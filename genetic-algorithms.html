@@ -219,35 +219,31 @@
   <h2 class="slide-h2">What Are <em>Genetic Algorithms</em>?</h2>
   <p class="slide-p">Genetic algorithms (GAs) are optimization techniques inspired by Charles Darwin's theory of natural selection. Instead of computing an exact solution, GAs evolve a population of candidate solutions over successive generations, guided by a fitness function.</p>
 
-  <div class="two-col">
-    <div>
-      <div class="cb">
-        <div class="cb-label">Core Idea</div>
-        <div class="cb-body"><strong>Evolve, don't calculate.</strong> Start with a random population of possible solutions. Evaluate how "fit" each one is. Select the best, combine them, introduce small random changes, and repeat. Over many generations, the population converges toward optimal solutions.</div>
-      </div>
-      <div class="cb blue">
-        <div class="cb-label">Brief History</div>
-        <div class="cb-body"><strong>John Holland (1975)</strong> formalized genetic algorithms in "Adaptation in Natural and Artificial Systems" at the University of Michigan. His Schema Theorem provided the first theoretical foundation for why GAs work. Since then, GAs have been applied to scheduling, routing, design optimization, and &mdash; most recently &mdash; software engineering.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;margin-top:6px;">
+    <div class="cb" style="margin:0;display:flex;flex-direction:column;">
+      <div class="cb-label">Core Idea</div>
+      <div class="cb-body" style="flex:1;"><strong>Evolve, don't calculate.</strong> Start with a random population of possible solutions. Evaluate how "fit" each one is. Select the best, combine them, introduce small random changes, and repeat. Over many generations, the population converges toward optimal solutions.</div>
+    </div>
+    <div class="cb amber" style="margin:0;display:flex;flex-direction:column;">
+      <div class="cb-label">Gradient-Based Optimization</div>
+      <div class="cb-body" style="flex:1;">
+        <strong>Requires:</strong> a differentiable objective function<br>
+        <strong>Method:</strong> compute gradients, follow the slope downhill<br>
+        <strong>Strengths:</strong> fast convergence on smooth landscapes<br>
+        <strong>Weakness:</strong> gets stuck in local optima; cannot handle discrete or non-differentiable problems
       </div>
     </div>
-    <div>
-      <div class="cb amber">
-        <div class="cb-label">Gradient-Based Optimization</div>
-        <div class="cb-body">
-          <strong>Requires:</strong> a differentiable objective function<br>
-          <strong>Method:</strong> compute gradients, follow the slope downhill<br>
-          <strong>Strengths:</strong> fast convergence on smooth landscapes<br>
-          <strong>Weakness:</strong> gets stuck in local optima; cannot handle discrete or non-differentiable problems
-        </div>
-      </div>
-      <div class="cb purple">
-        <div class="cb-label">Evolutionary Optimization</div>
-        <div class="cb-body">
-          <strong>Requires:</strong> only a fitness function (no gradients needed)<br>
-          <strong>Method:</strong> selection, crossover, mutation on a population<br>
-          <strong>Strengths:</strong> handles discrete, noisy, multi-modal search spaces<br>
-          <strong>Weakness:</strong> slower convergence; requires more function evaluations
-        </div>
+    <div class="cb blue" style="margin:0;display:flex;flex-direction:column;">
+      <div class="cb-label">Brief History</div>
+      <div class="cb-body" style="flex:1;"><strong>John Holland (1975)</strong> formalized genetic algorithms in "Adaptation in Natural and Artificial Systems" at the University of Michigan. His Schema Theorem provided the first theoretical foundation for why GAs work. Since then, GAs have been applied to scheduling, routing, design optimization, and &mdash; most recently &mdash; software engineering.</div>
+    </div>
+    <div class="cb purple" style="margin:0;display:flex;flex-direction:column;">
+      <div class="cb-label">Evolutionary Optimization</div>
+      <div class="cb-body" style="flex:1;">
+        <strong>Requires:</strong> only a fitness function (no gradients needed)<br>
+        <strong>Method:</strong> selection, crossover, mutation on a population<br>
+        <strong>Strengths:</strong> handles discrete, noisy, multi-modal search spaces<br>
+        <strong>Weakness:</strong> slower convergence; requires more function evaluations
       </div>
     </div>
   </div>
