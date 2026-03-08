@@ -422,3 +422,132 @@ code,kbd { font-family:'JetBrains Mono',monospace; }
   .grid-4 { grid-template-columns:1fr; }
   .footer-inner { flex-direction:column; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   COMPATIBILITY LAYER & MISSING CLASSES
+   Aliases so HTML pages using the new naming convention work
+   correctly with the shared design system above.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── CSS variable aliases ─── */
+:root {
+  /* Font stack variables */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Text colour aliases (new names → existing tokens) */
+  --text-primary:   #F0F6FC;   /* = --text   */
+  --text-secondary: #8B949E;   /* = --text-2 */
+  --text-muted:     #484F58;   /* = --text-3 */
+}
+
+/* ─── Navigation alias: .nav → .site-nav behaviour ─── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-h);
+  background: rgba(13,17,23,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+/* Inner flex row — container handles max-width */
+.nav .nav-inner,
+.nav-inner {
+  height: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; gap: 32px;
+}
+/* Strip list bullets when <ul class="nav-links"> is used */
+ul.nav-links { list-style: none; }
+ul.nav-links li { display: contents; }
+
+/* Logo mark (the </> glyph) */
+.logo-mark {
+  color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+/* Ensure nav-logo inherits display:flex properly */
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.05rem;
+  color: var(--text); white-space: nowrap; flex-shrink: 0; text-decoration: none;
+}
+
+/* ─── Button aliases ─── */
+/* .btn-primary maps to the green CTA button */
+.btn-primary {
+  background: var(--green); color: #0D1117;
+  border-color: var(--green);
+}
+.btn-primary:hover {
+  background: #00F58C;
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,217,126,0.3);
+}
+/* Size modifier */
+.btn-lg { padding: 12px 28px; font-size: 0.95rem; }
+
+/* ─── Section wrapper ─── */
+.section { padding: 80px 0; }
+@media(max-width:640px){ .section { padding: 56px 0; } }
+
+/* ─── Footer aliases: .footer → .site-footer behaviour ─── */
+.footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 44px 0 28px;
+}
+.footer .footer-inner {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px; flex-wrap: wrap;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.footer-left { max-width: 300px; }
+.footer-left .nav-logo { margin-bottom: 4px; }
+.footer-tagline { font-size: 0.78rem; color: var(--text-2); margin-top: 4px; line-height: 1.5; }
+/* Horizontal link row in footer */
+.footer-links {
+  display: flex; align-items: center;
+  gap: 4px; flex-wrap: wrap;
+}
+.footer-link {
+  font-size: 0.82rem; color: var(--text-2);
+  padding: 4px 10px; border-radius: 5px;
+  transition: color 0.15s, background 0.15s;
+  text-decoration: none;
+}
+.footer-link:hover { color: var(--green); background: rgba(0,217,126,0.06); }
+.footer-bottom {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+  font-size: 0.74rem; color: var(--text-3);
+}
+@media(max-width:640px){
+  .footer .footer-inner { flex-direction: column; }
+  .footer-links { flex-direction: column; align-items: flex-start; }
+}
+
+/* ─── Page-hero shared styles (project + gallery pages) ─── */
+.page-hero,
+.project-hero {
+  padding: calc(var(--nav-h) + 56px) 0 52px;
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+/* Breadcrumb */
+.breadcrumb {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.81rem; color: var(--text-3); margin-bottom: 18px;
+}
+.breadcrumb a { color: var(--text-3); text-decoration: none; transition: color 0.15s; }
+.breadcrumb a:hover { color: var(--green); }
+
+/* ─── Ensure body has correct padding for fixed nav ─── */
+body { padding-top: 0; }   /* nav height offset handled per-page via hero padding */
