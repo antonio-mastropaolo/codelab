@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DL for Software Development Foundations — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+
+    /* Typography */
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
+
+    /* Concept boxes */
+    .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .cb.blue{border-left-color:var(--blue);}
+    .cb.amber{border-left-color:var(--amber);}
+    .cb.purple{border-left-color:var(--purple);}
+    .cb.red{border-left-color:var(--red);}
+    .cb.cyan{border-left-color:var(--cyan);}
+    .cb-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .cb.blue .cb-label{color:var(--blue);}
+    .cb.amber .cb-label{color:var(--amber);}
+    .cb.purple .cb-label{color:var(--purple);}
+    .cb.red .cb-label{color:var(--red);}
+    .cb.cyan .cb-label{color:var(--cyan);}
+    .cb-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .cb-body strong{color:var(--text-primary);}
+
+    /* Term cards */
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .term-card:hover{border-color:var(--green-border);}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+
+    /* Code blocks */
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;}
+    .ck{color:var(--purple);}.cs{color:var(--green);}.cc{color:var(--text-muted);font-style:italic;}.cf{color:var(--blue);}.cl{color:var(--amber);}.ca{color:var(--cyan);}
+
+    /* Interactive panels */
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+
+    /* Sim buttons */
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+
+    /* Token chips */
+    .token-seq{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+    .tok{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:0.78rem;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);}
+    .tok.kw{border-color:rgba(188,140,255,0.3);color:var(--purple);background:rgba(188,140,255,0.06);}
+    .tok.id{border-color:rgba(88,166,255,0.3);color:var(--blue);background:rgba(88,166,255,0.06);}
+    .tok.op{border-color:rgba(227,179,65,0.3);color:var(--amber);background:rgba(227,179,65,0.06);}
+    .tok.sep{border-color:rgba(0,217,126,0.3);color:var(--green);background:rgba(0,217,126,0.08);}
+    .tok.lit{border-color:rgba(57,213,255,0.3);color:var(--cyan);background:rgba(57,213,255,0.06);}
+
+    /* Comparison table */
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-blue{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+    .tag-purple{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(188,140,255,0.08);color:var(--purple);border:1px solid rgba(188,140,255,0.2);}
+    .tag-red{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(255,95,87,0.08);color:var(--red);border:1px solid rgba(255,95,87,0.2);}
+
+    /* Takeaway grid */
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Flow arrows */
+    .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;justify-content:center;}
+    .flow-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:var(--font-display);font-size:0.82rem;font-weight:600;text-align:center;min-width:90px;}
+    .flow-box.green{border-color:var(--green-border);color:var(--green);}
+    .flow-box.blue{border-color:rgba(88,166,255,0.3);color:var(--blue);}
+    .flow-box.amber{border-color:rgba(227,179,65,0.3);color:var(--amber);}
+    .flow-box.purple{border-color:rgba(188,140,255,0.3);color:var(--purple);}
+    .flow-box.cyan{border-color:rgba(57,213,255,0.3);color:var(--cyan);}
+    .flow-arrow{color:var(--text-muted);font-size:1.2rem;}
+
+    /* Quiz */
+    .quiz-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .quiz-option:hover{border-color:var(--green-border);}
+    .quiz-option .q-label{font-size:0.82rem;color:var(--text-secondary);flex:1;}
+    .quiz-option .q-tag{font-family:var(--font-mono);font-size:0.7rem;padding:3px 10px;border-radius:12px;display:none;}
+    .quiz-option.revealed .q-tag{display:inline-block;}
+    .quiz-option.correct .q-tag{background:rgba(0,217,126,0.1);color:var(--green);}
+    .quiz-option.wrong .q-tag{background:rgba(255,95,87,0.1);color:var(--red);}
+    .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
+    .quiz-option.revealed.wrong{border-color:rgba(255,95,87,0.2);background:rgba(255,95,87,0.04);}
+
+    /* Knowledge check */
+    .kc-box{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;}
+    .kc-q{font-size:0.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .kc-q::before{content:'?';display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.12);color:var(--blue);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;flex-shrink:0;}
+    .kc-answer{display:none;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:10px 14px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);margin-top:8px;}
+    .kc-answer.visible{display:block;}
+    .kc-answer strong{color:var(--text-primary);}
+
+    /* Step rows */
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Stat cards */
+    .stat-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:110px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .stat-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--green);}
+    .stat-val.blue{color:var(--blue);}
+    .stat-val.amber{color:var(--amber);}
+    .stat-val.purple{color:var(--purple);}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+
+    /* VS layout */
+    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:14px 0;}
+    @media(max-width:700px){.vs-grid{grid-template-columns:1fr;}}
+    .vs-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .vs-card h4{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px;}
+    .vs-card ul{list-style:none;padding:0;}
+    .vs-card li{font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:3px 0;}
+    .vs-card li::before{content:'\2192 ';color:var(--green);font-family:var(--font-mono);}
+    .vs-card.warn li::before{color:var(--amber);}
+    .vs-divider{display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--text-muted);}
+    @media(max-width:700px){.vs-divider{display:none;}}
+
+    /* Self-attention tokens */
+    .sa-token{display:inline-flex;align-items:center;padding:6px 14px;border-radius:8px;font-family:var(--font-mono);font-size:0.85rem;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);cursor:pointer;transition:all 0.2s;margin:3px;}
+    .sa-token:hover{border-color:var(--green-border);color:var(--green);}
+    .sa-token.selected{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+
+    /* Slider rows */
+    .slider-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+    .slider-row label{font-size:0.78rem;font-family:var(--font-mono);color:var(--text-secondary);min-width:40px;}
+    .slider-row input[type=range]{flex:1;accent-color:var(--green);}
+    .sl-val{font-family:var(--font-mono);font-size:0.78rem;color:var(--green);min-width:45px;text-align:right;}
+
+    /* Gate bars */
+    .gate-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+    .gate-label{font-size:0.78rem;font-family:var(--font-mono);min-width:80px;}
+    .gate-track{flex:1;height:18px;background:var(--bg-3);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+    .gate-fill{height:100%;border-radius:3px;transition:width 0.3s ease;}
+    .gate-num{font-family:var(--font-mono);font-size:0.75rem;min-width:50px;text-align:right;}
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+    <span class="topbar-sep">|</span>
+    <span class="topbar-title">DL for Software Development Foundations</span>
+    <span class="topbar-badge">Module 4 &middot; Interactive</span>
+    <span class="slide-counter" id="counter">1 / 26</span>
+    <a href="index.html" class="topbar-home">Home</a>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:3.85%"></div></div>
+
+  <!-- Slides -->
+  <div class="slides-wrapper">
+
+    <!-- ═══ SLIDE 1 ═══ Title ═══ -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-label">Module 4 &middot; Slide 01</div>
+      <h1 class="slide-h1">Deep Learning for<br><em>Software Development</em> Foundations</h1>
+      <p class="slide-p">This module covers the core deep learning concepts and architectures that power modern AI-driven software engineering tools &mdash; from non-generative classification tasks to generative models based on LSTMs and Transformers.</p>
+      <div class="term-grid" style="margin-top:18px;">
+        <div class="term-card">
+          <div class="term-name">Part A &mdash; Non-Generative</div>
+          <div class="term-def">Clone detection, vulnerability prediction, code smell detection &mdash; classification and prediction tasks that do not produce new code.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Part B &mdash; Embeddings &amp; LSTMs</div>
+          <div class="term-def">Word embeddings, BPE tokenization, LSTM architecture, seq2seq with attention, and beam search for code generation.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Part C &mdash; Transformers</div>
+          <div class="term-def">Self-attention, multi-head attention, positional encoding, pre-training, fine-tuning, and the modern code model ecosystem.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Learning Objectives</div>
+          <div class="term-def">Distinguish generative vs. non-generative DL4SE tasks. Understand key architectures (LSTM, Transformer) and how pre-trained models are fine-tuned for SE.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 2 ═══ Non-Generative Tasks Overview ═══ -->
+    <div class="slide" id="slide-2">
+      <div class="slide-label">Module 4 &middot; Slide 02</div>
+      <h2 class="slide-h2"><em>Non-Generative</em> Tasks Overview</h2>
+      <p class="slide-p">Non-generative DL4SE tasks classify or predict properties of existing code without producing new source code. The model answers a question about the code rather than writing new code.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Definition</div>
+            <div class="cb-body"><strong>Non-generative tasks</strong> take code as input and output a <strong>label</strong> or <strong>score</strong> &mdash; e.g., "vulnerable" / "safe", or "clone" / "not clone".</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Key Examples</div>
+            <div class="cb-body">
+              <strong>Code Clone Detection</strong> &mdash; find duplicate or near-duplicate code fragments.<br>
+              <strong>Vulnerability Prediction</strong> &mdash; flag code likely to contain security flaws.<br>
+              <strong>Code Smell Detection</strong> &mdash; identify design problems like God Class or Long Method.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">Pipeline Pattern</div>
+            <div class="cb-body">Most non-generative tasks follow the same pattern:</div>
+          </div>
+          <div class="flow-row" style="margin-top:12px;">
+            <div class="flow-box green">Source Code</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box blue">Feature Extraction</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box purple">Classifier / DNN</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box amber">Label / Score</div>
+          </div>
+          <div class="cb amber" style="margin-top:8px;">
+            <div class="cb-label">Contrast</div>
+            <div class="cb-body"><strong>Generative</strong> tasks (code generation, summarization, translation) produce a sequence of new tokens. We cover those in Parts B and C.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 3 ═══ Code Clone Detection: Types I-IV ═══ -->
+    <div class="slide" id="slide-3">
+      <div class="slide-label">Module 4 &middot; Slide 03</div>
+      <h2 class="slide-h2">Code Clone Detection: <em>Types I &ndash; IV</em></h2>
+      <p class="slide-p">Code clones are pairs of code fragments that are similar. They are classified into four types based on the degree of similarity.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Type I &mdash; Exact Clone</div>
+            <div class="cb-body">Identical code except for whitespace, layout, and comments. A straight copy-paste.</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Type II &mdash; Renamed Clone</div>
+            <div class="cb-body">Syntactically identical except for identifier names, literal values, or type references.</div>
+          </div>
+          <div class="cb amber">
+            <div class="cb-label">Type III &mdash; Gapped Clone</div>
+            <div class="cb-body">Similar structure but with statements added, removed, or modified. Near-miss clone.</div>
+          </div>
+          <div class="cb purple">
+            <div class="cb-label">Type IV &mdash; Semantic Clone</div>
+            <div class="cb-body">Same functionality, completely different syntax. E.g., iterative vs. recursive implementations.</div>
+          </div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Clone Classifier <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:10px;">Examine the code pair and classify the clone type:</p>
+              <div id="clone-pair" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;" id="clone-btns"></div>
+              <div id="clone-feedback" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);min-height:24px;"></div>
+              <button class="sim-btn" onclick="nextClonePair()" style="margin-top:8px;">Next Pair</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 4 ═══ Clone Detection Approaches ═══ -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Module 4 &middot; Slide 04</div>
+      <h2 class="slide-h2">Clone Detection <em>Approaches</em></h2>
+      <p class="slide-p">Different techniques trade off precision, recall, and the ability to detect higher-type clones.</p>
+      <div class="two-col">
+        <div>
+          <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Text-Based</h4><p>Compare raw text or normalized lines. Fast but limited to Type I / II.</p></div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Token-Based</h4><p>Tokenize code and compare token sequences with suffix trees or hashing. Handles Type I-III.</p></div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>AST-Based</h4><p>Parse into Abstract Syntax Trees and compare subtrees. Invariant to formatting and renaming (Type I-III).</p></div></div>
+          <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>ML / DL-Based</h4><p>Learn embeddings of code fragments and use similarity in vector space. Can detect Type IV semantic clones.</p></div></div>
+        </div>
+        <div>
+          <table class="comp-table">
+            <tr><th>Approach</th><th>Types</th><th>Scalability</th></tr>
+            <tr><td>Text-based</td><td><span class="tag-green">I</span> <span class="tag-green">II</span></td><td><span class="tag-green">High</span></td></tr>
+            <tr><td>Token-based</td><td><span class="tag-green">I</span> <span class="tag-green">II</span> <span class="tag-blue">III</span></td><td><span class="tag-green">High</span></td></tr>
+            <tr><td>AST-based</td><td><span class="tag-green">I</span> <span class="tag-green">II</span> <span class="tag-blue">III</span></td><td><span class="tag-amber">Medium</span></td></tr>
+            <tr><td>ML / DL</td><td><span class="tag-green">I</span> <span class="tag-green">II</span> <span class="tag-blue">III</span> <span class="tag-purple">IV</span></td><td><span class="tag-amber">Medium</span></td></tr>
+          </table>
+          <div class="cb" style="margin-top:14px;">
+            <div class="cb-label">Key Insight</div>
+            <div class="cb-body">Only learning-based approaches can detect <strong>Type IV</strong> (semantic) clones, because they capture the <strong>meaning</strong> rather than the <strong>syntax</strong> of code.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 5 ═══ Vulnerability Prediction ═══ -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Module 4 &middot; Slide 05</div>
+      <h2 class="slide-h2"><em>Vulnerability</em> Prediction</h2>
+      <p class="slide-p">Automatically predicting whether a code component contains a security vulnerability, using machine learning classifiers trained on historical vulnerability data.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb red">
+            <div class="cb-label">Why It Matters</div>
+            <div class="cb-body">Security vulnerabilities cost billions per year. Manual code review does not scale. ML models can <strong>prioritize</strong> code for review by flagging high-risk components.</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Common Vulnerability Types</div>
+            <div class="cb-body">
+              <strong>Buffer Overflow</strong> &mdash; writing beyond allocated memory.<br>
+              <strong>SQL Injection</strong> &mdash; unsanitized user input in queries.<br>
+              <strong>XSS</strong> &mdash; injecting scripts into web pages.<br>
+              <strong>Use After Free</strong> &mdash; accessing freed memory.<br>
+              <strong>Integer Overflow</strong> &mdash; arithmetic exceeding type range.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">ML Pipeline</div>
+            <div class="cb-body">The typical vulnerability prediction pipeline:</div>
+          </div>
+          <div class="flow-row" style="margin-top:10px;">
+            <div class="flow-box green">Code</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box blue">Metrics &amp; Tokens</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box purple">Classifier</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box" style="border-color:rgba(255,95,87,0.3);color:var(--red);">Vuln Score</div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Features Used</div>
+            <div class="cb-body">
+              <strong>Software metrics</strong>: cyclomatic complexity, LOC, coupling.<br>
+              <strong>Code tokens</strong>: n-grams of source code tokens.<br>
+              <strong>API calls</strong>: use of dangerous functions (e.g., <code style="font-family:var(--font-mono);">strcpy</code>, <code style="font-family:var(--font-mono);">eval</code>).<br>
+              <strong>Change history</strong>: past bug-fixing frequency.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 6 ═══ Vulnerability Prediction Pipeline Interactive ═══ -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Module 4 &middot; Slide 06</div>
+      <h2 class="slide-h2">Vulnerability Prediction <em>Pipeline</em></h2>
+      <p class="slide-p">Walk through how a vulnerability prediction model extracts features and assigns a risk score to a code snippet.</p>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <span class="inter-title">Vulnerability Analyzer <span class="inter-badge">Interactive</span></span>
+        </div>
+        <div class="inter-body">
+          <div class="two-col" style="gap:16px;">
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">Code Snippet:</div>
+              <div class="code-block" id="vuln-code" style="font-size:0.75rem;min-height:100px;"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="sim-btn" onclick="setVulnExample(0)">Example 1</button>
+                <button class="sim-btn" onclick="setVulnExample(1)">Example 2</button>
+                <button class="sim-btn" onclick="setVulnExample(2)">Example 3</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">Extracted Features:</div>
+              <div id="vuln-features" style="font-size:0.82rem;color:var(--text-secondary);"></div>
+              <div id="vuln-result" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 7 ═══ Code Smell Detection ═══ -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Module 4 &middot; Slide 07</div>
+      <h2 class="slide-h2">Code <em>Smell</em> Detection</h2>
+      <p class="slide-p">Code smells are symptoms of poor design choices that increase maintenance cost and defect likelihood. ML models can automatically detect them from software metrics.</p>
+      <div class="two-col">
+        <div>
+          <div class="term-grid">
+            <div class="term-card">
+              <div class="term-name">Long Method</div>
+              <div class="term-def">A method with too many lines of code, doing too much. Hard to understand and test.</div>
+            </div>
+            <div class="term-card">
+              <div class="term-name">God Class</div>
+              <div class="term-def">A class that centralizes too much functionality and knows too much about the system.</div>
+            </div>
+            <div class="term-card">
+              <div class="term-name">Feature Envy</div>
+              <div class="term-def">A method that uses data from another class more than its own. Suggests misplaced responsibility.</div>
+            </div>
+            <div class="term-card">
+              <div class="term-name">Data Clumps</div>
+              <div class="term-def">Groups of data that frequently appear together and should be encapsulated into a class.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb">
+            <div class="cb-label">ML Approach</div>
+            <div class="cb-body">Extract software metrics (LOC, cyclomatic complexity, coupling, cohesion, depth of inheritance), then train a classifier (Random Forest, SVM, or DNN) to predict smell type.</div>
+          </div>
+          <div class="cb blue" style="margin-top:10px;">
+            <div class="cb-label">Why It Matters</div>
+            <div class="cb-body">Studies show that code with smells has <strong>higher defect density</strong> and <strong>longer change times</strong>. Automated detection helps developers refactor proactively.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 8 ═══ Interactive Code Smell Detector ═══ -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Module 4 &middot; Slide 08</div>
+      <h2 class="slide-h2">Interactive: <em>Code Smell</em> Detector</h2>
+      <p class="slide-p">Analyze code metrics to classify the type of code smell present in a given snippet.</p>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <span class="inter-title">Smell Detector <span class="inter-badge">Interactive</span></span>
+        </div>
+        <div class="inter-body">
+          <div class="two-col" style="gap:16px;">
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">Code Snippet:</div>
+              <div class="code-block" id="smell-code" style="font-size:0.72rem;min-height:120px;"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="sim-btn" onclick="setSmellExample(0)">Example 1</button>
+                <button class="sim-btn" onclick="setSmellExample(1)">Example 2</button>
+                <button class="sim-btn" onclick="setSmellExample(2)">Example 3</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">Metrics Analysis:</div>
+              <div id="smell-metrics"></div>
+              <div id="smell-result" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 9 ═══ Non-Generative Tasks Recap ═══ -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Module 4 &middot; Slide 09</div>
+      <h2 class="slide-h2">Non-Generative Tasks <em>Recap</em></h2>
+      <p class="slide-p">Summary and comparison of the three non-generative tasks we covered.</p>
+      <table class="comp-table">
+        <tr><th>Task</th><th>Input</th><th>Output</th><th>Features</th><th>Challenge</th></tr>
+        <tr>
+          <td><strong style="color:var(--green)">Clone Detection</strong></td>
+          <td>Code pair</td>
+          <td>Clone type (I-IV)</td>
+          <td>Tokens, AST, embeddings</td>
+          <td>Type IV semantic clones</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue)">Vulnerability Prediction</strong></td>
+          <td>Code component</td>
+          <td>Vulnerability score</td>
+          <td>Metrics, API calls, history</td>
+          <td>Class imbalance (few vulns)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--purple)">Code Smell Detection</strong></td>
+          <td>Class / method</td>
+          <td>Smell type</td>
+          <td>LOC, complexity, coupling</td>
+          <td>Subjective thresholds</td>
+        </tr>
+      </table>
+      <div class="kc-box" style="margin-top:16px;">
+        <div class="kc-q">Which clone type requires semantic understanding to detect?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Type IV &mdash; same functionality, different syntax</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Type II &mdash; renamed identifiers</span>
+          <span class="q-tag">Incorrect &mdash; Type II is detectable by token comparison</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Type III &mdash; gapped clones</span>
+          <span class="q-tag">Incorrect &mdash; Type III can be found with AST matching</span>
+        </div>
+      </div>
+      <div class="kc-box">
+        <div class="kc-q">What is the main challenge in vulnerability prediction?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Class imbalance &mdash; very few vulnerable samples vs. many safe ones</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Code is too short to extract features</span>
+          <span class="q-tag">Incorrect</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 10 ═══ From Non-Generative to Generative ═══ -->
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Module 4 &middot; Slide 10</div>
+      <h2 class="slide-h2">From Non-Generative to <em>Generative</em></h2>
+      <p class="slide-p">We now shift from classifying existing code to generating new sequences of code tokens. This requires a fundamentally different class of models.</p>
+      <div class="vs-grid">
+        <div class="vs-card">
+          <h4 style="color:var(--blue)">Non-Generative</h4>
+          <ul>
+            <li>Input: code &rarr; Output: label / score</li>
+            <li>Clone detection, vulnerability prediction</li>
+            <li>Traditional ML often sufficient</li>
+            <li>Fixed-size output</li>
+          </ul>
+        </div>
+        <div class="vs-divider">vs</div>
+        <div class="vs-card">
+          <h4 style="color:var(--green)">Generative</h4>
+          <ul>
+            <li>Input: code/NL &rarr; Output: code/NL sequence</li>
+            <li>Code generation, summarization, translation</li>
+            <li>Deep learning required (RNN, Transformer)</li>
+            <li>Variable-length output</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cb" style="margin-top:10px;">
+        <div class="cb-label">Generative Tasks in SE</div>
+        <div class="cb-body">
+          <strong>Code Generation</strong> &mdash; NL description &rarr; source code.<br>
+          <strong>Code Summarization</strong> &mdash; source code &rarr; NL summary.<br>
+          <strong>Code Translation</strong> &mdash; Java code &rarr; Python code.<br>
+          <strong>Bug Repair</strong> &mdash; buggy code &rarr; fixed code.<br>
+          <strong>Commit Message Generation</strong> &mdash; code diff &rarr; commit message.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 11 ═══ Word Embeddings for Code ═══ -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Module 4 &middot; Slide 11</div>
+      <h2 class="slide-h2">Word <em>Embeddings</em> for Code</h2>
+      <p class="slide-p">Before feeding code tokens to a neural network, we need to represent them as dense numerical vectors. Embeddings capture semantic relationships between tokens.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">One-Hot Encoding</div>
+            <div class="cb-body">Each token gets a sparse vector with a single 1. <strong>Problem:</strong> no similarity info, huge dimensions (vocabulary can be 50K+).</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Dense Embeddings (Word2Vec)</div>
+            <div class="cb-body">Each token mapped to a <strong>low-dimensional</strong> dense vector (e.g., 128-d). Tokens with similar contexts get similar vectors. <code style="font-family:var(--font-mono);">int</code> and <code style="font-family:var(--font-mono);">float</code> end up nearby.</div>
+          </div>
+          <div class="cb amber">
+            <div class="cb-label">Why Embeddings Work for Code</div>
+            <div class="cb-body">Code has strong <strong>local context</strong>: <code style="font-family:var(--font-mono);">for(int i=0</code> is predictable. Embeddings capture that <code style="font-family:var(--font-mono);">ArrayList</code> is similar to <code style="font-family:var(--font-mono);">LinkedList</code>.</div>
+          </div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Encoding Comparison <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px;">Vocabulary: <code style="font-family:var(--font-mono);">int, float, String, for, if, return</code></p>
+              <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <button class="sim-btn" id="enc-btn-oh" onclick="showEncoding('oh')">One-Hot</button>
+                <button class="sim-btn" id="enc-btn-bow" onclick="showEncoding('bow')">Bag of Words</button>
+                <button class="sim-btn" id="enc-btn-emb" onclick="showEncoding('emb')">Embedding</button>
+              </div>
+              <div id="enc-display" style="font-family:var(--font-mono);font-size:0.72rem;line-height:1.8;"></div>
+              <div id="enc-explanation" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 12 ═══ Byte Pair Encoding ═══ -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Module 4 &middot; Slide 12</div>
+      <h2 class="slide-h2">Byte Pair Encoding <em>(BPE)</em></h2>
+      <p class="slide-p">Subword tokenization that splits rare identifiers into known subword units. Essential for handling code's open vocabulary (compound names like <code style="font-family:var(--font-mono);">getEmbeddedIPv4ClientAddr</code>).</p>
+      <div class="two-col">
+        <div>
+          <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Start with Characters</h4><p>Initialize vocabulary with all individual characters in the training corpus.</p></div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Count Pairs</h4><p>Find the most frequent adjacent pair of tokens (e.g., 'e' + 's' appearing 1000 times).</p></div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Merge</h4><p>Replace all occurrences of the pair with a new token ('es'). Add to vocabulary.</p></div></div>
+          <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Repeat</h4><p>Repeat steps 2-3 for a fixed number of merges (e.g., 32K). Common words become single tokens; rare words split into subwords.</p></div></div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">BPE Tokenizer <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">Enter an identifier:</div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="bpe-input" value="getEmbeddedIPv4" style="flex:1;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--font-mono);font-size:0.82rem;color:var(--text-primary);" onkeyup="if(event.key==='Enter')runBPE()">
+                <button class="sim-btn primary" onclick="runBPE()">Tokenize</button>
+              </div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">Try: <span style="cursor:pointer;color:var(--blue);" onclick="document.getElementById('bpe-input').value='getEmbeddedIPv4';runBPE();">getEmbeddedIPv4</span> | <span style="cursor:pointer;color:var(--blue);" onclick="document.getElementById('bpe-input').value='parseHTTPResponse';runBPE();">parseHTTPResponse</span> | <span style="cursor:pointer;color:var(--blue);" onclick="document.getElementById('bpe-input').value='calculateTotalPrice';runBPE();">calculateTotalPrice</span></div>
+              <div id="bpe-result" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 13 ═══ LSTM Architecture ═══ -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Module 4 &middot; Slide 13</div>
+      <h2 class="slide-h2"><em>LSTM</em> Architecture</h2>
+      <p class="slide-p">Long Short-Term Memory networks solve the vanishing gradient problem of vanilla RNNs by introducing gated memory cells that selectively remember and forget information.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb red">
+            <div class="cb-label">RNN Limitation</div>
+            <div class="cb-body"><strong>Vanishing gradients:</strong> in long sequences, gradients shrink exponentially during backpropagation. The network cannot learn long-range dependencies (e.g., matching a <code style="font-family:var(--font-mono);">{</code> with its closing <code style="font-family:var(--font-mono);">}</code> 50 tokens later).</div>
+          </div>
+          <div class="cb">
+            <div class="cb-label">LSTM Solution: Gates</div>
+            <div class="cb-body">Three gates control information flow through the cell:</div>
+          </div>
+          <div class="term-grid">
+            <div class="term-card"><div class="term-name" style="color:var(--amber)">Forget Gate f_t</div><div class="term-def">Decides what to erase from cell state. sigmoid(W_f * [h_{t-1}, x_t])</div></div>
+            <div class="term-card"><div class="term-name" style="color:var(--green)">Input Gate i_t</div><div class="term-def">Decides what new info to store. sigmoid(W_i * [h_{t-1}, x_t])</div></div>
+            <div class="term-card"><div class="term-name" style="color:var(--cyan)">Candidate g_t</div><div class="term-def">New candidate values. tanh(W_g * [h_{t-1}, x_t])</div></div>
+            <div class="term-card"><div class="term-name" style="color:var(--purple)">Output Gate o_t</div><div class="term-def">Decides what to output. sigmoid(W_o * [h_{t-1}, x_t])</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">Cell State Update</div>
+            <div class="cb-body">
+              <strong>c_t = f_t * c_{t-1} + i_t * g_t</strong><br>
+              The cell state is a highway: the forget gate removes old info, the input gate writes new info.<br><br>
+              <strong>h_t = o_t * tanh(c_t)</strong><br>
+              The output gate filters the cell state to produce the hidden state.
+            </div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Why LSTM for Code</div>
+            <div class="cb-body">Code has <strong>long-range dependencies</strong>: variable declarations referenced many lines later, matching brackets, function calls. LSTM's cell state can carry this info across hundreds of tokens.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 14 ═══ LSTM Gate Explorer ═══ -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Module 4 &middot; Slide 14</div>
+      <h2 class="slide-h2">Interactive: <em>LSTM Gate</em> Explorer</h2>
+      <p class="slide-p">Adjust the input values and observe how each gate responds. The bars show gate activations computed with fixed illustrative weights.</p>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <span class="inter-title">LSTM Gate Explorer <span class="inter-badge">Interactive</span></span>
+        </div>
+        <div class="inter-body">
+          <div class="two-col" style="gap:20px;">
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">Input Values:</div>
+              <div class="slider-row"><label>x_t</label><input type="range" min="-300" max="300" value="50" id="sl-x" oninput="updateGates()"><span class="sl-val" id="sv-x">0.50</span></div>
+              <div class="slider-row"><label>h_{t-1}</label><input type="range" min="-300" max="300" value="30" id="sl-h" oninput="updateGates()"><span class="sl-val" id="sv-h">0.30</span></div>
+              <div class="slider-row"><label>c_{t-1}</label><input type="range" min="-300" max="300" value="80" id="sl-c" oninput="updateGates()"><span class="sl-val" id="sv-c">0.80</span></div>
+              <div style="margin-top:16px;">
+                <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">Outputs:</div>
+                <div style="display:flex;gap:12px;">
+                  <div class="stat-card" style="padding:10px;"><div class="stat-val" style="font-size:1.2rem;" id="out-c">0.000</div><div class="stat-label">c_t (cell)</div></div>
+                  <div class="stat-card" style="padding:10px;"><div class="stat-val blue" style="font-size:1.2rem;" id="out-h">0.000</div><div class="stat-label">h_t (hidden)</div></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">Gate Activations:</div>
+              <div class="gate-row"><span class="gate-label" style="color:var(--amber)">Forget f_t</span><div class="gate-track"><div class="gate-fill" id="bar-f" style="background:var(--amber);width:50%;"></div></div><span class="gate-num" id="num-f">0.500</span></div>
+              <div class="gate-row"><span class="gate-label" style="color:var(--green)">Input i_t</span><div class="gate-track"><div class="gate-fill" id="bar-i" style="background:var(--green);width:50%;"></div></div><span class="gate-num" id="num-i">0.500</span></div>
+              <div class="gate-row"><span class="gate-label" style="color:var(--cyan)">Candidate g_t</span><div class="gate-track"><div class="gate-fill" id="bar-g" style="background:var(--cyan);width:50%;"></div></div><span class="gate-num" id="num-g">0.500</span></div>
+              <div class="gate-row"><span class="gate-label" style="color:var(--purple)">Output o_t</span><div class="gate-track"><div class="gate-fill" id="bar-o" style="background:var(--purple);width:50%;"></div></div><span class="gate-num" id="num-o">0.500</span></div>
+              <div id="gate-explanation" style="margin-top:14px;font-size:0.82rem;color:var(--text-secondary);padding:10px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 15 ═══ Seq2Seq for Code ═══ -->
+    <div class="slide" id="slide-15">
+      <div class="slide-label">Module 4 &middot; Slide 15</div>
+      <h2 class="slide-h2"><em>Seq2Seq</em> for Code</h2>
+      <p class="slide-p">The encoder-decoder (sequence-to-sequence) architecture maps an input sequence to an output sequence of potentially different length &mdash; ideal for code translation and repair.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Encoder</div>
+            <div class="cb-body">An LSTM reads the input sequence token by token and compresses it into a fixed-size <strong>context vector</strong> (the final hidden state).</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Decoder</div>
+            <div class="cb-body">A second LSTM generates the output sequence one token at a time, conditioned on the context vector and previously generated tokens.</div>
+          </div>
+          <div class="cb amber">
+            <div class="cb-label">Teacher Forcing</div>
+            <div class="cb-body">During training, the decoder receives the <strong>ground-truth</strong> previous token (not its own prediction). This stabilizes and accelerates training.</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">Bug Repair Example:</div>
+          <div class="flow-row">
+            <div class="flow-box" style="border-color:rgba(255,95,87,0.3);color:var(--red);font-size:0.75rem;">sum(arr, n-1)</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box blue" style="font-size:0.75rem;">Encoder LSTM</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box purple" style="font-size:0.75rem;">Context Vector</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box blue" style="font-size:0.75rem;">Decoder LSTM</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box green" style="font-size:0.75rem;">sum(arr, n)</div>
+          </div>
+          <div class="cb red" style="margin-top:14px;">
+            <div class="cb-label">Bottleneck Problem</div>
+            <div class="cb-body">The entire input sequence must be compressed into a <strong>single fixed-size vector</strong>. For long code sequences, this loses information. Solution: <strong>attention mechanism</strong> (next slide).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 16 ═══ Attention Mechanism ═══ -->
+    <div class="slide" id="slide-16">
+      <div class="slide-label">Module 4 &middot; Slide 16</div>
+      <h2 class="slide-h2"><em>Attention</em> Mechanism</h2>
+      <p class="slide-p">Instead of relying on a single context vector, attention lets the decoder look back at all encoder hidden states and focus on the most relevant parts for each output token.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">How Attention Works</div>
+            <div class="cb-body">
+              <strong>1.</strong> Compute alignment scores between decoder state and each encoder state.<br>
+              <strong>2.</strong> Softmax to get attention weights (sum to 1).<br>
+              <strong>3.</strong> Weighted sum of encoder states = context for this step.<br>
+              <strong>4.</strong> Concatenate with decoder state to predict next token.
+            </div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Why It Helps for Code</div>
+            <div class="cb-body">When fixing a bug, the decoder can <strong>directly attend</strong> to the relevant input tokens. For <code style="font-family:var(--font-mono);">sum(arr, n-1)</code> &rarr; <code style="font-family:var(--font-mono);">sum(arr, n)</code>, attention learns to skip <code style="font-family:var(--font-mono);">-1</code>.</div>
+          </div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Attention Heatmap <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Input (buggy): <code style="font-family:var(--font-mono);">sum ( arr , n - 1 )</code></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Click an output token to see its attention weights:</div>
+              <div id="attn-out-tokens" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;"></div>
+              <div id="attn-heatmap"></div>
+              <div id="attn-explanation" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);padding:8px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);min-height:30px;">Click an output token to see its attention weights on the input.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 17 ═══ Beam Search ═══ -->
+    <div class="slide" id="slide-17">
+      <div class="slide-label">Module 4 &middot; Slide 17</div>
+      <h2 class="slide-h2"><em>Beam Search</em> Decoding</h2>
+      <p class="slide-p">At inference time, the decoder must choose tokens one at a time. Beam search keeps multiple candidate sequences (beams) to avoid getting trapped by greedy local choices.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb red">
+            <div class="cb-label">Greedy Decoding</div>
+            <div class="cb-body">Always pick the highest-probability token at each step. Fast but often produces suboptimal sequences &mdash; a locally good choice can lead to a poor overall result.</div>
+          </div>
+          <div class="cb">
+            <div class="cb-label">Beam Search (width = k)</div>
+            <div class="cb-body">
+              <strong>1.</strong> Start with the top-k tokens for position 1.<br>
+              <strong>2.</strong> For each beam, expand with all possible next tokens.<br>
+              <strong>3.</strong> Keep only the top-k sequences by cumulative log-probability.<br>
+              <strong>4.</strong> Repeat until all beams produce &lt;EOS&gt;.<br>
+              <strong>5.</strong> Return the highest-scoring complete sequence.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">Example: Beam Width = 2</div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px;">Step 1: Top-2 starts</div>
+            <div class="token-seq"><span class="tok sep">return</span> <span style="color:var(--text-muted);font-size:0.78rem;">(0.45)</span></div>
+            <div class="token-seq"><span class="tok kw">if</span> <span style="color:var(--text-muted);font-size:0.78rem;">(0.30)</span></div>
+            <div style="font-size:0.78rem;color:var(--text-secondary);margin:8px 0;">Step 2: Expand &amp; keep top-2</div>
+            <div class="token-seq"><span class="tok sep">return</span><span class="tok id">result</span> <span style="color:var(--text-muted);font-size:0.78rem;">(0.38)</span></div>
+            <div class="token-seq"><span class="tok sep">return</span><span class="tok lit">null</span> <span style="color:var(--text-muted);font-size:0.78rem;">(0.32)</span></div>
+            <div style="font-size:0.78rem;color:var(--text-secondary);margin:8px 0;">Step 3: Best complete sequence</div>
+            <div class="token-seq"><span class="tok sep">return</span><span class="tok id">result</span><span class="tok op">;</span> <span style="color:var(--green);font-size:0.78rem;">Winner (0.35)</span></div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Trade-off</div>
+            <div class="cb-body">Larger beam width &rarr; better results but slower. Typical values: <strong>k=5</strong> to <strong>k=10</strong> for code generation tasks.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 18 ═══ Generative Part 1 Recap ═══ -->
+    <div class="slide" id="slide-18">
+      <div class="slide-label">Module 4 &middot; Slide 18</div>
+      <h2 class="slide-h2">Generative Part 1 <em>Recap</em></h2>
+      <p class="slide-p">Summary of the key building blocks for LSTM-based generative models.</p>
+      <div class="takeaway-grid">
+        <div class="takeaway-card"><div class="takeaway-num">01</div><h4>Embeddings</h4><p>Dense vector representations that capture semantic similarity between code tokens. Foundation for all neural models.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">02</div><h4>BPE Tokenization</h4><p>Subword splitting that handles code's open vocabulary. Compound identifiers become sequences of known subwords.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">03</div><h4>LSTM Gates</h4><p>Forget, input, and output gates control memory flow. Solves vanishing gradients for long code sequences.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">04</div><h4>Seq2Seq</h4><p>Encoder-decoder architecture maps input sequences to output sequences. Used for code translation and repair.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">05</div><h4>Attention</h4><p>Lets the decoder focus on relevant encoder states at each step. Eliminates the information bottleneck.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">06</div><h4>Beam Search</h4><p>Explores multiple candidate sequences during decoding. Avoids greedy local optima for better overall output.</p></div>
+      </div>
+      <div class="kc-box" style="margin-top:14px;">
+        <div class="kc-q">Why does seq2seq with attention outperform vanilla seq2seq for long code sequences?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Attention lets the decoder access all encoder states, avoiding the fixed-size bottleneck</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Attention uses a larger context vector</span>
+          <span class="q-tag">Incorrect &mdash; the key is dynamic access, not vector size</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 19 ═══ Self-Attention ═══ -->
+    <div class="slide" id="slide-19">
+      <div class="slide-label">Module 4 &middot; Slide 19</div>
+      <h2 class="slide-h2">Self-Attention: <em>The Key Innovation</em></h2>
+      <p class="slide-p">Self-attention allows every token in a sequence to attend to every other token simultaneously, replacing the sequential processing of RNNs with parallel computation.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Query, Key, Value</div>
+            <div class="cb-body">Each token is projected into three vectors:<br>
+              <strong>Q (Query)</strong> &mdash; "What am I looking for?"<br>
+              <strong>K (Key)</strong> &mdash; "What do I contain?"<br>
+              <strong>V (Value)</strong> &mdash; "What information do I provide?"<br>
+              Attention = softmax(QK<sup>T</sup> / sqrt(d_k)) * V
+            </div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Why Replace Recurrence?</div>
+            <div class="cb-body">
+              <strong>Parallelism:</strong> all positions computed simultaneously (vs. sequential RNN).<br>
+              <strong>Direct paths:</strong> any two tokens are connected in one step (vs. O(n) hops in RNN).<br>
+              <strong>Scalability:</strong> leverages GPU parallelism for training on massive code corpora.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">Scaled Dot-Product</div>
+            <div class="cb-body">The scaling factor <strong>1/sqrt(d_k)</strong> prevents dot products from becoming too large, which would push softmax into saturated regions with vanishing gradients.</div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Self-Attention for Code</div>
+            <div class="cb-body">Self-attention naturally learns structural patterns in code: <code style="font-family:var(--font-mono);">(</code> attends to its matching <code style="font-family:var(--font-mono);">)</code>, function names attend to their arguments, and <code style="font-family:var(--font-mono);">def</code> links to <code style="font-family:var(--font-mono);">:</code>.</div>
+          </div>
+          <div class="flow-row" style="margin-top:12px;">
+            <div class="flow-box green" style="font-size:0.75rem;">Input Tokens</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box blue" style="font-size:0.75rem;">Q, K, V Projections</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box purple" style="font-size:0.75rem;">Attention Scores</div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box amber" style="font-size:0.75rem;">Weighted Sum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 20 ═══ Multi-Head Attention & Positional Encoding ═══ -->
+    <div class="slide" id="slide-20">
+      <div class="slide-label">Module 4 &middot; Slide 20</div>
+      <h2 class="slide-h2">Multi-Head Attention &amp; <em>Positional Encoding</em></h2>
+      <p class="slide-p">Multiple attention heads capture different types of relationships, while positional encodings inject sequence order into the otherwise position-agnostic Transformer.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Multi-Head Attention</div>
+            <div class="cb-body">Run <strong>h</strong> parallel attention functions with different learned projections. Each head can specialize: one head learns bracket matching, another learns data-flow, another learns identifier co-reference. Outputs are concatenated and linearly projected.</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Sinusoidal Positional Encoding</div>
+            <div class="cb-body">Since self-attention has no notion of order, we add position vectors using sine/cosine functions at different frequencies:<br>
+              <strong>PE(pos, 2i) = sin(pos / 10000^(2i/d))</strong><br>
+              <strong>PE(pos, 2i+1) = cos(pos / 10000^(2i/d))</strong><br>
+              This lets the model generalize to unseen sequence lengths.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Positional Encoding Heatmap <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:8px;">Each row = a position (0-7), each column = a dimension. Brighter green = higher value.</p>
+              <svg id="pe-svg" width="100%" height="170" viewBox="0 0 280 170" style="display:block;"></svg>
+              <div class="cb" style="margin-top:8px;">
+                <div class="cb-label">Pattern</div>
+                <div class="cb-body">Low dimensions oscillate rapidly (capturing local position), high dimensions change slowly (capturing global position). Each position gets a <strong>unique fingerprint</strong>.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 21 ═══ Transformer Architecture ═══ -->
+    <div class="slide" id="slide-21">
+      <div class="slide-label">Module 4 &middot; Slide 21</div>
+      <h2 class="slide-h2"><em>Transformer</em> Architecture</h2>
+      <p class="slide-p">The Transformer stacks self-attention and feed-forward layers into encoder and decoder blocks, with residual connections and layer normalization for stable deep training.</p>
+      <div class="two-col">
+        <div>
+          <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">Encoder Block (x N layers):</div>
+          <div class="flow-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+            <div class="flow-box green" style="width:100%;">Multi-Head Self-Attention</div>
+            <div class="flow-box" style="width:100%;font-size:0.75rem;">Add &amp; Layer Norm (residual)</div>
+            <div class="flow-box blue" style="width:100%;">Feed-Forward Network</div>
+            <div class="flow-box" style="width:100%;font-size:0.75rem;">Add &amp; Layer Norm (residual)</div>
+          </div>
+          <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin:12px 0 8px;">Decoder Block (x N layers):</div>
+          <div class="flow-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+            <div class="flow-box purple" style="width:100%;">Masked Self-Attention</div>
+            <div class="flow-box amber" style="width:100%;">Cross-Attention (to encoder)</div>
+            <div class="flow-box blue" style="width:100%;">Feed-Forward Network</div>
+          </div>
+        </div>
+        <div>
+          <div class="cb">
+            <div class="cb-label">Key Components</div>
+            <div class="cb-body">
+              <strong>Residual Connections:</strong> input added to sublayer output, enabling gradient flow through deep stacks.<br><br>
+              <strong>Layer Normalization:</strong> normalizes activations per-sample, stabilizing training.<br><br>
+              <strong>Masked Self-Attention:</strong> in the decoder, prevents attending to future tokens (preserves autoregressive property).<br><br>
+              <strong>Cross-Attention:</strong> decoder queries attend to encoder keys/values, linking input and output.
+            </div>
+          </div>
+          <div class="cb cyan" style="margin-top:10px;">
+            <div class="cb-label">Architecture Variants</div>
+            <div class="cb-body">
+              <strong>Encoder-only</strong> (BERT, CodeBERT): bidirectional, for classification.<br>
+              <strong>Decoder-only</strong> (GPT, Codex): autoregressive, for generation.<br>
+              <strong>Encoder-decoder</strong> (T5, CodeT5): full seq2seq, for translation.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 22 ═══ Pre-training & Fine-tuning ═══ -->
+    <div class="slide" id="slide-22">
+      <div class="slide-label">Module 4 &middot; Slide 22</div>
+      <h2 class="slide-h2"><em>Pre-training</em> &amp; Fine-tuning</h2>
+      <p class="slide-p">Modern code models are first pre-trained on massive unlabeled code corpora, then fine-tuned on smaller task-specific datasets. This transfer learning paradigm dramatically reduces labeled data requirements.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Pre-training Objectives</div>
+            <div class="cb-body">
+              <strong>MLM (Masked Language Modeling):</strong> randomly mask 15% of tokens, predict them from context. Used by BERT/CodeBERT. Learns bidirectional representations.<br><br>
+              <strong>CLM (Causal Language Modeling):</strong> predict the next token given all previous tokens. Used by GPT/Codex. Learns to generate code left-to-right.
+            </div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Fine-tuning</div>
+            <div class="cb-body">Add a task-specific head (classifier, decoder) on top of the pre-trained model. Train on labeled data with a small learning rate. The pre-trained weights provide a strong initialization that already understands code syntax and semantics.</div>
+          </div>
+        </div>
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Transfer Learning Benefit <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Labeled examples for fine-tuning:</div>
+              <input type="range" min="0" max="4" value="2" id="tl-slider" oninput="updateTL()" style="width:100%;accent-color:var(--green);">
+              <div style="text-align:center;font-family:var(--font-mono);font-size:0.88rem;color:var(--green);margin:6px 0;" id="tl-n">1,000</div>
+              <div style="margin-top:10px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);min-width:100px;">From Scratch:</div>
+                  <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;"><div id="tl-rand-bar" style="height:100%;background:var(--red);width:38%;border-radius:4px;transition:width 0.3s;"></div></div>
+                  <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--red);min-width:36px;" id="tl-rand-num">38%</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);min-width:100px;">Pre-trained:</div>
+                  <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;"><div id="tl-ft-bar" style="height:100%;background:var(--green);width:76%;border-radius:4px;transition:width 0.3s;"></div></div>
+                  <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--green);min-width:36px;" id="tl-ft-num">76%</div>
+                </div>
+              </div>
+              <div id="tl-insight" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);padding:8px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 23 ═══ Code Models Ecosystem ═══ -->
+    <div class="slide" id="slide-23">
+      <div class="slide-label">Module 4 &middot; Slide 23</div>
+      <h2 class="slide-h2">Code Models <em>Ecosystem</em></h2>
+      <p class="slide-p">An overview of the major pre-trained models for code, their architectures, and capabilities.</p>
+      <table class="comp-table">
+        <tr><th>Model</th><th>Architecture</th><th>Training Data</th><th>Key Capability</th></tr>
+        <tr>
+          <td><strong style="color:var(--green)">CodeBERT</strong></td>
+          <td><span class="tag-blue">Encoder-only</span></td>
+          <td>CodeSearchNet (6 langs)</td>
+          <td>Code search, clone detection, defect prediction</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--blue)">GraphCodeBERT</strong></td>
+          <td><span class="tag-blue">Encoder-only</span></td>
+          <td>CodeSearchNet + data flow</td>
+          <td>Structure-aware code understanding</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--purple)">CodeT5</strong></td>
+          <td><span class="tag-green">Encoder-decoder</span></td>
+          <td>CodeSearchNet + C/C#</td>
+          <td>Code generation, summarization, translation</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--amber)">StarCoder</strong></td>
+          <td><span class="tag-amber">Decoder-only</span></td>
+          <td>The Stack (80+ langs)</td>
+          <td>Code completion, fill-in-the-middle</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--cyan)">Codex / GPT</strong></td>
+          <td><span class="tag-amber">Decoder-only</span></td>
+          <td>GitHub public code</td>
+          <td>Code generation from NL, Copilot backend</td>
+        </tr>
+      </table>
+      <div class="cb" style="margin-top:12px;">
+        <div class="cb-label">Key Trend</div>
+        <div class="cb-body">The field has moved from <strong>encoder-only</strong> models (good for understanding) to <strong>decoder-only</strong> models (good for generation), with <strong>encoder-decoder</strong> models offering a balance for seq2seq tasks like code translation.</div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 24 ═══ HNN & CC2Vec ═══ -->
+    <div class="slide" id="slide-24">
+      <div class="slide-label">Module 4 &middot; Slide 24</div>
+      <h2 class="slide-h2">HNN &amp; CC2Vec: <em>Learning Code Changes</em></h2>
+      <p class="slide-p">Specialized architectures for understanding code changes (diffs) rather than static code snapshots.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">HNN &mdash; Hierarchical Neural Network</div>
+            <div class="cb-body">Generates commit messages from code diffs using a two-level hierarchy: first encode individual changed hunks, then aggregate hunk representations to generate a natural language commit message.</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">CC2Vec &mdash; Code Change to Vector</div>
+            <div class="cb-body">Learns distributed representations of code changes by separately encoding <strong>added lines</strong>, <strong>removed lines</strong>, and their <strong>context</strong>. The resulting vector captures the semantics of a commit for downstream tasks (just-in-time defect prediction, commit classification).</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">CC2Vec Pipeline &mdash; Step Through:</div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button class="sim-btn" id="hnn-btn-1" onclick="setHNNStep(1)">1. Diff Input</button>
+            <button class="sim-btn" id="hnn-btn-2" onclick="setHNNStep(2)">2. Separate Channels</button>
+            <button class="sim-btn" id="hnn-btn-3" onclick="setHNNStep(3)">3. Encode</button>
+            <button class="sim-btn" id="hnn-btn-4" onclick="setHNNStep(4)">4. Aggregate</button>
+          </div>
+          <div id="hnn-visual" style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;min-height:140px;"></div>
+          <div id="hnn-explanation" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);padding:8px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--blue);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 25 ═══ Module 4 Recap & Knowledge Check ═══ -->
+    <div class="slide" id="slide-25">
+      <div class="slide-label">Module 4 &middot; Slide 25</div>
+      <h2 class="slide-h2">Module 4 <em>Recap</em> &amp; Knowledge Check</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-card"><div class="takeaway-num">01</div><h4>Non-Generative Tasks</h4><p>Clone detection (Types I-IV), vulnerability prediction, code smell detection &mdash; classification without generating new code.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">02</div><h4>Embeddings &amp; BPE</h4><p>Dense vector representations and subword tokenization form the foundation for feeding code to neural networks.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">03</div><h4>LSTM &amp; Seq2Seq</h4><p>Gated recurrent cells with encoder-decoder architecture for sequence-to-sequence code tasks.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">04</div><h4>Attention &amp; Transformers</h4><p>Self-attention replaces recurrence; multi-head attention captures diverse code patterns in parallel.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">05</div><h4>Pre-training &amp; Fine-tuning</h4><p>Train on massive unlabeled code (MLM/CLM), then fine-tune on small labeled datasets for specific SE tasks.</p></div>
+        <div class="takeaway-card"><div class="takeaway-num">06</div><h4>Code Models</h4><p>CodeBERT, CodeT5, StarCoder, Codex &mdash; the ecosystem of pre-trained models powering modern AI-assisted development.</p></div>
+      </div>
+      <div class="kc-box" style="margin-top:14px;">
+        <div class="kc-q">What pre-training objective does CodeBERT use?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Masked Language Modeling (MLM) &mdash; predict randomly masked tokens from bidirectional context</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Causal Language Modeling (CLM) &mdash; predict next token left-to-right</span>
+          <span class="q-tag">Incorrect &mdash; CLM is used by decoder-only models like GPT/Codex</span>
+        </div>
+      </div>
+      <div class="kc-box">
+        <div class="kc-q">Which architecture variant is best suited for code translation (input lang &rarr; output lang)?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Encoder-decoder (e.g., CodeT5) &mdash; encodes input and generates output sequence</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">Encoder-only (e.g., CodeBERT) &mdash; produces contextualized embeddings</span>
+          <span class="q-tag">Incorrect &mdash; encoder-only models cannot generate output sequences</span>
+        </div>
+      </div>
+      <div class="kc-box">
+        <div class="kc-q">Why is BPE tokenization particularly important for code?</div>
+        <div class="quiz-option correct" onclick="revealQuiz(this)">
+          <span class="q-label">Code has compound identifiers (e.g., getEmbeddedIPv4) that would be OOV with word-level tokenization</span>
+          <span class="q-tag">Correct</span>
+        </div>
+        <div class="quiz-option wrong" onclick="revealQuiz(this)">
+          <span class="q-label">BPE makes code run faster at inference time</span>
+          <span class="q-tag">Incorrect &mdash; BPE affects vocabulary coverage, not inference speed directly</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 26 ═══ What's Next ═══ -->
+    <div class="slide" id="slide-26">
+      <div class="slide-label">Module 4 &middot; Slide 26</div>
+      <h2 class="slide-h2"><em>What's Next?</em></h2>
+      <p class="slide-p">You now have a foundation in both non-generative and generative deep learning for software engineering. Here is how this connects to the rest of the course.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Evaluating AI-enabled SE (Module 3)</div>
+            <div class="cb-body">How do we measure whether these models actually work? Module 3 covers evaluation metrics (BLEU, CodeBLEU, accuracy, F1), benchmarks, and experimental design for AI4SE research.</div>
+          </div>
+          <div class="cb blue">
+            <div class="cb-label">Practical Applications</div>
+            <div class="cb-body">These foundational models power real tools: GitHub Copilot (Codex), automated code review (CodeBERT), vulnerability scanners, and refactoring assistants.</div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">References &amp; Further Reading</div>
+            <div class="cb-body">
+              <strong>CodeBERT:</strong> Feng et al., 2020. Pre-trained models for NL-PL understanding and generation.<br><br>
+              <strong>CodeT5:</strong> Wang et al., 2021. Unified pre-trained encoder-decoder for code understanding and generation.<br><br>
+              <strong>CC2Vec:</strong> Hoang et al., 2020. Distributed representations of code changes.<br><br>
+              <strong>Attention Is All You Need:</strong> Vaswani et al., 2017. The original Transformer paper.
+            </div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Key Takeaway</div>
+            <div class="cb-body">The shift from handcrafted features to learned representations, and from task-specific models to pre-trained + fine-tuned architectures, has transformed software engineering research and practice.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides-wrapper -->
+
+  <!-- Nav bar -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>&larr; Prev</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next &rarr;</button>
+  </div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 26;
+let cur = 1;
+function buildDots(){const c=document.getElementById('dots');c.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='slide-dot'+(i===cur?' active':'');d.onclick=()=>setSlide(i);c.appendChild(d);}}
+function setSlide(n){document.getElementById('slide-'+cur).classList.remove('active');cur=Math.max(1,Math.min(TOTAL,n));document.getElementById('slide-'+cur).classList.add('active');document.getElementById('counter').textContent=cur+' / '+TOTAL;document.getElementById('progress').style.width=(cur/TOTAL*100).toFixed(2)+'%';document.getElementById('prev-btn').disabled=cur===1;document.getElementById('next-btn').disabled=cur===TOTAL;buildDots();onSlideEnter(cur);}
+function goSlide(d){setSlide(cur+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')goSlide(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goSlide(-1);});
+buildDots();
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function revealQuiz(el){el.classList.add('revealed');el.parentElement.querySelectorAll('.quiz-option').forEach(o=>o.classList.add('revealed'));}
+function toggleKC(id){const a=document.getElementById(id);a.classList.toggle('visible');}
+
+function onSlideEnter(n){
+  if(n===3) initClonePairs();
+  if(n===6) setVulnExample(0);
+  if(n===8) initSmellDetector();
+  if(n===11) initEncoding();
+  if(n===14) updateGates();
+  if(n===16) buildAttn();
+  if(n===20) drawPE();
+  if(n===22) updateTL();
+  if(n===24) setHNNStep(1);
+}
+
+// ── Clone Classifier (Slide 3) ────────────────────────────────────
+const CLONE_PAIRS = [
+  { a:'int sum = 0;\nfor(int i=0; i<n; i++)\n  sum += arr[i];', b:'int sum = 0;\nfor(int i=0; i<n; i++)\n  sum += arr[i];', type:'I', explain:'Identical code &mdash; a straight copy-paste (Type I).' },
+  { a:'int total = 0;\nfor(int j=0; j<len; j++)\n  total += data[j];', b:'int sum = 0;\nfor(int i=0; i<n; i++)\n  sum += arr[i];', type:'II', explain:'Same structure but identifiers renamed: total/sum, j/i, len/n, data/arr (Type II).' },
+  { a:'int sum = 0;\nfor(int i=0; i<n; i++) {\n  if(arr[i]>0)\n    sum += arr[i];\n}', b:'int sum = 0;\nfor(int i=0; i<n; i++)\n  sum += arr[i];', type:'III', explain:'An if-guard was added &mdash; statement inserted into similar structure (Type III).' },
+  { a:'int sum = 0;\nfor(int i=0; i<n; i++)\n  sum += arr[i];\nreturn sum;', b:'return Arrays.stream(arr)\n  .limit(n)\n  .sum();', type:'IV', explain:'Same functionality (sum of first n elements) but completely different syntax: loop vs stream API (Type IV).' },
+];
+let cloneIdx = -1;
+let cloneInited = false;
+
+function initClonePairs(){
+  if(cloneInited) return;
+  cloneInited = true;
+  nextClonePair();
+}
+
+function nextClonePair(){
+  cloneIdx = (cloneIdx + 1) % CLONE_PAIRS.length;
+  const p = CLONE_PAIRS[cloneIdx];
+  document.getElementById('clone-pair').innerHTML =
+    '<div class="code-block" style="font-size:0.72rem;">' + escHtml(p.a) + '</div>' +
+    '<div class="code-block" style="font-size:0.72rem;">' + escHtml(p.b) + '</div>';
+  document.getElementById('clone-btns').innerHTML =
+    ['I','II','III','IV'].map(t =>
+      '<button class="sim-btn" onclick="checkClone(\''+t+'\')">Type '+t+'</button>'
+    ).join('');
+  document.getElementById('clone-feedback').innerHTML = '';
+}
+
+function checkClone(guess){
+  const p = CLONE_PAIRS[cloneIdx];
+  const fb = document.getElementById('clone-feedback');
+  if(guess === p.type){
+    fb.innerHTML = '<span style="color:var(--green);font-weight:600;">Correct!</span> ' + p.explain;
+  } else {
+    fb.innerHTML = '<span style="color:var(--red);font-weight:600;">Not quite.</span> This is <strong>Type ' + p.type + '</strong>. ' + p.explain;
+  }
+}
+
+// ── Vulnerability Analyzer (Slide 6) ──────────────────────────────
+const VULN_EXAMPLES = [
+  { code:'void copy(char *src) {\n  char buf[64];\n  strcpy(buf, src);\n  printf("%s", buf);\n}',
+    features:[{name:'LOC',val:5},{name:'Complexity',val:1},{name:'Dangerous API',val:'strcpy (no bounds)'},{name:'Input validation',val:'None'}],
+    score:0.89, label:'HIGH RISK', color:'var(--red)',
+    explain:'Uses <strong>strcpy</strong> without bounds checking on an external input &mdash; classic buffer overflow vulnerability.' },
+  { code:'def get_user(request):\n  uid = request.args["id"]\n  query = "SELECT * FROM users"\n         " WHERE id=" + uid\n  return db.execute(query)',
+    features:[{name:'LOC',val:5},{name:'Complexity',val:1},{name:'Dangerous Pattern',val:'String concat in SQL'},{name:'Input validation',val:'None'}],
+    score:0.92, label:'HIGH RISK', color:'var(--red)',
+    explain:'User input concatenated directly into SQL query &mdash; <strong>SQL injection</strong> vulnerability.' },
+  { code:'def get_user(request):\n  uid = request.args.get("id", "")\n  if not uid.isdigit():\n    return "Invalid", 400\n  query = "SELECT * FROM users"\n         " WHERE id = %s"\n  return db.execute(query, (uid,))',
+    features:[{name:'LOC',val:7},{name:'Complexity',val:2},{name:'Dangerous Pattern',val:'None'},{name:'Input validation',val:'isdigit + parameterized'}],
+    score:0.12, label:'LOW RISK', color:'var(--green)',
+    explain:'Input validated and parameterized query used &mdash; properly mitigated against SQL injection.' },
+];
+
+function setVulnExample(idx){
+  const ex = VULN_EXAMPLES[idx];
+  document.getElementById('vuln-code').innerHTML = escHtml(ex.code);
+  let fhtml = '';
+  ex.features.forEach(f => {
+    fhtml += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem;"><span style="color:var(--text-muted);">'+f.name+'</span><span style="color:var(--text-primary);font-family:var(--font-mono);">'+f.val+'</span></div>';
+  });
+  document.getElementById('vuln-features').innerHTML = fhtml;
+  const pct = (ex.score*100).toFixed(0);
+  document.getElementById('vuln-result').innerHTML =
+    '<div style="margin-top:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-muted);">Risk Score:</span><span style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:'+ex.color+';">'+pct+'%</span><span style="font-family:var(--font-mono);font-size:0.72rem;padding:2px 8px;border-radius:4px;background:'+(ex.score>0.5?'rgba(255,95,87,0.1)':'rgba(0,217,126,0.1)')+';color:'+ex.color+';border:1px solid '+ex.color+';">'+ex.label+'</span></div>' +
+    '<div style="height:10px;background:var(--bg-3);border-radius:5px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:'+ex.color+';border-radius:5px;transition:width 0.4s;"></div></div>' +
+    '<div style="margin-top:8px;font-size:0.82rem;color:var(--text-secondary);">'+ex.explain+'</div></div>';
+}
+
+// ── Code Smell Detector (Slide 8) ─────────────────────────────────
+const SMELL_EXAMPLES = [
+  { code:'class ReportManager {\n  // 15 fields, 42 methods\n  // handles DB, PDF, email,\n  // user auth, logging,\n  // and UI rendering\n  void generateReport(){...}\n  void sendEmail(){...}\n  void authenticateUser(){...}\n  void renderUI(){...}\n  void writeLog(){...}\n}',
+    metrics:[{name:'LOC',val:850,thresh:500},{name:'Methods',val:42,thresh:20},{name:'Responsibilities',val:6,thresh:2},{name:'Coupling (CBO)',val:24,thresh:10}],
+    smell:'God Class', color:'var(--red)',
+    explain:'Excessive methods (42), high coupling (24), and 6 distinct responsibilities. This class does too much and should be split.' },
+  { code:'void processOrder(\n  Order o, Customer c,\n  Inventory inv, Logger log,\n  Mailer m, Validator v\n) {\n  v.validate(o);\n  inv.reserve(o.items());\n  double total = 0;\n  for(Item i : o.items()){\n    total += i.price()*i.qty();\n    if(i.isFragile()) {\n      // ... 80 more lines\n    }\n  }\n  // ... 120 more lines\n  m.send(c.email(), receipt);\n  log.info("done");\n}',
+    metrics:[{name:'LOC',val:220,thresh:30},{name:'Cyclomatic Complexity',val:18,thresh:10},{name:'Parameters',val:6,thresh:3},{name:'Nesting Depth',val:5,thresh:3}],
+    smell:'Long Method', color:'var(--amber)',
+    explain:'220 lines, complexity 18, and 5-deep nesting. This method should be broken into smaller, focused methods.' },
+  { code:'class Order {\n  Customer customer;\n  double getDiscount() {\n    int years = customer.getYears();\n    String tier = customer.getTier();\n    int orders = customer.getOrders();\n    if(tier.equals("Gold"))\n      return years > 5 ? 0.2 : 0.1;\n    return orders > 100 ? 0.05 : 0;\n  }\n}',
+    metrics:[{name:'Own fields accessed',val:0,thresh:2},{name:'Foreign fields accessed',val:3,thresh:1},{name:'LOC',val:12,thresh:30},{name:'Coupling to Customer',val:'High',thresh:'Low'}],
+    smell:'Feature Envy', color:'var(--purple)',
+    explain:'getDiscount() accesses 3 fields of Customer but 0 of its own class. This method belongs in the Customer class.' },
+];
+let smellInited = false;
+
+function initSmellDetector(){ if(!smellInited){smellInited=true; setSmellExample(0);} }
+
+function setSmellExample(idx){
+  const ex = SMELL_EXAMPLES[idx];
+  document.getElementById('smell-code').innerHTML = escHtml(ex.code);
+  let mhtml = '';
+  ex.metrics.forEach(m => {
+    const over = typeof m.val === 'number' ? m.val > m.thresh : true;
+    mhtml += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.82rem;"><span style="color:var(--text-muted);">'+m.name+'</span><span style="font-family:var(--font-mono);color:'+(over?'var(--red)':'var(--green)')+';">'+m.val+(typeof m.thresh==='number'?' <span style="color:var(--text-muted);font-size:0.7rem;">(thresh: '+m.thresh+')</span>':'')+'</span></div>';
+  });
+  document.getElementById('smell-metrics').innerHTML = mhtml;
+  document.getElementById('smell-result').innerHTML =
+    '<div class="cb" style="border-left-color:'+ex.color+';"><div class="cb-label" style="color:'+ex.color+';">Detected: '+ex.smell+'</div><div class="cb-body">'+ex.explain+'</div></div>';
+}
+
+// ── Encoding Comparison (Slide 11) ────────────────────────────────
+const ENC_VOCAB = ['int','float','String','for','if','return'];
+let encInited = false;
+function initEncoding(){ if(!encInited){encInited=true; showEncoding('oh');} }
+
+function showEncoding(mode){
+  ['oh','bow','emb'].forEach(m => {
+    const b = document.getElementById('enc-btn-'+m);
+    if(b) b.className = 'sim-btn' + (m===mode?' primary':'');
+  });
+  const disp = document.getElementById('enc-display');
+  const expl = document.getElementById('enc-explanation');
+  if(mode==='oh'){
+    let h = '<table style="border-collapse:collapse;">';
+    h += '<tr><td></td>' + ENC_VOCAB.map(v=>'<td style="padding:2px 6px;color:var(--text-muted);font-size:0.68rem;">'+v+'</td>').join('') + '</tr>';
+    ENC_VOCAB.forEach((v,i)=>{
+      h += '<tr><td style="padding:2px 8px;color:var(--green);">'+v+'</td>';
+      ENC_VOCAB.forEach((_,j)=>{
+        h += '<td style="padding:2px 6px;text-align:center;color:'+(i===j?'var(--green)':'var(--text-muted)')+';">'+(i===j?'1':'0')+'</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</table>';
+    disp.innerHTML = h;
+    expl.innerHTML = '<strong>One-Hot:</strong> Each token is a sparse vector with a single 1. No similarity info &mdash; all tokens are equidistant. Dimension = vocabulary size.';
+  } else if(mode==='bow'){
+    const snippet = 'for ( int i = 0 ; i < n ; i++ )';
+    const counts = {int:1,'float':0,String:0,'for':1,'if':0,'return':0};
+    let h = '<div style="margin-bottom:6px;color:var(--text-muted);font-size:0.75rem;">Snippet: <code>'+snippet+'</code></div>';
+    h += '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
+    ENC_VOCAB.forEach(v=>{
+      const c = counts[v]||0;
+      h += '<div style="text-align:center;"><div style="color:'+(c>0?'var(--green)':'var(--text-muted)')+';font-size:1.1rem;font-weight:700;">'+c+'</div><div style="font-size:0.68rem;color:var(--text-muted);">'+v+'</div></div>';
+    });
+    h += '</div>';
+    disp.innerHTML = h;
+    expl.innerHTML = '<strong>Bag of Words:</strong> Counts how often each vocabulary token appears. Loses all order info &mdash; <code>if return</code> and <code>return if</code> are identical.';
+  } else {
+    const embs = {int:[0.82,-0.15,0.41],'float':[0.79,-0.12,0.38],String:[0.21,0.67,-0.33],'for':[0.11,-0.88,0.72],'if':[0.08,-0.81,0.65],'return':[-0.55,0.22,0.91]};
+    let h = '<table style="border-collapse:collapse;"><tr><td></td><td style="padding:2px 8px;color:var(--text-muted);font-size:0.68rem;">d0</td><td style="padding:2px 8px;color:var(--text-muted);font-size:0.68rem;">d1</td><td style="padding:2px 8px;color:var(--text-muted);font-size:0.68rem;">d2</td></tr>';
+    ENC_VOCAB.forEach(v=>{
+      const e = embs[v];
+      h += '<tr><td style="padding:2px 8px;color:var(--green);">'+v+'</td>';
+      e.forEach(val=>{
+        const abs = Math.abs(val);
+        h += '<td style="padding:2px 8px;text-align:center;color:'+(val>=0?'var(--green)':'var(--amber)')+';">'+val.toFixed(2)+'</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</table>';
+    disp.innerHTML = h;
+    expl.innerHTML = '<strong>Embeddings:</strong> Dense 3-d vectors (real models use 128-768 dims). Notice <code>int</code> and <code>float</code> have similar vectors &mdash; they appear in similar contexts. <code>for</code> and <code>if</code> cluster together as control-flow keywords.';
+  }
+}
+
+// ── BPE Tokenizer (Slide 12) ──────────────────────────────────────
+const BPE_VOCAB = ['return','get','set','Embedded','parse','HTTP','Response','calculate','Total','Price','int','for','class','void','str','ing','arr','list','map','tion','ment','re','de','un','en','er','ed','al','th','in','on','an','or','es','le','is','at','IP','v4','Client','Addr'];
+
+function runBPE(){
+  const input = document.getElementById('bpe-input').value.trim();
+  if(!input) return;
+  const pieces = bpeSplit(input);
+  let html = '<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">Subword tokens (' + pieces.length + '):</div>';
+  html += '<div class="token-seq">';
+  pieces.forEach((p,i)=>{
+    const cls = i===0?'id':'op';
+    html += '<span class="tok '+cls+'">'+escHtml(p)+'</span>';
+  });
+  html += '</div>';
+  html += '<div style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px;">Original: <strong>1</strong> token &rarr; BPE: <strong>'+pieces.length+'</strong> subwords. ';
+  if(pieces.length<=2) html += 'Common identifier &mdash; few splits needed.';
+  else if(pieces.length<=4) html += 'Compound name split into recognizable subwords.';
+  else html += 'Complex identifier requires multiple subword splits.';
+  html += '</div>';
+  document.getElementById('bpe-result').innerHTML = html;
+}
+
+function bpeSplit(word){
+  const parts = word.replace(/([A-Z])/g,' $1').replace(/([0-9]+)/g,' $1').trim().split(/\s+/).filter(Boolean);
+  const result = [];
+  parts.forEach(p=>{
+    const match = BPE_VOCAB.find(v=>v.toLowerCase()===p.toLowerCase());
+    if(match){ result.push(p); }
+    else {
+      let rem = p;
+      while(rem.length > 0){
+        let best = '';
+        for(const v of BPE_VOCAB){
+          if(rem.toLowerCase().startsWith(v.toLowerCase()) && v.length > best.length) best = v;
+        }
+        if(best){
+          result.push(rem.slice(0, best.length));
+          rem = rem.slice(best.length);
+        } else {
+          const chunk = rem.slice(0, Math.min(3, rem.length));
+          result.push(chunk);
+          rem = rem.slice(chunk.length);
+        }
+      }
+    }
+  });
+  return result;
+}
+
+// ── LSTM Gate Explorer (Slide 14) ─────────────────────────────────
+function sig(x){return 1/(1+Math.exp(-x));}
+
+function updateGates(){
+  const x = parseFloat(document.getElementById('sl-x').value)/100;
+  const h = parseFloat(document.getElementById('sl-h').value)/100;
+  const c = parseFloat(document.getElementById('sl-c').value)/100;
+  document.getElementById('sv-x').textContent = x.toFixed(2);
+  document.getElementById('sv-h').textContent = h.toFixed(2);
+  document.getElementById('sv-c').textContent = c.toFixed(2);
+
+  const f  = sig(0.8*x + 1.1*h + 0.15);
+  const i_ = sig(1.0*x + 0.9*h - 0.10);
+  const g  = Math.tanh(0.9*x + 0.8*h + 0.05);
+  const o  = sig(0.7*x + 1.0*h + 0.20);
+  const cn = f*c + i_*g;
+  const hn = o*Math.tanh(cn);
+
+  const setBar = (id,val,pct)=>{
+    document.getElementById('bar-'+id).style.width = Math.max(2,pct*100).toFixed(1)+'%';
+    document.getElementById('num-'+id).textContent = val.toFixed(3);
+  };
+  setBar('f',f,f); setBar('i',i_,i_); setBar('g',g,(g+1)/2); setBar('o',o,o);
+  document.getElementById('out-c').textContent = cn.toFixed(3);
+  document.getElementById('out-h').textContent = hn.toFixed(3);
+
+  let msg = '';
+  if(f<0.3) msg='<strong style="color:var(--amber)">Forget gate is nearly closed</strong> &mdash; old cell state is mostly erased.';
+  else if(f>0.8) msg='<strong style="color:var(--amber)">Forget gate is wide open</strong> &mdash; old cell memory is preserved.';
+  else if(i_>0.75&&Math.abs(g)>0.5) msg='<strong style="color:var(--green)">Input gate is open and candidate is strong</strong> &mdash; new information is being written.';
+  else if(o<0.3) msg='<strong style="color:var(--purple)">Output gate is nearly closed</strong> &mdash; hidden state exposes very little.';
+  else msg='Gate values: f='+f.toFixed(2)+', i='+i_.toFixed(2)+', o='+o.toFixed(2)+'. Cell: '+cn.toFixed(2);
+  document.getElementById('gate-explanation').innerHTML = msg;
+}
+
+// ── Attention Heatmap (Slide 16) ──────────────────────────────────
+const ATT_IN  = ['sum','(','arr',',','n','-','1',')'];
+const ATT_OUT = ['sum','(','arr',',','n',')'];
+const ATT_MAT = [
+  [0.88,0.05,0.03,0.01,0.01,0.01,0.01,0.00],
+  [0.04,0.89,0.02,0.01,0.01,0.01,0.01,0.01],
+  [0.02,0.01,0.91,0.02,0.01,0.01,0.01,0.01],
+  [0.02,0.01,0.02,0.90,0.02,0.01,0.01,0.01],
+  [0.02,0.01,0.02,0.02,0.88,0.03,0.01,0.01],
+  [0.02,0.02,0.01,0.01,0.06,0.05,0.01,0.82],
+];
+const ATT_EXPLAIN = [
+  'Generating <strong style="color:var(--green)">sum</strong>: attends strongly to the encoder\'s <em>sum</em> token.',
+  'Generating <strong style="color:var(--green)">(</strong>: directly aligns with the opening parenthesis.',
+  'Generating <strong style="color:var(--green)">arr</strong>: copies the array argument with high confidence.',
+  'Generating <strong style="color:var(--green)">,</strong>: aligns to the comma separator.',
+  'Generating <strong style="color:var(--green)">n</strong>: attends to <em>n</em> and ignores <em>- 1</em>. <span style="color:var(--green)">This is the bug fix!</span>',
+  'Generating <strong style="color:var(--green)">)</strong>: skips deleted tokens, lands on closing paren.',
+];
+let selRow = -1;
+
+function buildAttn(){
+  const outDiv = document.getElementById('attn-out-tokens');
+  if(!outDiv) return;
+  outDiv.innerHTML = ATT_OUT.map((t,i)=>
+    '<button class="sim-btn" id="at-btn-'+i+'" onclick="selectAttn('+i+')" style="font-family:var(--font-mono);">'+t+'</button>'
+  ).join('');
+  renderHeatmap(-1);
+}
+
+function selectAttn(row){
+  selRow = row;
+  ATT_OUT.forEach((_,i)=>{
+    const b=document.getElementById('at-btn-'+i);
+    if(b) b.className='sim-btn'+(i===row?' primary':'');
+  });
+  renderHeatmap(row);
+  document.getElementById('attn-explanation').innerHTML = row>=0?ATT_EXPLAIN[row]:'Click an output token to see its attention weights.';
+}
+
+function renderHeatmap(activeRow){
+  const hmDiv=document.getElementById('attn-heatmap');
+  if(!hmDiv) return;
+  const cw=28,n_in=ATT_IN.length,n_out=ATT_OUT.length;
+  let html='<div style="display:flex;gap:2px;margin-bottom:4px;margin-left:56px;">'+
+    ATT_IN.map(t=>'<div style="width:'+cw+'px;text-align:center;font-size:0.6rem;font-family:var(--font-mono);color:var(--text-muted);overflow:hidden;">'+t+'</div>').join('')+'</div>';
+  for(let r=0;r<n_out;r++){
+    html+='<div style="display:flex;gap:2px;margin-bottom:2px;align-items:center;">';
+    html+='<div style="width:52px;text-align:right;padding-right:4px;font-size:0.68rem;font-family:var(--font-mono);color:'+(activeRow===r?'var(--green)':'var(--text-muted)')+';">'+ATT_OUT[r]+'</div>';
+    for(let c=0;c<n_in;c++){
+      const v=ATT_MAT[r][c];
+      const alpha=activeRow===r?v:(activeRow<0?v*0.6:0.08);
+      const bg=activeRow===r?'rgba(0,217,126,'+alpha+')':'rgba(88,166,255,'+alpha+')';
+      const border=activeRow===r&&v>0.3?'1px solid rgba(0,217,126,0.5)':'1px solid transparent';
+      html+='<div style="width:'+cw+'px;height:'+cw+'px;border-radius:3px;background:'+bg+';border:'+border+';display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-family:var(--font-mono);color:rgba(255,255,255,0.6);">'+(activeRow===r?v.toFixed(2):'')+'</div>';
+    }
+    html+='</div>';
+  }
+  hmDiv.innerHTML=html;
+}
+
+// ── Positional Encoding Heatmap (Slide 20) ────────────────────────
+function drawPE(){
+  const svg=document.getElementById('pe-svg');
+  if(!svg) return;
+  const positions=8, dims=16, cw=14, ch=18, ox=28, oy=8;
+  let html='';
+  for(let pos=0;pos<positions;pos++){
+    for(let di=0;di<dims;di++){
+      let val;
+      if(di%2===0) val=Math.sin(pos/Math.pow(10000,di/dims));
+      else val=Math.cos(pos/Math.pow(10000,(di-1)/dims));
+      const norm=(val+1)/2;
+      const r=Math.round(13+norm*(0-13));
+      const g=Math.round(23+norm*(217-23));
+      const b=Math.round(37+norm*(126-37));
+      const x=ox+di*(cw+1);
+      const y=oy+pos*(ch+1);
+      html+='<rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="2" fill="rgb('+r+','+g+','+b+')" opacity="0.9"/>';
+    }
+    html+='<text x="'+(ox-4)+'" y="'+(oy+pos*(ch+1)+ch*0.7)+'" font-size="9" fill="#484F58" font-family="monospace" text-anchor="end">pos '+pos+'</text>';
+  }
+  for(let di=0;di<dims;di+=4){
+    const x=ox+di*(cw+1)+cw/2;
+    html+='<text x="'+x+'" y="'+(oy+positions*(ch+1)+10)+'" font-size="8" fill="#484F58" font-family="monospace" text-anchor="middle">d'+di+'</text>';
+  }
+  svg.innerHTML=html;
+}
+
+// ── Transfer Learning Slider (Slide 22) ──────────────────────────
+const TL_POINTS = [
+  {n:'50',rand:18,ft:52},{n:'200',rand:25,ft:65},{n:'1,000',rand:38,ft:76},{n:'5,000',rand:57,ft:84},{n:'20,000',rand:72,ft:89},
+];
+
+function updateTL(){
+  const v=parseInt(document.getElementById('tl-slider').value);
+  const d=TL_POINTS[v];
+  document.getElementById('tl-n').textContent=d.n;
+  document.getElementById('tl-rand-bar').style.width=d.rand+'%';
+  document.getElementById('tl-rand-num').textContent=d.rand+'%';
+  document.getElementById('tl-ft-bar').style.width=d.ft+'%';
+  document.getElementById('tl-ft-num').textContent=d.ft+'%';
+  const gain=d.ft-d.rand;
+  const insight=document.getElementById('tl-insight');
+  if(gain>30) insight.innerHTML='With only <strong style="color:var(--green)">'+d.n+'</strong> labeled examples, pre-training gives a <strong style="color:var(--green)">+'+gain+'pp</strong> advantage. The backbone already understands code structure.';
+  else insight.innerHTML='With <strong style="color:var(--green)">'+d.n+'</strong> examples, the gap narrows to <strong style="color:var(--amber)">+'+gain+'pp</strong> &mdash; but pre-training still wins.';
+}
+
+// ── HNN / CC2Vec Step-Through (Slide 24) ─────────────────────────
+const HNN_STEPS = {
+  1: { visual:'<div class="code-block" style="font-size:0.72rem;"><span style="color:var(--red);">- if (obj == null)</span>\n<span style="color:var(--green);">+ if (obj == null || obj.isEmpty())</span>\n    return default;</div>', explain:'<strong>Step 1 &mdash; Diff Input:</strong> The raw code change (diff) showing removed and added lines. CC2Vec processes these as separate channels.' },
+  2: { visual:'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div style="background:rgba(255,95,87,0.08);border:1px solid rgba(255,95,87,0.2);border-radius:8px;padding:10px;"><div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--red);margin-bottom:4px;">Removed Channel</div><div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-secondary);">if (obj == null)</div></div><div style="background:rgba(0,217,126,0.06);border:1px solid rgba(0,217,126,0.2);border-radius:8px;padding:10px;"><div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--green);margin-bottom:4px;">Added Channel</div><div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-secondary);">if (obj == null || obj.isEmpty())</div></div></div>', explain:'<strong>Step 2 &mdash; Separate Channels:</strong> Added and removed lines are processed independently, each through its own encoder, preserving the directionality of the change.' },
+  3: { visual:'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div class="stat-card" style="padding:10px;"><div class="stat-val" style="font-size:1rem;color:var(--red);">h_rem</div><div class="stat-label">Removed Encoding</div><div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">[0.12, -0.45, 0.78, ...]</div></div><div class="stat-card" style="padding:10px;"><div class="stat-val" style="font-size:1rem;color:var(--green);">h_add</div><div class="stat-label">Added Encoding</div><div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">[0.34, -0.22, 0.91, ...]</div></div></div>', explain:'<strong>Step 3 &mdash; Encode:</strong> Each channel is encoded into a fixed-size vector using a hierarchical attention network. These vectors capture the semantics of what was removed and what was added.' },
+  4: { visual:'<div style="text-align:center;"><div class="flow-row"><div class="flow-box" style="border-color:rgba(255,95,87,0.3);color:var(--red);font-size:0.75rem;">h_rem</div><div class="flow-arrow">+</div><div class="flow-box green" style="font-size:0.75rem;">h_add</div><div class="flow-arrow">&rarr;</div><div class="flow-box purple" style="font-size:0.75rem;">CC2Vec Embedding</div></div><div style="margin-top:12px;"><div class="stat-card" style="display:inline-block;padding:12px 20px;"><div class="stat-val purple" style="font-size:1rem;">v_commit</div><div class="stat-label">Change Vector</div></div></div></div>', explain:'<strong>Step 4 &mdash; Aggregate:</strong> The channel vectors are combined (concatenated/added) into a single <strong>commit embedding</strong> that represents the entire code change. This vector can be used for defect prediction, commit classification, or as input to a decoder for commit message generation.' },
+};
+
+function setHNNStep(s){
+  [1,2,3,4].forEach(i=>{
+    const b=document.getElementById('hnn-btn-'+i);
+    if(b) b.className='sim-btn'+(i===s?' primary':'');
+  });
+  const step=HNN_STEPS[s];
+  document.getElementById('hnn-visual').innerHTML=step.visual;
+  document.getElementById('hnn-explanation').innerHTML=step.explain;
+}
+</script>
+</body>
+</html>

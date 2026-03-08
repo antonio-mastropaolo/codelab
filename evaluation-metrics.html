@@ -153,6 +153,28 @@
     .tk-card h4 { font-family:var(--font-display); font-size:0.92rem; margin-bottom:5px; }
     .tk-card p { font-size:0.8rem; color:var(--text-secondary); line-height:1.5; }
 
+    /* Confusion matrix grid */
+    .cm-grid { display:grid; grid-template-columns:auto 1fr 1fr; gap:2px; max-width:340px; }
+    .cm-corner { background:transparent; }
+    .cm-header { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; text-align:center; padding:8px 6px; }
+    .cm-header.cm-row-header { text-align:right; padding-right:10px; }
+    .cm-cell { border-radius:8px; padding:12px; text-align:center; position:relative; }
+    .cm-cell-label { display:block; font-family:var(--font-mono); font-size:0.68rem; font-weight:600; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em; }
+    .cm-tp { background:rgba(0,217,126,0.10); border:1px solid rgba(0,217,126,0.25); }
+    .cm-tp .cm-cell-label { color:var(--green); }
+    .cm-fn { background:rgba(255,95,87,0.10); border:1px solid rgba(255,95,87,0.25); }
+    .cm-fn .cm-cell-label { color:var(--red); }
+    .cm-fp { background:rgba(227,179,65,0.10); border:1px solid rgba(227,179,65,0.25); }
+    .cm-fp .cm-cell-label { color:var(--amber); }
+    .cm-tn { background:rgba(88,166,255,0.10); border:1px solid rgba(88,166,255,0.25); }
+    .cm-tn .cm-cell-label { color:var(--blue); }
+    .cm-input { width:70px; padding:6px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text-primary); font-family:var(--font-mono); font-size:1rem; font-weight:600; text-align:center; outline:none; transition:border-color 0.2s; }
+    .cm-input:focus { border-color:var(--green); }
+
+    /* BLEU calculator input */
+    .bleu-input { width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--text-primary); font-family:var(--font-mono); font-size:0.82rem; outline:none; transition:border-color 0.2s; }
+    .bleu-input:focus { border-color:var(--green); }
+
     /* Hard-neg quiz */
     .hn-option { display:flex; align-items:center; gap:10px; padding:10px 14px; margin:6px 0; border-radius:10px; border:1px solid var(--border); background:var(--bg-2); cursor:pointer; transition:all 0.2s; }
     .hn-option:hover { border-color:var(--green-border); }
@@ -192,17 +214,17 @@
     <a href="teaching.html" class="topbar-logo"><span class="logo-mark">&gt;</span> CodeLab</a>
     <span class="topbar-sep">/</span>
     <span class="topbar-title">Evaluating AI-enabled SD Techniques</span>
-    <span class="topbar-badge">interactive</span>
-    <span class="slide-counter" id="counter">1 / 14</span>
+    <span class="topbar-badge">Module 3 · Interactive</span>
+    <span class="slide-counter" id="counter">1 / 17</span>
     <a href="teaching.html" class="topbar-home">← modules</a>
   </header>
-  <div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:5.88%"></div></div>
 
   <div class="slides-wrapper">
 
     <!-- ═══ Slide 1: Title ═══════════════════════════════════ -->
     <div class="slide active" id="slide-1">
-      <div class="slide-label">Evaluation Metrics · Slide 1</div>
+      <div class="slide-label">Module 3 · Slide 01</div>
       <h1 class="slide-h1">Beyond Exact Matches:<br/><em>Metrics for Evaluating Technical NL &amp; Code</em></h1>
       <p class="slide-p">When we evaluate AI systems for software engineering, we compare model predictions against reference answers. But an exact textual match is not always necessary for correctness. This module explores why overlap-based metrics can fail and what alternatives exist.</p>
       <div class="stat-row">
@@ -219,7 +241,7 @@
 
     <!-- ═══ Slide 2: Semantic Equivalence Problem ════════════ -->
     <div class="slide" id="slide-2">
-      <div class="slide-label">Evaluation Metrics · Slide 2</div>
+      <div class="slide-label">Module 3 · Slide 02</div>
       <h2 class="slide-h2">The Semantic Equivalence Problem</h2>
       <p class="slide-p">Consider a Java method <code style="color:var(--blue);">read()</code> that opens a stream, reads contents, converts to string, and closes resources. Two summaries describe it:</p>
       <div class="two-col">
@@ -250,9 +272,136 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 3: Automated vs Manual ═════════════════════ -->
+    <!-- ═══ Slide 3: Classification Metrics ══════════════════ -->
     <div class="slide" id="slide-3">
-      <div class="slide-label">Evaluation Metrics · Slide 3</div>
+      <div class="slide-label">Module 3 · Slide 03</div>
+      <h2 class="slide-h2">Classification Metrics: <em>Precision, Recall &amp; F1</em></h2>
+      <p class="slide-p">Before we evaluate generative models, many SE tasks are classification problems (bug detection, vulnerability prediction, code smell detection). These use standard classification metrics.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-name">Precision</div>
+          <div class="term-def">Of all items predicted as positive, how many truly are?<br/><strong style="color:var(--blue);font-family:var(--font-mono);font-size:0.85rem;">TP / (TP + FP)</strong></div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Recall</div>
+          <div class="term-def">Of all actual positives, how many did we find?<br/><strong style="color:var(--blue);font-family:var(--font-mono);font-size:0.85rem;">TP / (TP + FN)</strong></div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">F1 Score</div>
+          <div class="term-def">Harmonic mean of precision and recall.<br/><strong style="color:var(--blue);font-family:var(--font-mono);font-size:0.85rem;">2 &middot; P &middot; R / (P + R)</strong></div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Accuracy</div>
+          <div class="term-def">Overall correct predictions. Can be misleading with imbalanced data.<br/><strong style="color:var(--blue);font-family:var(--font-mono);font-size:0.85rem;">(TP + TN) / Total</strong></div>
+        </div>
+      </div>
+      <div class="cb amber" style="margin-top:14px;">
+        <div class="cb-label">Why This Matters in SE</div>
+        <div class="cb-body">In SE tasks like vulnerability detection, classes are highly imbalanced &mdash; <strong>95%+ of code is non-vulnerable</strong>. Accuracy alone is misleading; <strong>F1 and especially recall</strong> matter more.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 4: Interactive Confusion Matrix ═══════════ -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Module 3 · Slide 04</div>
+      <h2 class="slide-h2">Interactive: <em>Confusion Matrix Explorer</em></h2>
+      <div class="two-col">
+        <div>
+          <div class="cm-grid">
+            <div class="cm-corner"></div>
+            <div class="cm-header">Predicted +</div>
+            <div class="cm-header">Predicted &minus;</div>
+            <div class="cm-header cm-row-header">Actual +</div>
+            <div class="cm-cell cm-tp">
+              <label class="cm-cell-label">TP</label>
+              <input type="number" id="cm-tp" class="cm-input" value="40" min="0" max="999" oninput="updateConfMatrix()"/>
+            </div>
+            <div class="cm-cell cm-fn">
+              <label class="cm-cell-label">FN</label>
+              <input type="number" id="cm-fn" class="cm-input" value="10" min="0" max="999" oninput="updateConfMatrix()"/>
+            </div>
+            <div class="cm-header cm-row-header">Actual &minus;</div>
+            <div class="cm-cell cm-fp">
+              <label class="cm-cell-label">FP</label>
+              <input type="number" id="cm-fp" class="cm-input" value="5" min="0" max="999" oninput="updateConfMatrix()"/>
+            </div>
+            <div class="cm-cell cm-tn">
+              <label class="cm-cell-label">TN</label>
+              <input type="number" id="cm-tn" class="cm-input" value="945" min="0" max="999" oninput="updateConfMatrix()"/>
+            </div>
+          </div>
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;">Adjust values to explore how metrics change.</p>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin-bottom:12px;">Computed Metrics</h4>
+          <div class="score-grid" id="cm-scores">
+            <div class="score-box"><div class="sb-name">Precision</div><div class="sb-val" id="cm-precision" style="color:var(--green);">0.89</div></div>
+            <div class="score-box"><div class="sb-name">Recall</div><div class="sb-val" id="cm-recall" style="color:var(--green);">0.80</div></div>
+            <div class="score-box"><div class="sb-name">F1</div><div class="sb-val" id="cm-f1" style="color:var(--green);">0.84</div></div>
+            <div class="score-box"><div class="sb-name">Accuracy</div><div class="sb-val" id="cm-accuracy" style="color:var(--green);">0.99</div></div>
+          </div>
+          <div class="cb" style="margin-top:12px;">
+            <div class="cb-label">Interpretation</div>
+            <div class="cb-body" id="cm-interpretation">The confusion matrix reveals <strong>WHERE</strong> a model fails. High FP = noisy alerts. High FN = missed bugs.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 5: BLEU Score Deep Dive ═══════════════════ -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Module 3 · Slide 05</div>
+      <h2 class="slide-h2">BLEU Score: <em>The Workhorse Metric</em></h2>
+      <p class="slide-p">BLEU (Bilingual Evaluation Understudy) measures how much the generated text's n-grams overlap with the reference. It is the most widely used automated metric in code summarization and machine translation.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">Formula</div>
+            <div class="cb-body" style="font-family:var(--font-mono);font-size:0.85rem;line-height:1.8;">
+              <strong style="color:var(--text-primary);">BLEU = BP &times; exp(&Sigma; w<sub>n</sub> &middot; log p<sub>n</sub>)</strong><br/>
+              <span style="font-size:0.78rem;">p<sub>n</sub> = modified n-gram precision<br/>
+              w<sub>n</sub> = 1/N (uniform weight, typically N=4)<br/>
+              BP = min(1, e<sup>1 &minus; r/c</sup>) &nbsp; (brevity penalty)</span>
+            </div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Brevity Penalty</div>
+            <div class="cb-body">Without BP, a model could output just one confident n-gram and score perfectly on precision. The <strong>brevity penalty</strong> penalizes candidates shorter than the reference, ensuring the model generates complete outputs.</div>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin-bottom:10px;">Interactive: BLEU Calculator</h4>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;">Reference:</label>
+            <input type="text" id="bleu-ref" class="bleu-input" value="reads the contents of this source as a string" oninput="computeBLEU()"/>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;">Candidate:</label>
+            <input type="text" id="bleu-cand" class="bleu-input" value="get the textual information from this source" oninput="computeBLEU()"/>
+          </div>
+          <div class="score-grid" id="bleu-scores">
+            <div class="score-box"><div class="sb-name">1-gram</div><div class="sb-val" id="bleu-1" style="color:var(--amber);">0.00</div></div>
+            <div class="score-box"><div class="sb-name">2-gram</div><div class="sb-val" id="bleu-2" style="color:var(--amber);">0.00</div></div>
+            <div class="score-box"><div class="sb-name">BP</div><div class="sb-val" id="bleu-bp" style="color:var(--amber);">0.00</div></div>
+            <div class="score-box"><div class="sb-name">BLEU</div><div class="sb-val" id="bleu-final" style="color:var(--amber);">0.00</div></div>
+          </div>
+          <div class="code-block" style="margin-top:10px;font-size:0.72rem;">
+            <span class="cmt">// Why BLEU can mislead for code:</span><br/>
+            <span class="kw">int</span> total = a + b; &nbsp; <span class="cmt">// reference</span><br/>
+            <span class="kw">int</span> total = a - b; &nbsp; <span class="cmt">// candidate &mdash; BLEU &asymp; 0.80</span><br/>
+            <span class="cmt">// High BLEU, but semantically wrong!</span>
+          </div>
+        </div>
+      </div>
+      <div class="cb purple" style="margin-top:10px;">
+        <div class="cb-label">Knowledge Check</div>
+        <div class="cb-body"><strong>Why might BLEU give a high score to generated code that doesn't compile?</strong> Because BLEU only measures n-gram overlap &mdash; it cannot check syntax validity, type correctness, or whether the code actually runs.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 6: Automated vs Manual ═════════════════════ -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Module 3 · Slide 06</div>
       <h2 class="slide-h2">Automated vs. Manual Evaluation</h2>
       <p class="slide-p">Every evaluation approach trades off between scalability and semantic sensitivity.</p>
       <div class="vs-grid">
@@ -282,9 +431,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 4: Metric Landscape ════════════════════════ -->
-    <div class="slide" id="slide-4">
-      <div class="slide-label">Evaluation Metrics · Slide 4</div>
+    <!-- ═══ Slide 7: Metric Landscape ════════════════════════ -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Module 3 · Slide 07</div>
       <h2 class="slide-h2">The Metric Landscape</h2>
       <p class="slide-p">Click each metric to learn what it measures, when it helps, and where it fails.</p>
       <div class="two-col">
@@ -303,9 +452,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 5: Embedding-based Metrics ═════════════════ -->
-    <div class="slide" id="slide-5">
-      <div class="slide-label">Evaluation Metrics · Slide 5</div>
+    <!-- ═══ Slide 8: Embedding-based Metrics ═════════════════ -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Module 3 · Slide 08</div>
       <h2 class="slide-h2">Embedding-based Metrics</h2>
       <p class="slide-p">Instead of comparing surface tokens, encode each text into a vector and measure geometric closeness.</p>
       <div class="two-col">
@@ -337,9 +486,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 6: CodeBLEU ════════════════════════════════ -->
-    <div class="slide" id="slide-6">
-      <div class="slide-label">Evaluation Metrics · Slide 6</div>
+    <!-- ═══ Slide 9: CodeBLEU ════════════════════════════════ -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Module 3 · Slide 09</div>
       <h2 class="slide-h2">CodeBLEU</h2>
       <p class="slide-p">CodeBLEU extends BLEU by recognizing that code should be evaluated not only as text, but also as structure and behavior.</p>
       <div class="flow-row">
@@ -373,9 +522,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 7: CrystalBLEU ═════════════════════════════ -->
-    <div class="slide" id="slide-7">
-      <div class="slide-label">Evaluation Metrics · Slide 7</div>
+    <!-- ═══ Slide 10: CrystalBLEU ════════════════════════════ -->
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Module 3 · Slide 10</div>
       <h2 class="slide-h2">CrystalBLEU</h2>
       <p class="slide-p">CrystalBLEU rewards <strong>correct yet novel</strong> outputs and discourages direct copying from training examples by reducing the influence of frequent boilerplate tokens.</p>
       <div class="two-col">
@@ -401,9 +550,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 8: Contrastive Learning Intro ══════════════ -->
-    <div class="slide" id="slide-8">
-      <div class="slide-label">Evaluation Metrics · Slide 8</div>
+    <!-- ═══ Slide 11: Contrastive Learning Intro ═════════════ -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Module 3 · Slide 11</div>
       <h2 class="slide-h2">Contrastive Learning: Core Idea</h2>
       <p class="slide-p">If lexical metrics aren't enough for technical summaries, how else might we learn what "similar meaning" looks like? The answer: <strong>shape the embedding space itself</strong>.</p>
       <div class="two-col">
@@ -431,9 +580,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 9: Loss Functions ══════════════════════════ -->
-    <div class="slide" id="slide-9">
-      <div class="slide-label">Evaluation Metrics · Slide 9</div>
+    <!-- ═══ Slide 12: Loss Functions ═════════════════════════ -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Module 3 · Slide 12</div>
       <h2 class="slide-h2">Contrastive Loss Functions</h2>
       <p class="slide-p">Three progressively more powerful objectives for shaping the embedding space.</p>
       <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
@@ -467,9 +616,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 10: Triplet Loss Interactive ═══════════════ -->
-    <div class="slide" id="slide-10">
-      <div class="slide-label">Evaluation Metrics · Slide 10</div>
+    <!-- ═══ Slide 13: Triplet Loss Interactive ════════════════ -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Module 3 · Slide 13</div>
       <h2 class="slide-h2">Interactive: Triplet Loss Explorer</h2>
       <p class="slide-p">Drag the Anchor (A), Positive (P), and Negative (N) points. Watch the loss update live.</p>
       <div class="two-col">
@@ -495,9 +644,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 11: Hard Negatives & Batch Size ════════════ -->
-    <div class="slide" id="slide-11">
-      <div class="slide-label">Evaluation Metrics · Slide 11</div>
+    <!-- ═══ Slide 14: Hard Negatives & Batch Size ════════════ -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Module 3 · Slide 14</div>
       <h2 class="slide-h2">Hard Negatives &amp; Batch Size</h2>
       <p class="slide-p">The quality of contrastive learning depends on how informative the training comparisons are.</p>
       <div class="two-col">
@@ -530,9 +679,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 12: Application to SE — SIDE ═══════════════ -->
-    <div class="slide" id="slide-12">
-      <div class="slide-label">Evaluation Metrics · Slide 12</div>
+    <!-- ═══ Slide 15: Application to SE — SIDE ════════════════ -->
+    <div class="slide" id="slide-15">
+      <div class="slide-label">Module 3 · Slide 15</div>
       <h2 class="slide-h2">From Summary-to-Summary → Summary-to-Code</h2>
       <p class="slide-p">Traditional metrics compare prediction vs. reference summary. But a summary can sound fluent and still be wrong with respect to the code. A stronger metric should measure <strong>alignment with code semantics</strong>.</p>
       <div class="two-col">
@@ -578,9 +727,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 13: Side-by-side Comparison ════════════════ -->
-    <div class="slide" id="slide-13">
-      <div class="slide-label">Evaluation Metrics · Slide 13</div>
+    <!-- ═══ Slide 16: Side-by-side Comparison ═════════════════ -->
+    <div class="slide" id="slide-16">
+      <div class="slide-label">Module 3 · Slide 16</div>
       <h2 class="slide-h2">Interactive: Multi-Metric Comparison</h2>
       <p class="slide-p">Compare how different metrics score the same prediction. Select a scenario:</p>
       <div class="cl-controls" id="scenario-tabs" style="margin-bottom:14px;"></div>
@@ -599,9 +748,9 @@
       </div>
     </div>
 
-    <!-- ═══ Slide 14: Key Takeaways ══════════════════════════ -->
-    <div class="slide" id="slide-14">
-      <div class="slide-label">Evaluation Metrics · Slide 14</div>
+    <!-- ═══ Slide 17: Key Takeaways ══════════════════════════ -->
+    <div class="slide" id="slide-17">
+      <div class="slide-label">Module 3 · Slide 17</div>
       <h2 class="slide-h2">Key Takeaways</h2>
       <div class="tk-grid">
         <div class="tk-card"><div class="tk-num">01 · Foundation</div><h4>Exact Overlap ≠ Semantic Correctness</h4><p>A model can be right in meaning and still look wrong to a token-overlap metric like BLEU.</p></div>
@@ -632,7 +781,7 @@
 
   <!-- ═══ JavaScript ═════════════════════════════════════════ -->
   <script>
-    const TOTAL = 14;
+    const TOTAL = 17;
     let current = 1;
 
     // ── Navigation ──────────────────────────────────────────
@@ -673,13 +822,15 @@
     });
     function initSlide(n) {
       if(n===2) setTimeout(initWordOverlap,50);
-      if(n===4) setTimeout(initMetricMap,50);
-      if(n===5) setTimeout(initEmbedViz,50);
-      if(n===7) setTimeout(initCrystal,50);
-      if(n===8) setTimeout(clReset,50);
-      if(n===10) setTimeout(initTriplet,50);
-      if(n===11) setTimeout(initHNQuiz,50);
-      if(n===13) setTimeout(initScenarios,50);
+      if(n===4) setTimeout(initConfMatrix,50);
+      if(n===5) setTimeout(computeBLEU,50);
+      if(n===7) setTimeout(initMetricMap,50);
+      if(n===8) setTimeout(initEmbedViz,50);
+      if(n===10) setTimeout(initCrystal,50);
+      if(n===11) setTimeout(clReset,50);
+      if(n===13) setTimeout(initTriplet,50);
+      if(n===14) setTimeout(initHNQuiz,50);
+      if(n===16) setTimeout(initScenarios,50);
     }
 
     // ── Interactive 1: Word Overlap (Slide 2) ───────────────
@@ -701,7 +852,7 @@
       document.getElementById('wo-count').textContent = matches;
     }
 
-    // ── Interactive 2: Metric Map (Slide 4) ─────────────────
+    // ── Interactive 2: Metric Map (Slide 7) ─────────────────
     const METRICS = {
       code: [
         { name:'BLEU', type:'code', measures:'N-gram overlap between generated and reference tokens.', helps:'Quick surface comparison.', fails:'Misses structural and semantic equivalence in code.' },
@@ -738,7 +889,7 @@
         `<div class="cb-body"><strong>Measures:</strong> ${m.measures}<br/><strong>Helps when:</strong> ${m.helps}<br/><strong>Fails when:</strong> ${m.fails}</div>`;
     }
 
-    // ── Interactive 3: Embedding Viz (Slide 5) ──────────────
+    // ── Interactive 3: Embedding Viz (Slide 8) ──────────────
     function initEmbedViz() {
       // Simulated embedding vectors (8-dim for visualization)
       const vA = [0.82, 0.14, -0.45, 0.67, 0.91, -0.23, 0.55, 0.38];
@@ -761,7 +912,85 @@
         `<span class="score-badge high" style="margin-left:8px;">High Semantic Similarity</span>`;
     }
 
-    // ── Interactive 4: CrystalBLEU Token Classifier (Slide 7) ─
+    // ── Interactive: Confusion Matrix (Slide 4) ──────────────
+    function initConfMatrix() { updateConfMatrix(); }
+    function updateConfMatrix() {
+      const tp = parseInt(document.getElementById('cm-tp').value) || 0;
+      const fp = parseInt(document.getElementById('cm-fp').value) || 0;
+      const fn = parseInt(document.getElementById('cm-fn').value) || 0;
+      const tn = parseInt(document.getElementById('cm-tn').value) || 0;
+      const precision = tp+fp > 0 ? tp/(tp+fp) : 0;
+      const recall = tp+fn > 0 ? tp/(tp+fn) : 0;
+      const f1 = precision+recall > 0 ? 2*precision*recall/(precision+recall) : 0;
+      const accuracy = tp+fp+fn+tn > 0 ? (tp+tn)/(tp+fp+fn+tn) : 0;
+      function scoreColor(v) { return v >= 0.7 ? 'var(--green)' : v >= 0.4 ? 'var(--amber)' : 'var(--red)'; }
+      document.getElementById('cm-precision').textContent = precision.toFixed(2);
+      document.getElementById('cm-precision').style.color = scoreColor(precision);
+      document.getElementById('cm-recall').textContent = recall.toFixed(2);
+      document.getElementById('cm-recall').style.color = scoreColor(recall);
+      document.getElementById('cm-f1').textContent = f1.toFixed(2);
+      document.getElementById('cm-f1').style.color = scoreColor(f1);
+      document.getElementById('cm-accuracy').textContent = accuracy.toFixed(2);
+      document.getElementById('cm-accuracy').style.color = scoreColor(accuracy);
+      // Interpretation
+      let interp = 'The confusion matrix reveals <strong>WHERE</strong> a model fails.';
+      if(fn > tp) interp += ' <span style="color:var(--red);">High FN rate &mdash; the model is missing many actual positives (missed bugs).</span>';
+      else if(fp > tp) interp += ' <span style="color:var(--amber);">High FP rate &mdash; the model raises many false alarms (noisy alerts).</span>';
+      else if(accuracy > 0.9 && f1 < 0.5) interp += ' <span style="color:var(--amber);">High accuracy but low F1 &mdash; classic sign of class imbalance!</span>';
+      else interp += ' Adjust the values to see how different failure modes affect each metric.';
+      document.getElementById('cm-interpretation').innerHTML = interp;
+    }
+
+    // ── Interactive: BLEU Calculator (Slide 5) ──────────────
+    function computeBLEU() {
+      const refEl = document.getElementById('bleu-ref');
+      const candEl = document.getElementById('bleu-cand');
+      if(!refEl || !candEl) return;
+      const ref = refEl.value.trim().toLowerCase().split(/\s+/).filter(w=>w);
+      const cand = candEl.value.trim().toLowerCase().split(/\s+/).filter(w=>w);
+      if(ref.length === 0 || cand.length === 0) return;
+      // Compute n-gram precisions (1 to 4)
+      function getNgrams(tokens, n) {
+        const map = {};
+        for(let i = 0; i <= tokens.length - n; i++) {
+          const ng = tokens.slice(i, i+n).join(' ');
+          map[ng] = (map[ng]||0) + 1;
+        }
+        return map;
+      }
+      const precisions = [];
+      for(let n = 1; n <= 4; n++) {
+        const refNg = getNgrams(ref, n);
+        const candNg = getNgrams(cand, n);
+        let clipped = 0, total = 0;
+        for(const ng in candNg) {
+          clipped += Math.min(candNg[ng], refNg[ng]||0);
+          total += candNg[ng];
+        }
+        precisions.push(total > 0 ? clipped/total : 0);
+      }
+      // Brevity penalty
+      const bp = cand.length >= ref.length ? 1 : Math.exp(1 - ref.length/cand.length);
+      // BLEU (geometric mean of available precisions with smoothing)
+      let logSum = 0, count = 0;
+      for(let n = 0; n < 4; n++) {
+        const p = precisions[n] > 0 ? precisions[n] : 1e-10;
+        logSum += Math.log(p);
+        count++;
+      }
+      const bleu = bp * Math.exp(logSum / count);
+      function scoreColor(v) { return v >= 0.5 ? 'var(--green)' : v >= 0.2 ? 'var(--amber)' : 'var(--red)'; }
+      document.getElementById('bleu-1').textContent = precisions[0].toFixed(2);
+      document.getElementById('bleu-1').style.color = scoreColor(precisions[0]);
+      document.getElementById('bleu-2').textContent = precisions[1].toFixed(2);
+      document.getElementById('bleu-2').style.color = scoreColor(precisions[1]);
+      document.getElementById('bleu-bp').textContent = bp.toFixed(2);
+      document.getElementById('bleu-bp').style.color = bp >= 0.8 ? 'var(--green)' : 'var(--amber)';
+      document.getElementById('bleu-final').textContent = bleu.toFixed(2);
+      document.getElementById('bleu-final').style.color = scoreColor(bleu);
+    }
+
+    // ── Interactive 4: CrystalBLEU Token Classifier (Slide 10) ─
     const CRYSTAL_TOKENS = [
       {t:'public', info:'low'}, {t:'static', info:'low'}, {t:'void', info:'low'},
       {t:'processTransaction', info:'high'}, {t:'(', info:'low'}, {t:'Account', info:'high'},
@@ -800,7 +1029,7 @@
       }
     }
 
-    // ── Interactive 5: Contrastive Learning Canvas (Slide 8) ─
+    // ── Interactive 5: Contrastive Learning Canvas (Slide 11) ─
     let clPoints = [];
     let clStep = 0;
     function clReset() {
@@ -875,7 +1104,7 @@
     }
     function clTrainAll(){ for(let i=0;i<10;i++) clTrain(); }
 
-    // ── Interactive 6: Triplet Loss Explorer (Slide 10) ─────
+    // ── Interactive 6: Triplet Loss Explorer (Slide 13) ─────
     let tripletPts = {A:{x:210,y:160}, P:{x:120,y:80}, N:{x:340,y:100}};
     let dragTarget = null;
     function initTriplet() {
@@ -940,7 +1169,7 @@
     }
     function updateTriplet(){ drawTriplet(); }
 
-    // ── Interactive 7: Hard-Negative Quiz (Slide 11) ────────
+    // ── Interactive 7: Hard-Negative Quiz (Slide 14) ────────
     const HN_ITEMS = [
       {text:'"A cat sits on the mat"', diff:'easy', why:'Completely different topic.'},
       {text:'"The dog is sleeping on the bone"', diff:'medium', why:'Same entities, different action.'},
@@ -958,7 +1187,7 @@
       HN_ITEMS.forEach((_,i) => document.getElementById('hn-'+i).classList.add('revealed'));
     }
 
-    // ── Interactive 8: Batch Size (Slide 11) ────────────────
+    // ── Interactive 8: Batch Size (Slide 14) ────────────────
     function updateBatch() {
       const bs=parseInt(document.getElementById('batch-slider').value);
       document.getElementById('batch-val').textContent=bs;
@@ -969,7 +1198,7 @@
          ' <span style="color:var(--red);">Limited negative variety.</span>');
     }
 
-    // ── Interactive 9: Multi-Metric Comparison (Slide 13) ───
+    // ── Interactive 9: Multi-Metric Comparison (Slide 16) ───
     const SCENARIOS = [
       { name:'Near-exact', pr:'Create a connection to the consumer.', gt:'Create a connection to the consumer.',
         scores:{BLEU:1.00,ROUGE:1.00,METEOR:1.00,CodeBLEU:'—',Embedding:0.99,SIDE:0.81},

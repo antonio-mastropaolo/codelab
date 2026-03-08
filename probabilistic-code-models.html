@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Probabilistic Language Modeling for Code — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+    /* Topbar */
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+
+    /* Progress */
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+
+    /* Slides */
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+
+    /* Nav bar */
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;border-color:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+
+    /* Typography */
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
+
+    /* Concept boxes */
+    .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .cb.blue{border-left-color:var(--blue);}
+    .cb.amber{border-left-color:var(--amber);}
+    .cb.purple{border-left-color:var(--purple);}
+    .cb.red{border-left-color:var(--red);}
+    .cb.cyan{border-left-color:var(--cyan);}
+    .cb-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .cb.blue .cb-label{color:var(--blue);}
+    .cb.amber .cb-label{color:var(--amber);}
+    .cb.purple .cb-label{color:var(--purple);}
+    .cb.red .cb-label{color:var(--red);}
+    .cb.cyan .cb-label{color:var(--cyan);}
+    .cb-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .cb-body strong{color:var(--text-primary);}
+
+    /* Term cards */
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .term-card:hover{border-color:var(--green-border);}
+    .term-emoji{font-size:1.3rem;margin-bottom:6px;}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+
+    /* Step rows */
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Code blocks */
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;}
+    .ck{color:var(--purple);}
+    .cs{color:var(--green);}
+    .cc{color:var(--text-muted);font-style:italic;}
+    .cf{color:var(--blue);}
+    .cl{color:var(--amber);}
+    .ca{color:var(--cyan);}
+
+    /* Interactive panels */
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+
+    /* Sim buttons */
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+
+    /* Token chips */
+    .token-seq{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+    .tok{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:0.78rem;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);}
+    .tok.kw{border-color:rgba(188,140,255,0.3);color:var(--purple);background:rgba(188,140,255,0.06);}
+    .tok.id{border-color:rgba(88,166,255,0.3);color:var(--blue);background:rgba(88,166,255,0.06);}
+    .tok.op{border-color:rgba(227,179,65,0.3);color:var(--amber);background:rgba(227,179,65,0.06);}
+    .tok.sep{border-color:rgba(0,217,126,0.3);color:var(--green);background:rgba(0,217,126,0.08);}
+    .tok.lit{border-color:rgba(57,213,255,0.3);color:var(--cyan);background:rgba(57,213,255,0.06);}
+    .tok.cmt{border-color:rgba(72,79,88,0.5);color:var(--text-muted);background:rgba(72,79,88,0.15);font-style:italic;}
+
+    /* Comparison table */
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-red{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(255,95,87,0.08);color:var(--red);border:1px solid rgba(255,95,87,0.2);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+    .tag-blue{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+
+    /* Takeaway grid */
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Flow arrows */
+    .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;justify-content:center;}
+    .flow-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:var(--font-display);font-size:0.82rem;font-weight:600;text-align:center;min-width:90px;}
+    .flow-box.green{border-color:var(--green-border);color:var(--green);}
+    .flow-box.blue{border-color:rgba(88,166,255,0.3);color:var(--blue);}
+    .flow-box.amber{border-color:rgba(227,179,65,0.3);color:var(--amber);}
+    .flow-box.purple{border-color:rgba(188,140,255,0.3);color:var(--purple);}
+    .flow-arrow{color:var(--text-muted);font-size:1.2rem;}
+
+    /* Quiz option */
+    .quiz-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .quiz-option:hover{border-color:var(--green-border);}
+    .quiz-option .q-label{font-size:0.82rem;color:var(--text-secondary);flex:1;}
+    .quiz-option .q-tag{font-family:var(--font-mono);font-size:0.7rem;padding:3px 10px;border-radius:12px;display:none;}
+    .quiz-option.revealed .q-tag{display:inline-block;}
+    .quiz-option.correct .q-tag{background:rgba(0,217,126,0.1);color:var(--green);}
+    .quiz-option.wrong .q-tag{background:rgba(255,95,87,0.1);color:var(--red);}
+    .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
+    .quiz-option.revealed.wrong{border-color:rgba(255,95,87,0.2);background:rgba(255,95,87,0.04);}
+
+    /* Knowledge check */
+    .kc-box{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;}
+    .kc-q{font-size:0.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .kc-q::before{content:'?';display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.12);color:var(--blue);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;flex-shrink:0;}
+    .kc-answer{display:none;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:10px 14px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);margin-top:8px;}
+    .kc-answer.visible{display:block;}
+    .kc-answer strong{color:var(--text-primary);}
+
+    /* VS layout */
+    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:14px 0;}
+    @media(max-width:700px){.vs-grid{grid-template-columns:1fr;}}
+    .vs-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .vs-card h4{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px;}
+    .vs-card ul{list-style:none;padding:0;}
+    .vs-card li{font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:3px 0;}
+    .vs-card li::before{content:'\2192 ';color:var(--green);font-family:var(--font-mono);}
+    .vs-card.warn li::before{color:var(--amber);}
+    .vs-divider{display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--text-muted);}
+    @media(max-width:700px){.vs-divider{display:none;}}
+
+    /* Stat cards */
+    .stat-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:110px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .stat-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--green);}
+    .stat-val.blue{color:var(--blue);}
+    .stat-val.amber{color:var(--amber);}
+    .stat-val.purple{color:var(--purple);}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+
+    /* Textarea */
+    .code-input{width:100%;min-height:60px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--font-mono);font-size:0.8rem;color:var(--text-primary);resize:vertical;line-height:1.6;}
+    .code-input:focus{outline:none;border-color:var(--green-border);}
+
+    /* Prediction bar */
+    .pred-bar{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:0.78rem;}
+    .pred-token{font-family:var(--font-mono);color:var(--text-primary);min-width:100px;}
+    .pred-fill-track{flex:1;height:18px;background:var(--bg-3);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative;}
+    .pred-fill-bar{height:100%;border-radius:3px;transition:width 0.4s ease;}
+    .pred-prob{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);min-width:50px;text-align:right;}
+
+    /* Formula display */
+    .formula{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-family:var(--font-mono);font-size:0.82rem;line-height:1.8;margin:10px 0;text-align:center;color:var(--text-secondary);}
+    .formula strong{color:var(--green);}
+    .formula .var{color:var(--blue);}
+    .formula .op{color:var(--amber);}
+    .formula.left{text-align:left;}
+
+    /* Count matrix table */
+    .count-matrix{width:100%;border-collapse:collapse;font-size:0.72rem;font-family:var(--font-mono);margin:10px 0;}
+    .count-matrix th{padding:6px 8px;background:var(--bg-3);border:1px solid var(--border);color:var(--text-muted);text-transform:none;letter-spacing:0;font-weight:600;text-align:center;min-width:50px;}
+    .count-matrix td{padding:6px 8px;border:1px solid var(--border);text-align:center;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;}
+    .count-matrix td:hover{background:var(--green-dim);border-color:var(--green-border);color:var(--green);}
+    .count-matrix td.highlight{background:var(--green-dim);border-color:var(--green-border);color:var(--green);font-weight:700;}
+    .count-matrix td.header-cell{background:var(--bg-3);color:var(--blue);font-weight:600;cursor:default;}
+    .count-matrix td.header-cell:hover{background:var(--bg-3);border-color:var(--border);color:var(--blue);}
+
+    /* Probability step display */
+    .prob-step{display:flex;align-items:center;gap:8px;padding:8px 12px;margin:4px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);font-family:var(--font-mono);font-size:0.78rem;opacity:0.3;transition:all 0.3s;}
+    .prob-step.active{opacity:1;border-color:var(--green-border);background:var(--green-dim);}
+    .prob-step .ps-label{color:var(--text-secondary);flex:1;}
+    .prob-step .ps-val{color:var(--green);font-weight:600;}
+
+    /* Slider row */
+    .slider-row{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:0.78rem;}
+    .slider-row label{font-family:var(--font-mono);color:var(--text-secondary);min-width:130px;}
+    .slider-row input[type=range]{flex:1;accent-color:var(--green);height:6px;}
+    .slider-row .sl-val{font-family:var(--font-mono);color:var(--green);min-width:50px;text-align:right;font-weight:600;}
+
+    /* Zipf bar */
+    .zipf-bar{display:flex;align-items:flex-end;gap:3px;height:120px;margin:14px 0;padding:0 10px;}
+    .zipf-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
+    .zipf-fill{width:100%;border-radius:3px 3px 0 0;transition:height 0.4s;min-width:16px;}
+    .zipf-lbl{font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted);writing-mode:vertical-rl;text-orientation:mixed;max-height:60px;overflow:hidden;}
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">&#8250;</span>
+  <span class="topbar-title">Probabilistic Language Modeling for Code</span>
+  <span class="topbar-badge">Module 2 &middot; Interactive</span>
+  <span class="slide-counter" id="counter">1 / 18</span>
+  <a href="teaching.html" class="topbar-home">&larr; Teaching</a>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:5.56%"></div></div>
+
+<div class="slides-wrapper">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 · What are Probabilistic Language Models?              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 2 &middot; Slide 01</div>
+  <h1 class="slide-h1">Probabilistic Language <em>Modeling for Code</em></h1>
+  <p class="slide-p">A Probabilistic Language Model (PLM) is a statistical approach to model the likelihood of occurring words or tokens in a sequence. It estimates how likely a given word or sequence of words is to occur in a particular context, based on statistical patterns observed in large corpora.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Core Goal</div>
+        <div class="cb-body">
+          Estimate <strong>P(word | context)</strong> and <strong>P(sequence)</strong> &mdash; the probability of the next word given previous context, and the probability of an entire sequence of words.
+        </div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">Learning Objectives</div>
+        <div class="cb-body">
+          By the end of this module you will be able to:<br/>
+          <strong>1.</strong> Apply conditional probabilities and the chain rule<br/>
+          <strong>2.</strong> Explain n-gram models and the Markov assumption<br/>
+          <strong>3.</strong> Compute and interpret perplexity<br/>
+          <strong>4.</strong> Describe smoothing, interpolation, and backoff<br/>
+          <strong>5.</strong> Apply sampling from language models<br/>
+          <strong>6.</strong> Explain why code is &ldquo;natural&rdquo; (Hindle et al.)<br/>
+          <strong>7.</strong> Compare n-gram LMs to neural LMs
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="term-grid" style="grid-template-columns:1fr;">
+        <div class="term-card">
+          <div class="term-name">PLM</div>
+          <div class="term-def">Probabilistic Language Model &mdash; a statistical model that assigns probabilities to sequences of words/tokens based on patterns observed in training data.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Corpus</div>
+          <div class="term-def">A large collection of text (or code) used to train the language model. The model learns statistical patterns from this data.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Context Window</div>
+          <div class="term-def">The number of preceding tokens the model considers when predicting the next token. Larger windows capture more context but require more data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 2 · Conditional Probabilities & Chain Rule               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 2 &middot; Slide 02</div>
+  <h2 class="slide-h2">Conditional Probabilities &amp; the <em>Chain Rule</em></h2>
+  <p class="slide-p">To estimate the probability of an entire sentence, we need two building blocks: <strong style="color:var(--text-primary)">conditional probability</strong> and the <strong style="color:var(--text-primary)">chain rule</strong>.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="formula left">
+        <strong>Conditional Probability</strong><br/>
+        P(<span class="var">B</span> | <span class="var">A</span>) <span class="op">=</span> P(<span class="var">A</span>, <span class="var">B</span>) <span class="op">/</span> P(<span class="var">A</span>)
+      </div>
+      <div class="formula left">
+        <strong>Joint Probability</strong><br/>
+        P(<span class="var">A</span>, <span class="var">B</span>) <span class="op">=</span> P(<span class="var">A</span>) <span class="op">&middot;</span> P(<span class="var">B</span> | <span class="var">A</span>)
+      </div>
+      <div class="formula left">
+        <strong>A Sentence</strong><br/>
+        s = (w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>N</sub>)
+      </div>
+    </div>
+    <div>
+      <div class="formula left">
+        <strong>Chain Rule Expansion</strong><br/>
+        P(w<sub>1</sub>, ..., w<sub>N</sub>) <span class="op">=</span><br/>
+        &nbsp;&nbsp;P(w<sub>1</sub>) <span class="op">&middot;</span> P(w<sub>2</sub>|w<sub>1</sub>) <span class="op">&middot;</span> P(w<sub>3</sub>|w<sub>1</sub>,w<sub>2</sub>) <span class="op">&middot;</span> ...<br/>
+        &nbsp;&nbsp;<span class="op">&middot;</span> P(w<sub>N</sub>|w<sub>1</sub>, ..., w<sub>N-1</sub>)
+      </div>
+      <div class="formula left">
+        <strong>Compact Notation</strong><br/>
+        P(w<sub>1</sub>, ..., w<sub>N</sub>) <span class="op">=</span> <span class="op">&Pi;</span><sub>i=1..N</sub> P(w<sub>i</sub> | w<sub>1</sub>, ..., w<sub>i-1</sub>)
+      </div>
+    </div>
+  </div>
+
+  <div class="cb blue">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body">The <strong>chain rule</strong> decomposes a joint probability into a product of conditional probabilities. This means we can compute the probability of any sequence by multiplying together the probability of each word given all the words that came before it.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 · Computing Sentence Probability                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 2 &middot; Slide 03</div>
+  <h2 class="slide-h2">Computing Probability of a <em>Sentence</em></h2>
+  <p class="slide-p">Let us apply the chain rule step by step to compute the probability of a concrete sentence.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Step-Through: P("its water is so transparent") <span class="inter-badge">interactive</span></span>
+      <div style="display:flex;gap:6px;">
+        <button class="sim-btn primary" id="sent-step-btn" onclick="sentStep()">Next Step</button>
+        <button class="sim-btn" onclick="sentReset()">Reset</button>
+        <span id="sent-step-label" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);display:flex;align-items:center;">Step 0 / 5</span>
+      </div>
+    </div>
+    <div class="inter-body">
+      <div id="sent-steps">
+        <div class="prob-step" id="ps-1"><span class="ps-label">P(<strong>its</strong>)</span><span class="ps-val">= P(its)</span></div>
+        <div class="prob-step" id="ps-2"><span class="ps-label"><span class="op">&times;</span> P(<strong>water</strong> | its)</span><span class="ps-val">= P(water|its)</span></div>
+        <div class="prob-step" id="ps-3"><span class="ps-label"><span class="op">&times;</span> P(<strong>is</strong> | its water)</span><span class="ps-val">= P(is|its water)</span></div>
+        <div class="prob-step" id="ps-4"><span class="ps-label"><span class="op">&times;</span> P(<strong>so</strong> | its water is)</span><span class="ps-val">= P(so|its water is)</span></div>
+        <div class="prob-step" id="ps-5"><span class="ps-label"><span class="op">&times;</span> P(<strong>transparent</strong> | its water is so)</span><span class="ps-val">= P(transparent|its water is so)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb red" style="margin-top:14px;">
+    <div class="cb-label">The Problem</div>
+    <div class="cb-body">
+      To compute <strong>P(the | its water is so transparent that)</strong>, we need:<br/>
+      Count(<em>its water is so transparent that the</em>) / Count(<em>its water is so transparent that</em>)<br/><br/>
+      Finding exact long sequences in any corpus is <strong>extremely unlikely</strong>! Even huge corpora will never contain most long word sequences.
+    </div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q">Why is it impractical to estimate P(word | very long context) using raw counts?</div>
+    <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
+    <div class="kc-answer"><strong>The number of possible sequences grows exponentially with length.</strong> Most long sequences will never appear in any finite corpus, so the counts will be zero. Even sequences that do appear will have counts too small to give reliable probability estimates.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 4 · Why N-grams: Data Sparsity                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 2 &middot; Slide 04</div>
+  <h2 class="slide-h2">The Data Sparsity Problem: <em>Why N-grams?</em></h2>
+  <p class="slide-p">To compute exact sequence probabilities, we would need enough data to observe every possible word combination. The number of combinations is astronomical.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="formula left">
+        <strong>Combinatorics</strong><br/>
+        C(<span class="var">n</span>, <span class="var">r</span>) <span class="op">=</span> <span class="var">n</span>! <span class="op">/</span> (<span class="var">r</span>!(<span class="var">n</span> <span class="op">-</span> <span class="var">r</span>)!)
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-val amber">1,000</div>
+          <div class="stat-label">Vocabulary Size</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--red);">8.25 &times; 10<sup style="font-size:0.6em;">12</sup></div>
+          <div class="stat-label">5-word Combos</div>
+        </div>
+      </div>
+
+      <div class="cb red">
+        <div class="cb-label">Example</div>
+        <div class="cb-body">
+          With just <strong>1,000 unique words</strong>, the number of possible 5-word combinations is:<br/>
+          C(1000, 5) = <strong>8.25 &times; 10<sup>12</sup></strong><br/><br/>
+          No corpus is large enough to observe all of these!
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Data Sparsity</div>
+        <div class="cb-body">The number of possible word sequences grows <strong>exponentially</strong> with sequence length. Even with enormous corpora, most sequences will <strong>never be observed</strong>. This makes direct counting impractical for long contexts.</div>
+      </div>
+
+      <div class="cb blue">
+        <div class="cb-label">The Solution</div>
+        <div class="cb-body">Instead of conditioning on the <strong>entire</strong> history, approximate by conditioning on only the last few words. This is the <strong>Markov assumption</strong>, and it gives us <strong>n-gram models</strong>.</div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Full history is impractical</h4>
+          <p>P(w<sub>i</sub> | w<sub>1</sub>...w<sub>i-1</sub>) requires too much data</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Truncate the context</h4>
+          <p>Approximate with only the last k words</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>N-gram model</h4>
+          <p>P(w<sub>i</sub> | w<sub>i-k</sub>...w<sub>i-1</sub>) is tractable to estimate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 5 · Markov Assumption & N-gram Models                    -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 2 &middot; Slide 05</div>
+  <h2 class="slide-h2">The Markov Assumption &amp; <em>N-gram Models</em></h2>
+  <p class="slide-p">The key idea: approximate the full conditional probability by looking at only the last <strong style="color:var(--text-primary)">N-1</strong> tokens.</p>
+
+  <div class="formula">
+    <strong>Markov Assumption</strong><br/>
+    P(w<sub>i</sub> | w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>i-1</sub>) <span class="op">&asymp;</span> P(w<sub>i</sub> | w<sub>i-k</sub>, ..., w<sub>i-1</sub>)
+  </div>
+
+  <div class="cb amber" style="margin-top:2px;margin-bottom:8px;">
+    <div class="cb-label">Example</div>
+    <div class="cb-body">P(<strong>the</strong> | its water is so transparent that) &asymp; P(<strong>the</strong> | that) &nbsp;&mdash;&nbsp; using a <strong>bigram</strong> model</div>
+  </div>
+
+  <div class="two-col" style="margin-top:6px;">
+    <div>
+      <table class="comp-table">
+        <tr><th>Model</th><th>Approximation</th></tr>
+        <tr>
+          <td><strong>Unigram</strong></td>
+          <td>P(w<sub>1</sub>...w<sub>n</sub>) &asymp; &Pi; P(w<sub>i</sub>) &mdash; each word independent</td>
+        </tr>
+        <tr>
+          <td><strong>Bigram</strong></td>
+          <td>P(w<sub>i</sub>|w<sub>1</sub>...w<sub>i-1</sub>) &asymp; P(w<sub>i</sub>|w<sub>i-1</sub>) &mdash; previous word only</td>
+        </tr>
+        <tr>
+          <td><strong>Trigram</strong></td>
+          <td>P(w<sub>i</sub>|w<sub>1</sub>...w<sub>i-1</sub>) &asymp; P(w<sub>i</sub>|w<sub>i-2</sub>,w<sub>i-1</sub>)</td>
+        </tr>
+        <tr>
+          <td><strong>N-gram</strong></td>
+          <td>Condition on the last N&minus;1 tokens (3-grams, 4-grams, 5-grams...)</td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <div class="term-grid" style="grid-template-columns:1fr;">
+        <div class="term-card">
+          <div class="term-name">Unigram</div>
+          <div class="term-def">Context = 0 words. Each word is treated independently. Simplest but least accurate.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Bigram</div>
+          <div class="term-def">Context = 1 word. Predicts based on the immediately preceding token.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Trigram</div>
+          <div class="term-def">Context = 2 words. Captures short-range dependencies like &ldquo;for (int&rdquo;.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">N-gram</div>
+          <div class="term-def">General form. Higher N = more context but exponentially more data needed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q">What is the tradeoff between using higher-order n-grams (e.g., 5-grams vs bigrams)?</div>
+    <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
+    <div class="kc-answer"><strong>Higher-order n-grams capture more context</strong>, leading to more informed predictions. However, the number of possible n-grams grows exponentially, causing severe <strong>data sparsity</strong> &mdash; most n-grams will never appear in training data, making their estimated probability zero or unreliable.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6 · Zipf's Law & The Long Tail                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 2 &middot; Slide 06</div>
+  <h2 class="slide-h2">Zipf's Law: <em>The Long Tail</em></h2>
+  <p class="slide-p">Word frequencies in natural language (and code) follow a power-law distribution known as <strong style="color:var(--text-primary)">Zipf's Law</strong>: a small number of words occur very frequently, while a large number occur rarely.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header">
+          <span class="inter-title">Zipf Distribution <span class="inter-badge">visualization</span></span>
+        </div>
+        <div class="inter-body">
+          <div class="zipf-bar" id="zipf-chart"></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);padding:0 10px;">
+            <span>Most frequent</span>
+            <span>Least frequent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-row" style="margin-top:10px;">
+        <div class="stat-card">
+          <div class="stat-val amber">20%</div>
+          <div class="stat-label">of Words</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--green);">80%</div>
+          <div class="stat-label">of Occurrences</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Pareto's Law (80/20 Rule)</div>
+        <div class="cb-body"><strong>20% of words account for 80% of all occurrences.</strong> In code, tokens like <code>;</code>, <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>=</code> dominate, while most identifiers appear very few times.</div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Impact on N-grams</div>
+        <div class="cb-body">Zipf's law means that most n-grams in our vocabulary will be <strong>extremely rare or never observed</strong>, making probability estimation challenging. This is the fundamental reason we need smoothing techniques.</div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">In Code</div>
+        <div class="cb-body">
+          <strong>High frequency:</strong> <code>;</code> <code>=</code> <code>(</code> <code>)</code> <code>return</code> <code>if</code> <code>this</code><br/>
+          <strong>Low frequency:</strong> <code>processUserData</code> <code>calcTaxRate</code> <code>getEmbeddedIPv4</code><br/>
+          Most custom identifiers fall in the &ldquo;long tail.&rdquo;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7 · The Naturalness of Software                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 2 &middot; Slide 07</div>
+  <h2 class="slide-h2">The <em>Naturalness</em> of Software</h2>
+  <p class="slide-p">Hindle et al. (ICSE 2012) made a groundbreaking discovery: programming languages, in theory, are complex and flexible, but real programs are mostly <strong style="color:var(--text-primary)">simple and repetitive</strong>, with predictable statistical properties that can be captured by language models.</p>
+
+  <div class="cb">
+    <div class="cb-label">Key Insight &mdash; Hindle et al., ICSE 2012</div>
+    <div class="cb-body">
+      Programming languages are theoretically complex, flexible, and powerful. But the programs that real people actually write are mostly simple and rather repetitive, and thus they have <strong>usefully predictable statistical properties</strong> that can be captured in statistical language models.
+    </div>
+  </div>
+
+  <div class="vs-grid">
+    <div class="vs-card">
+      <h4 style="color:var(--blue);">Natural Language</h4>
+      <ul>
+        <li>Rich vocabulary, diverse phrasing</li>
+        <li>Many ways to express the same idea</li>
+        <li>Ambiguity is common and accepted</li>
+        <li>Follows statistical patterns</li>
+        <li>Repetitive structures (grammar)</li>
+      </ul>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div class="vs-card">
+      <h4 style="color:var(--green);">Source Code</h4>
+      <ul>
+        <li>Constrained by strict syntax rules</li>
+        <li>Coding conventions enforce patterns</li>
+        <li>Repetitive idioms (for-loops, if-checks)</li>
+        <li>Also follows statistical patterns</li>
+        <li>Even MORE predictable than English!</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cb cyan">
+    <div class="cb-label">Why This Matters</div>
+    <div class="cb-body">
+      Because code is &ldquo;natural&rdquo; &mdash; repetitive and predictable &mdash; statistical language models like n-grams can be <strong>effectively applied to software engineering tasks</strong>: code completion, bug detection, code recommendation, and more. This insight is what makes PLMs useful for SE.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 8 · Training a Bigram Model for Code                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 2 &middot; Slide 08</div>
+  <h2 class="slide-h2">Training a Bigram Model <em>for Code</em></h2>
+  <p class="slide-p">Training an n-gram model is simply <strong style="color:var(--text-primary)">counting</strong>. Split your corpus into training (80%) and test (20%) sets. Count all bigram occurrences, then normalize to get probabilities.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="code-block" style="font-size:0.72rem;"><span class="ck">public static</span> <span class="cf">Inet4Address</span> <span class="cf">getEmbeddedIPv4CA</span>(<span class="cf">Inet6Address</span> <span class="ca">ip</span>) {
+  <span class="ca">ip1</span> <span class="op">=</span> <span class="ck">New</span> <span class="cf">IP</span>(<span class="cs">"127.0.0.1"</span>)
+  <span class="ck">if</span> (<span class="cf">isCompatIPv4Address</span>(<span class="ca">ip</span>)) {
+    <span class="ck">return</span> <span class="cf">getCompatIPv4Address</span>(<span class="ca">ip</span>);
+  }
+  ...
+}</div>
+
+      <div class="cb blue">
+        <div class="cb-label">Count Matrix</div>
+        <div class="cb-body">Build a table where <strong>rows = preceding token</strong>, <strong>columns = following token</strong>, and each cell = the count of that bigram in the training corpus. Then normalize each row to get probabilities.</div>
+      </div>
+    </div>
+    <div>
+      <div class="formula left">
+        <strong>Bigram Probability</strong><br/>
+        P(<span class="var">getEmbeddedIPv4CA</span> | <span class="var">Inet4Address</span>)<br/>
+        <span class="op">=</span> Count(Inet4Address, getEmbeddedIPv4CA) <span class="op">/</span> Count(Inet4Address)<br/>
+        <span class="op">=</span> <strong>15 / 300 = 0.05</strong>
+      </div>
+
+      <div class="inter-panel" style="margin-top:10px;">
+        <div class="inter-header"><span class="inter-title">Simplified Count Matrix</span></div>
+        <div class="inter-body" style="overflow-x:auto;">
+          <table class="count-matrix" id="bigram-matrix">
+            <tr><th></th><th>static</th><th>void</th><th>Inet4Address</th><th>(</th><th>return</th><th>ip</th></tr>
+            <tr><td class="header-cell">public</td><td onclick="highlightCell(this,120,400)">120</td><td onclick="highlightCell(this,15,400)">15</td><td onclick="highlightCell(this,8,400)">8</td><td onclick="highlightCell(this,5,400)">5</td><td onclick="highlightCell(this,2,400)">2</td><td onclick="highlightCell(this,0,400)">0</td></tr>
+            <tr><td class="header-cell">static</td><td onclick="highlightCell(this,0,350)">0</td><td onclick="highlightCell(this,180,350)">180</td><td onclick="highlightCell(this,45,350)">45</td><td onclick="highlightCell(this,3,350)">3</td><td onclick="highlightCell(this,0,350)">0</td><td onclick="highlightCell(this,0,350)">0</td></tr>
+            <tr><td class="header-cell">Inet4Address</td><td onclick="highlightCell(this,0,300)">0</td><td onclick="highlightCell(this,0,300)">0</td><td onclick="highlightCell(this,0,300)">0</td><td onclick="highlightCell(this,10,300)">10</td><td onclick="highlightCell(this,0,300)">0</td><td onclick="highlightCell(this,3,300)">3</td></tr>
+            <tr><td class="header-cell">if</td><td onclick="highlightCell(this,0,250)">0</td><td onclick="highlightCell(this,0,250)">0</td><td onclick="highlightCell(this,0,250)">0</td><td onclick="highlightCell(this,220,250)">220</td><td onclick="highlightCell(this,0,250)">0</td><td onclick="highlightCell(this,0,250)">0</td></tr>
+            <tr><td class="header-cell">return</td><td onclick="highlightCell(this,0,200)">0</td><td onclick="highlightCell(this,0,200)">0</td><td onclick="highlightCell(this,5,200)">5</td><td onclick="highlightCell(this,10,200)">10</td><td onclick="highlightCell(this,0,200)">0</td><td onclick="highlightCell(this,30,200)">30</td></tr>
+          </table>
+          <div id="matrix-result" style="margin-top:8px;font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);min-height:20px;">Click any cell to see the bigram probability computation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9 · Interactive: Bigram Probability Calculator            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 2 &middot; Slide 09</div>
+  <h2 class="slide-h2">Interactive: <em>Bigram Probability Calculator</em></h2>
+  <p class="slide-p">Select a code snippet and see how bigram counts and probabilities are computed from the token sequence.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Bigram Calculator <span class="inter-badge">interactive</span></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="sim-btn primary" onclick="bigramCalc(0)">Example 1</button>
+        <button class="sim-btn" onclick="bigramCalc(1)">Example 2</button>
+        <button class="sim-btn" onclick="bigramCalc(2)">Example 3</button>
+      </div>
+    </div>
+    <div class="inter-body">
+      <div id="bigram-code" style="margin-bottom:10px;"></div>
+      <div id="bigram-tokens" style="margin-bottom:10px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="bigram-results">
+        <div id="bigram-table-area" style="overflow-x:auto;"></div>
+        <div id="bigram-prob-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 10 · Pros & Cons of N-gram LMs                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 2 &middot; Slide 10</div>
+  <h2 class="slide-h2">Pros &amp; Cons of <em>N-gram Language Models</em></h2>
+  <p class="slide-p">N-gram models are a foundational approach with clear strengths and known limitations.</p>
+
+  <div class="vs-grid">
+    <div class="vs-card">
+      <h4 style="color:var(--green);">Pros</h4>
+      <ul>
+        <li>No need for specialized hardware (GPU/TPU)</li>
+        <li>CPU-based computation is sufficient</li>
+        <li>Easy to implement &mdash; just counting and dividing</li>
+        <li>Fast to train and query</li>
+        <li>Interpretable: inspect the count tables directly</li>
+        <li>Well-understood mathematical foundations</li>
+      </ul>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div class="vs-card warn">
+      <h4 style="color:var(--amber);">Cons</h4>
+      <ul>
+        <li>Long-distance relationships cannot be captured</li>
+        <li>Fixed context window (cannot see beyond N-1 tokens)</li>
+        <li>Data sparsity grows exponentially with N</li>
+        <li>No semantic understanding of tokens</li>
+        <li>Cannot generalize to unseen n-grams</li>
+        <li>Open vocabulary problem with code identifiers</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cb blue">
+    <div class="cb-label">Key Takeaway</div>
+    <div class="cb-body">N-gram models are powerful for <strong>local patterns</strong> but fundamentally limited by their <strong>fixed context window</strong>. They are excellent baselines and remain useful in practice, but complex code understanding requires models that can look further back.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 11 · Long-Range Dependencies                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 2 &middot; Slide 11</div>
+  <h2 class="slide-h2">Long-Range <em>Dependencies</em> in Code</h2>
+  <p class="slide-p">Code often has dependencies that span many tokens. A variable declared at the top of a method may be used at the bottom &mdash; far beyond any n-gram window.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="code-block" style="font-size:0.72rem;"><span class="ck">public static</span> <span class="cf">Inet4Address</span> <span class="cf">getEmbeddedIPv4ClientAddress</span>(<span class="cf">Inet6Address</span> <span class="ca">ip</span>) {
+    <span class="ca" style="background:rgba(227,179,65,0.15);padding:1px 4px;border-radius:3px;">ip1</span> = New IP("127.0.0.1")
+    <span class="ck">if</span> (isCompatIPv4Address(<span class="ca">ip</span>)) {
+        <span class="ck">return</span> getCompatIPv4Address(<span class="ca">ip</span>);
+    }
+    <span class="ck">if</span> (is6to4Address(<span class="ca">ip</span>)) {
+        <span class="ck">return</span> get6to4IPv4Address(<span class="ca">ip</span>);
+    }
+    <span class="ck">if</span> (isTeredoAddress(<span class="ca">ip</span>)) {
+        <span class="ck">return</span> getTeredoInfo(<span class="ca">ip</span>).getClient();
+    }
+    <span class="ck">return</span> <span class="ca" style="background:rgba(227,179,65,0.15);padding:1px 4px;border-radius:3px;">ip1</span>.getDefault();
+}</div>
+    </div>
+    <div>
+      <div class="cb amber">
+        <div class="cb-label">The Problem</div>
+        <div class="cb-body">
+          <strong><code>ip1</code></strong> is defined at line 2 but used at the last line &mdash; <strong>many tokens apart</strong>. A bigram or trigram model would have no knowledge of <code>ip1</code> when predicting the final return statement.
+        </div>
+      </div>
+
+      <div class="cb cyan">
+        <div class="cb-label">Neural Networks to the Rescue</div>
+        <div class="cb-body">
+          Neural networks (RNNs, Transformers) can easily handle <strong>longer context windows</strong>. They maintain hidden state or attention mechanisms that allow information from distant tokens to influence predictions.
+        </div>
+      </div>
+
+      <div class="kc-box" style="margin-top:8px;">
+        <div class="kc-q">In the code above, which dependency would a bigram model miss?</div>
+        <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
+        <div class="kc-answer"><strong>The dependency between <code>ip1</code> on line 2 and <code>ip1</code> on the last line.</strong> These are separated by many tokens (all the if-statements and return statements). A bigram model only sees the previous token, so when it reaches the final <code>return</code>, it has no memory of <code>ip1</code> being declared earlier.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 12 · Model Evaluation: Extrinsic                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 2 &middot; Slide 12</div>
+  <h2 class="slide-h2">Model Evaluation: <em>Extrinsic Evaluation</em></h2>
+  <p class="slide-p">How do we know if a language model is good? One approach: test it on an actual <strong style="color:var(--text-primary)">downstream task</strong> and measure its performance.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Choose a Task</h4>
+          <p>Pick a downstream task: code completion, code generation, bug detection, etc.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Run Both Models</h4>
+          <p>Apply Model A and Model B to the same task with the same test data.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Measure Accuracy</h4>
+          <p>How many tokens correctly predicted? How many mispredicted? Compare metrics.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Compare Results</h4>
+          <p>The model with better task performance is the better language model for that task.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box green">Model A</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box amber" style="min-width:120px;">Code Completion<br/><span style="font-size:0.68rem;color:var(--text-muted);">downstream task</span></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box blue">Accuracy: 72%</div>
+      </div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box purple">Model B</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box amber" style="min-width:120px;">Code Completion<br/><span style="font-size:0.68rem;color:var(--text-muted);">downstream task</span></div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box blue">Accuracy: 85%</div>
+      </div>
+
+      <div class="cb red" style="margin-top:14px;">
+        <div class="cb-label">Drawback</div>
+        <div class="cb-body"><strong>Extrinsic evaluation is time-consuming.</strong> Running a full downstream task evaluation can take days or even weeks. We need a faster way to compare models during development.</div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Gold Standard</div>
+        <div class="cb-body">Extrinsic evaluation is the <strong>gold standard</strong> because it directly measures what we care about. But it is expensive &mdash; which motivates <strong>intrinsic</strong> metrics like perplexity.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 13 · Model Evaluation: Perplexity                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 2 &middot; Slide 13</div>
+  <h2 class="slide-h2">Intrinsic Evaluation: <em>Perplexity</em></h2>
+  <p class="slide-p">Perplexity measures model quality <strong style="color:var(--text-primary)">independent of any application</strong>. Lower perplexity = better model (more confident, less &ldquo;surprised&rdquo; by the test data).</p>
+
+  <div class="two-col">
+    <div>
+      <div class="formula left">
+        <strong>Perplexity (General)</strong><br/>
+        PP(W) <span class="op">=</span> P(w<sub>1</sub>w<sub>2</sub>...w<sub>N</sub>)<sup>-1/N</sup><br/><br/>
+        <span class="op">=</span> (<span class="op">&Pi;</span><sub>i=1..N</sub> 1/P(w<sub>i</sub>|w<sub>1</sub>...w<sub>i-1</sub>))<sup>1/N</sup>
+      </div>
+      <div class="formula left">
+        <strong>For Bigrams</strong><br/>
+        PP(W) <span class="op">=</span> (<span class="op">&Pi;</span><sub>i=1..N</sub> 1/P(w<sub>i</sub>|w<sub>i-1</sub>))<sup>1/N</sup>
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Comparison</div>
+        <div class="cb-body">
+          If <strong>Model A has perplexity 20</strong> and <strong>Model B has perplexity 5</strong>, Model B is much more confident in its predictions. It is as if Model B is choosing among only 5 equally likely options at each step, while Model A is choosing among 20.
+        </div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">Caveat</div>
+        <div class="cb-body">
+          Perplexity provides a <strong>bad approximation</strong> unless the test data looks like the training data. It is generally only useful in <strong>pilot experiments</strong> for quick model comparison.
+        </div>
+      </div>
+
+      <div class="cb red">
+        <div class="cb-label">Warning: Zero Probabilities</div>
+        <div class="cb-body">If any P(w<sub>i</sub>|context) = 0, then 1/0 = infinity, and perplexity <strong>goes to infinity</strong>. A single unseen n-gram breaks the entire metric! This is why we need <strong>smoothing</strong>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 14 · Interactive: Perplexity Calculator                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 2 &middot; Slide 14</div>
+  <h2 class="slide-h2">Interactive: <em>Perplexity Calculator</em></h2>
+  <p class="slide-p">Adjust the bigram probabilities for each token and see how cross-entropy and perplexity change in real time. Try setting one probability to zero!</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Perplexity Calculator <span class="inter-badge">interactive</span></span>
+    </div>
+    <div class="inter-body">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;font-family:var(--font-mono);">Sequence: for ( int i = 0</div>
+      <div id="perp-sliders"></div>
+      <div id="perp-stats" style="margin-top:12px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 15 · Smoothing & Interpolation                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 2 &middot; Slide 15</div>
+  <h2 class="slide-h2">Smoothing &amp; <em>Interpolation</em></h2>
+  <p class="slide-p">Zero-count n-grams break the model. Smoothing techniques redistribute probability mass to handle unseen events.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">The Problem</div>
+        <div class="cb-body">If count(w<sub>i-1</sub>, w<sub>i</sub>) = 0, then P(w<sub>i</sub>|w<sub>i-1</sub>) = 0. A single zero probability makes the entire sequence probability zero and perplexity infinite.</div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Laplace (Add-1) Smoothing</div>
+        <div class="cb-body">
+          Add 1 to <strong>all</strong> n-gram counts:<br/>
+          <strong>P(w<sub>i</sub>|w<sub>i-1</sub>) = (count(w<sub>i-1</sub>, w<sub>i</sub>) + 1) / (count(w<sub>i-1</sub>) + V)</strong><br/>
+          where V = vocabulary size. Simple but crude &mdash; steals too much mass from observed events.
+        </div>
+      </div>
+
+      <div class="cb purple">
+        <div class="cb-label">Add-k Smoothing</div>
+        <div class="cb-body">
+          Generalize Laplace by adding <strong>k</strong> instead of 1:<br/>
+          <strong>P(w<sub>i</sub>|w<sub>i-1</sub>) = (count(w<sub>i-1</sub>, w<sub>i</sub>) + k) / (count(w<sub>i-1</sub>) + kV)</strong><br/>
+          <strong>k</strong> is a hyperparameter &mdash; optimize it on a held-out set.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Interpolation</div>
+        <div class="cb-body">
+          Combine unigram, bigram, and trigram models with weights:<br/><br/>
+          <strong>P(w<sub>i</sub>) = &lambda;<sub>1</sub>P<sub>uni</sub>(w<sub>i</sub>) + &lambda;<sub>2</sub>P<sub>bi</sub>(w<sub>i</sub>|w<sub>i-1</sub>) + &lambda;<sub>3</sub>P<sub>tri</sub>(w<sub>i</sub>|w<sub>i-2</sub>,w<sub>i-1</sub>)</strong><br/><br/>
+          where &lambda;<sub>1</sub> + &lambda;<sub>2</sub> + &lambda;<sub>3</sub> = 1. Choose &lambda; values that <strong>maximize likelihood on held-out corpus</strong>.
+        </div>
+      </div>
+
+      <div class="inter-panel" style="margin-top:8px;">
+        <div class="inter-header"><span class="inter-title">Laplace Smoothing Example</span></div>
+        <div class="inter-body" style="font-size:0.78rem;">
+          <table class="comp-table" style="font-size:0.75rem;">
+            <tr><th>Bigram</th><th>Raw Count</th><th>+1 Count</th><th>Raw P</th><th>Smoothed P</th></tr>
+            <tr>
+              <td><code>for (</code></td>
+              <td>18</td>
+              <td>19</td>
+              <td>18/100 = 0.180</td>
+              <td>19/110 = 0.173</td>
+            </tr>
+            <tr>
+              <td><code>for return</code></td>
+              <td>0</td>
+              <td>1</td>
+              <td>0/100 = <span style="color:var(--red);">0.000</span></td>
+              <td>1/110 = <span style="color:var(--green);">0.009</span></td>
+            </tr>
+          </table>
+          <div style="color:var(--text-muted);margin-top:6px;font-family:var(--font-mono);font-size:0.68rem;">Assume count(for) = 100, V = 10</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q">Why is Laplace smoothing considered too crude for large vocabularies?</div>
+    <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
+    <div class="kc-answer"><strong>It adds 1 to every possible bigram count</strong>, and adds V to the denominator. When V is very large (common in code), the total mass redistributed to unseen events becomes enormous, stealing too much probability from actually observed n-grams. Add-k and interpolation are better alternatives.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 16 · Stupid Backoff & Sampling                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 2 &middot; Slide 16</div>
+  <h2 class="slide-h2">Stupid Backoff &amp; <em>Sampling</em></h2>
+  <p class="slide-p">Two more practical techniques for handling unseen n-grams and generating text from language models.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Stupid Backoff</div>
+        <div class="cb-body">
+          If the n-gram count is zero, <strong>back off</strong> to the (n-1)-gram:<br/><br/>
+          <strong>1.</strong> Try P(w<sub>i</sub> | w<sub>i-2</sub>, w<sub>i-1</sub>) &mdash; trigram<br/>
+          <strong>2.</strong> If zero, try P(w<sub>i</sub> | w<sub>i-1</sub>) &mdash; bigram<br/>
+          <strong>3.</strong> If still zero, use P(w<sub>i</sub>) &mdash; unigram<br/><br/>
+          Simple and effective in practice. Not strictly a probability distribution unless adjusted, but works well for large-scale systems.
+        </div>
+      </div>
+
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box purple">Trigram</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box blue">Bigram</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-box green">Unigram</div>
+      </div>
+      <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:-6px;">back off if count = 0</div>
+    </div>
+    <div>
+      <div class="cb cyan">
+        <div class="cb-label">Sampling from Language Models</div>
+        <div class="cb-body">
+          Instead of always picking the most likely next token, <strong>choose randomly according to the probability distribution</strong>:<br/><br/>
+          <strong>High-probability tokens:</strong> more likely to be sampled<br/>
+          <strong>Low-probability tokens:</strong> less likely to be sampled<br/><br/>
+          This generates more <strong>diverse and creative</strong> output while still following learned patterns.
+        </div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">Why Sample?</div>
+        <div class="cb-body">
+          Always picking the top prediction (greedy decoding) produces <strong>repetitive and boring</strong> output. Sampling introduces variety &mdash; the model is more likely to generate high-probability sentences but can occasionally produce surprising and novel completions.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 17 · LLMs vs N-grams                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 2 &middot; Slide 17</div>
+  <h2 class="slide-h2">Large Language Models vs <em>N-grams</em></h2>
+  <p class="slide-p">LLMs use neural networks rather than explicit n-gram counts. They address two fundamental problems that limit n-gram models.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">Problem 1: Parameter Explosion</div>
+        <div class="cb-body">The number of parameters in an n-gram model grows <strong>exponentially</strong> as the n-gram order increases. A 5-gram model with vocabulary V requires up to V<sup>5</sup> parameters. This quickly becomes intractable.</div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">Problem 2: No Generalization</div>
+        <div class="cb-body">N-grams <strong>cannot generalize</strong> from training to test unless the exact same words are used. Seeing &ldquo;the cat sat&rdquo; teaches nothing about &ldquo;the dog sat&rdquo; because the model treats every word as an independent symbol.</div>
+      </div>
+    </div>
+    <div>
+      <div class="vs-grid" style="grid-template-columns:1fr auto 1fr;margin:0;">
+        <div class="vs-card">
+          <h4 style="color:var(--amber);">N-gram LMs</h4>
+          <ul>
+            <li>Count-based statistics</li>
+            <li>Fixed context window</li>
+            <li>No semantic understanding</li>
+            <li>Cannot generalize</li>
+            <li>Fast, interpretable</li>
+          </ul>
+        </div>
+        <div class="vs-divider">vs</div>
+        <div class="vs-card">
+          <h4 style="color:var(--green);">Neural LMs</h4>
+          <ul>
+            <li>Learned representations</li>
+            <li>Long-range context</li>
+            <li>Semantic embeddings</li>
+            <li>Generalizes to new data</li>
+            <li>GPU-intensive, less interpretable</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-row" style="margin-top:16px;">
+    <div class="flow-box green">N-grams</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box blue">FFNNs</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box purple">RNNs</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box amber">Transformers</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box" style="border-color:rgba(57,213,255,0.3);color:var(--cyan);">LLMs</div>
+  </div>
+  <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">This is where Module 4 picks up...</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 18 · Recap & Knowledge Check                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 2 &middot; Slide 18</div>
+  <h2 class="slide-h2">Recap &amp; <em>Knowledge Check</em></h2>
+
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-num">01</div>
+      <h4>PLMs &amp; Chain Rule</h4>
+      <p>PLMs assign probabilities to words and sequences using corpus statistics. The chain rule decomposes joint probability into conditionals.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">02</div>
+      <h4>N-gram Models</h4>
+      <p>Use the Markov property to estimate probabilities from a fixed window. Simple, interpretable, and effective for local patterns.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">03</div>
+      <h4>Evaluation</h4>
+      <p>Extrinsic: measure on downstream tasks (gold standard but slow). Intrinsic: perplexity (fast but approximate).</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">04</div>
+      <h4>Smoothing &amp; Backoff</h4>
+      <p>Zero-count n-grams are addressed with Laplace smoothing, add-k, interpolation, and stupid backoff.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">05</div>
+      <h4>Naturalness of Code</h4>
+      <p>Code is &ldquo;natural&rdquo; (Hindle et al.) &mdash; repetitive and predictable. PLMs work well for software engineering tasks.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">06</div>
+      <h4>LLMs &amp; Beyond</h4>
+      <p>LLMs overcome n-gram limitations (fixed window, no generalization) using deep learning and learned embeddings.</p>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-top:20px;margin-bottom:10px;">Recap Quiz</h3>
+
+  <div id="quiz-area">
+    <div style="margin-bottom:14px;">
+      <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;">Q1: What does the chain rule allow us to compute?</div>
+      <div class="quiz-option correct" onclick="revealQuiz(this)">
+        <span class="q-label">The joint probability of a sequence by decomposing it into a product of conditional probabilities.</span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">The average number of bits needed to encode a token, independent of the model.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">The optimal vocabulary size for an n-gram model trained on source code.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;">Q2: Why is code more predictable than English text?</div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">Because programming languages have fewer words than English.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option correct" onclick="revealQuiz(this)">
+        <span class="q-label">Because code follows strict syntax rules, coding conventions, and repetitive idioms that create predictable patterns.</span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">Because code is always written by a single person, reducing variability.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;">Q3: What happens to perplexity when a model assigns zero probability to a token?</div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">Perplexity drops to zero, indicating a perfect model.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option wrong" onclick="revealQuiz(this)">
+        <span class="q-label">Perplexity remains unchanged because zero-probability tokens are ignored.</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option correct" onclick="revealQuiz(this)">
+        <span class="q-label">Perplexity goes to infinity because we divide by zero in the computation.</span>
+        <span class="q-tag">Correct</span>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;margin-bottom:8px;">Q4: What are the two key limitations of n-gram models that LLMs overcome?</div>
+      <div class="kc-box" style="margin:0;">
+        <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Model Answer</button>
+        <div class="kc-answer"><strong>(1) Parameter explosion:</strong> the number of parameters grows exponentially with the n-gram order, making high-order n-grams intractable. <strong>(2) No generalization:</strong> n-gram models cannot transfer knowledge between similar but distinct n-grams (e.g., &ldquo;the cat sat&rdquo; teaches nothing about &ldquo;the dog sat&rdquo;). Neural LMs address both through learned embeddings that capture semantic similarity and shared representations.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;font-size:0.78rem;color:var(--text-muted);">
+    <strong>References:</strong> Hindle et al., &ldquo;On the Naturalness of Software&rdquo; (ICSE 2012) &bull; Jurafsky &amp; Martin, &ldquo;Speech and Language Processing&rdquo; &bull; &ldquo;Recommending Code Tokens via N-gram Models&rdquo;
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Nav Bar -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>&larr; Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next &rarr;</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 18;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+  // Initialize interactive elements when their slides are shown
+  if (cur === 6) initZipf();
+  if (cur === 9) bigramCalc(0);
+  if (cur === 14) initPerpCalc();
+}
+
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Sentence Probability Step-Through (Slide 3) ──────────────────
+let sentCur = 0;
+function sentStep() {
+  if (sentCur >= 5) return;
+  sentCur++;
+  document.getElementById('ps-' + sentCur).classList.add('active');
+  document.getElementById('sent-step-label').textContent = 'Step ' + sentCur + ' / 5';
+  if (sentCur >= 5) document.getElementById('sent-step-btn').disabled = true;
+}
+function sentReset() {
+  sentCur = 0;
+  for (let i = 1; i <= 5; i++) document.getElementById('ps-' + i).classList.remove('active');
+  document.getElementById('sent-step-label').textContent = 'Step 0 / 5';
+  document.getElementById('sent-step-btn').disabled = false;
+}
+
+// ── Bigram Count Matrix Click (Slide 8) ──────────────────────────
+function highlightCell(el, count, rowTotal) {
+  document.querySelectorAll('.count-matrix td.highlight').forEach(td => td.classList.remove('highlight'));
+  el.classList.add('highlight');
+  const row = el.parentElement;
+  const rowLabel = row.querySelector('.header-cell').textContent;
+  const colIdx = Array.from(row.children).indexOf(el);
+  const headerRow = el.closest('table').querySelector('tr');
+  const colLabel = headerRow.children[colIdx].textContent;
+  const prob = rowTotal > 0 ? (count / rowTotal).toFixed(4) : '0';
+  document.getElementById('matrix-result').innerHTML =
+    '<span style="color:var(--green);">P(' + escHtml(colLabel) + ' | ' + escHtml(rowLabel) + ')</span> = ' +
+    count + ' / ' + rowTotal + ' = <strong style="color:var(--text-primary);">' + prob + '</strong>';
+}
+
+// ── Bigram Calculator (Slide 9) ──────────────────────────────────
+const BIGRAM_EXAMPLES = [
+  { label: 'For loop', code: 'for ( int i = 0 ; i < n ; i ++ )' },
+  { label: 'If check', code: 'if ( x == null ) { return false ; }' },
+  { label: 'Method call', code: 'public static void main ( String args )' }
+];
+
+function bigramCalc(idx) {
+  const ex = BIGRAM_EXAMPLES[idx];
+  const tokens = ex.code.split(/\s+/);
+
+  // Show code
+  document.getElementById('bigram-code').innerHTML =
+    '<div class="code-block" style="font-size:0.75rem;">' + escHtml(ex.code) + '</div>';
+
+  // Show tokens
+  document.getElementById('bigram-tokens').innerHTML =
+    '<div class="token-seq">' + tokens.map(t => '<span class="tok">' + escHtml(t) + '</span>').join('') + '</div>' +
+    '<div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);">' + tokens.length + ' tokens</div>';
+
+  // Count bigrams
+  const counts = {};
+  const uniCounts = {};
+  tokens.forEach(t => { uniCounts[t] = (uniCounts[t] || 0) + 1; });
+  for (let i = 0; i < tokens.length - 1; i++) {
+    const key = tokens[i] + ' ' + tokens[i+1];
+    counts[key] = (counts[key] || 0) + 1;
+  }
+
+  // Build unique tokens for matrix (limit to first 8 for display)
+  const uniq = [];
+  const seen = new Set();
+  tokens.forEach(t => { if (!seen.has(t)) { uniq.push(t); seen.add(t); } });
+  const display = uniq.slice(0, 8);
+
+  // Build table
+  let html = '<table class="count-matrix"><tr><th></th>';
+  display.forEach(t => { html += '<th>' + escHtml(t) + '</th>'; });
+  html += '</tr>';
+  display.forEach(r => {
+    html += '<tr><td class="header-cell">' + escHtml(r) + '</td>';
+    display.forEach(c => {
+      const key = r + ' ' + c;
+      const cnt = counts[key] || 0;
+      html += '<td' + (cnt > 0 ? ' style="color:var(--green);font-weight:600;"' : '') + '>' + cnt + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  document.getElementById('bigram-table-area').innerHTML = html;
+
+  // Show top bigram probabilities
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  let probHtml = '<div style="font-size:0.82rem;font-weight:600;margin-bottom:8px;">Top Bigram Probabilities</div>';
+  sorted.forEach(([bigram, cnt]) => {
+    const parts = bigram.split(' ');
+    const denom = uniCounts[parts[0]];
+    const prob = (cnt / denom);
+    const pct = (prob * 100).toFixed(1);
+    probHtml += '<div class="pred-bar">' +
+      '<span class="pred-token">' + escHtml(bigram) + '</span>' +
+      '<div class="pred-fill-track"><div class="pred-fill-bar" style="width:' + pct + '%;background:var(--green);"></div></div>' +
+      '<span class="pred-prob">' + prob.toFixed(3) + '</span></div>';
+  });
+  document.getElementById('bigram-prob-area').innerHTML = probHtml;
+
+  // Update buttons
+  document.querySelectorAll('#slide-9 .inter-header .sim-btn').forEach((btn, i) => {
+    btn.className = i === idx ? 'sim-btn primary' : 'sim-btn';
+  });
+}
+
+// ── Zipf's Law Chart (Slide 6) ───────────────────────────────────
+let zipfInit = false;
+function initZipf() {
+  if (zipfInit) return;
+  zipfInit = true;
+  const chart = document.getElementById('zipf-chart');
+  const words = [';', '(', ')', '{', '}', '=', 'i', 'int', 'return', 'if', 'this', 'new', 'public', 'String', 'for', 'class', 'null', 'void', 'else', 'final'];
+  const freqs = [120, 110, 110, 80, 80, 70, 55, 45, 40, 34, 38, 35, 32, 28, 20, 18, 26, 30, 16, 14];
+  const maxF = Math.max(...freqs);
+  let html = '';
+  freqs.forEach((f, i) => {
+    const h = (f / maxF * 100).toFixed(0);
+    const hue = i < 5 ? 'var(--green)' : i < 10 ? 'var(--blue)' : i < 15 ? 'var(--purple)' : 'var(--text-muted)';
+    html += '<div class="zipf-col"><div class="zipf-fill" style="height:' + h + '%;background:' + hue + ';"></div><div class="zipf-lbl">' + escHtml(words[i]) + '</div></div>';
+  });
+  chart.innerHTML = html;
+}
+
+// ── Perplexity Calculator (Slide 14) ─────────────────────────────
+const PERP_TOKENS = [
+  { tok: 'for', label: 'P(for)' },
+  { tok: '(', label: 'P( ( | for )' },
+  { tok: 'int', label: 'P( int | ( )' },
+  { tok: 'i', label: 'P( i | int )' },
+  { tok: '=', label: 'P( = | i )' },
+  { tok: '0', label: 'P( 0 | = )' }
+];
+const PERP_DEFAULTS = [0.08, 0.92, 0.75, 0.85, 0.90, 0.95];
+let perpInited = false;
+
+function initPerpCalc() {
+  if (perpInited) return;
+  perpInited = true;
+  const container = document.getElementById('perp-sliders');
+  let html = '';
+  PERP_TOKENS.forEach((t, i) => {
+    html += '<div class="slider-row">' +
+      '<label>' + escHtml(t.label) + '</label>' +
+      '<input type="range" min="0" max="100" value="' + (PERP_DEFAULTS[i] * 100) + '" oninput="updatePerp()" id="perp-sl-' + i + '" />' +
+      '<span class="sl-val" id="perp-val-' + i + '">' + PERP_DEFAULTS[i].toFixed(2) + '</span>' +
+      '</div>';
+  });
+  container.innerHTML = html;
+  updatePerp();
+}
+
+function updatePerp() {
+  const N = PERP_TOKENS.length;
+  let sumLogP = 0;
+  let hasZero = false;
+  for (let i = 0; i < N; i++) {
+    const sl = document.getElementById('perp-sl-' + i);
+    const p = sl.value / 100;
+    document.getElementById('perp-val-' + i).textContent = p.toFixed(2);
+    if (p === 0) hasZero = true;
+    else sumLogP += Math.log2(p);
+  }
+
+  const stats = document.getElementById('perp-stats');
+  if (hasZero) {
+    stats.innerHTML = '<div class="stat-row">' +
+      '<div class="stat-card"><div class="stat-val" style="color:var(--red);">&infin;</div><div class="stat-label">Perplexity</div></div>' +
+      '<div class="stat-card"><div class="stat-val" style="color:var(--red);">&infin;</div><div class="stat-label">Cross-Entropy H</div></div>' +
+      '</div>' +
+      '<div class="cb red" style="margin-top:8px;"><div class="cb-label">Division by Zero!</div><div class="cb-body">One or more probabilities are <strong>0</strong>. Since perplexity involves computing 1/P(w), a zero probability makes perplexity <strong>infinity</strong>. This is exactly why smoothing is necessary.</div></div>';
+    return;
+  }
+
+  const H = -sumLogP / N;
+  const PP = Math.pow(2, H);
+
+  stats.innerHTML = '<div class="stat-row">' +
+    '<div class="stat-card"><div class="stat-val blue">' + N + '</div><div class="stat-label">Tokens</div></div>' +
+    '<div class="stat-card"><div class="stat-val amber">' + (-sumLogP).toFixed(2) + '</div><div class="stat-label">&minus;&Sigma; log<sub>2</sub> P</div></div>' +
+    '<div class="stat-card"><div class="stat-val purple">' + H.toFixed(3) + '</div><div class="stat-label">Cross-Entropy H</div></div>' +
+    '<div class="stat-card"><div class="stat-val">' + PP.toFixed(1) + '</div><div class="stat-label">Perplexity 2<sup>H</sup></div></div>' +
+    '</div>' +
+    '<div class="cb" style="margin-top:8px;"><div class="cb-label">Interpretation</div><div class="cb-body">With perplexity <strong>' + PP.toFixed(1) + '</strong>, the model is on average as uncertain as if choosing uniformly among <strong>~' + Math.round(PP) + '</strong> equally likely options at each step.</div></div>';
+}
+
+// ── Quiz (Slide 18) ──────────────────────────────────────────────
+function revealQuiz(el) {
+  el.classList.add('revealed');
+  // Reveal all siblings too
+  const parent = el.parentElement;
+  parent.querySelectorAll('.quiz-option').forEach(opt => opt.classList.add('revealed'));
+}
+</script>
+</body>
+</html>

@@ -219,7 +219,6 @@
         <li><a href="teaching.html" class="nav-link active">Teaching</a></li>
         <li><a href="index.html#about" class="nav-link">About</a></li>
       </ul>
-      <a href="projects.html" class="btn btn-primary">Projects →</a>
     </div>
   </nav>
 
@@ -245,16 +244,16 @@
         <aside class="teaching-sidebar">
           <div class="sidebar-heading">Modules</div>
           <a href="#interactive" class="sidebar-nav-item active">
-            <span class="sidebar-nav-icon">⛏️</span> MSR
+            <span class="sidebar-nav-icon">⛏️</span> 1. MSR
           </a>
-          <a href="#module-lstm" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🧠</span> LSTMs &amp; Embeddings
-          </a>
-          <a href="#module-transformers" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">⚡</span> Transformers
+          <a href="#module-plcm" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">🎲</span> 2. Probabilistic Models
           </a>
           <a href="#module-eval" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">📊</span> Evaluation Metrics
+            <span class="sidebar-nav-icon">📊</span> 3. Evaluation
+          </a>
+          <a href="#module-dl4se" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">🧠</span> 4. DL4SE Foundations
           </a>
           <a href="#module-ga" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">🧬</span> GA (Extra)
@@ -300,14 +299,14 @@
 
             <div class="module-list">
 
-              <!-- MSR Module -->
+              <!-- Module 1: MSR -->
               <div class="module-card" id="module-msr">
                 <div class="mc-header">
                   <div class="mc-icon green">⛏️</div>
                   <div class="mc-meta">
-                    <span class="mc-tag green">interactive · 14 slides</span>
+                    <span class="mc-tag green">module 1 · interactive</span>
                     <h3>Mining Software Repositories</h3>
-                    <p>How to collect, clean, and prepare source-code data from public repositories — the critical first step before any deep learning model can learn. Includes a live preprocessing pipeline and code tokenizer.</p>
+                    <p>How to collect, clean, and prepare source-code data from public repositories — the critical first step before any model can learn. Includes a live preprocessing pipeline and code tokenizer.</p>
                   </div>
                 </div>
                 <div class="mc-stats">
@@ -329,93 +328,97 @@
                 </div>
               </div>
 
-              <!-- LSTM Module -->
-              <div class="module-card" id="module-lstm">
+              <!-- Module 2: Probabilistic Language Modeling for Code -->
+              <div class="module-card" id="module-plcm">
                 <div class="mc-header">
-                  <div class="mc-icon blue">🧠</div>
+                  <div class="mc-icon blue">🎲</div>
                   <div class="mc-meta">
-                    <span class="mc-tag blue">interactive · 14 slides</span>
-                    <h3>LSTMs, Embeddings &amp; Deep Learning for SE</h3>
-                    <p>From word embeddings to the open-vocabulary problem, BPE subword tokenisation, LSTM gates, BPTT, and attention — culminating in a full PyTorch seq2seq bug-fixing model.</p>
+                    <span class="mc-tag blue">module 2 · interactive</span>
+                    <h3>Probabilistic Language Modeling for Code</h3>
+                    <p>Conditional probabilities, the chain rule, n-gram language models, the Markov assumption, Zipf's law, the naturalness hypothesis (Hindle et al.), perplexity, smoothing &amp; interpolation, stupid backoff, sampling, and the path from n-grams to LLMs.</p>
                   </div>
                 </div>
                 <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">3</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~30m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">18</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">4</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~40m</span><span class="mc-stat-key">Duration</span></div>
                   <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
                 </div>
                 <div class="mc-footer">
                   <div class="mc-skills">
-                    <span class="mc-skill">embeddings</span>
-                    <span class="mc-skill">BPE</span>
-                    <span class="mc-skill">LSTM gates</span>
-                    <span class="mc-skill">BPTT</span>
-                    <span class="mc-skill">attention</span>
-                    <span class="mc-skill">seq2seq</span>
-                    <span class="mc-skill">PyTorch</span>
+                    <span class="mc-skill">chain rule</span>
+                    <span class="mc-skill">n-grams</span>
+                    <span class="mc-skill">Markov assumption</span>
+                    <span class="mc-skill">naturalness</span>
+                    <span class="mc-skill">perplexity</span>
+                    <span class="mc-skill">smoothing</span>
+                    <span class="mc-skill">sampling</span>
+                    <span class="mc-skill">LLMs vs n-grams</span>
                   </div>
-                  <a href="lstm-deep-learning.html" class="mc-cta-link">Open module →</a>
+                  <a href="probabilistic-code-models.html" class="mc-cta-link">Open module →</a>
                 </div>
               </div>
 
-              <!-- Transformers Module -->
-              <div class="module-card" id="module-transformers">
+              <!-- Module 3: Evaluation -->
+              <div class="module-card" id="module-eval">
                 <div class="mc-header">
-                  <div class="mc-icon purple">⚡</div>
+                  <div class="mc-icon purple">📊</div>
                   <div class="mc-meta">
-                    <span class="mc-tag purple">interactive · 14 slides</span>
-                    <h3>Transformers, Self-Attention &amp; Modern Code Models</h3>
-                    <p>Self-attention from scratch, multi-head attention, the Transformer architecture, pre-training vs fine-tuning, CodeBERT and StarCoder — plus an interactive bug-triaging pipeline with embeddings.</p>
+                    <span class="mc-tag purple">module 3 · interactive</span>
+                    <h3>Evaluating AI-enabled Software Development Techniques</h3>
+                    <p>Classification metrics (precision, recall, F1), BLEU score deep-dive, CodeBLEU, CrystalBLEU, embedding-based metrics, contrastive learning, and the SIDE framework for code-summary semantic alignment.</p>
                   </div>
                 </div>
                 <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">3</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">17</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">5</span><span class="mc-stat-key">Live Demos</span></div>
                   <div class="mc-stat"><span class="mc-stat-val">~35m</span><span class="mc-stat-key">Duration</span></div>
                   <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
                 </div>
                 <div class="mc-footer">
                   <div class="mc-skills">
-                    <span class="mc-skill">self-attention</span>
-                    <span class="mc-skill">multi-head</span>
-                    <span class="mc-skill">pre-training</span>
-                    <span class="mc-skill">fine-tuning</span>
-                    <span class="mc-skill">CodeBERT</span>
-                    <span class="mc-skill">bug triaging</span>
-                    <span class="mc-skill">HuggingFace</span>
+                    <span class="mc-skill">precision</span>
+                    <span class="mc-skill">recall</span>
+                    <span class="mc-skill">F1</span>
+                    <span class="mc-skill">BLEU</span>
+                    <span class="mc-skill">CodeBLEU</span>
+                    <span class="mc-skill">CrystalBLEU</span>
+                    <span class="mc-skill">contrastive learning</span>
+                    <span class="mc-skill">SIDE</span>
                   </div>
-                  <a href="transformers-code-models.html" class="mc-cta-link">Open module →</a>
+                  <a href="evaluation-metrics.html" class="mc-cta-link">Open module →</a>
                 </div>
               </div>
 
-              <!-- Evaluation Metrics Module -->
-              <div class="module-card" id="module-eval">
+              <!-- Module 4: DL for SE Foundations -->
+              <div class="module-card" id="module-dl4se">
                 <div class="mc-header">
-                  <div class="mc-icon amber">📊</div>
+                  <div class="mc-icon green">🧠</div>
                   <div class="mc-meta">
-                    <span class="mc-tag amber">interactive · 14 slides</span>
-                    <h3>Evaluating AI-enabled SD Techniques</h3>
-                    <p>Beyond exact matches — BLEU, CodeBLEU, CrystalBLEU, embedding-based metrics, contrastive learning, and the SIDE framework for code-summary semantic alignment.</p>
+                    <span class="mc-tag green">module 4 · interactive</span>
+                    <h3>Deep Learning for Software Development Foundations</h3>
+                    <p>Non-generative tasks (code clone detection, vulnerability prediction, code smell detection) and generative tasks (embeddings, LSTMs, seq2seq, attention, transformers, self-attention, pre-training, fine-tuning, and modern code models).</p>
                   </div>
                 </div>
                 <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">4</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~30m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">26</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">6</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~55m</span><span class="mc-stat-key">Duration</span></div>
                   <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
                 </div>
                 <div class="mc-footer">
                   <div class="mc-skills">
-                    <span class="mc-skill">BLEU</span>
-                    <span class="mc-skill">CodeBLEU</span>
-                    <span class="mc-skill">CrystalBLEU</span>
+                    <span class="mc-skill">clone detection</span>
+                    <span class="mc-skill">vulnerability</span>
+                    <span class="mc-skill">code smells</span>
                     <span class="mc-skill">embeddings</span>
-                    <span class="mc-skill">contrastive learning</span>
-                    <span class="mc-skill">triplet loss</span>
-                    <span class="mc-skill">SIDE</span>
+                    <span class="mc-skill">LSTM</span>
+                    <span class="mc-skill">seq2seq</span>
+                    <span class="mc-skill">transformers</span>
+                    <span class="mc-skill">CodeBERT</span>
+                    <span class="mc-skill">pre-training</span>
                   </div>
-                  <a href="evaluation-metrics.html" class="mc-cta-link">Open module →</a>
+                  <a href="dl4se-foundations.html" class="mc-cta-link">Open module →</a>
                 </div>
               </div>
 
@@ -424,7 +427,7 @@
                 <div class="mc-header">
                   <div class="mc-icon green">🧬</div>
                   <div class="mc-meta">
-                    <span class="mc-tag green">extra · interactive · 14 slides</span>
+                    <span class="mc-tag green">extra · interactive</span>
                     <h3>Genetic Evolution for Evolving Code Descriptions</h3>
                     <p>Understand selection, crossover, and mutation by watching code descriptions evolve toward higher code coverage. Includes a live simulation you can step through generation by generation.</p>
                   </div>
@@ -508,10 +511,10 @@
       <div class="footer-links">
         <a href="projects.html" class="footer-link">Projects</a>
         <a href="teaching.html" class="footer-link">Teaching</a>
-        <a href="msr.html" class="footer-link">MSR Module</a>
-        <a href="lstm-deep-learning.html" class="footer-link">LSTM Module</a>
-        <a href="transformers-code-models.html" class="footer-link">Transformers Module</a>
-        <a href="evaluation-metrics.html" class="footer-link">Evaluation Module</a>
+        <a href="msr.html" class="footer-link">1. MSR</a>
+        <a href="probabilistic-code-models.html" class="footer-link">2. Probabilistic Models</a>
+        <a href="evaluation-metrics.html" class="footer-link">3. Evaluation</a>
+        <a href="dl4se-foundations.html" class="footer-link">4. DL4SE Foundations</a>
         <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
         <a href="https://github.com/antonio-mastropaolo/codelab" class="footer-link" target="_blank">GitHub</a>
       </div>
