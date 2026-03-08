@@ -144,50 +144,49 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Modules preview */
-    .modules-preview-grid {
+    /* Modules compact grid */
+    .mod-compact-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
-    .mod-card {
+    .mod-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
-      text-decoration: none; display: flex; flex-direction: column;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-    .mod-card:hover {
-      transform: translateY(-3px);
+    .mod-row:hover {
+      transform: translateY(-2px);
       box-shadow: var(--shadow);
       border-color: var(--wm-green);
     }
-    .mod-card-bar { height: 5px; background: var(--wm-green); }
-    .mod-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
-    .mod-card-num {
+    .mod-row-num {
       font-family: 'Playfair Display', serif;
-      font-size: 2.2rem; font-weight: 700; color: var(--border-md);
-      line-height: 1; margin-bottom: 12px;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--border-md); min-width: 38px; text-align: center;
+      line-height: 1; transition: color 0.2s;
     }
-    .mod-card:hover .mod-card-num { color: var(--wm-green); transition: color 0.25s; }
-    .mod-card h4 {
+    .mod-row:hover .mod-row-num { color: var(--wm-green); }
+    .mod-row-info { flex: 1; min-width: 0; }
+    .mod-row-info h4 {
       font-family: 'Playfair Display', serif; font-weight: 700;
-      font-size: 1.05rem; margin-bottom: 8px; color: var(--text);
+      font-size: 0.92rem; color: var(--text); margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .mod-card p { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; flex: 1; }
-    .mod-card-footer {
-      padding: 12px 24px 16px;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.75rem; color: var(--text-3);
+    .mod-row-stats {
+      font-size: 0.72rem; color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
     }
-    .mod-card-cta {
-      font-size: 0.78rem; font-weight: 600; color: var(--wm-green);
-      display: flex; align-items: center; gap: 4px;
+    .mod-row-arrow {
+      font-size: 0.9rem; color: var(--wm-green); font-weight: 600;
+      flex-shrink: 0; opacity: 0; transition: opacity 0.2s, transform 0.2s;
     }
-    .mod-card:hover .arrow { transform: translateX(4px); transition: transform 0.2s; }
+    .mod-row:hover .mod-row-arrow { opacity: 1; transform: translateX(2px); }
+    .mod-row.gold { border-left: 3px solid var(--wm-gold); }
 
     /* Projects preview */
     .projects-preview-grid {
@@ -276,7 +275,7 @@
       .container { padding: 0 16px; }
       .home-hero { padding: calc(var(--nav-h) + 32px) 0 40px; }
       .home-section { padding: 40px 0; }
-      .modules-preview-grid,
+      .mod-compact-grid,
       .projects-preview-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -338,11 +337,11 @@
         <span class="stat-label">Student Projects</span>
       </div>
       <div class="stat-item">
-        <span class="stat-num">100+</span>
+        <span class="stat-num">200+</span>
         <span class="stat-label">Interactive Slides</span>
       </div>
       <div class="stat-item">
-        <span class="stat-num">30+</span>
+        <span class="stat-num">40+</span>
         <span class="stat-label">Hands-on Demos</span>
       </div>
     </div>
@@ -448,102 +447,70 @@
         Seven self-paced, browser-based modules covering the full pipeline — from mining repositories to detecting hallucinations. Each module includes interactive demos and hands-on exercises. No install required.
       </p>
     </div>
-    <div class="modules-preview-grid">
-      <a href="course-intro.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">00</div>
+    <div class="mod-compact-grid">
+      <a href="course-intro.html" class="mod-row">
+        <span class="mod-row-num">00</span>
+        <div class="mod-row-info">
           <h4>Course Introduction</h4>
-          <p>Welcome to CSCI 455/555. Course overview, learning objectives, structure, and tools of the trade.</p>
+          <span class="mod-row-stats">30 slides · 4 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>12 slides · 2 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="msr.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">01</div>
+      <a href="msr.html" class="mod-row">
+        <span class="mod-row-num">01</span>
+        <div class="mod-row-info">
           <h4>Mining Software Repositories</h4>
-          <p>Collecting, cleaning, and preparing source-code data from public repositories — the first step before any model can learn.</p>
+          <span class="mod-row-stats">32 slides · 5 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>20 slides · 4 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="probabilistic-code-models.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">02</div>
+      <a href="probabilistic-code-models.html" class="mod-row">
+        <span class="mod-row-num">02</span>
+        <div class="mod-row-info">
           <h4>Probabilistic Language Models</h4>
-          <p>Conditional probabilities, n-gram models, the naturalness hypothesis, perplexity, and the path from n-grams to LLMs.</p>
+          <span class="mod-row-stats">28 slides · 4 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>18 slides · 4 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="evaluation-metrics.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">03</div>
+      <a href="evaluation-metrics.html" class="mod-row">
+        <span class="mod-row-num">03</span>
+        <div class="mod-row-info">
           <h4>Evaluation Metrics</h4>
-          <p>Precision, recall, F1, BLEU, CodeBLEU, embedding-based metrics, and the SIDE framework for semantic alignment.</p>
+          <span class="mod-row-stats">30 slides · 5 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>17 slides · 5 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="dl4se-foundations.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">04</div>
+      <a href="dl4se-foundations.html" class="mod-row">
+        <span class="mod-row-num">04</span>
+        <div class="mod-row-info">
           <h4>DL for Software Engineering</h4>
-          <p>From clone detection and vulnerability prediction to embeddings, seq2seq, transformers, and pre-trained code models.</p>
+          <span class="mod-row-stats">34 slides · 6 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>26 slides · 6 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="prompting-llms.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">05</div>
+      <a href="prompting-llms.html" class="mod-row">
+        <span class="mod-row-num">05</span>
+        <div class="mod-row-info">
           <h4>Prompting LLMs</h4>
-          <p>In-Context Learning, few-shot prompting, prompting vs fine-tuning tradeoffs, and why example selection matters.</p>
+          <span class="mod-row-stats">30 slides · 7 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>20 slides · 7 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="hallucinations.html" class="mod-card">
-        <div class="mod-card-bar"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">06</div>
+      <a href="hallucinations.html" class="mod-row">
+        <span class="mod-row-num">06</span>
+        <div class="mod-row-info">
           <h4>Hallucinations in Coding Tasks</h4>
-          <p>When LLMs generate plausible but incorrect code. The CodeHalu taxonomy, detection strategies, and mitigation.</p>
+          <span class="mod-row-stats">30 slides · 5 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>20 slides · 5 demos</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
-      <a href="genetic-algorithms.html" class="mod-card">
-        <div class="mod-card-bar" style="background: var(--wm-gold);"></div>
-        <div class="mod-card-body">
-          <div class="mod-card-num">GA</div>
+      <a href="genetic-algorithms.html" class="mod-row gold">
+        <span class="mod-row-num">GA</span>
+        <div class="mod-row-info">
           <h4>Genetic Algorithms &amp; LLMs</h4>
-          <p>GA fundamentals from scratch — populations, selection, crossover, mutation — then connecting to LLM-driven test generation.</p>
+          <span class="mod-row-stats">20 slides · 4 demos</span>
         </div>
-        <div class="mod-card-footer">
-          <span>14 slides · 1 simulation</span>
-          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
-        </div>
+        <span class="mod-row-arrow">→</span>
       </a>
     </div>
     <div style="text-align:center;margin-top:36px;">
