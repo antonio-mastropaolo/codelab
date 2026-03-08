@@ -245,13 +245,16 @@
         <aside class="teaching-sidebar">
           <div class="sidebar-heading">Modules</div>
           <a href="#interactive" class="sidebar-nav-item active">
-            <span class="sidebar-nav-icon">🧬</span> Genetic Algorithms
+            <span class="sidebar-nav-icon">⛏️</span> MSR
           </a>
           <a href="#module-lstm" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">🧠</span> LSTMs &amp; Embeddings
           </a>
           <a href="#module-transformers" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">⚡</span> Transformers
+          </a>
+          <a href="#module-ga" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">🧬</span> GA (Extra)
           </a>
           <a href="#coming-soon" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">🔜</span> Coming Soon
@@ -294,46 +297,32 @@
 
             <div class="module-list">
 
-              <!-- GA Module -->
-              <div class="module-card">
+              <!-- MSR Module -->
+              <div class="module-card" id="module-msr">
                 <div class="mc-header">
-                  <div class="mc-icon green">🧬</div>
+                  <div class="mc-icon green">⛏️</div>
                   <div class="mc-meta">
                     <span class="mc-tag green">interactive · 14 slides</span>
-                    <h3>Genetic Evolution for Evolving Code Descriptions</h3>
-                    <p>Understand selection, crossover, and mutation by watching code descriptions evolve toward higher code coverage. Includes a live simulation you can step through generation by generation.</p>
+                    <h3>Mining Software Repositories</h3>
+                    <p>How to collect, clean, and prepare source-code data from public repositories — the critical first step before any deep learning model can learn. Includes a live preprocessing pipeline and code tokenizer.</p>
                   </div>
                 </div>
                 <div class="mc-stats">
-                  <div class="mc-stat">
-                    <span class="mc-stat-val">14</span>
-                    <span class="mc-stat-key">Slides</span>
-                  </div>
-                  <div class="mc-stat">
-                    <span class="mc-stat-val">1</span>
-                    <span class="mc-stat-key">Live Sim</span>
-                  </div>
-                  <div class="mc-stat">
-                    <span class="mc-stat-val">~25m</span>
-                    <span class="mc-stat-key">Duration</span>
-                  </div>
-                  <div class="mc-stat">
-                    <span class="mc-stat-val">0</span>
-                    <span class="mc-stat-key">Install</span>
-                  </div>
+                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">3</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~25m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
                 </div>
                 <div class="mc-footer">
                   <div class="mc-skills">
-                    <span class="mc-skill">population</span>
-                    <span class="mc-skill">selection</span>
-                    <span class="mc-skill">crossover</span>
-                    <span class="mc-skill">mutation</span>
-                    <span class="mc-skill">fitness</span>
-                    <span class="mc-skill">code coverage</span>
-                    <span class="mc-skill">code descriptions</span>
-                    <span class="mc-skill">specification evolution</span>
+                    <span class="mc-skill">repositories</span>
+                    <span class="mc-skill">version control</span>
+                    <span class="mc-skill">data quality</span>
+                    <span class="mc-skill">preprocessing</span>
+                    <span class="mc-skill">tokenization</span>
+                    <span class="mc-skill">GitHub API</span>
                   </div>
-                  <a href="genetic-algorithms.html" class="mc-cta-link">Open module →</a>
+                  <a href="msr.html" class="mc-cta-link">Open module →</a>
                 </div>
               </div>
 
@@ -397,6 +386,37 @@
                 </div>
               </div>
 
+              <!-- GA Module [Extra] -->
+              <div class="module-card" id="module-ga">
+                <div class="mc-header">
+                  <div class="mc-icon green">🧬</div>
+                  <div class="mc-meta">
+                    <span class="mc-tag green">extra · interactive · 14 slides</span>
+                    <h3>Genetic Evolution for Evolving Code Descriptions</h3>
+                    <p>Understand selection, crossover, and mutation by watching code descriptions evolve toward higher code coverage. Includes a live simulation you can step through generation by generation.</p>
+                  </div>
+                </div>
+                <div class="mc-stats">
+                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">1</span><span class="mc-stat-key">Live Sim</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~25m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
+                </div>
+                <div class="mc-footer">
+                  <div class="mc-skills">
+                    <span class="mc-skill">population</span>
+                    <span class="mc-skill">selection</span>
+                    <span class="mc-skill">crossover</span>
+                    <span class="mc-skill">mutation</span>
+                    <span class="mc-skill">fitness</span>
+                    <span class="mc-skill">code coverage</span>
+                    <span class="mc-skill">code descriptions</span>
+                    <span class="mc-skill">specification evolution</span>
+                  </div>
+                  <a href="genetic-algorithms.html" class="mc-cta-link">Open module →</a>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -455,9 +475,10 @@
       <div class="footer-links">
         <a href="projects.html" class="footer-link">Projects</a>
         <a href="teaching.html" class="footer-link">Teaching</a>
-        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
+        <a href="msr.html" class="footer-link">MSR Module</a>
         <a href="lstm-deep-learning.html" class="footer-link">LSTM Module</a>
         <a href="transformers-code-models.html" class="footer-link">Transformers Module</a>
+        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
         <a href="https://github.com/antonio-mastropaolo/codelab" class="footer-link" target="_blank">GitHub</a>
       </div>
     </div>

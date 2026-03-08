@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mining Software Repositories — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0D1117; --bg-2: #161B22; --bg-3: #21262D;
+      --border: #30363D;
+      --green: #00D97E; --green-dim: rgba(0,217,126,0.08); --green-border: rgba(0,217,126,0.2);
+      --blue: #58A6FF; --purple: #BC8CFF; --amber: #E3B341; --red: #FF5F57;
+      --text-primary: #E6EDF3; --text-secondary: #8B949E; --text-muted: #484F58;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ──────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+      flex-shrink: 0;
+      gap: 16px;
+      z-index: 100;
+    }
+    .topbar-logo { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .logo-mark { color: var(--green); }
+    .topbar-sep { color: var(--text-muted); opacity: 0.4; }
+    .topbar-title { font-size: 0.85rem; color: var(--text-secondary); flex: 1; }
+    .topbar-badge { font-size: 0.72rem; font-family: var(--font-mono); background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; }
+    .slide-counter { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+    .topbar-home { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .topbar-home:hover { color: var(--green); }
+
+    /* ── Progress bar ────────────────────────────────────── */
+    .progress-track { height: 3px; background: var(--border); flex-shrink: 0; }
+    .progress-fill { height: 100%; background: var(--green); transition: width 0.3s ease; }
+
+    /* ── Slide Container ─────────────────────────────────── */
+    .slides-wrapper { flex: 1; overflow: hidden; position: relative; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 40px 60px;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; }
+    @media (max-width: 800px) { .slide { padding: 24px 20px; } }
+
+    /* ── Navigation ──────────────────────────────────────── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-2);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) { border-color: var(--green-border); color: var(--green); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn.primary { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 600; }
+    .nav-btn.primary:hover { background: #00F58C; border-color: #00F58C; color: var(--bg); }
+    .slide-dots { display: flex; gap: 5px; }
+    .slide-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); cursor: pointer; transition: background 0.2s; }
+    .slide-dot.active { background: var(--green); }
+
+    /* ── Slide content components ────────────────────────── */
+    .slide-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .slide-label::before { content: '//'; color: var(--green); }
+    .slide-h1 { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 20px; font-family: var(--font-display); }
+    .slide-h1 em { font-style: normal; background: linear-gradient(135deg, var(--green), #00B8D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .slide-h2 { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 700; margin-bottom: 16px; font-family: var(--font-display); letter-spacing: -0.02em; }
+    .slide-p { color: var(--text-secondary); line-height: 1.7; font-size: 0.97rem; margin-bottom: 16px; max-width: 680px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-top: 8px; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; gap: 20px; } }
+
+    /* Key concept box */
+    .concept-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .concept-box.blue  { border-left-color: var(--blue); }
+    .concept-box.amber { border-left-color: var(--amber); }
+    .concept-box.purple { border-left-color: var(--purple); }
+    .concept-box-label { font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 6px; }
+    .concept-box.blue  .concept-box-label { color: var(--blue); }
+    .concept-box.amber .concept-box-label { color: var(--amber); }
+    .concept-box.purple .concept-box-label { color: var(--purple); }
+    .concept-box-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+    .concept-box-body strong { color: var(--text-primary); }
+
+    /* Term definitions */
+    .term-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 600px) { .term-grid { grid-template-columns: 1fr; } }
+    .term-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .term-emoji { font-size: 1.4rem; margin-bottom: 7px; }
+    .term-name { font-size: 0.78rem; font-family: var(--font-mono); color: var(--green); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .term-def  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+    .term-analogy { font-size: 0.78rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
+
+    /* Stat cards */
+    .stat-row { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+    .stat-card { flex: 1; min-width: 120px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-val { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--green); }
+    .stat-val.blue { color: var(--blue); }
+    .stat-val.amber { color: var(--amber); }
+    .stat-val.purple { color: var(--purple); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Repo type explorer (interactive) */
+    .repo-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .repo-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .repo-tab:hover { border-color: var(--green-border); color: var(--green); }
+    .repo-tab.active { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 600; }
+    .repo-panel { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; min-height: 180px; }
+    .repo-artifact { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 4px 0; background: var(--bg-3); border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem; }
+    .repo-artifact-icon { font-size: 1.1rem; }
+    .repo-artifact-label { color: var(--text-secondary); font-size: 0.82rem; }
+    .repo-artifact-type { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-left: auto; }
+
+    /* Versus card */
+    .vs-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: start; margin: 16px 0; }
+    @media (max-width: 700px) { .vs-grid { grid-template-columns: 1fr; } }
+    .vs-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .vs-card h4 { font-family: var(--font-display); font-size: 1rem; margin-bottom: 12px; }
+    .vs-card ul { list-style: none; padding: 0; }
+    .vs-card li { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; padding: 3px 0; }
+    .vs-card li::before { content: '→ '; color: var(--green); font-family: var(--font-mono); }
+    .vs-card.rule li::before { color: var(--amber); }
+    .vs-divider { display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--text-muted); }
+    @media (max-width: 700px) { .vs-divider { display: none; } }
+
+    /* Preprocessing pipeline (interactive) */
+    .pipeline-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .pipeline-toggle {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .pipeline-toggle.on { border-color: var(--green-border); background: var(--green-dim); color: var(--green); }
+    .pipeline-toggle .check { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+    .pipeline-toggle.on .check { background: var(--green); border-color: var(--green); color: var(--bg); }
+    .code-panel {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      overflow-x: auto;
+      min-height: 200px;
+      transition: all 0.3s;
+    }
+    .code-panel .kw { color: var(--purple); }
+    .code-panel .type { color: var(--blue); }
+    .code-panel .str { color: var(--green); }
+    .code-panel .cmt { color: var(--text-muted); font-style: italic; }
+    .code-panel .rem { color: var(--red); text-decoration: line-through; opacity: 0.5; }
+    .pipeline-stats {
+      display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .pipeline-stat { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+    .pipeline-stat strong { color: var(--green); }
+
+    /* Tokenizer playground (interactive) */
+    .tok-input {
+      width: 100%;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+    .tok-input:focus { outline: none; border-color: var(--green-border); }
+    .tok-btn {
+      margin-top: 10px;
+      padding: 8px 24px;
+      border-radius: 8px;
+      border: none;
+      background: var(--green);
+      color: var(--bg);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .tok-btn:hover { background: #00F58C; }
+    .tok-result {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 40px;
+    }
+    .tok-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    .tok-chip.keyword { background: rgba(188,140,255,0.1); border-color: rgba(188,140,255,0.3); color: var(--purple); }
+    .tok-chip.type { background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.3); color: var(--blue); }
+    .tok-chip.identifier { background: var(--bg-3); color: var(--text-primary); }
+    .tok-chip.literal { background: rgba(0,217,126,0.08); border-color: var(--green-border); color: var(--green); }
+    .tok-chip.operator { background: rgba(227,179,65,0.1); border-color: rgba(227,179,65,0.3); color: var(--amber); }
+    .tok-chip.separator { background: var(--bg-2); color: var(--text-muted); }
+    .tok-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+    .tok-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--text-muted); }
+    .tok-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+    /* Tools list */
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 600px) { .tool-grid { grid-template-columns: 1fr; } }
+    .tool-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
+    }
+    .tool-card:hover { border-color: var(--green-border); }
+    .tool-name { font-family: var(--font-mono); font-size: 0.82rem; color: var(--green); font-weight: 600; margin-bottom: 4px; }
+    .tool-lang { font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted); margin-bottom: 6px; }
+    .tool-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Step list */
+    .step-list { list-style: none; padding: 0; counter-reset: step; }
+    .step-list li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before {
+      content: counter(step);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--green-dim);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .step-list li strong { color: var(--text-primary); }
+
+    /* Takeaway cards */
+    .takeaway-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+    @media (max-width: 700px) { .takeaway-grid { grid-template-columns: 1fr; } }
+    .takeaway-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .takeaway-num { font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .takeaway-card h4 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 6px; }
+    .takeaway-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Bench table */
+    .bench-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.82rem; }
+    .bench-table th { text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+    .bench-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .bench-table tr:hover td { background: var(--bg-2); }
+
+    /* Code block */
+    .code-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    .code-block .kw  { color: var(--purple); }
+    .code-block .fn  { color: var(--blue); }
+    .code-block .str { color: var(--green); }
+    .code-block .cmt { color: var(--text-muted); font-style: italic; }
+    .code-block .num { color: var(--amber); }
+
+    /* Flow diagram */
+    .flow-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 16px 0; justify-content: center; }
+    .flow-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+    .flow-box.green { border-color: var(--green-border); color: var(--green); }
+    .flow-box.blue { border-color: rgba(88,166,255,0.3); color: var(--blue); }
+    .flow-box.amber { border-color: rgba(227,179,65,0.3); color: var(--amber); }
+    .flow-box.purple { border-color: rgba(188,140,255,0.3); color: var(--purple); }
+    .flow-arrow { color: var(--text-muted); font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Topbar ──────────────────────────────────────────── -->
+  <header class="topbar">
+    <a href="teaching.html" class="topbar-logo"><span class="logo-mark">&gt;</span> CodeLab</a>
+    <span class="topbar-sep">/</span>
+    <span class="topbar-title">Mining Software Repositories</span>
+    <span class="topbar-badge">interactive</span>
+    <span class="slide-counter" id="counter">1 / 14</span>
+    <a href="teaching.html" class="topbar-home">← modules</a>
+  </header>
+
+  <!-- ── Progress ────────────────────────────────────────── -->
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+
+  <!-- ── Slides ──────────────────────────────────────────── -->
+  <div class="slides-wrapper">
+
+    <!-- ── Slide 1: Title ─────────────────────────────────── -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-label">Mining Software Repositories · Slide 1</div>
+      <h1 class="slide-h1">Mining <em>Software Repositories</em></h1>
+      <p class="slide-p">Where do we find the data that feeds AI-driven software engineering? This module explores how to collect, clean, and prepare source-code data from public repositories — the critical first step before any deep learning model can learn.</p>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">100M+</div><div class="stat-label">Developers on GitHub</div></div>
+        <div class="stat-card"><div class="stat-val blue">400M+</div><div class="stat-label">Public Repositories</div></div>
+        <div class="stat-card"><div class="stat-val amber">3</div><div class="stat-label">Repo Types</div></div>
+        <div class="stat-card"><div class="stat-val purple">∞</div><div class="stat-label">Artifacts to Mine</div></div>
+      </div>
+      <div class="concept-box">
+        <div class="concept-box-label">Goal</div>
+        <div class="concept-box-body"><strong>Build AI systems that support developers</strong> in one or more SE-related tasks — by leveraging data available in software repositories.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 2: What Is a Repository? ─────────────────── -->
+    <div class="slide" id="slide-2">
+      <div class="slide-label">Mining Software Repositories · Slide 2</div>
+      <h2 class="slide-h2">What Is a Repository?</h2>
+      <p class="slide-p">A <strong>repository</strong> (repo) is a centralized digital storage that developers use to make and manage changes to an application's source code and more. It lets developers track code changes, simultaneously edit files, and collaborate efficiently from any location.</p>
+      <div class="concept-box blue">
+        <div class="concept-box-label">Version Control</div>
+        <div class="concept-box-body">A <strong>versioning system</strong> manages changes to <strong>configuration items</strong> (artifacts). It tracks <em>what</em> was changed, <em>who</em> did the change, <em>when</em>, and <em>why</em>. It enables retrieving specific revisions and managing branches.</div>
+      </div>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-emoji">📝</div>
+          <div class="term-name">Commit</div>
+          <div class="term-def">A snapshot of changes to one or more files, with a message describing what changed and why.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🌿</div>
+          <div class="term-name">Branch</div>
+          <div class="term-def">An independent line of development allowing parallel work on features, bug fixes, or experiments.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🔀</div>
+          <div class="term-name">Merge / Pull Request</div>
+          <div class="term-def">Integrating changes from one branch into another, often through a reviewed pull request.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🏷️</div>
+          <div class="term-name">Tag / Release</div>
+          <div class="term-def">A named reference to a specific commit, typically marking a release version (e.g., v2.1.0).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 3: Types of Repositories ─────────────────── -->
+    <div class="slide" id="slide-3">
+      <div class="slide-label">Mining Software Repositories · Slide 3</div>
+      <h2 class="slide-h2">Types of Repositories</h2>
+      <p class="slide-p">Software projects generate artifacts across three main repository types. Click each tab to explore what kind of data lives inside.</p>
+      <div class="repo-tabs">
+        <div class="repo-tab active" onclick="selectRepo(0)">📂 Source Repositories</div>
+        <div class="repo-tab" onclick="selectRepo(1)">🐛 Bug Repositories</div>
+        <div class="repo-tab" onclick="selectRepo(2)">💬 Communication Repos</div>
+      </div>
+      <div class="repo-panel" id="repo-panel"></div>
+      <div class="concept-box" style="margin-top: 16px;">
+        <div class="concept-box-label">Key Insight</div>
+        <div class="concept-box-body"><strong>MSR (Mining Software Repositories)</strong> leverages data available in these repositories to aid development activities. Our overarching goal is to build AI systems that can support developers in one or more SE-related tasks.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 4: Rule-based vs Data-driven ─────────────── -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Mining Software Repositories · Slide 4</div>
+      <h2 class="slide-h2">Rule-based vs. Data-driven Approaches</h2>
+      <p class="slide-p">AI systems don't have to be grounded in data-driven methods. Some systems encode expert knowledge directly as rules. But for modern SE automation, data-driven approaches (especially deep learning) dominate.</p>
+      <div class="vs-grid">
+        <div class="vs-card rule">
+          <h4 style="color: var(--amber);">🧠 Rule-based (Expert Systems)</h4>
+          <ul>
+            <li>Hand-crafted IF/THEN rules</li>
+            <li>Domain experts encode knowledge</li>
+            <li>No training data needed</li>
+            <li>Brittle: fails on edge cases</li>
+            <li>Hard to scale and maintain</li>
+          </ul>
+          <div class="code-block" style="margin-top:12px;font-size:0.72rem;">
+            <span class="kw">IF</span>: the screen is blue<br/>
+            <span class="kw">AND</span>: there is an error message<br/>
+            <span class="kw">THEN</span>: it's all good, it's Windows
+          </div>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-card">
+          <h4 style="color: var(--green);">🤖 Data-driven (Machine Learning)</h4>
+          <ul>
+            <li>Learn patterns from data automatically</li>
+            <li>Require large, high-quality datasets</li>
+            <li>Generalize to unseen examples</li>
+            <li>Scale with more data</li>
+            <li>State of the art for SE tasks</li>
+          </ul>
+          <div class="concept-box" style="margin-top:12px;">
+            <div class="concept-box-label">Modern Approach</div>
+            <div class="concept-box-body">Among all data-driven techniques, <strong>deep learning models</strong> — particularly <strong>Large Language Models (LLMs)</strong> — are highly dependent on data. They require vast amounts of data to effectively learn and generalize.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 5: Why So Much Data? ─────────────────────── -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Mining Software Repositories · Slide 5</div>
+      <h2 class="slide-h2">Why So Much Data?</h2>
+      <p class="slide-p">Deep learning models, especially LLMs, learn statistical patterns from enormous corpora. More data means better generalization — but the data must be <em>high quality</em>.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">The Data Hunger</div>
+            <div class="concept-box-body">A model trained on cat images needs <strong>millions</strong> of examples to distinguish breeds. Similarly, a code model needs millions of functions to learn patterns like variable naming, control flow, and idiomatic usage.</div>
+          </div>
+          <div class="concept-box blue" style="margin-top: 12px;">
+            <div class="concept-box-label">What Type of Data?</div>
+            <div class="concept-box-body">We <strong>mine</strong> data from publicly available GitHub repositories — both <strong>source code</strong> and <strong>natural language</strong> (comments, commit messages, issues, documentation).</div>
+          </div>
+        </div>
+        <div>
+          <div class="concept-box amber">
+            <div class="concept-box-label">GitHub Copilot Example</div>
+            <div class="concept-box-body">GitHub Copilot can generate <strong>code and natural language</strong> because it was trained on massive amounts of open-source code from GitHub repositories — learning both the structure of code and the intent expressed in comments and documentation.</div>
+          </div>
+          <div class="flow-row" style="margin-top: 16px;">
+            <div class="flow-box green">GitHub Repos</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box blue">Mine Data</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box amber">Clean &amp; Filter</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box purple">Train Model</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 6: Data Quality ──────────────────────────── -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Mining Software Repositories · Slide 6</div>
+      <h2 class="slide-h2">Ensuring Data Quality</h2>
+      <p class="slide-p">Not all data is useful. We need to ensure high-quality datasets through careful repository selection and rigorous preprocessing.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Step 1 — Select Good Repositories</div>
+            <div class="concept-box-body">Use repository quality as a proxy. Filters include: <strong>minimum stars</strong>, <strong>active maintenance</strong> (recent commits), <strong>non-fork</strong> status, <strong>proper licensing</strong>, and <strong>meaningful commit history</strong>.</div>
+          </div>
+        </div>
+        <div>
+          <div class="concept-box blue">
+            <div class="concept-box-label">Step 2 — Enforce Quality Checks</div>
+            <div class="concept-box-body">Once data is collected, apply <strong>sanity checks</strong>: remove duplicates, filter by language, remove auto-generated code, check for encoding issues, and validate syntactic correctness.</div>
+          </div>
+        </div>
+      </div>
+      <div class="concept-box amber" style="margin-top: 16px;">
+        <div class="concept-box-label">Remember</div>
+        <div class="concept-box-body"><strong>Garbage in, garbage out.</strong> A model trained on low-quality data will produce low-quality predictions. Data curation is arguably the most important (and most underappreciated) step in the ML pipeline.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 7: Preprocessing Pipeline ────────────────── -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Mining Software Repositories · Slide 7</div>
+      <h2 class="slide-h2">Preprocessing Source Code</h2>
+      <p class="slide-p">Raw code from repositories needs systematic cleaning before it can be used for training. Here are the essential preprocessing steps applied to each method/function.</p>
+      <ol class="step-list">
+        <li><strong>Remove duplicates</strong> — Their presence can hinder the learning ability of the model by creating data leakage between training and test sets.</li>
+        <li><strong>ASCII-only characters</strong> — Keep code that contains only standard ASCII characters to avoid encoding issues.</li>
+        <li><strong>Remove outliers</strong> — Define outliers as methods that are incredibly long or incredibly short (e.g., single-line getters or 1000-line methods).</li>
+        <li><strong>Remove boilerplate</strong> — Eliminate trivial code like getters, setters, and auto-generated constructors.</li>
+        <li><strong>Strip comments</strong> — Clean the method by removing all inline and block comments.</li>
+        <li><strong>Custom criteria</strong> — Remove code that doesn't fit project-specific criteria (e.g., Cyclomatic Complexity &lt; 5 if training on complex code).</li>
+      </ol>
+    </div>
+
+    <!-- ── Slide 8: Interactive Preprocessing Pipeline ─────── -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Mining Software Repositories · Slide 8</div>
+      <h2 class="slide-h2">Interactive: Preprocessing Pipeline</h2>
+      <p class="slide-p">Toggle each preprocessing step and watch the code get cleaned in real time.</p>
+      <div class="pipeline-controls" id="pipeline-controls"></div>
+      <div class="code-panel" id="pipeline-output"></div>
+      <div class="pipeline-stats" id="pipeline-stats"></div>
+    </div>
+
+    <!-- ── Slide 9: Tokenization ──────────────────────────── -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Mining Software Repositories · Slide 9</div>
+      <h2 class="slide-h2">Tokenization</h2>
+      <p class="slide-p">Tokenization is the process that breaks down text into smaller units (tokens) that can be analyzed separately. For code, this means converting raw source into a structured sequence of keywords, identifiers, operators, and literals.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Before Tokenization</div>
+            <div class="concept-box-body" style="font-family:var(--font-mono);font-size:0.82rem;">public int addNumbers(int a, int b){<br/>&nbsp;&nbsp;&nbsp;&nbsp;int sum=a+b;<br/>&nbsp;&nbsp;&nbsp;&nbsp;return sum;<br/>}</div>
+          </div>
+          <div class="concept-box blue" style="margin-top: 12px;">
+            <div class="concept-box-label">After Tokenization</div>
+            <div class="concept-box-body" style="font-family:var(--font-mono);font-size:0.82rem;">public int addNumbers ( int a , int b ) {<br/>&nbsp;&nbsp;&nbsp;&nbsp;int sum = a + b ;<br/>&nbsp;&nbsp;&nbsp;&nbsp;return sum ;<br/>}</div>
+          </div>
+        </div>
+        <div>
+          <div class="term-grid" style="grid-template-columns: 1fr;">
+            <div class="term-card">
+              <div class="term-emoji">🔤</div>
+              <div class="term-name">Lexer</div>
+              <div class="term-def">Converts raw text into a sequence of tokens — the basic building blocks of the language (keywords, operators, literals, identifiers).</div>
+            </div>
+            <div class="term-card">
+              <div class="term-emoji">🌲</div>
+              <div class="term-name">Parser</div>
+              <div class="term-def">Takes the token sequence from the lexer and analyzes them to understand the structure and syntax of the code (builds an AST).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 10: Why Tokenization? ────────────────────── -->
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Mining Software Repositories · Slide 10</div>
+      <h2 class="slide-h2">Why Is Tokenization Needed?</h2>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Reducing Complexity</div>
+            <div class="concept-box-body">Tokenization divides text into smaller units, making it easier for the model to <strong>identify patterns and relationships</strong>. Instead of processing raw character streams, the model works with meaningful units.</div>
+          </div>
+          <div class="concept-box blue" style="margin-top: 12px;">
+            <div class="concept-box-label">Handling the Vocabulary</div>
+            <div class="concept-box-body">By dividing text into tokens, the model can create a <strong>numerical representation of the vocabulary</strong>, making it easier to process and understand. Each unique token gets an ID in the vocabulary.</div>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display); margin-bottom: 12px;">Tokenization Tools</h4>
+          <div class="tool-grid" style="grid-template-columns: 1fr;">
+            <div class="tool-card">
+              <div class="tool-name">code-tokenize</div>
+              <div class="tool-lang">Python · Multi-language</div>
+              <div class="tool-desc">Works for several programming languages. Provides tokenization tailored to code structure.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name">javalang</div>
+              <div class="tool-lang">Python · Java only</div>
+              <div class="tool-desc">Java-specific lexer and parser in Python. Produces fine-grained Java tokens.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name">JavaParser</div>
+              <div class="tool-lang">Java · Java only</div>
+              <div class="tool-desc">Full Java parser that builds a complete AST. Used for structural analysis.</div>
+            </div>
+            <div class="tool-card">
+              <div class="tool-name">Pygments</div>
+              <div class="tool-lang">Python · Multi-language</div>
+              <div class="tool-desc">Generic syntax highlighter integrating a lexer and parser. Works for many languages.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 11: Interactive Tokenizer ─────────────────── -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Mining Software Repositories · Slide 11</div>
+      <h2 class="slide-h2">Interactive: Code Tokenizer</h2>
+      <p class="slide-p">Enter Java code below and click "Tokenize" to see it broken into classified tokens.</p>
+      <textarea class="tok-input" id="tok-input">public int addNumbers(int a, int b) {
+    int sum = a + b;
+    return sum;
+}</textarea>
+      <button class="tok-btn" onclick="tokenize()">Tokenize →</button>
+      <div class="tok-result" id="tok-result"></div>
+      <div class="tok-legend" id="tok-legend">
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--purple);"></div> keyword</div>
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--blue);"></div> type</div>
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--text-primary);"></div> identifier</div>
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--green);"></div> literal</div>
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--amber);"></div> operator</div>
+        <div class="tok-legend-item"><div class="tok-legend-dot" style="background:var(--text-muted);"></div> separator</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 12: GitHub API & SEART-GHS ───────────────── -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Mining Software Repositories · Slide 12</div>
+      <h2 class="slide-h2">Tools for Mining at Scale</h2>
+      <p class="slide-p">Mining millions of repositories by hand isn't practical. Specialized APIs and search platforms make large-scale dataset construction possible.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">GitHub REST &amp; GraphQL API</div>
+            <div class="concept-box-body">Programmatic access to repository metadata, commits, issues, PRs, file contents, and more. <strong>Rate-limited</strong> (5,000 req/hour with auth). Libraries: <strong>PyGitHub</strong> (Python), <strong>Octokit</strong> (JS), <strong>go-github</strong> (Go).</div>
+          </div>
+          <div class="code-block" style="margin-top: 12px;">
+            <span class="cmt"># PyGitHub example</span><br/>
+            <span class="kw">from</span> github <span class="kw">import</span> Github<br/><br/>
+            g = Github(<span class="str">"access_token"</span>)<br/>
+            <span class="kw">for</span> repo <span class="kw">in</span> g.search_repositories(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;query=<span class="str">"language:java stars:>100"</span>):<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(repo.full_name, repo.stargazers_count)
+          </div>
+        </div>
+        <div>
+          <div class="concept-box blue">
+            <div class="concept-box-label">SEART-GHS</div>
+            <div class="concept-box-body">The <strong>Software Engineering Artifact Repository Tracker</strong> — a search engine for GitHub repos maintained by USI. Provides advanced filtering by language, stars, commits, contributors, license, and more.</div>
+          </div>
+          <div class="concept-box amber" style="margin-top: 12px;">
+            <div class="concept-box-label">Best Practices</div>
+            <div class="concept-box-body">
+              <strong>1.</strong> Always respect rate limits and API terms<br/>
+              <strong>2.</strong> Cache responses to avoid redundant requests<br/>
+              <strong>3.</strong> Use bulk exports (GH Archive, GHTorrent) for historical data<br/>
+              <strong>4.</strong> Verify license compatibility for your use case
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 13: The MSR Pipeline (Summary) ───────────── -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Mining Software Repositories · Slide 13</div>
+      <h2 class="slide-h2">The MSR Pipeline: End to End</h2>
+      <p class="slide-p">From raw repositories to a clean, tokenized dataset ready for model training — here's the complete pipeline.</p>
+      <div class="flow-row">
+        <div class="flow-box green">Select Repos<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Stars, activity, license</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box blue">Clone &amp; Extract<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Methods, classes, files</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box amber">Preprocess<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Dedup, filter, clean</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box purple">Tokenize<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Lexer → token sequence</span></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box green">Dataset<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Train / Val / Test</span></div>
+      </div>
+      <div class="bench-table" style="margin-top: 24px;">
+        <table class="bench-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Input</th>
+              <th>Output</th>
+              <th>Key Concern</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Repository Selection</td><td>GitHub / SEART-GHS</td><td>Repo list (URLs)</td><td>Quality proxy (stars, activity)</td></tr>
+            <tr><td>Data Extraction</td><td>Repo list</td><td>Raw methods / files</td><td>Language filtering, scope</td></tr>
+            <tr><td>Deduplication</td><td>Raw methods</td><td>Unique methods</td><td>Data leakage prevention</td></tr>
+            <tr><td>Preprocessing</td><td>Unique methods</td><td>Clean methods</td><td>Outliers, boilerplate, encoding</td></tr>
+            <tr><td>Tokenization</td><td>Clean methods</td><td>Token sequences</td><td>Vocabulary size, OOV handling</td></tr>
+            <tr><td>Split</td><td>Token sequences</td><td>Train / Val / Test</td><td>No overlap between splits</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Slide 14: Key Takeaways ────────────────────────── -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Mining Software Repositories · Slide 14</div>
+      <h2 class="slide-h2">Key Takeaways</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-card">
+          <div class="takeaway-num">01 · Foundation</div>
+          <h4>Data Is the Foundation</h4>
+          <p>AI-driven software engineering starts with data. Mining software repositories provides the raw material for every downstream model.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">02 · Three Repo Types</div>
+          <h4>Source, Bug, Communication</h4>
+          <p>Each repository type contributes different artifacts — source code, bug reports, mailing lists — all valuable for learning SE patterns.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">03 · Quality Over Quantity</div>
+          <h4>Preprocessing Is Critical</h4>
+          <p>Deduplication, outlier removal, boilerplate filtering, and sanity checks are essential before any model sees the data. Garbage in, garbage out.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">04 · Tokenization</div>
+          <h4>From Characters to Tokens</h4>
+          <p>Tokenization converts raw code into structured sequences that models can process — reducing complexity and building a manageable vocabulary.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">05 · Tools Exist</div>
+          <h4>Mine at Scale</h4>
+          <p>GitHub APIs, SEART-GHS, PyGitHub, javalang, Pygments — a rich ecosystem of tools exists for every stage of the pipeline.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">06 · The Big Picture</div>
+          <h4>MSR → Train → Deploy</h4>
+          <p>This pipeline feeds directly into the next modules: probabilistic language models, deep learning architectures, and pre-trained transformers for code.</p>
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:20px;">
+        <div class="concept-box-label">Next Steps</div>
+        <div class="concept-box-body">Now that you know how to <strong>collect and prepare</strong> data from software repositories, the next module explores <strong>Probabilistic Language Models</strong> — how to model the statistical properties of code using n-grams.</div>
+      </div>
+    </div>
+
+  </div><!-- /slides-wrapper -->
+
+  <!-- ── Navigation Bar ──────────────────────────────────── -->
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>← Prev</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next →</button>
+  </nav>
+
+  <!-- ── JavaScript ──────────────────────────────────────── -->
+  <script>
+    const TOTAL = 14;
+    let current = 1;
+
+    // ── Navigation ──────────────────────────────────────────
+    function goSlide(delta) {
+      const next = current + delta;
+      if (next < 1 || next > TOTAL) return;
+      document.getElementById('slide-' + current).classList.remove('active');
+      current = next;
+      document.getElementById('slide-' + current).classList.add('active');
+      updateUI();
+      // Init interactive components on their slides
+      if (current === 3) setTimeout(initRepoExplorer, 50);
+      if (current === 8) setTimeout(initPipeline, 50);
+      if (current === 11) setTimeout(initTokenizer, 50);
+    }
+
+    function updateUI() {
+      document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+      document.getElementById('progress').style.width = (current / TOTAL * 100).toFixed(2) + '%';
+      document.getElementById('prev-btn').disabled = current === 1;
+      document.getElementById('next-btn').disabled = current === TOTAL;
+      document.getElementById('next-btn').textContent = current === TOTAL ? 'Finish' : 'Next →';
+      const dots = document.getElementById('dots');
+      dots.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const d = document.createElement('div');
+        d.className = 'slide-dot' + (i === current ? ' active' : '');
+        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); if(i===3) setTimeout(initRepoExplorer,50); if(i===8) setTimeout(initPipeline,50); if(i===11) setTimeout(initTokenizer,50); };
+        dots.appendChild(d);
+      }
+    }
+
+    // ── Keyboard navigation ─────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goSlide(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goSlide(-1); }
+    });
+
+    // ── Interactive 1: Repository Type Explorer ─────────────
+    const REPO_DATA = [
+      {
+        title: 'Source Repositories',
+        desc: 'Store the complete history of source code changes. GitHub, GitLab, Bitbucket.',
+        artifacts: [
+          { icon: '📄', label: 'Source code files (.java, .py, .js, ...)', type: 'code' },
+          { icon: '📝', label: 'Commit messages & diffs', type: 'text' },
+          { icon: '🌿', label: 'Branch history & merge logs', type: 'metadata' },
+          { icon: '🔖', label: 'Tags and release notes', type: 'metadata' },
+          { icon: '📋', label: 'Pull request descriptions & reviews', type: 'text' },
+          { icon: '⚙️', label: 'Configuration files (CI/CD, build)', type: 'config' },
+        ]
+      },
+      {
+        title: 'Bug Repositories',
+        desc: 'Track defects, feature requests, and tasks. Jira, BugZilla, GitHub Issues.',
+        artifacts: [
+          { icon: '🐛', label: 'Bug report titles & descriptions', type: 'text' },
+          { icon: '🏷️', label: 'Labels, priority, severity', type: 'metadata' },
+          { icon: '💬', label: 'Discussion threads & comments', type: 'text' },
+          { icon: '👤', label: 'Assignee & reporter information', type: 'metadata' },
+          { icon: '📊', label: 'Status transitions (open → resolved → closed)', type: 'metadata' },
+          { icon: '🔗', label: 'Links to commits and PRs that fix the bug', type: 'link' },
+        ]
+      },
+      {
+        title: 'Communication Repositories',
+        desc: 'Capture developer discussions. Mailing lists, Slack, Stack Overflow, IRC logs.',
+        artifacts: [
+          { icon: '✉️', label: 'Mailing list archives', type: 'text' },
+          { icon: '💬', label: 'Chat logs (Slack, Discord, IRC)', type: 'text' },
+          { icon: '❓', label: 'Q&A threads (Stack Overflow)', type: 'text' },
+          { icon: '📖', label: 'Meeting notes and design docs', type: 'text' },
+          { icon: '📢', label: 'Announcements and changelogs', type: 'text' },
+        ]
+      }
+    ];
+
+    let activeRepo = 0;
+    function selectRepo(idx) {
+      activeRepo = idx;
+      document.querySelectorAll('.repo-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+      renderRepoPanel();
+    }
+    function renderRepoPanel() {
+      const data = REPO_DATA[activeRepo];
+      const panel = document.getElementById('repo-panel');
+      panel.innerHTML = `<h4 style="font-family:var(--font-display);margin-bottom:4px;">${data.title}</h4>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">${data.desc}</p>` +
+        data.artifacts.map(a => `<div class="repo-artifact"><span class="repo-artifact-icon">${a.icon}</span><span class="repo-artifact-label">${a.label}</span><span class="repo-artifact-type">${a.type}</span></div>`).join('');
+    }
+    function initRepoExplorer() { renderRepoPanel(); }
+
+    // ── Interactive 2: Preprocessing Pipeline ───────────────
+    const RAW_CODE = `// Utility class for math operations
+// Author: John Doe, 2024
+package com.example.utils;
+
+/**
+ * Adds two numbers and returns the result.
+ * @param a first number
+ * @param b second number
+ * @return sum of a and b
+ */
+public int addNumbers(int a, int b) {
+    // compute the sum
+    int sum = a + b; // inline: add operands
+    return sum;
+}
+
+// Simple getter — boilerplate
+public String getName() {
+    return this.name;
+}
+
+// Another getter
+public int getId() {
+    return this.id;
+}
+
+// Duplicate of addNumbers
+public int addNumbers(int a, int b) {
+    // compute the sum
+    int sum = a + b;
+    return sum;
+}
+
+// Método con caracteres Unicode: café ñ ü
+public void logMensaje(String café) {
+    System.out.println(café);
+}`;
+
+    const PIPELINE_STEPS = [
+      { id: 'dedup',     label: 'Remove Duplicates', on: false },
+      { id: 'ascii',     label: 'ASCII Only',        on: false },
+      { id: 'outlier',   label: 'Remove Outliers',   on: false },
+      { id: 'boiler',    label: 'Remove Boilerplate', on: false },
+      { id: 'comments',  label: 'Strip Comments',    on: false },
+    ];
+
+    function initPipeline() {
+      const ctrl = document.getElementById('pipeline-controls');
+      ctrl.innerHTML = PIPELINE_STEPS.map((s, i) =>
+        `<div class="pipeline-toggle ${s.on ? 'on' : ''}" onclick="toggleStep(${i})" id="pt-${i}"><span class="check">${s.on ? '✓' : ''}</span>${s.label}</div>`
+      ).join('');
+      runPipeline();
+    }
+
+    function toggleStep(i) {
+      PIPELINE_STEPS[i].on = !PIPELINE_STEPS[i].on;
+      const el = document.getElementById('pt-' + i);
+      el.classList.toggle('on', PIPELINE_STEPS[i].on);
+      el.querySelector('.check').textContent = PIPELINE_STEPS[i].on ? '✓' : '';
+      runPipeline();
+    }
+
+    function runPipeline() {
+      let lines = RAW_CODE.split('\n');
+      let methods = extractMethods(lines.join('\n'));
+      let removedCount = 0;
+      let totalBefore = methods.length;
+
+      // Apply steps
+      if (PIPELINE_STEPS[0].on) { // dedup
+        const seen = new Set();
+        methods = methods.filter(m => {
+          const norm = m.body.replace(/\s+/g, ' ').trim();
+          if (seen.has(norm)) { removedCount++; return false; }
+          seen.add(norm);
+          return true;
+        });
+      }
+      if (PIPELINE_STEPS[1].on) { // ascii
+        methods = methods.filter(m => {
+          // eslint-disable-next-line no-control-regex
+          const isAscii = /^[\x00-\x7F\n\r]*$/.test(m.body);
+          if (!isAscii) removedCount++;
+          return isAscii;
+        });
+      }
+      if (PIPELINE_STEPS[2].on) { // outlier — remove single-line methods
+        methods = methods.filter(m => {
+          const bodyLines = m.body.trim().split('\n').filter(l => l.trim().length > 0);
+          if (bodyLines.length <= 2) { removedCount++; return false; }
+          return true;
+        });
+      }
+      if (PIPELINE_STEPS[3].on) { // boilerplate — getters/setters
+        methods = methods.filter(m => {
+          const sig = m.body.toLowerCase();
+          if (/^\s*(public|private|protected)?\s*(static\s+)?\w+\s+get\w+\s*\(/.test(sig) &&
+              m.body.includes('return this.')) { removedCount++; return false; }
+          if (/^\s*(public|private|protected)?\s*(static\s+)?\w+\s+set\w+\s*\(/.test(sig) &&
+              m.body.includes('this.')) { removedCount++; return false; }
+          return true;
+        });
+      }
+      if (PIPELINE_STEPS[4].on) { // strip comments
+        methods = methods.map(m => ({
+          ...m,
+          body: m.body.replace(/\/\*[\s\S]*?\*\//g, '')       // block comments
+                       .replace(/\/\/.*$/gm, '')                // line comments
+                       .replace(/^\s*\n/gm, '')                 // empty lines left behind
+        }));
+      }
+
+      // Render
+      const output = document.getElementById('pipeline-output');
+      if (methods.length === 0) {
+        output.innerHTML = '<span style="color:var(--red);">All methods removed by current filters.</span>';
+      } else {
+        output.innerHTML = methods.map(m => highlightJava(m.body)).join('\n\n<span style="color:var(--border);">─────────────────────</span>\n\n');
+      }
+
+      // Stats
+      const stats = document.getElementById('pipeline-stats');
+      stats.innerHTML = `<span class="pipeline-stat">Methods before: <strong>${totalBefore}</strong></span>` +
+        `<span class="pipeline-stat">After filtering: <strong>${methods.length}</strong></span>` +
+        `<span class="pipeline-stat">Removed: <strong style="color:var(--red);">${removedCount}</strong></span>` +
+        `<span class="pipeline-stat">Active steps: <strong>${PIPELINE_STEPS.filter(s=>s.on).length}/${PIPELINE_STEPS.length}</strong></span>`;
+    }
+
+    function extractMethods(code) {
+      // Simple regex-based method extraction for demo purposes
+      const methods = [];
+      const regex = /(\/\*[\s\S]*?\*\/\s*)?((?:\/\/.*\n)*)?\s*(public|private|protected)\s+(?:static\s+)?[\w<>\[\]]+\s+\w+\s*\([^)]*\)\s*\{/g;
+      let match;
+      while ((match = regex.exec(code)) !== null) {
+        const start = match.index;
+        let braces = 0;
+        let end = start;
+        let inMethod = false;
+        for (let i = start; i < code.length; i++) {
+          if (code[i] === '{') { braces++; inMethod = true; }
+          if (code[i] === '}') { braces--; }
+          if (inMethod && braces === 0) { end = i + 1; break; }
+        }
+        const fullBody = code.substring(start, end).trim();
+        methods.push({ body: fullBody, start, end });
+      }
+      return methods.length > 0 ? methods : [{ body: code, start: 0, end: code.length }];
+    }
+
+    function highlightJava(code) {
+      const keywords = ['public','private','protected','static','final','void','return','int','String','boolean','new','if','else','for','while','class','package','import','this','throw','throws','try','catch','finally'];
+      const types = ['int','String','boolean','double','float','long','char','byte','short','void'];
+      let html = code
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="cmt">$1</span>')
+        .replace(/(\/\/.*$)/gm, '<span class="cmt">$1</span>')
+        .replace(/("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
+      keywords.forEach(kw => {
+        html = html.replace(new RegExp('\\b(' + kw + ')\\b', 'g'), '<span class="kw">$1</span>');
+      });
+      return html;
+    }
+
+    // ── Interactive 3: Code Tokenizer ───────────────────────
+    const JAVA_KEYWORDS = new Set(['abstract','assert','boolean','break','byte','case','catch','char','class','const','continue','default','do','double','else','enum','extends','final','finally','float','for','goto','if','implements','import','instanceof','int','interface','long','native','new','package','private','protected','public','return','short','static','strictfp','super','switch','synchronized','this','throw','throws','transient','try','void','volatile','while']);
+    const JAVA_TYPES = new Set(['int','long','short','byte','float','double','char','boolean','void','String','Integer','Long','Short','Byte','Float','Double','Character','Boolean','Object','List','Map','Set','Array','ArrayList','HashMap','HashSet']);
+    const OPERATORS = new Set(['+','-','*','/','%','=','==','!=','<','>','<=','>=','&&','||','!','&','|','^','~','<<','>>','>>>','++','--','+=','-=','*=','/=','%=']);
+    const SEPARATORS = new Set(['(',')','{','}','[',']',';',',','.']);
+
+    function tokenize() {
+      const code = document.getElementById('tok-input').value;
+      const tokens = lexJava(code);
+      const result = document.getElementById('tok-result');
+      result.innerHTML = tokens.map(t => `<span class="tok-chip ${t.type}" title="${t.type}">${escapeHtml(t.value)}</span>`).join('');
+    }
+
+    function initTokenizer() { tokenize(); }
+
+    function lexJava(code) {
+      const tokens = [];
+      let i = 0;
+      while (i < code.length) {
+        // Skip whitespace
+        if (/\s/.test(code[i])) { i++; continue; }
+        // Skip line comments
+        if (code[i] === '/' && code[i+1] === '/') {
+          while (i < code.length && code[i] !== '\n') i++;
+          continue;
+        }
+        // Skip block comments
+        if (code[i] === '/' && code[i+1] === '*') {
+          i += 2;
+          while (i < code.length - 1 && !(code[i] === '*' && code[i+1] === '/')) i++;
+          i += 2;
+          continue;
+        }
+        // String literal
+        if (code[i] === '"') {
+          let s = '"'; i++;
+          while (i < code.length && code[i] !== '"') { if (code[i] === '\\') { s += code[i++]; } s += code[i++]; }
+          s += '"'; i++;
+          tokens.push({ value: s, type: 'literal' });
+          continue;
+        }
+        // Char literal
+        if (code[i] === "'") {
+          let s = "'"; i++;
+          while (i < code.length && code[i] !== "'") { if (code[i] === '\\') { s += code[i++]; } s += code[i++]; }
+          s += "'"; i++;
+          tokens.push({ value: s, type: 'literal' });
+          continue;
+        }
+        // Number
+        if (/[0-9]/.test(code[i])) {
+          let num = '';
+          while (i < code.length && /[0-9.xXa-fA-FLl]/.test(code[i])) num += code[i++];
+          tokens.push({ value: num, type: 'literal' });
+          continue;
+        }
+        // Multi-char operators
+        if (i + 1 < code.length) {
+          const two = code[i] + code[i+1];
+          if (OPERATORS.has(two)) { tokens.push({ value: two, type: 'operator' }); i += 2; continue; }
+        }
+        // Separators
+        if (SEPARATORS.has(code[i])) {
+          tokens.push({ value: code[i], type: 'separator' }); i++;
+          continue;
+        }
+        // Single-char operators
+        if (OPERATORS.has(code[i])) {
+          tokens.push({ value: code[i], type: 'operator' }); i++;
+          continue;
+        }
+        // Identifiers and keywords
+        if (/[a-zA-Z_$]/.test(code[i])) {
+          let id = '';
+          while (i < code.length && /[a-zA-Z0-9_$]/.test(code[i])) id += code[i++];
+          if (JAVA_KEYWORDS.has(id)) tokens.push({ value: id, type: 'keyword' });
+          else if (JAVA_TYPES.has(id)) tokens.push({ value: id, type: 'type' });
+          else tokens.push({ value: id, type: 'identifier' });
+          continue;
+        }
+        // @ annotations
+        if (code[i] === '@') {
+          let ann = '@'; i++;
+          while (i < code.length && /[a-zA-Z0-9_]/.test(code[i])) ann += code[i++];
+          tokens.push({ value: ann, type: 'keyword' });
+          continue;
+        }
+        // Unknown
+        i++;
+      }
+      return tokens;
+    }
+
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── Init ────────────────────────────────────────────────
+    updateUI();
+    // Pre-init slide 3 if starting there
+    setTimeout(initRepoExplorer, 100);
+  </script>
+</body>
+</html>
