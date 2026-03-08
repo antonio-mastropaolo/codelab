@@ -35,7 +35,17 @@
       transform: translateX(-50%);
       width: 900px;
       height: 600px;
-      background: radial-gradient(ellipse, rgba(0,217,126,0.12) 0%, transparent 70%);
+      background:
+        radial-gradient(ellipse 60% 50% at 35% 40%, rgba(0,78,56,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 65% 50%, rgba(183,146,87,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,217,126,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-wm-pattern {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,78,56,0.04) 100%);
       pointer-events: none;
     }
     .hero-content {
@@ -79,7 +89,7 @@
     }
     .hero h1 em {
       font-style: normal;
-      background: linear-gradient(135deg, var(--green) 0%, #00B8D4 100%);
+      background: linear-gradient(135deg, var(--green) 0%, var(--wm-patina) 50%, var(--wm-gold) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -219,7 +229,28 @@
     .pcard-body p  { font-size: 0.87rem; color: var(--text-secondary); line-height: 1.55; margin: 0; }
 
     /* ── Teaching Section ─────────────────────────────────────── */
-    .teaching-section { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .teaching-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .teaching-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--wm-gold), transparent);
+    }
+    .teaching-section::after {
+      content: '';
+      position: absolute;
+      top: 0; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,78,56,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
     .teaching-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -318,15 +349,16 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--green), #00B8D4);
+      background: linear-gradient(135deg, var(--wm-green), var(--wm-gold));
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
       font-weight: 700;
-      color: var(--bg);
+      color: var(--wm-silver);
       flex-shrink: 0;
       font-family: var(--font-display);
+      box-shadow: 0 0 0 3px rgba(183,146,87,0.2), 0 4px 20px rgba(0,78,56,0.3);
     }
     .about-text h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
     .about-text p  { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; max-width: 580px; }
@@ -345,8 +377,10 @@
 </head>
 <body>
 
+  <div class="wm-accent-bar"></div>
+
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" style="top:3px">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo">
         <span class="logo-mark">&lt;/&gt;</span>
@@ -365,8 +399,10 @@
   <section class="hero">
     <div class="hero-grid"></div>
     <div class="hero-glow"></div>
+    <div class="hero-wm-pattern"></div>
+    <div class="wm-stripes"></div>
     <div class="container hero-content">
-      <div class="hero-badge">W&amp;M · Generative AI for Software Development</div>
+      <div class="wm-badge">W&amp;M · Generative AI for Software Development</div>
       <h1>Where AI Meets<br /><em>Real Software</em></h1>
       <p class="hero-sub">
         Student projects, teaching modules, and open resources from Prof. Antonio Mastropaolo's course at William &amp; Mary. Build real things with generative AI.
@@ -382,8 +418,8 @@
         </div>
         <div class="hero-stat-divider"></div>
         <div class="hero-stat">
-          <span class="hero-stat-num">01</span>
-          <span class="hero-stat-label">Interactive Module</span>
+          <span class="hero-stat-num">05</span>
+          <span class="hero-stat-label">Teaching Modules</span>
         </div>
         <div class="hero-stat-divider"></div>
         <div class="hero-stat">
@@ -527,6 +563,8 @@
     </div>
   </section>
 
+  <hr class="wm-divider" />
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -545,8 +583,8 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
-      <span>Built with vibe coding ✨</span>
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · <span style="color:var(--wm-gold);font-weight:600">William &amp; Mary</span></span>
+      <span style="color:var(--wm-patina)">Built with vibe coding ✨</span>
     </div>
   </footer>
 

@@ -20,7 +20,9 @@
       position: absolute;
       top: -60px; right: -40px;
       width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(88,166,255,0.07) 0%, transparent 70%);
+      background:
+        radial-gradient(circle at 30% 40%, rgba(0,78,56,0.12) 0%, transparent 60%),
+        radial-gradient(circle at 70% 60%, rgba(183,146,87,0.08) 0%, transparent 60%);
       pointer-events: none;
     }
     .breadcrumb {
@@ -211,7 +213,9 @@
 </head>
 <body>
 
-  <nav class="nav">
+  <div class="wm-accent-bar"></div>
+
+  <nav class="nav" style="top:3px">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
       <ul class="nav-links">
@@ -537,6 +541,7 @@
     </div>
   </section>
 
+  <hr class="wm-divider" />
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-left">
@@ -556,8 +561,8 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
-      <span>Built with vibe coding ✨</span>
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · <span style="color:var(--wm-gold);font-weight:600">William &amp; Mary</span></span>
+      <span style="color:var(--wm-patina)">Built with vibe coding ✨</span>
     </div>
   </footer>
 

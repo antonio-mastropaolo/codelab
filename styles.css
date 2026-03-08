@@ -25,6 +25,15 @@
   --amber-dim:   rgba(227,179,65,0.12);
   --red:         #F85149;
   --wm-gold:     #B9975B;
+  --wm-green:    #004E38;
+  --wm-dark:     #00231B;
+  --wm-griffin:   #28463D;
+  --wm-patina:   #76A190;
+  --wm-sage:     #B8DDB1;
+  --wm-spirit:   #FDB714;
+  --wm-silver:   #D8DCDB;
+  --wm-midnight: #0D3E4A;
+  --wm-marine:   #247B8C;
 
   --text:        #F0F6FC;
   --text-2:      #8B949E;
@@ -551,3 +560,106 @@ ul.nav-links li { display: contents; }
 
 /* ─── Ensure body has correct padding for fixed nav ─── */
 body { padding-top: 0; }   /* nav height offset handled per-page via hero padding */
+
+/* ═══════════════════════════════════════════════════════════
+   W&M BRAND PATTERNS
+   Decorative elements using William & Mary official colors
+   ═══════════════════════════════════════════════════════════ */
+
+/* Thin gradient strip at the very top of the page */
+.wm-accent-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--wm-green) 0%,
+    var(--wm-patina) 25%,
+    var(--wm-gold) 50%,
+    var(--wm-spirit) 75%,
+    var(--wm-green) 100%
+  );
+  background-size: 200% 100%;
+  animation: wmShimmer 8s linear infinite;
+}
+@keyframes wmShimmer {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* W&M decorative corner flourish */
+.wm-corner {
+  position: absolute;
+  width: 200px; height: 200px;
+  pointer-events: none;
+  opacity: 0.06;
+}
+.wm-corner::before,
+.wm-corner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.wm-corner::before {
+  width: 160px; height: 160px;
+  border: 2px solid var(--wm-gold);
+}
+.wm-corner::after {
+  width: 100px; height: 100px;
+  top: 30px; left: 30px;
+  border: 2px solid var(--wm-green);
+}
+.wm-corner.top-right { top: 60px; right: -40px; }
+.wm-corner.bottom-left { bottom: -40px; left: -40px; }
+
+/* W&M-styled divider line */
+.wm-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--wm-griffin) 20%,
+    var(--wm-gold) 50%,
+    var(--wm-griffin) 80%,
+    transparent 100%
+  );
+  margin: 0;
+  border: none;
+}
+
+/* W&M gold text highlight */
+.wm-highlight { color: var(--wm-gold); }
+
+/* W&M branded badge */
+.wm-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 100px;
+  background: rgba(0,78,56,0.15);
+  border: 1px solid rgba(0,78,56,0.3);
+  color: var(--wm-patina);
+  letter-spacing: 0.04em;
+}
+.wm-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--wm-gold);
+  border-radius: 50%;
+}
+
+/* W&M diagonal stripe pattern overlay */
+.wm-stripes {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 40px,
+    rgba(0,78,56,0.03) 40px,
+    rgba(0,78,56,0.03) 42px
+  );
+}
+
+/* W&M section accent — left border highlight */
+.wm-section-accent {
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(180deg, var(--wm-green), var(--wm-gold)) 1;
+  padding-left: 20px;
+}
