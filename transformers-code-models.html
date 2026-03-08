@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transformers, Self-Attention &amp; Modern Code Models — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:10px;}
+    @media(max-width:700px){.two-col,.three-col{grid-template-columns:1fr;gap:16px;}}
+
+    .concept-box{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .concept-box.blue{border-left-color:var(--blue);}
+    .concept-box.amber{border-left-color:var(--amber);}
+    .concept-box.purple{border-left-color:var(--purple);}
+    .concept-box.red{border-left-color:var(--red);}
+    .concept-box.cyan{border-left-color:var(--cyan);}
+    .concept-box-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .concept-box.blue .concept-box-label{color:var(--blue);}
+    .concept-box.amber .concept-box-label{color:var(--amber);}
+    .concept-box.purple .concept-box-label{color:var(--purple);}
+    .concept-box.red .concept-box-label{color:var(--red);}
+    .concept-box.cyan .concept-box-label{color:var(--cyan);}
+    .concept-box-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .concept-box-body strong{color:var(--text-primary);}
+
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;margin-bottom:10px;}
+    .term-emoji{font-size:1.3rem;margin-bottom:6px;}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:12px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;}
+    .ck{color:var(--purple);}
+    .cs{color:var(--green);}
+    .cc{color:var(--text-muted);font-style:italic;}
+    .cf{color:var(--blue);}
+    .cl{color:var(--amber);}
+    .ca{color:var(--cyan);}
+
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+    .sim-btn.blue{border-color:rgba(88,166,255,0.3);color:var(--blue);}
+    .sim-btn.blue.active{background:rgba(88,166,255,0.15);border-color:rgba(88,166,255,0.5);}
+
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:8px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-blue{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+    .tag-red{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(255,95,87,0.08);color:var(--red);border:1px solid rgba(255,95,87,0.2);}
+
+    .tok{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:0.78rem;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);}
+    .tok.kw{border-color:rgba(188,140,255,0.3);color:var(--purple);background:rgba(188,140,255,0.06);}
+    .tok.id{border-color:rgba(88,166,255,0.3);color:var(--blue);background:rgba(88,166,255,0.06);}
+    .tok.op{border-color:rgba(227,179,65,0.3);color:var(--amber);background:rgba(227,179,65,0.06);}
+    .tok-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Self-attention token */
+    .sa-token{display:inline-flex;align-items:center;justify-content:center;padding:8px 14px;border-radius:8px;font-family:var(--font-mono);font-size:0.85rem;border:2px solid var(--border);background:var(--bg-3);color:var(--text-secondary);cursor:pointer;transition:all 0.2s;user-select:none;}
+    .sa-token:hover{border-color:var(--green-border);color:var(--green);}
+    .sa-token.selected{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+    .sa-token.attended{background:rgba(88,166,255,0.1);}
+
+    /* PE heatmap */
+    .pe-cell{border-radius:2px;transition:opacity 0.2s;}
+
+    /* Scatter plot */
+    .scatter-dot{cursor:pointer;transition:r 0.2s;}
+    .scatter-dot:hover{r:7;}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-title">Transformers, Self-Attention &amp; Modern Code Models</span>
+  <span class="topbar-badge">Interactive · 14 Slides</span>
+  <span class="slide-counter" id="counter">1 / 14</span>
+  <a href="teaching.html" class="topbar-home">← Teaching</a>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+
+<div class="slides-wrapper">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 · Hook                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 2 · Slide 01</div>
+  <h1 class="slide-h1">What if you didn't need to<br/><em>read sequentially?</em></h1>
+  <p class="slide-p">LSTMs process tokens one at a time — each step waiting for the previous. Transformers abolished this constraint: they read the <strong style="color:var(--text-primary)">entire sequence at once</strong>, letting every token attend to every other in parallel.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid rgba(255,95,87,0.3);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.7rem;font-family:var(--font-mono);color:var(--red);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">LSTM — Sequential</div>
+        <div style="display:flex;align-items:center;gap:6px;overflow-x:auto;">
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;flex-shrink:0;">def</div>
+          <div style="color:var(--red);font-size:0.8rem;flex-shrink:0;">→</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;flex-shrink:0;">fix</div>
+          <div style="color:var(--red);font-size:0.8rem;flex-shrink:0;">→</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;flex-shrink:0;">(</div>
+          <div style="color:var(--red);font-size:0.8rem;flex-shrink:0;">→</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;flex-shrink:0;">err</div>
+          <div style="color:var(--red);font-size:0.8rem;flex-shrink:0;">→</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;flex-shrink:0;">)</div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;">Must finish step t before starting t+1. O(T) depth.</div>
+      </div>
+      <div style="background:var(--bg-2);border:1px solid var(--green-border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.7rem;font-family:var(--font-mono);color:var(--green);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Transformer — Parallel</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px 4px;font-family:var(--font-mono);font-size:0.72rem;text-align:center;color:var(--green);">def</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px 4px;font-family:var(--font-mono);font-size:0.72rem;text-align:center;color:var(--green);">fix</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px 4px;font-family:var(--font-mono);font-size:0.72rem;text-align:center;color:var(--green);">(</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px 4px;font-family:var(--font-mono);font-size:0.72rem;text-align:center;color:var(--green);">err</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px 4px;font-family:var(--font-mono);font-size:0.72rem;text-align:center;color:var(--green);">)</div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:12px;margin-top:6px;">
+          <div style="font-size:0.6rem;color:var(--green);">↕</div><div style="font-size:0.6rem;color:var(--green);">↕</div><div style="font-size:0.6rem;color:var(--green);">↕</div><div style="font-size:0.6rem;color:var(--green);">↕</div><div style="font-size:0.6rem;color:var(--green);">↕</div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-align:center;">All tokens computed simultaneously via self-attention.</div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box">
+        <div class="concept-box-label">Why It Changed Everything</div>
+        <div class="concept-box-body">
+          <strong>2017:</strong> "Attention is All You Need" (Vaswani et al.) introduced the Transformer.<br/><br/>
+          <strong>2018–19:</strong> BERT, GPT pre-trained on billions of tokens with self-supervised objectives.<br/><br/>
+          <strong>2020+:</strong> CodeBERT, Codex, StarCoder — the same architecture applied to code at massive scale.<br/><br/>
+          The Transformer didn't just improve performance — it <strong>unified NLP and code understanding under one architecture</strong>.
+        </div>
+      </div>
+      <div class="concept-box blue" style="margin-top:0">
+        <div class="concept-box-label">This Module Covers</div>
+        <div class="concept-box-body">Self-attention · Multi-head attention · Transformer architecture · Positional encoding · LSTM vs Transformer · Pre-training · Fine-tuning · Code models (CodeBERT, StarCoder) · Bug triaging with embeddings</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 2 · Self-Attention Intuition                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 2 · Slide 02</div>
+  <h2 class="slide-h2">Self-Attention: The Core Idea</h2>
+  <p class="slide-p">In self-attention, each token asks: <em>"which other tokens in this sequence are most relevant to understanding me?"</em> The answer is computed via three learned projections: <strong style="color:var(--amber)">Query</strong>, <strong style="color:var(--blue)">Key</strong>, and <strong style="color:var(--green)">Value</strong>.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box amber">
+        <div class="concept-box-label">Query — "What am I looking for?"</div>
+        <div class="concept-box-body">Each token projects itself into a query vector Q = xW<sub>Q</sub>. This represents <strong>what information this token needs</strong> from others.</div>
+      </div>
+      <div class="concept-box blue" style="margin-top:0">
+        <div class="concept-box-label">Key — "What do I offer?"</div>
+        <div class="concept-box-body">Each token also projects to a key vector K = xW<sub>K</sub>. Keys describe <strong>what information this token contains</strong>, available to be retrieved by other tokens' queries.</div>
+      </div>
+      <div class="concept-box" style="margin-top:0">
+        <div class="concept-box-label">Value — "What do I contribute?"</div>
+        <div class="concept-box-body">V = xW<sub>V</sub> holds the <strong>actual content to pass forward</strong>. The output at each position is a weighted sum of all values, where weights come from Q·Kᵀ similarity.</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">The Scaled Dot-Product Attention</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-family:var(--font-mono);font-size:0.82rem;text-align:center;">
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+            <span style="color:var(--amber);">Q</span><span style="color:var(--text-secondary);"> = X · W</span><span style="color:var(--amber);">Q</span>
+            &nbsp;&nbsp;
+            <span style="color:var(--blue);">K</span><span style="color:var(--text-secondary);"> = X · W</span><span style="color:var(--blue);">K</span>
+            &nbsp;&nbsp;
+            <span style="color:var(--green);">V</span><span style="color:var(--text-secondary);"> = X · W</span><span style="color:var(--green);">V</span>
+          </div>
+          <div style="color:var(--green);">↓</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+            <span style="color:var(--text-secondary);">scores = </span><span style="color:var(--amber);">Q</span><span style="color:var(--text-secondary);"> · </span><span style="color:var(--blue);">K</span><span style="color:var(--text-secondary);">ᵀ / √d<sub>k</sub></span>
+          </div>
+          <div style="color:var(--green);">↓ softmax →</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+            <span style="color:var(--text-secondary);">weights = softmax(scores)</span>
+          </div>
+          <div style="color:var(--green);">↓</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;">
+            <span style="color:var(--text-secondary);">output = weights · </span><span style="color:var(--green);">V</span>
+          </div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:10px;">√d<sub>k</sub> scaling prevents dot products from growing too large, which would push softmax into low-gradient regions.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 · Self-Attention Explorer (Interactive)                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 2 · Slide 03 · ★ Interactive</div>
+  <h2 class="slide-h2">Self-Attention Explorer</h2>
+  <p class="slide-p" style="max-width:620px;">Click any token in the code snippet below to see which other tokens it attends to most strongly. Each bar shows the attention weight from the selected token to every other position.</p>
+  <div class="two-col">
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header"><div class="inter-title">🔍 Token Selector <span class="inter-badge">interactive</span></div></div>
+        <div class="inter-body">
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">Code: <code style="font-family:var(--font-mono);">def fix_null ( obj ) :</code></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;" id="sa-tokens"></div>
+          <div style="font-size:0.78rem;color:var(--text-muted);" id="sa-explanation">Click a token to explore its attention distribution.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header"><div class="inter-title">📊 Attention Weights</div></div>
+        <div class="inter-body" id="sa-bars">
+          <div style="font-size:0.78rem;color:var(--text-muted);">Select a token on the left to see its attention distribution.</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Key Observations</div>
+        <ul style="font-size:0.8rem;color:var(--text-secondary);line-height:1.7;padding-left:16px;">
+          <li><code style="font-family:var(--font-mono);color:var(--amber);">def</code> attends strongly to <code style="font-family:var(--font-mono);color:var(--amber);">:</code> — together they signal a function definition</li>
+          <li><code style="font-family:var(--font-mono);color:var(--blue);">obj</code> attends to <code style="font-family:var(--font-mono);color:var(--green);">fix_null</code> — argument linked to function name</li>
+          <li><code style="font-family:var(--font-mono);color:var(--text-secondary);">(</code> and <code style="font-family:var(--font-mono);color:var(--text-secondary);">)</code> attend to each other — matching brackets</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 4 · Multi-Head Attention                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 2 · Slide 04</div>
+  <h2 class="slide-h2">Multi-Head Attention</h2>
+  <p class="slide-p">A single attention head can only capture one type of relationship. <strong style="color:var(--text-primary)">Multi-head attention</strong> runs <em>h</em> attention heads in parallel — each with independent W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub> projections — then concatenates and projects the results.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Multi-Head Mechanism</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:6px;">
+            <div style="flex:1;background:var(--bg-3);border:1px solid rgba(227,179,65,0.3);border-radius:6px;padding:8px;font-size:0.72rem;text-align:center;color:var(--amber);">Head 1<br/><span style="font-size:0.65rem;color:var(--text-muted);">syntax patterns</span></div>
+            <div style="flex:1;background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:6px;padding:8px;font-size:0.72rem;text-align:center;color:var(--blue);">Head 2<br/><span style="font-size:0.65rem;color:var(--text-muted);">arg–param links</span></div>
+            <div style="flex:1;background:var(--bg-3);border:1px solid rgba(188,140,255,0.3);border-radius:6px;padding:8px;font-size:0.72rem;text-align:center;color:var(--purple);">Head 3<br/><span style="font-size:0.65rem;color:var(--text-muted);">coreference</span></div>
+            <div style="flex:1;background:var(--bg-3);border:1px solid rgba(0,217,126,0.3);border-radius:6px;padding:8px;font-size:0.72rem;text-align:center;color:var(--green);">Head 4<br/><span style="font-size:0.65rem;color:var(--text-muted);">data flow</span></div>
+          </div>
+          <div style="text-align:center;color:var(--green);font-size:1rem;">↓ concat</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:6px;padding:8px;font-size:0.75rem;text-align:center;color:var(--green);">Concat([Head1, Head2, Head3, Head4]) · W<sub>O</sub></div>
+        </div>
+      </div>
+      <div class="concept-box">
+        <div class="concept-box-label">Parameter Efficiency</div>
+        <div class="concept-box-body">With <em>h</em> heads and dimension <em>d</em>, each head uses d/h dimensions. Total compute is similar to a single head at dimension d — but the model gets <strong>h independent perspectives</strong> on the same input.</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">What Different Heads Learn (Empirically)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;">
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:10px;height:10px;background:var(--amber);border-radius:50%;margin-top:3px;flex-shrink:0;"></div>
+            <div><strong style="color:var(--text-primary);">Positional heads:</strong> <span style="color:var(--text-secondary);">attend to tokens immediately before/after (local syntax)</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:10px;height:10px;background:var(--blue);border-radius:50%;margin-top:3px;flex-shrink:0;"></div>
+            <div><strong style="color:var(--text-primary);">Bracket heads:</strong> <span style="color:var(--text-secondary);">( attends to ) and vice versa across any distance</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:10px;height:10px;background:var(--purple);border-radius:50%;margin-top:3px;flex-shrink:0;"></div>
+            <div><strong style="color:var(--text-primary);">Coreference heads:</strong> <span style="color:var(--text-secondary);">a variable use attends back to its declaration</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:10px;height:10px;background:var(--green);border-radius:50%;margin-top:3px;flex-shrink:0;"></div>
+            <div><strong style="color:var(--text-primary);">Rare token heads:</strong> <span style="color:var(--text-secondary);">unknown subwords attend to semantically related tokens to borrow meaning</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="concept-box blue" style="margin-top:10px;">
+        <div class="concept-box-label">Typical Scale</div>
+        <div class="concept-box-body">BERT-base: <strong>12 heads × 64d = 768d</strong>. CodeBERT: same. GPT-4: reportedly 128 heads at very high dimension across 96+ layers. More heads → more specialisation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 5 · Transformer Architecture                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 2 · Slide 05</div>
+  <h2 class="slide-h2">The Transformer Architecture</h2>
+  <p class="slide-p">The Transformer stacks <em>N</em> identical layers. Each layer is a <strong style="color:var(--text-primary)">Multi-Head Attention block + Feed-Forward Network</strong>, both wrapped with residual connections and layer normalisation.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">One Encoder Layer</div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:stretch;">
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:10px;text-align:center;font-size:0.82rem;color:var(--blue);">Multi-Head Self-Attention</div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);">+ residual &nbsp;→&nbsp; LayerNorm</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(0,217,126,0.3);border-radius:8px;padding:10px;text-align:center;font-size:0.82rem;color:var(--green);">Feed-Forward Network (2 layers, ReLU)</div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);">+ residual &nbsp;→&nbsp; LayerNorm</div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;font-size:0.78rem;color:var(--text-secondary);">Output representations (same shape as input)</div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px;">Stacked N=6–96 times depending on model size.</div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box purple">
+        <div class="concept-box-label">Residual Connections</div>
+        <div class="concept-box-body"><strong>output = LayerNorm(x + sublayer(x))</strong><br/><br/>The residual connection <em>adds</em> the original input to the sublayer output. This creates a highway for gradients: even if a sublayer learns nothing, the gradient flows directly through the addition. This is what enables training 100+ layer Transformers.</div>
+      </div>
+      <div class="concept-box amber" style="margin-top:0">
+        <div class="concept-box-label">Feed-Forward Network (FFN)</div>
+        <div class="concept-box-body">Each position independently passes through: <strong>FFN(x) = max(0, xW₁+b₁)W₂+b₂</strong>. Hidden dimension is typically 4× the model dimension. The FFN acts as a key-value memory that <em>stores factual associations learned from training data</em>.</div>
+      </div>
+      <div class="concept-box" style="margin-top:0">
+        <div class="concept-box-label">Encoder vs Decoder</div>
+        <div class="concept-box-body">The <strong>encoder</strong> uses bidirectional self-attention (all tokens see all). The <strong>decoder</strong> uses masked self-attention (each token only attends to previous tokens) plus cross-attention to encoder outputs.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6 · Positional Encoding                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 2 · Slide 06</div>
+  <h2 class="slide-h2">Positional Encoding: Injecting Order</h2>
+  <p class="slide-p">Self-attention is <strong style="color:var(--text-primary)">permutation-invariant</strong>: if you shuffle the input tokens, the attention scores don't change (only the output positions swap). Transformers must be given explicit position information.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box blue">
+        <div class="concept-box-label">Sinusoidal Positional Encoding (original)</div>
+        <div class="concept-box-body">
+          PE(pos, 2i) = sin(pos / 10000<sup>2i/d</sup>)<br/>
+          PE(pos, 2i+1) = cos(pos / 10000<sup>2i/d</sup>)<br/><br/>
+          Each position gets a unique pattern of sin/cos at different frequencies. Added directly to the token embedding before the first layer.
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:0">
+        <div class="concept-box-label">Learned Positional Embeddings</div>
+        <div class="concept-box-body">BERT and most modern code models use <strong>learned positional embeddings</strong> — one trainable vector per position. Slightly better in practice but can't generalise beyond the maximum training length.</div>
+      </div>
+      <div class="concept-box amber" style="margin-top:0">
+        <div class="concept-box-label">RoPE &amp; ALiBi (Modern)</div>
+        <div class="concept-box-body">Recent models (Llama, CodeLlama) use <strong>Rotary Position Embeddings (RoPE)</strong> which encode relative position directly in the Q·K dot product, enabling better length extrapolation.</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Sinusoidal PE — First 8 Positions, 16 Dimensions</div>
+        <svg id="pe-svg" viewBox="0 0 280 180" width="100%" style="display:block;"></svg>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">Each row = a position. Each column = one embedding dimension. Colors show sin/cos wave values from −1 (dark) to +1 (bright green).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7 · LSTM vs Transformer                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 2 · Slide 07</div>
+  <h2 class="slide-h2">LSTM vs Transformer: Head to Head</h2>
+  <p class="slide-p">Both architectures can learn representations of sequences — but their inductive biases, scaling properties, and practical trade-offs differ significantly.</p>
+  <table class="comp-table">
+    <tr><th>Dimension</th><th>LSTM</th><th>Transformer</th></tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Processing</strong></td>
+      <td><span class="tag-amber">Sequential</span> — must process t before t+1</td>
+      <td><span class="tag-green">Parallel</span> — all positions processed simultaneously</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Long-range dependencies</strong></td>
+      <td><span class="tag-amber">Indirect</span> — must flow through all intermediate cells</td>
+      <td><span class="tag-green">Direct</span> — any token attends to any other in O(1) steps</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Compute complexity</strong></td>
+      <td>O(T) per layer; easily handles very long sequences</td>
+      <td>O(T²) per layer (attention matrix); quadratic in sequence length</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Memory (inference)</strong></td>
+      <td><span class="tag-green">O(1)</span> per step (just the hidden state)</td>
+      <td><span class="tag-amber">O(T)</span> — must cache all prior key-value pairs</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Pre-training at scale</strong></td>
+      <td><span class="tag-amber">Limited</span> — hard to scale; sequential bottleneck</td>
+      <td><span class="tag-green">Excellent</span> — trivially parallelises across GPUs/TPUs</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Small datasets</strong></td>
+      <td><span class="tag-green">Competitive</span> — fewer parameters, strong inductive bias</td>
+      <td><span class="tag-amber">Data-hungry</span> without pre-training; overfits easily</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--text-primary);">Streaming/online</strong></td>
+      <td><span class="tag-green">Natural</span> — processes one token at a time</td>
+      <td><span class="tag-amber">Requires KV cache</span> or re-computation at each step</td>
+    </tr>
+  </table>
+  <div class="concept-box" style="margin-top:14px;">
+    <div class="concept-box-label">The Practical Verdict</div>
+    <div class="concept-box-body">For <strong>research-scale SE automation</strong> (bug fixing, code summarisation, clone detection) today: <strong>Transformers dominate</strong>, primarily because large pre-trained code models are freely available. LSTMs remain relevant in <strong>resource-constrained</strong> settings, streaming inference, and scenarios where training data is small.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 8 · Pre-Training                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 2 · Slide 08</div>
+  <h2 class="slide-h2">Pre-Training: Learning from the Unlabeled</h2>
+  <p class="slide-p">The key insight behind BERT, GPT, and their code variants: you can learn <em>powerful representations</em> from raw, unlabeled text using <strong style="color:var(--text-primary)">self-supervised objectives</strong> — without any human annotation.</p>
+  <div class="two-col">
+    <div>
+      <div class="term-card">
+        <div class="term-emoji">🎭</div>
+        <div class="term-name">Masked Language Modelling (MLM) — BERT-style</div>
+        <div class="term-def">Randomly mask 15% of tokens. Train the model to predict the masked tokens from context. Forces the model to learn bidirectional language understanding. Used by: BERT, CodeBERT, RoBERTa.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-emoji">🔮</div>
+        <div class="term-name">Causal Language Modelling (CLM) — GPT-style</div>
+        <div class="term-def">Train to predict the next token given all previous tokens (left-to-right). Naturally suited for generation. Used by: GPT-2/3/4, Codex, StarCoder, CodeLlama.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-emoji">🔁</div>
+        <div class="term-name">Span Denoising — T5-style</div>
+        <div class="term-def">Corrupt the input by masking contiguous spans. Train to reconstruct the original. The encoder-decoder architecture naturally learns to repair text. Used by: CodeT5, T5.</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Pre-Training Pipeline</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+            <div style="font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:4px;">DATA</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">GitHub: 54M+ repos — Python, Java, JS, Go, Rust… Raw code, no labels needed.</div>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:10px;">
+            <div style="font-size:0.68rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:4px;">SELF-SUPERVISED OBJECTIVE</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Predict masked tokens / next tokens — no human annotation required.</div>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓ 100B-1T tokens ↓</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;">
+            <div style="font-size:0.68rem;color:var(--green);font-family:var(--font-mono);margin-bottom:4px;">RESULT</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Model learns: syntax, idioms, common patterns, API usage, variable naming conventions — without being told what any of it means.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9 · Fine-Tuning                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 2 · Slide 09</div>
+  <h2 class="slide-h2">Fine-Tuning: Adapting to Downstream Tasks</h2>
+  <p class="slide-p">After pre-training, the model has rich representations but no task-specific head. <strong style="color:var(--text-primary)">Fine-tuning</strong> adds a small task head and continues training on a (typically small) labeled dataset.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box">
+        <div class="concept-box-label">Two Strategies</div>
+        <div class="concept-box-body">
+          <strong>Full fine-tuning:</strong> update all parameters. Best accuracy but requires storing one model copy per task. Used when compute is plentiful.<br/><br/>
+          <strong>Frozen backbone + head:</strong> freeze the pre-trained encoder, only train the classification head. Much cheaper. Works well when labeled data is small (100–1000 examples).
+        </div>
+      </div>
+      <div class="concept-box blue" style="margin-top:0">
+        <div class="concept-box-label">Why Labeled Data is Scarce in SE</div>
+        <div class="concept-box-body">
+          Creating labeled SE datasets requires <strong>developer expertise</strong>:<br/>
+          — Classifying a bug report to a component needs project knowledge<br/>
+          — Identifying a code smell requires understanding code quality<br/>
+          — Annotating a patch as correct requires running tests<br/><br/>
+          A large project might have 10k labeled bug reports after years of effort — but GitHub has <em>billions</em> of unlabeled lines of code. Pre-training exploits the unlabeled majority.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Few-Shot Learning Advantage</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.82rem;">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Bug triaging accuracy vs labeled dataset size:</div>
+          <!-- Bar chart -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:80px;font-size:0.72rem;color:var(--text-muted);text-align:right;">100 samples</div>
+            <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;">
+              <div style="height:100%;background:var(--red);width:35%;border-radius:4px;"></div>
+            </div>
+            <div style="width:36px;font-family:var(--font-mono);font-size:0.72rem;color:var(--red);">35%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:80px;font-size:0.72rem;color:var(--text-muted);text-align:right;">100 samples</div>
+            <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;">
+              <div style="height:100%;background:var(--blue);width:68%;border-radius:4px;"></div>
+            </div>
+            <div style="width:36px;font-family:var(--font-mono);font-size:0.72rem;color:var(--blue);">68%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:80px;font-size:0.72rem;color:var(--text-muted);text-align:right;">1k samples</div>
+            <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;">
+              <div style="height:100%;background:var(--amber);width:55%;border-radius:4px;"></div>
+            </div>
+            <div style="width:36px;font-family:var(--font-mono);font-size:0.72rem;color:var(--amber);">55%</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:80px;font-size:0.72rem;color:var(--text-muted);text-align:right;">1k samples</div>
+            <div style="flex:1;background:var(--bg-3);border-radius:4px;height:18px;overflow:hidden;">
+              <div style="height:100%;background:var(--green);width:84%;border-radius:4px;"></div>
+            </div>
+            <div style="width:36px;font-family:var(--font-mono);font-size:0.72rem;color:var(--green);">84%</div>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;">
+            <span style="color:var(--red);">■</span> Random init &nbsp;
+            <span style="color:var(--blue);">■</span> Pre-trained (frozen) &nbsp;
+            <span style="color:var(--amber);">■</span> Random init (1k) &nbsp;
+            <span style="color:var(--green);">■</span> Pre-trained (1k)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 10 · Code Models                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 2 · Slide 10</div>
+  <h2 class="slide-h2">Code Models: The Ecosystem</h2>
+  <p class="slide-p">A new generation of Transformer-based models pre-trained specifically on source code has emerged, each with a different architecture, training objective, and intended use case.</p>
+  <table class="comp-table">
+    <tr><th>Model</th><th>Org</th><th>Architecture</th><th>Pre-train Objective</th><th>Best For</th></tr>
+    <tr>
+      <td><strong style="color:var(--blue);">CodeBERT</strong></td>
+      <td style="color:var(--text-muted);">Microsoft</td>
+      <td>Encoder-only (BERT)</td>
+      <td>MLM + RTD (bimodal: code + docstring)</td>
+      <td>Classification, retrieval, embeddings</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--purple);">GraphCodeBERT</strong></td>
+      <td style="color:var(--text-muted);">Microsoft</td>
+      <td>Encoder-only + data-flow</td>
+      <td>MLM + edge prediction on DFG</td>
+      <td>Code search, clone detection</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green);">CodeT5</strong></td>
+      <td style="color:var(--text-muted);">Salesforce</td>
+      <td>Encoder-Decoder (T5)</td>
+      <td>Span denoising + identifier tagging</td>
+      <td>Code generation, summarisation</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--amber);">StarCoder2</strong></td>
+      <td style="color:var(--text-muted);">Hugging Face</td>
+      <td>Decoder-only (GPT)</td>
+      <td>CLM on 600+ languages (The Stack v2)</td>
+      <td>Code completion, generation</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--cyan);">CodeLlama</strong></td>
+      <td style="color:var(--text-muted);">Meta</td>
+      <td>Decoder-only (Llama 2)</td>
+      <td>CLM + infilling (code only)</td>
+      <td>Completion, infilling, instruction following</td>
+    </tr>
+  </table>
+  <div class="concept-box" style="margin-top:14px;">
+    <div class="concept-box-label">Which to Choose?</div>
+    <div class="concept-box-body">For <strong>classification and embedding extraction</strong> (bug triaging, clone detection, vulnerability detection): encoder-only models like <strong>CodeBERT / GraphCodeBERT</strong> are the standard choice. For <strong>generation tasks</strong> (code completion, repair): decoder-only models (StarCoder, CodeLlama) produce better output. Encoder-decoder models (CodeT5) occupy a middle ground — strong at both.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 11 · Code Embeddings (Interactive)                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 2 · Slide 11 · ★ Interactive</div>
+  <h2 class="slide-h2">Code Embeddings from Transformers</h2>
+  <p class="slide-p" style="max-width:640px;">After fine-tuning (or even without it), the <strong style="color:var(--text-primary)">[CLS] token's output</strong> from an encoder is a rich embedding of the full input. These embeddings cluster semantically similar inputs together. Click a component label below to highlight its bug-report cluster.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box blue">
+        <div class="concept-box-label">Contextual vs Static Embeddings</div>
+        <div class="concept-box-body">In word2vec, <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--text-secondary);">null</code> always has the same vector. In BERT/CodeBERT, <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--text-secondary);">null</code> in a Java null-check has a <strong>different embedding</strong> than in a JSON response — the context shapes the representation. This massively improves downstream task performance.</div>
+      </div>
+      <div class="concept-box" style="margin-top:0">
+        <div class="concept-box-label">[CLS] Pooling</div>
+        <div class="concept-box-body">BERT prepends a special <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--green)">[CLS]</code> token. After the final layer, its hidden state attends to the entire sequence and produces a fixed-size (e.g. 768-d) vector representing the whole input. Add a linear layer on top → classifier.</div>
+      </div>
+      <div style="margin-top:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Highlight Component</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="scatter-legend"></div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header"><div class="inter-title">🗺️ Bug-Report Embedding Space (t-SNE) <span class="inter-badge">interactive</span></div></div>
+        <div class="inter-body" style="padding:8px;">
+          <svg id="scatter-svg" viewBox="0 0 300 220" width="100%" style="display:block;"></svg>
+          <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:4px;" id="scatter-tooltip">Click a legend item to highlight a component cluster</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 12 · Bug Triaging                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 2 · Slide 12</div>
+  <h2 class="slide-h2">Bug Triaging: From Embeddings to Labels</h2>
+  <p class="slide-p">Large open-source projects receive hundreds of bug reports per week. <strong style="color:var(--text-primary)">Bug triaging</strong> — assigning each report to the right developer or component — is labour-intensive. Embeddings + classification make it automatable.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box red">
+        <div class="concept-box-label">The Scale Problem</div>
+        <div class="concept-box-body">The Eclipse IDE bug tracker has received over <strong>300,000 bug reports</strong> across 15+ components (UI, JDT, Platform, CDT…). Mozilla Firefox has similar numbers. Manually routing all of these to the right team is a full-time job per project.</div>
+      </div>
+      <div class="concept-box blue" style="margin-top:0">
+        <div class="concept-box-label">Input Features</div>
+        <div class="concept-box-body">
+          <strong>Bug report title:</strong> "NPE in UIManager.paintComponent when dark theme"<br/>
+          <strong>Description:</strong> stack traces, steps to reproduce, version info<br/>
+          <strong>Code context (optional):</strong> snippet triggering the bug<br/><br/>
+          All concatenated with [SEP] tokens and fed to CodeBERT / BERT.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Classification Pipeline</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:var(--bg-3);border:1px solid rgba(255,95,87,0.3);border-radius:8px;padding:10px;font-size:0.8rem;">
+            <div style="color:var(--red);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">INPUT</div>
+            <em style="color:var(--text-secondary);">"NullPointerException in UIManager.paintComponent — occurs when switching to dark theme on Windows 11"</em>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓ tokenize + [CLS] prepend</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:10px;font-size:0.8rem;text-align:center;color:var(--blue);">CodeBERT encoder → [CLS] embedding (768-d)</div>
+          <div style="text-align:center;color:var(--green);">↓ linear layer</div>
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;">
+            <div style="color:var(--green);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:6px;">OUTPUT (softmax over 16 components)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;">
+              <div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--border);border-radius:3px;height:8px;overflow:hidden;"><div style="width:78%;height:100%;background:var(--green);border-radius:3px;"></div></div><span style="color:var(--green);font-family:var(--font-mono);font-size:0.72rem;">Platform/UI 78%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--border);border-radius:3px;height:8px;overflow:hidden;"><div style="width:14%;height:100%;background:var(--amber);border-radius:3px;"></div></div><span style="color:var(--amber);font-family:var(--font-mono);font-size:0.72rem;">JDT/Core 14%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--border);border-radius:3px;height:8px;overflow:hidden;"><div style="width:5%;height:100%;background:var(--text-muted);border-radius:3px;"></div></div><span style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;">Other 8%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 13 · Transfer Learning Pipeline (Interactive)             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 2 · Slide 13 · ★ Interactive</div>
+  <h2 class="slide-h2">Transfer Learning Pipeline</h2>
+  <p class="slide-p" style="max-width:640px;">Step through how a pre-trained CodeBERT model is adapted for bug triaging. Use the slider to see how performance changes with the number of labeled training examples.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Pipeline Steps</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div id="step-box-1" style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:10px;cursor:pointer;transition:all 0.2s;" onclick="setTLStep(1)">
+            <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);margin-bottom:3px;">STEP 1</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Load pre-trained CodeBERT (125M params, trained on 6 languages)</div>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓</div>
+          <div id="step-box-2" style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:all 0.2s;" onclick="setTLStep(2)">
+            <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:3px;">STEP 2</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Add classification head: Linear(768 → n_classes)</div>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓</div>
+          <div id="step-box-3" style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:all 0.2s;" onclick="setTLStep(3)">
+            <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:3px;">STEP 3</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Fine-tune on labeled bug reports (adjust training size below)</div>
+          </div>
+          <div style="text-align:center;color:var(--green);">↓</div>
+          <div id="step-box-4" style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:all 0.2s;" onclick="setTLStep(4)">
+            <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:3px;">STEP 4</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary);">Deploy: route incoming bug reports automatically</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header"><div class="inter-title">📈 Accuracy vs Training Size <span class="inter-badge">interactive</span></div></div>
+        <div class="inter-body" style="padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <span style="font-size:0.8rem;color:var(--text-secondary);">Labeled examples:</span>
+            <input type="range" id="tl-slider" min="0" max="4" step="1" value="2" oninput="updateTL()" style="flex:1;accent-color:var(--green);"/>
+            <span id="tl-n" style="font-family:var(--font-mono);font-size:0.9rem;font-weight:700;color:var(--green);min-width:50px;text-align:right;">1,000</span>
+          </div>
+          <!-- Accuracy comparison -->
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">Random initialisation</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;background:var(--bg-3);border-radius:4px;height:20px;overflow:hidden;">
+                  <div id="tl-rand-bar" style="height:100%;background:var(--red);border-radius:4px;width:30%;transition:width 0.5s ease;"></div>
+                </div>
+                <div id="tl-rand-num" style="font-family:var(--font-mono);font-size:0.82rem;font-weight:600;color:var(--red);min-width:40px;text-align:right;">30%</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">CodeBERT fine-tuned</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;background:var(--bg-3);border-radius:4px;height:20px;overflow:hidden;">
+                  <div id="tl-ft-bar" style="height:100%;background:var(--green);border-radius:4px;width:72%;transition:width 0.5s ease;"></div>
+                </div>
+                <div id="tl-ft-num" style="font-family:var(--font-mono);font-size:0.82rem;font-weight:600;color:var(--green);min-width:40px;text-align:right;">72%</div>
+              </div>
+            </div>
+          </div>
+          <div id="tl-insight" style="margin-top:12px;padding:10px;background:var(--bg-3);border-radius:8px;font-size:0.79rem;color:var(--text-secondary);line-height:1.5;">
+            With 1,000 examples, pre-training already delivers a <strong style="color:var(--green)">+42pp</strong> accuracy advantage. The backbone already "knows" what code looks like.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 14 · HuggingFace Code Example                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 2 · Slide 14</div>
+  <h2 class="slide-h2">HuggingFace: Pre-Train → Embed → Classify</h2>
+  <p class="slide-p" style="max-width:640px;">A complete, runnable example: load CodeBERT, freeze the backbone, attach a classification head, and fine-tune on bug-triaging data.</p>
+  <div class="two-col">
+    <div>
+      <div class="code-block" style="font-size:0.74rem;">
+<span class="ck">from</span> transformers <span class="ck">import</span> AutoTokenizer, AutoModel
+<span class="ck">import</span> torch, torch.nn <span class="ck">as</span> nn
+
+<span class="cc"># ── 1. Load pre-trained CodeBERT ──────────────</span>
+tokenizer = AutoTokenizer.<span class="cf">from_pretrained</span>(
+    <span class="cs">"microsoft/codebert-base"</span>)
+backbone  = AutoModel.<span class="cf">from_pretrained</span>(
+    <span class="cs">"microsoft/codebert-base"</span>)
+
+<span class="cc"># Freeze backbone weights</span>
+<span class="ck">for</span> p <span class="ck">in</span> backbone.parameters():
+    p.requires_grad = <span class="ck">False</span>
+
+<span class="cc"># ── 2. Classification head ─────────────────────</span>
+<span class="ck">class</span> <span class="cl">BugTriageModel</span>(nn.Module):
+    <span class="ck">def</span> <span class="cf">__init__</span>(self, encoder, n_classes, drop=<span class="cs">0.1</span>):
+        <span class="cf">super</span>().__init__()
+        self.enc  = encoder
+        self.drop = nn.<span class="cl">Dropout</span>(drop)
+        self.head = nn.<span class="cl">Linear</span>(<span class="cs">768</span>, n_classes)
+
+    <span class="ck">def</span> <span class="cf">forward</span>(self, ids, mask):
+        out = self.enc(input_ids=ids,
+                       attention_mask=mask)
+        cls = out.last_hidden_state[:, <span class="cs">0</span>, :]  <span class="cc"># [CLS]</span>
+        <span class="ck">return</span> self.head(self.drop(cls))
+
+COMPONENTS = [<span class="cs">"Platform/UI"</span>, <span class="cs">"JDT/Core"</span>, <span class="cs">"Platform/Debug"</span>,
+              <span class="cs">"CDT/Core"</span>, <span class="cs">"Platform/Runtime"</span>, ...]
+model = <span class="cl">BugTriageModel</span>(backbone, n_classes=<span class="cf">len</span>(COMPONENTS))
+      </div>
+    </div>
+    <div>
+      <div class="code-block" style="font-size:0.74rem;">
+<span class="cc"># ── 3. Training loop ───────────────────────────</span>
+opt = torch.optim.<span class="cf">Adam</span>(
+    <span class="cf">filter</span>(<span class="ck">lambda</span> p: p.requires_grad,
+           model.parameters()), lr=<span class="cs">2e-4</span>)
+loss_fn = nn.<span class="cl">CrossEntropyLoss</span>()
+
+<span class="ck">for</span> epoch <span class="ck">in</span> <span class="cf">range</span>(<span class="cs">10</span>):
+    <span class="ck">for</span> title, label <span class="ck">in</span> dataloader:
+        enc = tokenizer(title,
+                        return_tensors=<span class="cs">"pt"</span>,
+                        max_length=<span class="cs">128</span>,
+                        truncation=<span class="ck">True</span>,
+                        padding=<span class="ck">True</span>)
+        logits = model(**enc)
+        loss   = loss_fn(logits, label)
+        loss.<span class="cf">backward</span>()
+        opt.<span class="cf">step</span>(); opt.<span class="cf">zero_grad</span>()
+
+<span class="cc"># ── 4. Inference ───────────────────────────────</span>
+model.<span class="cf">eval</span>()
+report = <span class="cs">"NPE in UIManager.paintComponent — dark theme"</span>
+enc = tokenizer(report, return_tensors=<span class="cs">"pt"</span>,
+                max_length=<span class="cs">128</span>, truncation=<span class="ck">True</span>)
+<span class="ck">with</span> torch.no_grad():
+    logits = model(**enc)
+    pred   = logits.<span class="cf">argmax</span>(dim=<span class="cs">-1</span>)
+<span class="cf">print</span>(<span class="cs">f"→ </span><span class="ck">{</span>COMPONENTS[pred]<span class="ck">}</span><span class="cs">"</span>)
+<span class="cc"># → Platform/UI</span>
+      </div>
+      <div class="concept-box" style="margin-top:8px;">
+        <div class="concept-box-label">Key Takeaways</div>
+        <div class="concept-box-body">
+          <strong>1.</strong> Pre-trained code models are <em>plug-and-play</em> via HuggingFace.<br/>
+          <strong>2.</strong> Frozen backbone + small head trains in minutes on modest hardware.<br/>
+          <strong>3.</strong> The same recipe works for vulnerability detection, code smell classification, duplicate bug detection — just change the labels.<br/>
+          <strong>4.</strong> For generation tasks, swap <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--green)">AutoModel</code> for <code style="font-family:var(--font-mono);font-size:0.82em;color:var(--green)">AutoModelForCausalLM</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<div class="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>← Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next →</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 14;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+  if (cur === 3) setTimeout(buildSA, 100);
+  if (cur === 6) setTimeout(drawPE, 100);
+  if (cur === 11) setTimeout(buildScatter, 100);
+  if (cur === 13) setTimeout(() => { updateTL(); setTLStep(1); }, 100);
+}
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+// ── Self-Attention Explorer (Slide 3) ────────────────────────────
+const SA_TOKENS = ['def', 'fix_null', '(', 'obj', ')', ':'];
+const SA_ATTN = {
+  'def':      [0.12, 0.28, 0.08, 0.06, 0.06, 0.40],
+  'fix_null': [0.18, 0.30, 0.05, 0.28, 0.05, 0.14],
+  '(':        [0.06, 0.06, 0.20, 0.15, 0.48, 0.05],
+  'obj':      [0.07, 0.38, 0.12, 0.28, 0.10, 0.05],
+  ')':        [0.05, 0.05, 0.50, 0.10, 0.22, 0.08],
+  ':':        [0.42, 0.25, 0.05, 0.08, 0.05, 0.15],
+};
+const SA_EXPLAIN = {
+  'def':      '<strong style="color:var(--green)">def</strong> attends most strongly to <code style="font-family:var(--font-mono)">:</code> (0.40) — together they signal a function definition boundary.',
+  'fix_null': '<strong style="color:var(--green)">fix_null</strong> attends to itself (0.30) and <code style="font-family:var(--font-mono)">obj</code> (0.28) — it knows its argument.',
+  '(':        '<strong style="color:var(--green)">(</strong> attends most to its matching <code style="font-family:var(--font-mono)">)</code> (0.48) — bracket matching emerges naturally.',
+  'obj':      '<strong style="color:var(--green)">obj</strong> attends to <code style="font-family:var(--font-mono)">fix_null</code> (0.38) — parameter linked to function name.',
+  ')':        '<strong style="color:var(--green)">)</strong> attends to <code style="font-family:var(--font-mono)">(</code> (0.50) — the matching open bracket, even through <code style="font-family:var(--font-mono)">obj</code>.',
+  ':':        '<strong style="color:var(--green)">:</strong> attends strongly to <code style="font-family:var(--font-mono)">def</code> (0.42) and <code style="font-family:var(--font-mono)">fix_null</code> (0.25) — it marks the end of the function signature.',
+};
+let saSelected = null;
+
+function buildSA() {
+  const tokDiv = document.getElementById('sa-tokens');
+  if (!tokDiv) return;
+  tokDiv.innerHTML = SA_TOKENS.map(t =>
+    `<div class="sa-token" id="sa-tok-${t}" onclick="selectSA('${t}')">${t}</div>`
+  ).join('');
+}
+function selectSA(tok) {
+  saSelected = tok;
+  SA_TOKENS.forEach(t => {
+    const el = document.getElementById('sa-tok-' + t);
+    if (el) el.className = 'sa-token' + (t === tok ? ' selected' : '');
+  });
+  const attn = SA_ATTN[tok];
+  const barsDiv = document.getElementById('sa-bars');
+  barsDiv.innerHTML = SA_TOKENS.map((t, i) => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="width:60px;font-family:var(--font-mono);font-size:0.78rem;color:${attn[i]>0.25?'var(--green)':'var(--text-secondary)'};">${t}</div>
+      <div style="flex:1;background:var(--bg-3);border-radius:4px;height:16px;overflow:hidden;">
+        <div style="height:100%;background:${attn[i]>0.25?'var(--green)':'rgba(88,166,255,0.5)'};width:${(attn[i]*100).toFixed(1)}%;border-radius:4px;transition:width 0.3s ease;"></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;font-weight:600;color:${attn[i]>0.25?'var(--green)':'var(--text-muted)'};min-width:36px;text-align:right;">${attn[i].toFixed(2)}</div>
+    </div>
+  `).join('');
+  document.getElementById('sa-explanation').innerHTML = SA_EXPLAIN[tok];
+}
+
+// ── Positional Encoding (Slide 6) ────────────────────────────────
+function drawPE() {
+  const svg = document.getElementById('pe-svg');
+  if (!svg) return;
+  const positions = 8, dims = 16;
+  const cw = 14, ch = 18, ox = 28, oy = 8;
+  let html = '';
+  for (let pos = 0; pos < positions; pos++) {
+    for (let di = 0; di < dims; di++) {
+      const d = di;
+      let val;
+      if (d % 2 === 0) val = Math.sin(pos / Math.pow(10000, d / dims));
+      else             val = Math.cos(pos / Math.pow(10000, (d-1) / dims));
+      const norm = (val + 1) / 2;
+      const r = Math.round(13 + norm * (0 - 13));
+      const g = Math.round(23 + norm * (217 - 23));
+      const b = Math.round(37 + norm * (126 - 37));
+      const x = ox + di * (cw + 1);
+      const y = oy + pos * (ch + 1);
+      html += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="2" fill="rgb(${r},${g},${b})" opacity="0.9"/>`;
+    }
+    html += `<text x="${ox - 4}" y="${oy + pos*(ch+1) + ch*0.7}" font-size="9" fill="#484F58" font-family="monospace" text-anchor="end">pos ${pos}</text>`;
+  }
+  for (let di = 0; di < dims; di += 4) {
+    const x = ox + di * (cw + 1) + cw/2;
+    html += `<text x="${x}" y="${oy + positions*(ch+1) + 10}" font-size="8" fill="#484F58" font-family="monospace" text-anchor="middle">d${di}</text>`;
+  }
+  svg.innerHTML = html;
+}
+
+// ── Scatter Plot (Slide 11) ───────────────────────────────────────
+const COMPONENTS_DATA = [
+  { label: 'Platform/UI', color: '#58A6FF', points: [[55,60],[65,55],[58,70],[72,62],[60,50],[68,80],[50,65],[80,58]] },
+  { label: 'JDT/Core',    color: '#00D97E', points: [[170,50],[180,62],[165,70],[185,55],[175,75],[190,68],[160,60],[182,48]] },
+  { label: 'Platform/Debug', color: '#E3B341', points: [[100,140],[115,150],[95,155],[120,145],[105,135],[125,160],[90,148],[112,138]] },
+  { label: 'CDT/Core',    color: '#BC8CFF', points: [[220,140],[235,150],[215,160],[240,145],[225,135],[245,155],[210,148],[238,138]] },
+  { label: 'PDE/UI',      color: '#FF5F57', points: [[140,95],[150,88],[135,105],[155,100],[145,82],[160,92],[130,98],[152,85]] },
+];
+let scatterHighlight = null;
+
+function buildScatter() {
+  const svg = document.getElementById('scatter-svg');
+  const legend = document.getElementById('scatter-legend');
+  if (!svg) return;
+  let html = '';
+  COMPONENTS_DATA.forEach((comp, ci) => {
+    comp.points.forEach((p, pi) => {
+      html += `<circle class="scatter-dot" cx="${p[0]}" cy="${p[1]}" r="5" fill="${comp.color}" opacity="0.7" data-comp="${ci}" onclick="highlightComp(${ci})" id="sc-${ci}-${pi}"/>`;
+    });
+  });
+  svg.innerHTML = html;
+  legend.innerHTML = COMPONENTS_DATA.map((c, i) =>
+    `<button class="sim-btn" id="leg-${i}" onclick="highlightComp(${i})" style="display:flex;align-items:center;gap:6px;font-size:0.75rem;"><span style="width:8px;height:8px;background:${c.color};border-radius:50%;display:inline-block;"></span>${c.label}</button>`
+  ).join('');
+}
+
+function highlightComp(idx) {
+  scatterHighlight = idx;
+  const svg = document.getElementById('scatter-svg');
+  if (!svg) return;
+  COMPONENTS_DATA.forEach((comp, ci) => {
+    comp.points.forEach((p, pi) => {
+      const el = svg.querySelector(`#sc-${ci}-${pi}`);
+      if (el) {
+        if (idx === null) { el.setAttribute('opacity', '0.7'); el.setAttribute('r', '5'); }
+        else if (ci === idx) { el.setAttribute('opacity', '0.95'); el.setAttribute('r', '7'); }
+        else { el.setAttribute('opacity', '0.12'); el.setAttribute('r', '4'); }
+      }
+    });
+  });
+  COMPONENTS_DATA.forEach((c, i) => {
+    const btn = document.getElementById('leg-' + i);
+    if (btn) btn.className = 'sim-btn' + (i === idx ? ' primary' : '');
+  });
+  const tt = document.getElementById('scatter-tooltip');
+  if (tt && idx !== null) tt.textContent = `${COMPONENTS_DATA[idx].label}: ${COMPONENTS_DATA[idx].points.length} bug reports highlighted. These cluster together in embedding space.`;
+}
+
+// ── Transfer Learning Slider (Slide 13) ──────────────────────────
+const TL_POINTS = [
+  { n: '50',    rand: 18, ft: 52 },
+  { n: '200',   rand: 25, ft: 65 },
+  { n: '1,000', rand: 38, ft: 76 },
+  { n: '5,000', rand: 57, ft: 84 },
+  { n: '20,000',rand: 72, ft: 89 },
+];
+
+function updateTL() {
+  const v = parseInt(document.getElementById('tl-slider').value);
+  const d = TL_POINTS[v];
+  document.getElementById('tl-n').textContent = d.n;
+  document.getElementById('tl-rand-bar').style.width = d.rand + '%';
+  document.getElementById('tl-rand-num').textContent = d.rand + '%';
+  document.getElementById('tl-ft-bar').style.width = d.ft + '%';
+  document.getElementById('tl-ft-num').textContent = d.ft + '%';
+  const gain = d.ft - d.rand;
+  const insight = document.getElementById('tl-insight');
+  if (gain > 30) insight.innerHTML = `With only <strong style="color:var(--green)">${d.n}</strong> labeled examples, pre-training gives a <strong style="color:var(--green)">+${gain}pp</strong> advantage. The backbone already understands code structure.`;
+  else insight.innerHTML = `With <strong style="color:var(--green)">${d.n}</strong> examples, the gap narrows to <strong style="color:var(--amber)">+${gain}pp</strong> — but pre-training still wins. At this scale you'd need far more data from scratch.`;
+}
+
+let tlStep = 0;
+function setTLStep(s) {
+  tlStep = s;
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('step-box-' + i);
+    if (!el) return;
+    if (i === s) {
+      el.style.borderColor = 'var(--green-border)';
+      el.style.background = 'rgba(0,217,126,0.06)';
+    } else if (i < s) {
+      el.style.borderColor = 'rgba(0,217,126,0.15)';
+      el.style.background = 'var(--bg-3)';
+    } else {
+      el.style.borderColor = 'var(--border)';
+      el.style.background = 'var(--bg-3)';
+    }
+  });
+}
+</script>
+</body>
+</html>

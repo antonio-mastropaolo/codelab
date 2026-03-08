@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LSTMs, Embeddings &amp; Deep Learning for SE — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+    /* Topbar */
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+
+    /* Progress */
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+
+    /* Slides */
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+
+    /* Nav bar */
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;border-color:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+
+    /* Typography */
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:10px;}
+    @media(max-width:700px){.two-col,.three-col{grid-template-columns:1fr;gap:16px;}}
+
+    /* Concept boxes */
+    .concept-box{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .concept-box.blue{border-left-color:var(--blue);}
+    .concept-box.amber{border-left-color:var(--amber);}
+    .concept-box.purple{border-left-color:var(--purple);}
+    .concept-box.red{border-left-color:var(--red);}
+    .concept-box.cyan{border-left-color:var(--cyan);}
+    .concept-box-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .concept-box.blue .concept-box-label{color:var(--blue);}
+    .concept-box.amber .concept-box-label{color:var(--amber);}
+    .concept-box.purple .concept-box-label{color:var(--purple);}
+    .concept-box.red .concept-box-label{color:var(--red);}
+    .concept-box.cyan .concept-box-label{color:var(--cyan);}
+    .concept-box-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .concept-box-body strong{color:var(--text-primary);}
+
+    /* Term cards */
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;}
+    .term-emoji{font-size:1.3rem;margin-bottom:6px;}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+
+    /* Step rows */
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Code blocks */
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;}
+    .ck{color:var(--purple);}  /* keyword */
+    .cs{color:var(--green);}   /* string / number */
+    .cc{color:var(--text-muted);font-style:italic;}  /* comment */
+    .cf{color:var(--blue);}    /* function */
+    .cl{color:var(--amber);}   /* class */
+    .ca{color:var(--cyan);}    /* attribute / decorator */
+
+    /* Interactive panels */
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+
+    /* Sim buttons */
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+
+    /* Takeaway grid */
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* Token chips */
+    .token-seq{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+    .tok{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:0.78rem;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);}
+    .tok.kw{border-color:rgba(188,140,255,0.3);color:var(--purple);background:rgba(188,140,255,0.06);}
+    .tok.id{border-color:rgba(88,166,255,0.3);color:var(--blue);background:rgba(88,166,255,0.06);}
+    .tok.op{border-color:rgba(227,179,65,0.3);color:var(--amber);background:rgba(227,179,65,0.06);}
+    .tok.sub{border-color:rgba(0,217,126,0.3);color:var(--green);background:rgba(0,217,126,0.08);}
+    .tok.unk{border-color:rgba(255,95,87,0.3);color:var(--red);background:rgba(255,95,87,0.06);}
+
+    /* Embed vector display */
+    .vec-display{display:flex;gap:3px;margin:6px 0;}
+    .vec-cell{width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-family:var(--font-mono);}
+
+    /* Comparison table */
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-red{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(255,95,87,0.08);color:var(--red);border:1px solid rgba(255,95,87,0.2);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+
+    /* LSTM diagram */
+    .lstm-cell-diagram{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;min-height:180px;}
+    .gate-box{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;font-size:0.78rem;}
+    .gate-box-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+    .gate-box-val{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;}
+
+    /* Slider row */
+    .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .slider-label{font-size:0.8rem;font-family:var(--font-mono);color:var(--text-secondary);min-width:90px;}
+    .slider-val{font-family:var(--font-mono);font-size:0.82rem;font-weight:600;min-width:48px;text-align:right;}
+    input[type=range]{flex:1;accent-color:var(--green);}
+
+    /* Gate bar */
+    .gate-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+    .gate-bar-label{font-size:0.75rem;font-family:var(--font-mono);min-width:80px;color:var(--text-secondary);}
+    .gate-bar-track{flex:1;height:14px;background:var(--bg-3);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+    .gate-bar-fill{height:100%;border-radius:4px;transition:width 0.25s ease;}
+    .gate-bar-num{font-family:var(--font-mono);font-size:0.75rem;font-weight:600;min-width:42px;text-align:right;}
+
+    /* Attention heatmap */
+    .attn-grid{display:grid;gap:2px;}
+    .attn-cell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-family:var(--font-mono);cursor:pointer;transition:opacity 0.15s;}
+    .attn-tok-label{font-size:0.68rem;font-family:var(--font-mono);color:var(--text-secondary);padding:4px 2px;text-align:center;overflow:hidden;white-space:nowrap;}
+
+    /* Arch diagram */
+    .arch-box{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.8rem;text-align:center;}
+    .arch-arrow{text-align:center;color:var(--green);font-size:1.1rem;margin:4px 0;}
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-title">LSTMs, Embeddings &amp; Deep Learning for SE</span>
+  <span class="topbar-badge">Interactive · 14 Slides</span>
+  <span class="slide-counter" id="counter">1 / 14</span>
+  <a href="teaching.html" class="topbar-home">← Teaching</a>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+
+<div class="slides-wrapper">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 · Hook                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 1 · Slide 01</div>
+  <h1 class="slide-h1">How does a machine<br/><em>learn to fix code?</em></h1>
+  <p class="slide-p">Before LLMs and GitHub Copilot, researchers spent a decade building neural networks that could read and transform source code — one token at a time. The key ingredients: <strong style="color:var(--text-primary)">embeddings, sequence models, and attention</strong>.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box">
+        <div class="concept-box-label">The Big Picture</div>
+        <div class="concept-box-body">Source code is <strong>discrete, structured text</strong>. Neural networks only understand continuous numbers. We need a pipeline: <strong>tokenize → embed → model → predict</strong>. Each step has deep implications for what the model can and cannot learn.</div>
+      </div>
+      <div class="concept-box blue" style="margin-top:0">
+        <div class="concept-box-label">What We'll Build Up To</div>
+        <div class="concept-box-body">A <strong>sequence-to-sequence LSTM with attention</strong> that takes buggy code as input and outputs the corrected version — the architecture behind early automated program repair systems like DeepFix and SequenceR.</div>
+      </div>
+    </div>
+    <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;">Bug-Fixing Pipeline</div>
+      <div style="background:var(--bg-3);border:1px solid rgba(255,95,87,0.3);border-radius:8px;padding:10px;font-family:var(--font-mono);font-size:0.75rem;color:var(--red);">
+        <span style="color:var(--text-muted);font-size:0.65rem;">INPUT (buggy)</span><br/>
+        <span style="color:var(--text-secondary);">result = sum(arr, n-<span style="color:var(--red)">0</span>)</span>
+      </div>
+      <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">↓ tokenize &amp; embed</div>
+      <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:10px;font-size:0.75rem;text-align:center;color:var(--blue);">LSTM Encoder → Attention → LSTM Decoder</div>
+      <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">↓ generate tokens</div>
+      <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;font-family:var(--font-mono);font-size:0.75rem;">
+        <span style="color:var(--text-muted);font-size:0.65rem;">OUTPUT (fixed)</span><br/>
+        <span style="color:var(--text-secondary);">result = sum(arr, <span style="color:var(--green)">n</span>)</span>
+      </div>
+      <div style="font-size:0.72rem;color:var(--text-muted);text-align:center;margin-top:4px;">off-by-one corrected ✓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 2 · Word Embeddings                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 1 · Slide 02</div>
+  <h2 class="slide-h2">From Tokens to Vectors: Word Embeddings</h2>
+  <p class="slide-p">Neural networks operate on numbers, not text. An <strong style="color:var(--text-primary)">embedding</strong> is a learned mapping from each token to a dense vector in a high-dimensional space. The geometry of that space encodes meaning.</p>
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>One-hot is too sparse</h4>
+          <p>With a vocabulary of 50,000 tokens, a one-hot vector wastes 49,999 zeros. Every token is equally "distant" from every other — the model can't generalise.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Dense embeddings learn geometry</h4>
+          <p>A 128-d embedding vector is <em>learned during training</em>. Tokens that appear in similar contexts end up close together. <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--blue)">sort()</code> and <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--blue)">order()</code> cluster; <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--amber)">while</code> and <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--amber)">for</code> cluster.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Lookup, not computation</h4>
+          <p>In PyTorch: <code style="font-family:var(--font-mono);font-size:0.8em;color:var(--green)">nn.Embedding(V, d)</code> is just a matrix of shape <em>V × d</em>. Forward pass = row lookup. Back-prop adjusts rows to improve predictions.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Embedding Space (2D projection)</div>
+        <svg viewBox="0 0 260 200" width="100%" style="display:block;">
+          <rect width="260" height="200" fill="transparent"/>
+          <!-- axes -->
+          <line x1="20" y1="180" x2="245" y2="180" stroke="#30363D" stroke-width="1"/>
+          <line x1="20" y1="180" x2="20" y2="10" stroke="#30363D" stroke-width="1"/>
+          <!-- loop/for/while cluster -->
+          <circle cx="60" cy="50" r="5" fill="#E3B341" opacity="0.8"/>
+          <circle cx="75" cy="42" r="5" fill="#E3B341" opacity="0.8"/>
+          <circle cx="68" cy="62" r="5" fill="#E3B341" opacity="0.8"/>
+          <text x="82" y="46" font-size="10" fill="#8B949E" font-family="monospace">for</text>
+          <text x="64" y="38" font-size="10" fill="#8B949E" font-family="monospace">while</text>
+          <text x="72" y="72" font-size="10" fill="#8B949E" font-family="monospace">loop</text>
+          <!-- sort/order cluster -->
+          <circle cx="185" cy="55" r="5" fill="#58A6FF" opacity="0.8"/>
+          <circle cx="200" cy="45" r="5" fill="#58A6FF" opacity="0.8"/>
+          <circle cx="192" cy="68" r="5" fill="#58A6FF" opacity="0.8"/>
+          <text x="192" y="52" font-size="10" fill="#8B949E" font-family="monospace">sort</text>
+          <text x="207" y="42" font-size="10" fill="#8B949E" font-family="monospace">order</text>
+          <text x="197" y="75" font-size="10" fill="#8B949E" font-family="monospace">rank</text>
+          <!-- null/none cluster -->
+          <circle cx="120" cy="140" r="5" fill="#FF5F57" opacity="0.8"/>
+          <circle cx="138" cy="132" r="5" fill="#FF5F57" opacity="0.8"/>
+          <text x="126" y="138" font-size="10" fill="#8B949E" font-family="monospace">null</text>
+          <text x="143" y="130" font-size="10" fill="#8B949E" font-family="monospace">None</text>
+          <!-- cluster labels -->
+          <text x="38" y="88" font-size="9" fill="#484F58" font-family="sans-serif">control flow</text>
+          <text x="168" y="88" font-size="9" fill="#484F58" font-family="sans-serif">ordering</text>
+          <text x="104" y="165" font-size="9" fill="#484F58" font-family="sans-serif">null literals</text>
+        </svg>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">Tokens with similar roles cluster together in embedding space.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 · Code Embeddings                                       -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 1 · Slide 03</div>
+  <h2 class="slide-h2">Code Embeddings: Code is Different</h2>
+  <p class="slide-p">Source code is not just another kind of text. It has <strong style="color:var(--text-primary)">formal syntax</strong>, <strong style="color:var(--text-primary)">deterministic semantics</strong>, and <strong style="color:var(--text-primary)">rich structure</strong> (ASTs, control flow, data flow). Early work explored how to build embeddings that capture these properties.</p>
+  <div class="two-col" style="margin-top:10px;">
+    <div>
+      <div class="term-card" style="margin-bottom:10px;">
+        <div class="term-emoji">🌳</div>
+        <div class="term-name">code2vec (Alon et al., 2019)</div>
+        <div class="term-def">Represents a method as a bag of <strong style="color:var(--text-primary)">AST path-contexts</strong>. Each path is a (start leaf → root → end leaf) triple. Paths are embedded and combined with learned attention weights.</div>
+      </div>
+      <div class="term-card" style="margin-bottom:10px;">
+        <div class="term-emoji">🔗</div>
+        <div class="term-name">Graph-based Embeddings</div>
+        <div class="term-def">Use the <strong style="color:var(--text-primary)">data-flow graph</strong> to capture which variables influence which. GraphCodeBERT adds data-flow edges to the Transformer attention matrix.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-emoji">📝</div>
+        <div class="term-name">Token-Level Embeddings</div>
+        <div class="term-def">Simpler approach: treat code as a sequence of tokens and learn embeddings directly via language modelling. Works surprisingly well at scale (CodeBERT, StarCoder).</div>
+      </div>
+    </div>
+    <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Why Code Needs Special Treatment</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:0.7rem;color:var(--amber);font-family:var(--font-mono);margin-bottom:4px;">IDENTIFIER DIVERSITY</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);">Natural language has ~170k English words. A large codebase may have <strong style="color:var(--text-primary)">millions of unique identifiers</strong> — each method name, variable, class name is potentially unique.</div>
+        </div>
+        <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:0.7rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:4px;">SYNTAX SENSITIVITY</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);">Changing one character can completely change semantics: <code style="font-family:var(--font-mono);color:var(--red)">x = 0</code> vs <code style="font-family:var(--font-mono);color:var(--green)">x == 0</code>. Natural language is far more robust to small edits.</div>
+        </div>
+        <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:0.7rem;color:var(--green);font-family:var(--font-mono);margin-bottom:4px;">STRUCTURAL REGULARITY</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary);">Code has predictable patterns (loops, conditionals, method signatures) that a model can exploit — but only if the encoding preserves structural information.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 4 · Open-Vocabulary Problem                               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 1 · Slide 04</div>
+  <h2 class="slide-h2">The Open-Vocabulary Problem</h2>
+  <p class="slide-p">Word-level models fix a vocabulary at training time. Any token not in the vocabulary becomes <code style="font-family:var(--font-mono);color:var(--red)">&lt;UNK&gt;</code> — a blank. In natural language this is tolerable. In source code, it's <strong style="color:var(--text-primary)">catastrophic</strong>.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box red">
+        <div class="concept-box-label">The Core Problem</div>
+        <div class="concept-box-body">Source code identifiers follow a <strong>power-law / Zipfian distribution</strong>. The most common tokens (keywords, operators) appear millions of times. But the <strong>vast majority of identifiers appear only once or twice</strong> in the entire corpus — and new ones are invented constantly.</div>
+      </div>
+      <div style="margin-top:14px;">
+        <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:10px;">Common examples of out-of-vocabulary identifiers:</p>
+        <div class="token-seq">
+          <span class="tok unk">calculateManhattanDist</span>
+          <span class="tok unk">getUserAuthToken</span>
+          <span class="tok unk">parseXMLResponseV2</span>
+          <span class="tok unk">AbstractFactoryBean</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">All become → <code style="font-family:var(--font-mono);color:var(--red)">&lt;UNK&gt;</code> &nbsp;→&nbsp; model learns nothing about them</div>
+      </div>
+    </div>
+    <div>
+      <!-- Token frequency histogram -->
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Token Frequency in a Java Corpus</div>
+        <svg viewBox="0 0 260 160" width="100%" style="display:block;">
+          <rect width="260" height="160" fill="transparent"/>
+          <!-- y axis -->
+          <line x1="35" y1="10" x2="35" y2="140" stroke="#30363D" stroke-width="1"/>
+          <!-- x axis -->
+          <line x1="35" y1="140" x2="255" y2="140" stroke="#30363D" stroke-width="1"/>
+          <!-- bars: keywords high, operators medium, method names low, identifiers very low -->
+          <rect x="40" y="15" width="28" height="125" fill="#58A6FF" opacity="0.7" rx="2"/>
+          <rect x="74" y="55" width="28" height="85" fill="#58A6FF" opacity="0.55" rx="2"/>
+          <rect x="108" y="90" width="28" height="50" fill="#E3B341" opacity="0.7" rx="2"/>
+          <rect x="142" y="115" width="28" height="25" fill="#E3B341" opacity="0.55" rx="2"/>
+          <rect x="176" y="128" width="28" height="12" fill="#FF5F57" opacity="0.7" rx="2"/>
+          <rect x="210" y="133" width="28" height="7" fill="#FF5F57" opacity="0.5" rx="2"/>
+          <!-- labels -->
+          <text x="44" y="155" font-size="8" fill="#8B949E" font-family="monospace">kw</text>
+          <text x="76" y="155" font-size="8" fill="#8B949E" font-family="monospace">ops</text>
+          <text x="106" y="155" font-size="8" fill="#8B949E" font-family="monospace">std lib</text>
+          <text x="143" y="155" font-size="8" fill="#8B949E" font-family="monospace">methods</text>
+          <text x="178" y="155" font-size="8" fill="#8B949E" font-family="monospace">vars</text>
+          <text x="212" y="155" font-size="8" fill="#8B949E" font-family="monospace">rare ids</text>
+          <!-- OOV annotation -->
+          <rect x="168" y="8" width="88" height="22" rx="4" fill="rgba(255,95,87,0.12)" stroke="rgba(255,95,87,0.3)" stroke-width="1"/>
+          <text x="172" y="22" font-size="9" fill="#FF5F57" font-family="sans-serif">→ OOV if &lt;5 occurrences</text>
+        </svg>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">The long tail makes a fixed vocabulary impractical. A 50k vocab still leaves 40-60% of unique tokens as &lt;UNK&gt;.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 5 · Early Solutions                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 1 · Slide 05</div>
+  <h2 class="slide-h2">Early Solutions: Abstraction &amp; Normalization</h2>
+  <p class="slide-p">Before subword tokenization became widespread, researchers tried several heuristics to shrink the effective vocabulary while preserving structure. These techniques helped — but each came with a cost.</p>
+  <div class="three-col" style="margin-top:6px;">
+    <div class="concept-box blue" style="margin:0;">
+      <div class="concept-box-label">Type Abstraction</div>
+      <div class="concept-box-body">Replace identifiers with their <strong>type placeholders</strong>:<br/><code style="font-family:var(--font-mono);font-size:0.78em;color:var(--text-secondary);">String msg = "hi"</code><br/>→ <code style="font-family:var(--font-mono);font-size:0.78em;color:var(--blue);">TYPE VAR = LIT</code><br/><br/>✅ Tiny vocabulary<br/>❌ Loses all semantic info. Model can't tell <em>what</em> a variable means.</div>
+    </div>
+    <div class="concept-box amber" style="margin:0;">
+      <div class="concept-box-label">CamelCase Splitting</div>
+      <div class="concept-box-body">Split compound identifiers into sub-tokens:<br/><code style="font-family:var(--font-mono);font-size:0.78em;color:var(--text-secondary);">getUserName</code><br/>→ <code style="font-family:var(--font-mono);font-size:0.78em;color:var(--amber);">get</code> <code style="font-family:var(--font-mono);font-size:0.78em;color:var(--amber);">User</code> <code style="font-family:var(--font-mono);font-size:0.78em;color:var(--amber);">Name</code><br/><br/>✅ Reuses common sub-words<br/>❌ Still produces OOV parts; order information is lost.</div>
+    </div>
+    <div class="concept-box purple" style="margin:0;">
+      <div class="concept-box-label">Idiom Mining</div>
+      <div class="concept-box-body">Detect frequently recurring code patterns and treat them as single vocabulary entries (Allamanis &amp; Sutton, 2014).<br/><br/>✅ Captures common idioms<br/>❌ Non-exhaustive; domain-specific; doesn't scale to new projects.</div>
+    </div>
+  </div>
+  <div class="concept-box" style="margin-top:16px;">
+    <div class="concept-box-label">The Fundamental Limitation</div>
+    <div class="concept-box-body">All of these approaches are <strong>lossy pre-processing steps</strong> applied before the model sees the data. They reduce vocabulary size by discarding information. The ideal solution should reduce vocabulary <em>without</em> losing information — and generalise to tokens it has never seen. That is exactly what <strong>subword tokenization</strong> achieves.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6 · BPE Tokenization (Interactive)                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 1 · Slide 06 · ★ Interactive</div>
+  <h2 class="slide-h2">Byte-Pair Encoding: Subword Tokenization</h2>
+  <p class="slide-p" style="max-width:620px;">BPE starts with a character-level vocabulary and iteratively merges the most frequent symbol pair. The result: a vocabulary of common subword units that can represent <em>any</em> token by composition.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box">
+        <div class="concept-box-label">The Algorithm</div>
+        <div class="concept-box-body">
+          <strong>1.</strong> Initialize vocab = all characters<br/>
+          <strong>2.</strong> Count all symbol pairs in the corpus<br/>
+          <strong>3.</strong> Merge the most frequent pair → new symbol<br/>
+          <strong>4.</strong> Repeat until vocab size = V<br/><br/>
+          At inference time, tokenize greedily: match the <strong>longest vocabulary entry</strong> at each position.
+        </div>
+      </div>
+      <div class="concept-box amber">
+        <div class="concept-box-label">Key Insight for Code</div>
+        <div class="concept-box-body">Common programming sub-words (<code style="font-family:var(--font-mono);font-size:0.8em">get</code>, <code style="font-family:var(--font-mono);font-size:0.8em">set</code>, <code style="font-family:var(--font-mono);font-size:0.8em">parse</code>, <code style="font-family:var(--font-mono);font-size:0.8em">Error</code>, <code style="font-family:var(--font-mono);font-size:0.8em">List</code>, <code style="font-family:var(--font-mono);font-size:0.8em">Manager</code>…) appear in BPE vocabulary. Even a completely novel identifier like <code style="font-family:var(--font-mono);font-size:0.8em">AbstractNetworkErrorHandler</code> decomposes gracefully.</div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <div class="inter-title">🔤 BPE Tokenizer Simulator <span class="inter-badge">interactive</span></div>
+        </div>
+        <div class="inter-body">
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <input id="bpe-input" type="text" placeholder="e.g. getUserAuthToken" value="getUserAuthToken"
+              style="flex:1;background:var(--bg-3);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text-primary);font-family:var(--font-mono);font-size:0.85rem;outline:none;"/>
+            <button class="sim-btn primary" onclick="runBPE()">Tokenize</button>
+          </div>
+          <div id="bpe-result" style="min-height:60px;">
+            <div style="font-size:0.78rem;color:var(--text-muted);">Type an identifier and click Tokenize</div>
+          </div>
+          <div id="bpe-steps" style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7 · BPE Meets Embeddings                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 1 · Slide 07</div>
+  <h2 class="slide-h2">BPE + Embeddings = No OOV</h2>
+  <p class="slide-p">Once we tokenize with BPE, each subword piece gets its own learned embedding. The model can now handle <em>any</em> input by composing subword embeddings — even tokens it has never seen during training.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Word-Level (Old Approach)</div>
+        <div class="token-seq">
+          <span class="tok id">calculateManhattanDist</span>
+        </div>
+        <div style="margin:6px 0;color:var(--text-muted);font-size:0.8rem;">↓ Not in vocab</div>
+        <div class="token-seq">
+          <span class="tok unk">&lt;UNK&gt;</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--red);margin-top:6px;">❌ Embedding: zero / random noise — model learns nothing</div>
+      </div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">BPE Subword Approach</div>
+        <div class="token-seq">
+          <span class="tok id">calculateManhattanDist</span>
+        </div>
+        <div style="margin:6px 0;color:var(--text-muted);font-size:0.8rem;">↓ BPE split</div>
+        <div class="token-seq">
+          <span class="tok sub">calc</span>
+          <span class="tok sub">ulate</span>
+          <span class="tok sub">Manhattan</span>
+          <span class="tok sub">Dist</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--green);margin-top:6px;">✅ Each piece has a meaningful embedding. Model knows "calc" from "calculate", "Dist" from "Distance".</div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box blue">
+        <div class="concept-box-label">How Subword Embeddings Combine</div>
+        <div class="concept-box-body">In most Transformer models, subword token embeddings are simply <strong>summed with positional encodings</strong> and fed as input. The model learns how to combine them through its attention layers. In RNNs, the LSTM hidden state integrates subword embeddings sequentially.</div>
+      </div>
+      <table class="comp-table" style="margin-top:12px;">
+        <tr><th>Property</th><th>Word-Level</th><th>BPE</th></tr>
+        <tr><td>Vocab size</td><td><span class="tag-red">100k-1M+</span></td><td><span class="tag-green">32k-64k</span></td></tr>
+        <tr><td>OOV rate</td><td><span class="tag-red">40-60%</span></td><td><span class="tag-green">&lt; 0.1%</span></td></tr>
+        <tr><td>New identifiers</td><td><span class="tag-red">Always OOV</span></td><td><span class="tag-green">Composable</span></td></tr>
+        <tr><td>Morphology</td><td><span class="tag-red">Ignored</span></td><td><span class="tag-green">Captured</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 8 · From RNN to LSTM                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 1 · Slide 08</div>
+  <h2 class="slide-h2">From RNN to LSTM: The Memory Problem</h2>
+  <p class="slide-p">A basic <strong style="color:var(--text-primary)">Recurrent Neural Network</strong> (RNN) passes a hidden state from step to step — in theory capturing context from earlier tokens. In practice, gradients vanish exponentially as they flow backward through many timesteps.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Vanilla RNN — Gradient Vanishing</div>
+        <div style="display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:4px;">
+          <!-- RNN cells left to right with fading gradient arrows -->
+          <div style="text-align:center;flex-shrink:0;">
+            <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.72rem;font-family:var(--font-mono);">h₁</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;">x₁</div>
+          </div>
+          <div style="color:var(--green);font-size:0.9rem;flex-shrink:0;">→</div>
+          <div style="text-align:center;flex-shrink:0;">
+            <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.72rem;font-family:var(--font-mono);">h₂</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;">x₂</div>
+          </div>
+          <div style="color:var(--green);font-size:0.9rem;opacity:0.7;flex-shrink:0;">→</div>
+          <div style="text-align:center;flex-shrink:0;">
+            <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.72rem;font-family:var(--font-mono);">h₃</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;">x₃</div>
+          </div>
+          <div style="color:var(--green);font-size:0.9rem;opacity:0.45;flex-shrink:0;">→</div>
+          <div style="text-align:center;flex-shrink:0;opacity:0.5;">
+            <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.72rem;font-family:var(--font-mono);">h₄</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;">x₄</div>
+          </div>
+          <div style="color:var(--green);font-size:0.9rem;opacity:0.2;flex-shrink:0;">→</div>
+          <div style="text-align:center;flex-shrink:0;opacity:0.2;">
+            <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.72rem;font-family:var(--font-mono);">h₅</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;">x₅</div>
+          </div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--red);margin-top:8px;">↑ Gradient shrinks exponentially — h₁'s influence on the loss at step 5 ≈ 0</div>
+      </div>
+      <div class="concept-box red">
+        <div class="concept-box-label">Vanishing Gradient</div>
+        <div class="concept-box-body">∂L/∂h₁ = ∂L/∂h₅ × W⁴ (approximately). If the spectral norm of W &lt; 1, this product shrinks to zero. The model forgets early tokens. In code, this means <strong>it can't relate a variable declaration to its use 20 tokens later</strong>.</div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box" style="margin-bottom:12px;">
+        <div class="concept-box-label">LSTM — The Solution</div>
+        <div class="concept-box-body">Hochreiter &amp; Schmidhuber (1997) proposed the <strong>Long Short-Term Memory</strong> cell. Two key changes:<br/><br/><strong>1. Cell state (c)</strong> — a separate "memory highway" with near-constant error flow<br/><br/><strong>2. Gates</strong> — learnable switches that control what to remember, what to write, and what to output</div>
+      </div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">LSTM Cell at a Glance</div>
+        <div style="display:flex;gap:10px;flex-direction:column;font-size:0.8rem;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--amber);font-family:var(--font-mono);font-size:1rem;">σ</span><span style="color:var(--text-secondary);"><strong style="color:var(--amber);">Forget gate</strong> — what to erase from cell state</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--green);font-family:var(--font-mono);font-size:1rem;">σ</span><span style="color:var(--text-secondary);"><strong style="color:var(--green);">Input gate</strong> — what new info to write</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--cyan);font-family:var(--font-mono);font-size:1rem;">tanh</span><span style="color:var(--text-secondary);"><strong style="color:var(--cyan);">Candidate cell</strong> — the new content to potentially add</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--purple);font-family:var(--font-mono);font-size:1rem;">σ</span><span style="color:var(--text-secondary);"><strong style="color:var(--purple);">Output gate</strong> — what to expose as hidden state</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9 · LSTM Architecture                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 1 · Slide 09</div>
+  <h2 class="slide-h2">Inside the LSTM Cell</h2>
+  <p class="slide-p">At each timestep <em>t</em>, the LSTM takes the current input <strong style="color:var(--blue)">x<sub>t</sub></strong>, the previous hidden state <strong style="color:var(--green)">h<sub>t-1</sub></strong>, and the previous cell state <strong style="color:var(--amber)">c<sub>t-1</sub></strong>. Four learnable transformations produce a new cell and hidden state.</p>
+  <div class="two-col">
+    <div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">LSTM Equations</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-family:var(--font-mono);font-size:0.82rem;">
+          <div style="background:var(--bg-3);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:8px 12px;">
+            <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:3px;">FORGET GATE</span>
+            <span style="color:var(--amber);">f<sub>t</sub></span><span style="color:var(--text-secondary);"> = σ(W<sub>f</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>f</sub>)</span>
+          </div>
+          <div style="background:var(--bg-3);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:8px 12px;">
+            <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:3px;">INPUT GATE + CANDIDATE</span>
+            <span style="color:var(--green);">i<sub>t</sub></span><span style="color:var(--text-secondary);"> = σ(W<sub>i</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>i</sub>)</span><br/>
+            <span style="color:var(--cyan);">g̃<sub>t</sub></span><span style="color:var(--text-secondary);"> = tanh(W<sub>g</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>g</sub>)</span>
+          </div>
+          <div style="background:var(--bg-3);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:8px 12px;">
+            <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:3px;">CELL STATE UPDATE</span>
+            <span style="color:var(--blue);">c<sub>t</sub></span><span style="color:var(--text-secondary);"> = </span><span style="color:var(--amber);">f<sub>t</sub></span><span style="color:var(--text-secondary);"> ⊙ c<sub>t-1</sub> + </span><span style="color:var(--green);">i<sub>t</sub></span><span style="color:var(--text-secondary);"> ⊙ </span><span style="color:var(--cyan);">g̃<sub>t</sub></span>
+          </div>
+          <div style="background:var(--bg-3);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:8px 12px;">
+            <span style="color:var(--text-muted);font-size:0.68rem;display:block;margin-bottom:3px;">OUTPUT GATE + HIDDEN STATE</span>
+            <span style="color:var(--purple);">o<sub>t</sub></span><span style="color:var(--text-secondary);"> = σ(W<sub>o</sub>·[h<sub>t-1</sub>, x<sub>t</sub>] + b<sub>o</sub>)</span><br/>
+            <span style="color:var(--green);">h<sub>t</sub></span><span style="color:var(--text-secondary);"> = </span><span style="color:var(--purple);">o<sub>t</sub></span><span style="color:var(--text-secondary);"> ⊙ tanh(</span><span style="color:var(--blue);">c<sub>t</sub></span><span style="color:var(--text-secondary);">)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box amber">
+        <div class="concept-box-label">Forget Gate — what to erase</div>
+        <div class="concept-box-body">Output ∈ [0,1]. <strong>0</strong> = completely erase the old cell state. <strong>1</strong> = keep everything. If the LSTM has been tracking the subject of a sentence and encounters a period, it may learn to reset.</div>
+      </div>
+      <div class="concept-box" style="margin-top:0;">
+        <div class="concept-box-label">Input Gate — what to write</div>
+        <div class="concept-box-body">Controls <em>how much</em> of the candidate value <strong style="color:var(--cyan);">g̃<sub>t</sub></strong> to add. The candidate is a new proposed value from tanh; the gate scales it by importance.</div>
+      </div>
+      <div class="concept-box purple" style="margin-top:0;">
+        <div class="concept-box-label">Output Gate — what to expose</div>
+        <div class="concept-box-body">The cell state may hold many things. The output gate selects what is <em>relevant now</em> to expose as the hidden state h<sub>t</sub>, which feeds the next timestep and any prediction head.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 10 · Gate Explorer (Interactive)                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 1 · Slide 10 · ★ Interactive</div>
+  <h2 class="slide-h2">LSTM Gate Explorer</h2>
+  <p class="slide-p" style="max-width:620px;">Adjust the inputs and observe how each gate activates and how the cell &amp; hidden state update. The weights here are illustrative but the <strong style="color:var(--text-primary)">sigmoid / tanh mathematics are exact</strong>.</p>
+  <div class="two-col">
+    <div>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <div class="inter-title">⚙️ Inputs <span class="inter-badge">interactive</span></div>
+        </div>
+        <div class="inter-body" style="padding:16px;">
+          <div class="slider-row">
+            <span class="slider-label" style="color:var(--blue);">x<sub>t</sub> (input)</span>
+            <input type="range" id="sl-x" min="-2" max="2" step="0.05" value="0.8" oninput="updateGates()"/>
+            <span class="slider-val" id="sv-x" style="color:var(--blue);">0.80</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label" style="color:var(--green);">h<sub>t-1</sub> (hidden)</span>
+            <input type="range" id="sl-h" min="-1" max="1" step="0.05" value="0.3" oninput="updateGates()"/>
+            <span class="slider-val" id="sv-h" style="color:var(--green);">0.30</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label" style="color:var(--amber);">c<sub>t-1</sub> (cell)</span>
+            <input type="range" id="sl-c" min="-2" max="2" step="0.05" value="0.5" oninput="updateGates()"/>
+            <span class="slider-val" id="sv-c" style="color:var(--amber);">0.50</span>
+          </div>
+        </div>
+      </div>
+      <div class="inter-panel" style="margin-top:10px;">
+        <div class="inter-header"><div class="inter-title">📤 New States</div></div>
+        <div class="inter-body" style="padding:14px 16px;">
+          <div style="display:flex;gap:12px;">
+            <div style="flex:1;background:var(--bg-3);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:12px;text-align:center;">
+              <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:4px;">c<sub>t</sub> (new cell)</div>
+              <div id="out-c" style="font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:var(--blue);">0.72</div>
+            </div>
+            <div style="flex:1;background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:12px;text-align:center;">
+              <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:4px;">h<sub>t</sub> (new hidden)</div>
+              <div id="out-h" style="font-family:var(--font-mono);font-size:1.3rem;font-weight:700;color:var(--green);">0.41</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel">
+        <div class="inter-header"><div class="inter-title">🚦 Gate Activations</div></div>
+        <div class="inter-body" style="padding:14px 16px;">
+          <div class="gate-bar-row">
+            <span class="gate-bar-label" style="color:var(--amber);">f<sub>t</sub> forget</span>
+            <div class="gate-bar-track"><div class="gate-bar-fill" id="bar-f" style="width:70%;background:var(--amber);"></div></div>
+            <span class="gate-bar-num" id="num-f" style="color:var(--amber);">0.70</span>
+          </div>
+          <div class="gate-bar-row">
+            <span class="gate-bar-label" style="color:var(--green);">i<sub>t</sub> input</span>
+            <div class="gate-bar-track"><div class="gate-bar-fill" id="bar-i" style="width:75%;background:var(--green);"></div></div>
+            <span class="gate-bar-num" id="num-i" style="color:var(--green);">0.75</span>
+          </div>
+          <div class="gate-bar-row">
+            <span class="gate-bar-label" style="color:var(--cyan);">g̃<sub>t</sub> candidate</span>
+            <div class="gate-bar-track"><div class="gate-bar-fill" id="bar-g" style="width:60%;background:var(--cyan);"></div></div>
+            <span class="gate-bar-num" id="num-g" style="color:var(--cyan);">0.55</span>
+          </div>
+          <div class="gate-bar-row">
+            <span class="gate-bar-label" style="color:var(--purple);">o<sub>t</sub> output</span>
+            <div class="gate-bar-track"><div class="gate-bar-fill" id="bar-o" style="width:65%;background:var(--purple);"></div></div>
+            <span class="gate-bar-num" id="num-o" style="color:var(--purple);">0.65</span>
+          </div>
+          <div style="margin-top:14px;padding:10px;background:var(--bg-3);border-radius:8px;font-size:0.78rem;color:var(--text-secondary);" id="gate-explanation">
+            Try sliding x<sub>t</sub> up: the input and forget gates open wider, writing more to the cell state.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 11 · BPTT & Limitations                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 1 · Slide 11</div>
+  <h2 class="slide-h2">Training LSTMs: BPTT &amp; Limitations</h2>
+  <p class="slide-p">LSTMs are trained with <strong style="color:var(--text-primary)">Backpropagation Through Time (BPTT)</strong>: unroll the network across all timesteps and apply standard backprop. The cell-state highway mitigates vanishing gradients — but doesn't eliminate all challenges.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box blue">
+        <div class="concept-box-label">BPTT in a Nutshell</div>
+        <div class="concept-box-body">
+          <strong>1.</strong> Forward pass: process the full sequence, recording all gate values and states.<br/>
+          <strong>2.</strong> Compute loss at each output step (e.g., cross-entropy over next token).<br/>
+          <strong>3.</strong> Backward pass: propagate gradients back through all unrolled timesteps simultaneously.<br/>
+          <strong>4.</strong> Accumulate gradients for all weight matrices (W<sub>f</sub>, W<sub>i</sub>, W<sub>g</sub>, W<sub>o</sub>).<br/>
+          <strong>5.</strong> Apply <em>gradient clipping</em> to prevent explosions, then update with Adam/SGD.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="concept-box amber">
+        <div class="concept-box-label">Remaining Limitations of LSTMs</div>
+        <div class="concept-box-body">
+          <strong>Sequential bottleneck:</strong> Each timestep depends on the previous hidden state — you can't parallelise across timesteps. Training on long sequences is slow.<br/><br/>
+          <strong>Fixed context window via bottleneck:</strong> The encoder must compress an entire sequence into a single context vector. For long code files this is lossy.<br/><br/>
+          <strong>Still not great at very long dependencies:</strong> Even with gating, tracking a variable declared 500 tokens back is difficult.
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:0;">
+        <div class="concept-box-label">The Motivation for Attention</div>
+        <div class="concept-box-body">What if the decoder didn't have to rely on a single bottleneck vector — but could <strong>directly look back at all encoder states</strong> with learned weights? That's the key idea behind attention mechanisms.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 12 · Attention (Interactive)                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 1 · Slide 12 · ★ Interactive</div>
+  <h2 class="slide-h2">Attention: The Decoder Looks Back</h2>
+  <p class="slide-p" style="max-width:640px;">At each decoding step, the attention mechanism computes a <strong style="color:var(--text-primary)">soft alignment</strong> over all encoder hidden states. Click an output token below to see where the decoder focuses when producing it.</p>
+  <div class="two-col">
+    <div>
+      <div class="concept-box">
+        <div class="concept-box-label">How It Works</div>
+        <div class="concept-box-body">
+          For each decoder step <em>s</em>:<br/>
+          <span style="font-family:var(--font-mono);font-size:0.8em;">score(s,j) = h_dec[s] · h_enc[j]</span><br/>
+          <span style="font-family:var(--font-mono);font-size:0.8em;">α[s,j] = softmax(scores)[j]</span><br/>
+          <span style="font-family:var(--font-mono);font-size:0.8em;">context = Σⱼ α[s,j] · h_enc[j]</span><br/><br/>
+          The context vector is concatenated with the decoder input and fed to the LSTM. This lets the model <strong>re-read relevant parts of the input</strong> at each step.
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;font-size:0.78rem;color:var(--text-secondary);" id="attn-explanation">
+        Click an output token to see its attention weights on the input.
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel">
+        <div class="inter-header"><div class="inter-title">🎯 Attention Heatmap <span class="inter-badge">interactive</span></div></div>
+        <div class="inter-body" style="padding:12px;">
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">Input (encoder): <code style="font-family:var(--font-mono);color:var(--text-secondary);">sum ( arr , n - 1 )</code></div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">Output (decoder): Click a token to highlight attention</div>
+          <!-- Output token buttons -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;" id="attn-out-tokens"></div>
+          <!-- Heatmap -->
+          <div id="attn-heatmap" style="margin-top:6px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 13 · Seq2Seq Architecture                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 1 · Slide 13</div>
+  <h2 class="slide-h2">Seq2Seq for Automated Bug Fixing</h2>
+  <p class="slide-p">Combining everything: a <strong style="color:var(--text-primary)">bidirectional LSTM encoder</strong> reads the buggy code, an <strong style="color:var(--text-primary)">attention mechanism</strong> aligns encoder states to decoder steps, and a <strong style="color:var(--text-primary)">LSTM decoder</strong> generates the corrected code token by token.</p>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+    <!-- Architecture strip -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:center;">
+      <div style="background:var(--bg-2);border:1px solid rgba(255,95,87,0.3);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--red);margin-bottom:6px;text-transform:uppercase;">Input Sequence</div>
+        <div class="token-seq" style="justify-content:center;flex-wrap:wrap;">
+          <span class="tok kw">if</span><span class="tok op">(</span><span class="tok id">x</span><span class="tok op">=</span><span class="tok op">=</span><span class="tok id">null</span><span class="tok op">)</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:6px;">BPE tokenized + embedded</div>
+      </div>
+      <div style="color:var(--green);font-size:1.4rem;text-align:center;">→</div>
+      <div style="background:var(--bg-2);border:1px solid rgba(88,166,255,0.3);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);margin-bottom:6px;text-transform:uppercase;">BiLSTM Encoder</div>
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.2);border-radius:5px;padding:5px 8px;font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);">h₁</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.2);border-radius:5px;padding:5px 8px;font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);">h₂</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.2);border-radius:5px;padding:5px 8px;font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);">⋯</div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.2);border-radius:5px;padding:5px 8px;font-size:0.68rem;font-family:var(--font-mono);color:var(--blue);">hₙ</div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:6px;">Reads both ← and →</div>
+      </div>
+      <div style="color:var(--green);font-size:1.4rem;text-align:center;">→</div>
+      <div style="background:var(--bg-2);border:1px solid var(--green-border);border-radius:10px;padding:14px;text-align:center;">
+        <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--green);margin-bottom:6px;text-transform:uppercase;">Attn + LSTM Decoder</div>
+        <div class="token-seq" style="justify-content:center;flex-wrap:wrap;">
+          <span class="tok kw">if</span><span class="tok op">(</span><span class="tok id">x</span><span class="tok op">!=</span><span class="tok id">null</span><span class="tok op">)</span>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:6px;">Generated token by token</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:4px;">
+      <div class="concept-box blue">
+        <div class="concept-box-label">Teacher Forcing (Training)</div>
+        <div class="concept-box-body">During training, the decoder receives the <strong>ground-truth previous token</strong> at each step, not its own prediction. This stabilises learning but creates a train/test mismatch — at inference, errors compound.</div>
+      </div>
+      <div class="concept-box purple">
+        <div class="concept-box-label">Beam Search (Inference)</div>
+        <div class="concept-box-body">Instead of greedy decoding, maintain the top-<em>k</em> most probable sequences at each step. With beam width 5, the model explores 5 candidate fixes simultaneously and returns the highest-probability complete sequence.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 14 · PyTorch Code                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 1 · Slide 14</div>
+  <h2 class="slide-h2">PyTorch: Encoder-Decoder for Bug Fixing</h2>
+  <p class="slide-p" style="max-width:640px;">A complete (but concise) PyTorch implementation of the Encoder, Attention module, and Decoder described in this module. This is the architecture at the core of papers like SequenceR and BugLab.</p>
+  <div class="two-col">
+    <div>
+      <div class="code-block">
+<span class="ck">import</span> torch, torch.nn <span class="ck">as</span> nn
+<span class="ck">from</span> torch.nn.utils.rnn <span class="ck">import</span> pack_padded_sequence, pad_packed_sequence
+
+<span class="ck">class</span> <span class="cl">Encoder</span>(nn.Module):
+    <span class="cc">"""BiLSTM — reads the buggy token sequence."""</span>
+    <span class="ck">def</span> <span class="cf">__init__</span>(self, vocab_sz, emb_d, hid_d, n_layers, drop=<span class="cs">0.1</span>):
+        <span class="cf">super</span>().__init__()
+        self.embed = nn.<span class="cl">Embedding</span>(vocab_sz, emb_d, padding_idx=<span class="cs">0</span>)
+        self.lstm  = nn.<span class="cl">LSTM</span>(emb_d, hid_d, n_layers,
+                              batch_first=<span class="ck">True</span>, dropout=drop,
+                              bidirectional=<span class="ck">True</span>)
+        self.proj  = nn.<span class="cl">Linear</span>(hid_d * <span class="cs">2</span>, hid_d)
+
+    <span class="ck">def</span> <span class="cf">forward</span>(self, src, src_len):
+        emb  = self.embed(src)                      <span class="cc"># [B,T,E]</span>
+        pack = <span class="cf">pack_padded_sequence</span>(emb, src_len,
+                   batch_first=<span class="ck">True</span>, enforce_sorted=<span class="ck">False</span>)
+        out, (h, c) = self.lstm(pack)
+        out, _  = <span class="cf">pad_packed_sequence</span>(out, batch_first=<span class="ck">True</span>)
+        h_fwd, h_bwd = h[<span class="cs">-2</span>], h[<span class="cs">-1</span>]
+        h = torch.<span class="cf">tanh</span>(self.proj(
+                torch.<span class="cf">cat</span>([h_fwd, h_bwd], dim=<span class="cs">1</span>)))
+        <span class="ck">return</span> out, h  <span class="cc"># encoder states, summary hidden</span>
+      </div>
+    </div>
+    <div>
+      <div class="code-block">
+<span class="ck">class</span> <span class="cl">Attention</span>(nn.Module):
+    <span class="ck">def</span> <span class="cf">__init__</span>(self, hid_d):
+        <span class="cf">super</span>().__init__()
+        self.W = nn.<span class="cl">Linear</span>(hid_d * <span class="cs">3</span>, hid_d)
+        self.v = nn.<span class="cl">Linear</span>(hid_d, <span class="cs">1</span>, bias=<span class="ck">False</span>)
+
+    <span class="ck">def</span> <span class="cf">forward</span>(self, dec_h, enc_out):
+        T  = enc_out.size(<span class="cs">1</span>)
+        h  = dec_h.unsqueeze(<span class="cs">1</span>).repeat(<span class="cs">1</span>, T, <span class="cs">1</span>)
+        e  = torch.<span class="cf">tanh</span>(self.W(
+                 torch.<span class="cf">cat</span>([h, enc_out], dim=<span class="cs">2</span>)))
+        <span class="ck">return</span> torch.nn.functional.<span class="cf">softmax</span>(
+                 self.v(e).squeeze(<span class="cs">2</span>), dim=<span class="cs">1</span>)  <span class="cc"># [B,T]</span>
+
+<span class="ck">class</span> <span class="cl">Decoder</span>(nn.Module):
+    <span class="ck">def</span> <span class="cf">__init__</span>(self, vocab_sz, emb_d, hid_d, n_layers, drop=<span class="cs">0.1</span>):
+        <span class="cf">super</span>().__init__()
+        self.embed = nn.<span class="cl">Embedding</span>(vocab_sz, emb_d, padding_idx=<span class="cs">0</span>)
+        self.attn  = <span class="cl">Attention</span>(hid_d)
+        self.lstm  = nn.<span class="cl">LSTM</span>(emb_d + hid_d * <span class="cs">2</span>, hid_d, n_layers,
+                               batch_first=<span class="ck">True</span>, dropout=drop)
+        self.out   = nn.<span class="cl">Linear</span>(hid_d * <span class="cs">3</span> + emb_d, vocab_sz)
+
+    <span class="ck">def</span> <span class="cf">forward</span>(self, tok, h, c, enc_out):
+        emb  = self.embed(tok.unsqueeze(<span class="cs">1</span>))       <span class="cc"># [B,1,E]</span>
+        aw   = self.attn(h[<span class="cs">-1</span>], enc_out)          <span class="cc"># [B,T]</span>
+        ctx  = torch.<span class="cf">bmm</span>(aw.unsqueeze(<span class="cs">1</span>), enc_out) <span class="cc"># [B,1,2H]</span>
+        out, (h, c) = self.lstm(
+                 torch.<span class="cf">cat</span>([emb, ctx], dim=<span class="cs">2</span>), (h, c))
+        pred = self.out(torch.<span class="cf">cat</span>([
+                 out.squeeze(<span class="cs">1</span>), ctx.squeeze(<span class="cs">1</span>),
+                 emb.squeeze(<span class="cs">1</span>)], dim=<span class="cs">1</span>))
+        <span class="ck">return</span> pred, h, c, aw
+      </div>
+      <div class="concept-box" style="margin-top:8px;">
+        <div class="concept-box-label">Instantiate</div>
+        <div class="concept-box-body" style="font-family:var(--font-mono);font-size:0.78em;line-height:1.7;">
+          <span style="color:var(--text-secondary);">enc = <span style="color:var(--amber);">Encoder</span>(V=32000, E=256, H=512, L=2)<br/>dec = <span style="color:var(--amber);">Decoder</span>(V=32000, E=256, H=512, L=2)<br/>optimizer = Adam(list(enc.parameters()) + list(dec.parameters()))</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Nav Bar -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>← Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next →</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 14;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+  if (cur === 10) setTimeout(updateGates, 100);
+  if (cur === 12) setTimeout(buildAttn, 100);
+}
+
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+// ── BPE Simulator (Slide 6) ───────────────────────────────────────
+const BPE_VOCAB = [
+  'Abstract','Manager','Handler','Controller','Service','Factory','Builder','Provider',
+  'List','Map','Set','Array','String','Integer','Boolean','Exception','Error','Event',
+  'get','set','is','has','add','remove','update','create','delete','find','build',
+  'parse','format','convert','validate','check','handle','process','execute','run',
+  'calculate','compute','generate','init','clear','reset','fetch','load','save',
+  'send','receive','connect','disconnect','open','close','read','write','encode','decode',
+  'null','true','false','void','int','long','float','double','char','byte','short',
+  'Auth','Token','User','Config','Data','Request','Response','Client','Server','Cache',
+  'Input','Output','File','Path','Url','Key','Value','Node','Edge','Graph',
+  'test','mock','stub','spy','assert','expect','verify','should',
+  'Manhattan','Distance','Position','Location','Index','Count','Size','Length','Width',
+  'XML','JSON','HTTP','REST','API','SQL','Query',
+  'Impl','Base','Default','Custom','Simple','Generic','Static','Dynamic',
+];
+
+function runBPE() {
+  const raw = document.getElementById('bpe-input').value.trim();
+  if (!raw) return;
+  const tokens = bpeTokenize(raw);
+  const resDiv = document.getElementById('bpe-result');
+  const stepsDiv = document.getElementById('bpe-steps');
+  resDiv.innerHTML = '<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">BPE Tokens:</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+    tokens.map((t, i) => `<span class="tok ${i===0?'id':'sub'}" style="${i>0?'border-color:rgba(0,217,126,0.3);color:var(--green);background:rgba(0,217,126,0.08);':''}">${t}</span>`).join('') +
+    '</div>';
+  stepsDiv.innerHTML = `<span style="color:var(--text-muted);">${tokens.length} tokens (vs ${countChars(raw)} chars, ${countWords(raw)} camelCase words)</span>`;
+}
+
+function bpeTokenize(text) {
+  const words = splitCamel(text);
+  const result = [];
+  words.forEach((w, wi) => {
+    const pieces = greedySplit(w);
+    pieces.forEach((p, pi) => result.push(wi === 0 && pi === 0 ? p : (wi > 0 && pi === 0 ? p : p)));
+  });
+  return result;
+}
+
+function splitCamel(s) {
+  return s.replace(/([A-Z])/g, ' $1').replace(/[_\-]/g, ' ').trim().split(/\s+/).filter(Boolean);
+}
+
+function greedySplit(word) {
+  if (!word) return [];
+  const lower = word.toLowerCase();
+  const vocab = BPE_VOCAB.map(v => v.toLowerCase());
+  let i = 0;
+  const result = [];
+  while (i < lower.length) {
+    let best = '';
+    for (const v of vocab) {
+      if (lower.startsWith(v, i) && v.length > best.length) best = v;
+    }
+    if (best) {
+      // Restore original casing
+      const piece = word.slice(i, i + best.length);
+      result.push(result.length === 0 ? piece : '##' + piece);
+      i += best.length;
+    } else {
+      // Fall back to 3-char chunks
+      const chunk = word.slice(i, Math.min(i + 3, word.length));
+      result.push(result.length === 0 ? chunk : '##' + chunk);
+      i += chunk.length;
+    }
+  }
+  return result;
+}
+
+function countChars(s) { return s.length; }
+function countWords(s) { return splitCamel(s).length; }
+
+// ── LSTM Gate Explorer (Slide 10) ─────────────────────────────────
+function sig(x) { return 1 / (1 + Math.exp(-x)); }
+function tanh(x) { return Math.tanh(x); }
+
+function updateGates() {
+  const x  = parseFloat(document.getElementById('sl-x').value);
+  const h  = parseFloat(document.getElementById('sl-h').value);
+  const c  = parseFloat(document.getElementById('sl-c').value);
+  document.getElementById('sv-x').textContent = x.toFixed(2);
+  document.getElementById('sv-h').textContent = h.toFixed(2);
+  document.getElementById('sv-c').textContent = c.toFixed(2);
+
+  // Simplified fixed weights (illustrative but exact sigmoid/tanh)
+  const f  = sig( 0.8*x + 1.1*h + 0.15);
+  const i_ = sig( 1.0*x + 0.9*h - 0.10);
+  const g  = tanh(0.9*x + 0.8*h + 0.05);
+  const o  = sig( 0.7*x + 1.0*h + 0.20);
+  const cn = f * c + i_ * g;
+  const hn = o * tanh(cn);
+
+  const setBar = (id, val, pct) => {
+    document.getElementById('bar-' + id).style.width = Math.max(2, pct * 100).toFixed(1) + '%';
+    document.getElementById('num-' + id).textContent = val.toFixed(3);
+  };
+  setBar('f', f, f);
+  setBar('i', i_, i_);
+  // candidate is tanh → range [-1,1], map to [0,1] for bar
+  setBar('g', g, (g + 1) / 2);
+  setBar('o', o, o);
+  document.getElementById('out-c').textContent = cn.toFixed(3);
+  document.getElementById('out-h').textContent = hn.toFixed(3);
+
+  // Explanation
+  let msg = '';
+  if (f < 0.3) msg = '<strong style="color:var(--amber)">Forget gate is nearly closed</strong> — old cell state is mostly erased.';
+  else if (f > 0.8) msg = '<strong style="color:var(--amber)">Forget gate is wide open</strong> — old cell memory is preserved.';
+  else if (i_ > 0.75 && Math.abs(g) > 0.5) msg = '<strong style="color:var(--green)">Input gate is open and candidate is strong</strong> — new information is being written to cell state.';
+  else if (o < 0.3) msg = '<strong style="color:var(--purple)">Output gate is nearly closed</strong> — the hidden state h<sub>t</sub> exposes very little, even if the cell holds information.';
+  else msg = 'Gate pattern: forget=' + f.toFixed(2) + ', input=' + i_.toFixed(2) + ', output=' + o.toFixed(2) + '. New cell: ' + cn.toFixed(2);
+  document.getElementById('gate-explanation').innerHTML = msg;
+}
+
+// ── Attention Heatmap (Slide 12) ──────────────────────────────────
+const ATT_IN  = ['sum','(','arr',',','n','-','1',')'];
+const ATT_OUT = ['sum','(','arr',',','n',')'];
+// Pre-computed attention weights (output_step × input_token)
+const ATT_MAT = [
+  [0.88, 0.05, 0.03, 0.01, 0.01, 0.01, 0.01, 0.00], // sum →
+  [0.04, 0.89, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01], // ( →
+  [0.02, 0.01, 0.91, 0.02, 0.01, 0.01, 0.01, 0.01], // arr →
+  [0.02, 0.01, 0.02, 0.90, 0.02, 0.01, 0.01, 0.01], // , →
+  [0.02, 0.01, 0.02, 0.02, 0.88, 0.03, 0.01, 0.01], // n → (key: attends to n, skips -1)
+  [0.02, 0.02, 0.01, 0.01, 0.06, 0.05, 0.01, 0.82], // ) → attends to original )
+];
+const ATT_EXPLAIN = [
+  'Decoder generating <strong style="color:var(--green)">sum</strong>: attends strongly to the encoder\'s <em>sum</em> token.',
+  'Decoder generating <strong style="color:var(--green)">(</strong>: directly aligns with the opening parenthesis.',
+  'Decoder generating <strong style="color:var(--green)">arr</strong>: copies the array argument with high confidence.',
+  'Decoder generating <strong style="color:var(--green)">,</strong>: aligns to the comma separator.',
+  'Decoder generating <strong style="color:var(--green)">n</strong>: attends to <em>n</em> in the input and largely ignores <em>- 1</em>. <span style="color:var(--green)">This is the bug fix!</span>',
+  'Decoder generating <strong style="color:var(--green)">)</strong>: skips the deleted tokens and lands on the closing paren.',
+];
+
+let selRow = -1;
+function buildAttn() {
+  const outDiv = document.getElementById('attn-out-tokens');
+  const hmDiv  = document.getElementById('attn-heatmap');
+  if (!outDiv) return;
+  outDiv.innerHTML = ATT_OUT.map((t, i) =>
+    `<button class="sim-btn" id="at-btn-${i}" onclick="selectAttn(${i})" style="font-family:var(--font-mono);">${t}</button>`
+  ).join('');
+  renderHeatmap(-1);
+}
+
+function selectAttn(row) {
+  selRow = row;
+  ATT_OUT.forEach((_, i) => {
+    const b = document.getElementById('at-btn-' + i);
+    if (b) { b.className = 'sim-btn' + (i === row ? ' primary' : ''); }
+  });
+  renderHeatmap(row);
+  document.getElementById('attn-explanation').innerHTML = row >= 0 ? ATT_EXPLAIN[row] : 'Click an output token to see its attention weights on the input.';
+}
+
+function renderHeatmap(activeRow) {
+  const hmDiv = document.getElementById('attn-heatmap');
+  if (!hmDiv) return;
+  const cellW = 28;
+  const n_in = ATT_IN.length, n_out = ATT_OUT.length;
+  let html = `<div style="display:flex;gap:2px;margin-bottom:4px;margin-left:56px;">` +
+    ATT_IN.map(t => `<div style="width:${cellW}px;text-align:center;font-size:0.6rem;font-family:var(--font-mono);color:var(--text-muted);overflow:hidden;">${t}</div>`).join('') +
+    '</div>';
+  for (let r = 0; r < n_out; r++) {
+    html += `<div style="display:flex;gap:2px;margin-bottom:2px;align-items:center;">`;
+    html += `<div style="width:52px;text-align:right;padding-right:4px;font-size:0.68rem;font-family:var(--font-mono);color:${activeRow===r?'var(--green)':'var(--text-muted)'};">${ATT_OUT[r]}</div>`;
+    for (let c = 0; c < n_in; c++) {
+      const v = ATT_MAT[r][c];
+      const alpha = activeRow === r ? v : (activeRow < 0 ? v * 0.6 : 0.08);
+      const bg = activeRow === r ? `rgba(0,217,126,${alpha})` : `rgba(88,166,255,${alpha})`;
+      const border = activeRow === r && v > 0.3 ? '1px solid rgba(0,217,126,0.5)' : '1px solid transparent';
+      html += `<div style="width:${cellW}px;height:${cellW}px;border-radius:3px;background:${bg};border:${border};display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-family:var(--font-mono);color:rgba(255,255,255,0.6);">${activeRow===r?v.toFixed(2):''}</div>`;
+    }
+    html += '</div>';
+  }
+  hmDiv.innerHTML = html;
+}
+</script>
+</body>
+</html>
