@@ -4,638 +4,616 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teaching — CodeLab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Interactive teaching modules for Generative AI for Software Development (CSCI 455/555) at William & Mary." />
+  <link rel="stylesheet" href="platform.css" />
   <style>
-    .page-hero {
-      padding: 120px 0 64px;
-      border-bottom: 1px solid var(--border);
-      position: relative;
+    .module-list { margin-top: 48px; }
+    .module-section { margin-bottom: 64px; }
+    .module-full-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      text-decoration: none; display: block; margin-bottom: 20px;
     }
-    .page-hero::before {
-      content: '';
-      position: absolute;
-      top: -60px; right: -40px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(88,166,255,0.07) 0%, transparent 70%);
-      pointer-events: none;
+    .module-full-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--wm-green);
     }
-    .breadcrumb {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px;
+    .module-full-card.empty {
+      border-style: dashed; box-shadow: none; cursor: default;
     }
-    .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-    .breadcrumb a:hover { color: var(--green); }
-    .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 14px; }
-    .page-hero p  { color: var(--text-secondary); font-size: 1.05rem; max-width: 560px; line-height: 1.65; }
+    .module-full-card.empty:hover { transform: none; box-shadow: none; border-color: var(--border); }
 
-    /* ── Teaching Layout ──────────────────────────────────────── */
-    .teaching-layout {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 40px;
-      align-items: start;
+    .mfc-grid {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; gap: 28px; padding: 28px 32px;
     }
-    @media (max-width: 800px) {
-      .teaching-layout { grid-template-columns: 1fr; }
+    .mfc-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem; font-weight: 700; color: var(--border);
+      line-height: 1; min-width: 48px; text-align: center;
     }
-    .teaching-sidebar {
-      position: sticky;
-      top: 80px;
+    .module-full-card:hover .mfc-num { color: var(--wm-green); transition: color 0.25s; }
+    .mfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .mfc-title { font-size: 1.3rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
+    .mfc-desc { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; max-width: 680px; }
+    .mfc-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; }
+    .mfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
+    .mfc-meta-item .icon { font-size: 0.85rem; }
+    .mfc-action { flex-shrink: 0; }
+
+    .module-stats {
+      display: flex; gap: 32px; padding: 14px 32px;
+      border-top: 1px solid var(--border); background: var(--wm-green-mist);
     }
-    .sidebar-heading {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      margin-top: 28px;
-      padding-left: 12px;
+    .module-stat { display: flex; align-items: center; gap: 6px; }
+    .module-stat .val { font-size: 1rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
+    .module-stat .lbl { font-size: 0.72rem; color: var(--text-3); }
+
+    .mfc-skills {
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex; gap: 6px; flex-wrap: wrap;
     }
-    .sidebar-heading:first-child { margin-top: 0; }
-    .sidebar-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+    .mfc-skill {
+      font-size: 0.72rem; padding: 3px 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text-3); font-family: 'JetBrains Mono', monospace;
+    }
+
+    .teaching-layout { display: grid; grid-template-columns: 260px 1fr; gap: 48px; align-items: start; }
+    .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); }
+    .sidebar-section { margin-bottom: 28px; }
+    .sidebar-title {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px;
+      font-size: 0.85rem; color: var(--text-2);
+      cursor: pointer; transition: all 0.2s;
       text-decoration: none;
     }
-    .sidebar-nav-item:hover { background: var(--bg-3); color: var(--text-primary); }
-    .sidebar-nav-item.active { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
-    .sidebar-nav-icon { font-size: 1rem; }
+    .sidebar-item:hover { background: var(--wm-green-mist); color: var(--wm-green); }
+    .sidebar-item.active { background: var(--wm-green-mist); color: var(--wm-green); font-weight: 600; }
+    .sidebar-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; font-weight: 600;
+      color: var(--text-3); min-width: 22px;
+    }
+    .sidebar-item:hover .sidebar-num,
+    .sidebar-item.active .sidebar-num { color: var(--wm-green); }
 
-    /* ── Module Cards ─────────────────────────────────────────── */
-    .module-list { display: flex; flex-direction: column; gap: 20px; }
-    .module-card {
-      background: var(--bg-2);
+    .course-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .module-card:hover { border-color: rgba(0,217,126,0.25); box-shadow: 0 4px 24px rgba(0,217,126,0.06); }
-    .mc-header {
-      padding: 20px 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    .mc-icon {
-      width: 48px; height: 48px;
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-    .mc-icon.green  { background: var(--green-dim); border: 1px solid var(--green-border); }
-    .mc-icon.blue   { background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.2); }
-    .mc-icon.purple { background: rgba(188,140,255,0.1); border: 1px solid rgba(188,140,255,0.2); }
-    .mc-meta { flex: 1; }
-    .mc-tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-family: var(--font-mono);
-      padding: 2px 7px;
-      border-radius: 3px;
-      margin-bottom: 6px;
-    }
-    .mc-tag.green  { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
-    .mc-tag.blue   { background: rgba(88,166,255,0.1); color: var(--blue); border: 1px solid rgba(88,166,255,0.2); }
-    .mc-tag.purple { background: rgba(188,140,255,0.1); color: var(--purple); border: 1px solid rgba(188,140,255,0.2); }
-    .mc-meta h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 5px; color: var(--text-primary); }
-    .mc-meta p  { font-size: 0.87rem; color: var(--text-secondary); line-height: 1.55; margin: 0; }
-    .mc-stats {
-      display: flex;
-      gap: 0;
-      border-top: 1px solid var(--border);
-    }
-    .mc-stat {
-      flex: 1;
-      padding: 12px 16px;
-      border-right: 1px solid var(--border);
-      text-align: center;
-    }
-    .mc-stat:last-child { border-right: none; }
-    .mc-stat-val { display: block; font-size: 1.1rem; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
-    .mc-stat-key { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-    .mc-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .mc-skills { display: flex; flex-wrap: wrap; gap: 6px; }
-    .mc-skill {
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      background: var(--bg-3);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-    .mc-cta-link {
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--green);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-      transition: gap 0.15s;
-    }
-    .mc-cta-link:hover { gap: 8px; }
-
-    /* ── Coming Soon Cards ───────────────────────────────────── */
-    .coming-soon-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 28px;
-    }
-    @media (max-width: 600px) {
-      .coming-soon-grid { grid-template-columns: 1fr; }
-    }
-    .cs-card {
-      background: var(--bg-2);
-      border: 1px dashed var(--border);
-      border-radius: 12px;
       padding: 20px;
-      opacity: 0.6;
+      margin-top: 24px;
+      box-shadow: var(--shadow-sm);
     }
-    .cs-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .cs-badge {
-      font-size: 0.68rem;
-      font-family: var(--font-mono);
-      background: var(--bg-3);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      padding: 2px 7px;
-      border-radius: 3px;
+    .course-card h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--wm-green); margin-bottom: 14px;
+      text-transform: uppercase; letter-spacing: 0.06em;
     }
-    .cs-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
-    .cs-card p  { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+    .course-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .course-row:last-child { border-bottom: none; }
+    .course-key { color: var(--text-3); min-width: 80px; }
+    .course-val { color: var(--text); font-weight: 500; text-align: right; }
 
-    /* ── Course Info ──────────────────────────────────────────── */
-    .course-info-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      margin-top: 32px;
+    .tag-green { background: rgba(17,87,64,0.08); color: var(--wm-green); border: 1px solid rgba(17,87,64,0.2); }
+    .tag-gold { background: var(--wm-gold-pale); color: #8B6914; border: 1px solid rgba(185,151,91,0.3); }
+    .tag-blue { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; }
+    .tag-purple { background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE; }
+    .tag-red { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+    .tag-teal { background: #F0FDFA; color: #0D9488; border: 1px solid #99F6E4; }
+
+    @media (max-width: 900px) {
+      .teaching-layout { grid-template-columns: 1fr; }
+      .teaching-sidebar { position: static; }
+      .mfc-grid { grid-template-columns: 1fr; gap: 12px; }
+      .mfc-num { display: none; }
+      .module-stats { flex-wrap: wrap; gap: 16px; }
     }
-    .course-info-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
-    .course-detail {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-    }
-    .course-detail:last-child { border-bottom: none; }
-    .cd-key { color: var(--text-muted); min-width: 90px; flex-shrink: 0; }
-    .cd-val { color: var(--text-secondary); }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
-    <div class="container nav-inner">
-      <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
-      <ul class="nav-links">
-        <li><a href="projects.html" class="nav-link">Projects</a></li>
-        <li><a href="teaching.html" class="nav-link active">Teaching</a></li>
-        <li><a href="index.html#about" class="nav-link">About</a></li>
-      </ul>
+<!-- NAV -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark">CL</div>
+      CODELAB<span style="color:var(--wm-gold);">.</span>SH
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="teaching.html" class="nav-link active">Teaching</a>
+      <a href="projects.html" class="nav-link">Projects</a>
+      <a href="index.html#about" class="nav-link">About</a>
     </div>
-  </nav>
-
-  <!-- Page Hero -->
-  <div class="page-hero">
-    <div class="container">
-      <div class="breadcrumb">
-        <a href="index.html">CodeLab</a>
-        <span style="opacity:0.4">›</span>
-        <span>Teaching</span>
-      </div>
-      <h1>Teaching Resources</h1>
-      <p>Interactive modules, slides, and open materials for learning how generative AI reshapes software development.</p>
+    <div class="nav-right">
+      <span class="nav-instructor">Antonio Mastropaolo · W&amp;M</span>
     </div>
   </div>
+</nav>
 
-  <!-- Teaching Content -->
-  <section class="section">
-    <div class="container">
-      <div class="teaching-layout">
+<!-- HERO -->
+<section class="teaching-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill">CSCI 455 / 555</span>
+      <span class="sep">·</span>
+      <span>Spring 2026</span>
+      <span class="sep">·</span>
+      <span>William &amp; Mary</span>
+    </div>
+    <h1 class="animate-up">Teaching Modules</h1>
+    <p class="lead animate-up animate-up-1" style="max-width:620px;margin-top:12px;">
+      Interactive course content for <strong style="color:var(--wm-gold-light);">Generative AI for Software Development</strong>. Each module includes hands-on examples, live demos, and interactive exercises. Open directly in your browser — no install required.
+    </p>
+  </div>
+</section>
 
-        <!-- Sidebar -->
-        <aside class="teaching-sidebar">
-          <div class="sidebar-heading">Modules</div>
-          <a href="#module-intro" class="sidebar-nav-item active">
-            <span class="sidebar-nav-icon">&#x26A1;</span> 0. Intro
-          </a>
-          <a href="#module-msr" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">⛏️</span> 1. MSR
-          </a>
-          <a href="#module-plcm" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🎲</span> 2. Probabilistic Models
-          </a>
-          <a href="#module-eval" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">📊</span> 3. Evaluation
-          </a>
-          <a href="#module-dl4se" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🧠</span> 4. DL4SE Foundations
-          </a>
-          <a href="#module-prompting" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">💬</span> 5. Prompting LLMs
-          </a>
-          <a href="#module-hallucinations" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">&#x1F47B;</span> 6. Hallucinations
-          </a>
-          <a href="#module-ga" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🧬</span> GA (Extra)
-          </a>
-          <a href="#coming-soon" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🔜</span> Coming Soon
-          </a>
+<!-- MAIN CONTENT -->
+<section style="padding: 64px 0 96px; background: var(--bg);">
+  <div class="container">
+    <div class="teaching-layout">
 
-          <div class="sidebar-heading">Course</div>
-          <a href="#course" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">📚</span> Course Info
+      <!-- Sidebar -->
+      <aside class="teaching-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Modules</div>
+          <a href="#module-0" class="sidebar-item active">
+            <span class="sidebar-num">00</span> Course Intro
           </a>
-          <a href="projects.html" class="sidebar-nav-item">
-            <span class="sidebar-nav-icon">🛠️</span> Student Projects
+          <a href="#module-1" class="sidebar-item">
+            <span class="sidebar-num">01</span> MSR
           </a>
+          <a href="#module-2" class="sidebar-item">
+            <span class="sidebar-num">02</span> Probabilistic Models
+          </a>
+          <a href="#module-3" class="sidebar-item">
+            <span class="sidebar-num">03</span> Evaluation
+          </a>
+          <a href="#module-4" class="sidebar-item">
+            <span class="sidebar-num">04</span> DL4SE Foundations
+          </a>
+          <a href="#module-5" class="sidebar-item">
+            <span class="sidebar-num">05</span> Prompting LLMs
+          </a>
+          <a href="#module-6" class="sidebar-item">
+            <span class="sidebar-num">06</span> Hallucinations
+          </a>
+          <a href="#module-ga" class="sidebar-item">
+            <span class="sidebar-num">GA</span> Genetic Algorithms &amp; LLMs
+          </a>
+        </div>
 
-          <div class="course-info-card" id="course">
-            <h3>Course Details</h3>
-            <div class="course-detail">
-              <span class="cd-key">Course</span>
-              <span class="cd-val">CSCI 455 / 555</span>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Resources</div>
+          <a href="https://antoniomastropaolo.com/teaching/" target="_blank" class="sidebar-item">
+            <span class="sidebar-num">&rarr;</span> Course Info
+          </a>
+          <a href="projects.html" class="sidebar-item">
+            <span class="sidebar-num">&rarr;</span> Student Projects
+          </a>
+        </div>
+
+        <div class="course-card">
+          <h4>Course Details</h4>
+          <div class="course-row">
+            <span class="course-key">Course</span>
+            <span class="course-val">CSCI 455 / 555</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Title</span>
+            <span class="course-val">GenAI for Software<br>Development</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Semester</span>
+            <span class="course-val">Spring 2026</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Schedule</span>
+            <span class="course-val">MWF 1:00 – 1:50 PM</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Location</span>
+            <span class="course-val">Blow Hall 333</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Credits</span>
+            <span class="course-val">3</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Instructor</span>
+            <span class="course-val">Prof. A. Mastropaolo</span>
+          </div>
+          <div class="course-row">
+            <span class="course-key">Institution</span>
+            <span class="course-val">William &amp; Mary</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Module list -->
+      <main class="module-list">
+
+        <!-- Semester heading -->
+        <div class="semester-divider" style="margin-top:0;">
+          <h3>Spring 2026 — Core Modules</h3>
+        </div>
+
+        <!-- Module 0: Course Introduction -->
+        <a href="course-intro.html" class="module-full-card" id="module-0">
+          <div class="mfc-grid">
+            <div class="mfc-num">00</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-blue">Overview</span>
+              </div>
+              <div class="mfc-title">Course Introduction</div>
+              <div class="mfc-desc">
+                Welcome to Generative AI for Software Development (CSCI 455/555). Course overview, learning objectives, structure, tools of the trade, and what to expect throughout the semester.
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">12</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">2</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~15</span> min</div>
+              </div>
             </div>
-            <div class="course-detail">
-              <span class="cd-key">Title</span>
-              <span class="cd-val">GenAI for Software Development</span>
-            </div>
-            <div class="course-detail">
-              <span class="cd-key">Semester</span>
-              <span class="cd-val">Spring 2026</span>
-            </div>
-            <div class="course-detail">
-              <span class="cd-key">Credits</span>
-              <span class="cd-val">3</span>
-            </div>
-            <div class="course-detail">
-              <span class="cd-key">Instructor</span>
-              <span class="cd-val">Prof. Antonio Mastropaolo</span>
-            </div>
-            <div class="course-detail">
-              <span class="cd-key">Institution</span>
-              <span class="cd-val">William &amp; Mary</span>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
             </div>
           </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main>
-          <div id="interactive">
-            <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:8px; letter-spacing:-0.02em;">Interactive Modules</h2>
-            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:28px;">Self-contained web apps you can open directly in a browser — no install required.</p>
-
-            <div class="module-list">
-
-              <!-- Module 0: Course Introduction -->
-              <div class="module-card" id="module-intro">
-                <div class="mc-header">
-                  <div class="mc-icon blue">&#x26A1;</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag blue">module 0 · interactive</span>
-                    <h3>Course Introduction</h3>
-                    <p>Welcome to Generative AI for Software Development (CSCI 455/555). Course overview, learning objectives, structure, tools, and what to expect — everything you need to get started.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">12</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">2</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~15m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">course overview</span>
-                    <span class="mc-skill">CSCI 455/555</span>
-                    <span class="mc-skill">Spring 2026</span>
-                    <span class="mc-skill">AI4SE landscape</span>
-                    <span class="mc-skill">learning objectives</span>
-                    <span class="mc-skill">vibe coding</span>
-                  </div>
-                  <a href="course-intro.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 1: MSR -->
-              <div class="module-card" id="module-msr">
-                <div class="mc-header">
-                  <div class="mc-icon green">⛏️</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag green">module 1 · interactive</span>
-                    <h3>Mining Software Repositories</h3>
-                    <p>How to collect, clean, and prepare source-code data from public repositories — the critical first step before any model can learn. Includes a live preprocessing pipeline and code tokenizer.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">20</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">4</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~35m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">repositories</span>
-                    <span class="mc-skill">version control</span>
-                    <span class="mc-skill">data quality</span>
-                    <span class="mc-skill">preprocessing</span>
-                    <span class="mc-skill">tokenization</span>
-                    <span class="mc-skill">GitHub API</span>
-                    <span class="mc-skill">deduplication</span>
-                    <span class="mc-skill">data splitting</span>
-                  </div>
-                  <a href="msr.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 2: Probabilistic Language Modeling for Code -->
-              <div class="module-card" id="module-plcm">
-                <div class="mc-header">
-                  <div class="mc-icon blue">🎲</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag blue">module 2 · interactive</span>
-                    <h3>Probabilistic Language Modeling for Code</h3>
-                    <p>Conditional probabilities, the chain rule, n-gram language models, the Markov assumption, Zipf's law, the naturalness hypothesis (Hindle et al.), perplexity, smoothing &amp; interpolation, stupid backoff, sampling, and the path from n-grams to LLMs.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">18</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">4</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~40m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">chain rule</span>
-                    <span class="mc-skill">n-grams</span>
-                    <span class="mc-skill">Markov assumption</span>
-                    <span class="mc-skill">naturalness</span>
-                    <span class="mc-skill">perplexity</span>
-                    <span class="mc-skill">smoothing</span>
-                    <span class="mc-skill">sampling</span>
-                    <span class="mc-skill">LLMs vs n-grams</span>
-                  </div>
-                  <a href="probabilistic-code-models.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 3: Evaluation -->
-              <div class="module-card" id="module-eval">
-                <div class="mc-header">
-                  <div class="mc-icon purple">📊</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag purple">module 3 · interactive</span>
-                    <h3>Evaluating AI-enabled Software Development Techniques</h3>
-                    <p>Classification metrics (precision, recall, F1), BLEU score deep-dive, CodeBLEU, CrystalBLEU, embedding-based metrics, contrastive learning, and the SIDE framework for code-summary semantic alignment.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">17</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">5</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~35m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">precision</span>
-                    <span class="mc-skill">recall</span>
-                    <span class="mc-skill">F1</span>
-                    <span class="mc-skill">BLEU</span>
-                    <span class="mc-skill">CodeBLEU</span>
-                    <span class="mc-skill">CrystalBLEU</span>
-                    <span class="mc-skill">contrastive learning</span>
-                    <span class="mc-skill">SIDE</span>
-                  </div>
-                  <a href="evaluation-metrics.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 4: DL for SE Foundations -->
-              <div class="module-card" id="module-dl4se">
-                <div class="mc-header">
-                  <div class="mc-icon green">🧠</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag green">module 4 · interactive</span>
-                    <h3>Deep Learning for Software Development Foundations</h3>
-                    <p>Non-generative tasks (code clone detection, vulnerability prediction, code smell detection) and generative tasks (embeddings, LSTMs, seq2seq, attention, transformers, self-attention, pre-training, fine-tuning, and modern code models).</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">26</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">6</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~55m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">clone detection</span>
-                    <span class="mc-skill">vulnerability</span>
-                    <span class="mc-skill">code smells</span>
-                    <span class="mc-skill">embeddings</span>
-                    <span class="mc-skill">LSTM</span>
-                    <span class="mc-skill">seq2seq</span>
-                    <span class="mc-skill">transformers</span>
-                    <span class="mc-skill">CodeBERT</span>
-                    <span class="mc-skill">pre-training</span>
-                  </div>
-                  <a href="dl4se-foundations.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 5: Prompting LLMs for Software Development Automation -->
-              <div class="module-card" id="module-prompting">
-                <div class="mc-header">
-                  <div class="mc-icon purple">💬</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag purple">module 5 · interactive</span>
-                    <h3>Prompting LLMs for Software Development Automation</h3>
-                    <p>In-Context Learning (ICL), few-shot prompting, prompting vs fine-tuning tradeoffs, code summarization case study, and why example selection matters — the lightweight adaptation mechanism for SE tasks.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">20</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">7</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~40m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">ICL</span>
-                    <span class="mc-skill">few-shot</span>
-                    <span class="mc-skill">prompting vs fine-tuning</span>
-                    <span class="mc-skill">bug fixing</span>
-                    <span class="mc-skill">code summarization</span>
-                    <span class="mc-skill">shot selection</span>
-                    <span class="mc-skill">prompt engineering</span>
-                  </div>
-                  <a href="prompting-llms.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- Module 6: Hallucinations in Coding Tasks -->
-              <div class="module-card" id="module-hallucinations">
-                <div class="mc-header">
-                  <div class="mc-icon purple">&#x1F47B;</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag purple">module 6 · interactive</span>
-                    <h3>Hallucinations in Coding Tasks</h3>
-                    <p>When LLMs generate plausible but incorrect code: non-existent APIs, wrong parameters, logic errors. Covers the CodeHalu taxonomy (AAAI 2025), detection via execution-based verification and AST analysis, and mitigation strategies including De-Hallucinator and MARIN (FSE 2025).</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">20</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">5</span><span class="mc-stat-key">Live Demos</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~40m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">code hallucinations</span>
-                    <span class="mc-skill">CodeHalu taxonomy</span>
-                    <span class="mc-skill">API hallucination</span>
-                    <span class="mc-skill">detection</span>
-                    <span class="mc-skill">AST analysis</span>
-                    <span class="mc-skill">De-Hallucinator</span>
-                    <span class="mc-skill">MARIN</span>
-                    <span class="mc-skill">mitigation</span>
-                  </div>
-                  <a href="hallucinations.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-              <!-- GA Module [Extra] -->
-              <div class="module-card" id="module-ga">
-                <div class="mc-header">
-                  <div class="mc-icon green">🧬</div>
-                  <div class="mc-meta">
-                    <span class="mc-tag green">extra · interactive</span>
-                    <h3>Genetic Evolution for Evolving Code Descriptions</h3>
-                    <p>Understand selection, crossover, and mutation by watching code descriptions evolve toward higher code coverage. Includes a live simulation you can step through generation by generation.</p>
-                  </div>
-                </div>
-                <div class="mc-stats">
-                  <div class="mc-stat"><span class="mc-stat-val">14</span><span class="mc-stat-key">Slides</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">1</span><span class="mc-stat-key">Live Sim</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">~25m</span><span class="mc-stat-key">Duration</span></div>
-                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
-                </div>
-                <div class="mc-footer">
-                  <div class="mc-skills">
-                    <span class="mc-skill">population</span>
-                    <span class="mc-skill">selection</span>
-                    <span class="mc-skill">crossover</span>
-                    <span class="mc-skill">mutation</span>
-                    <span class="mc-skill">fitness</span>
-                    <span class="mc-skill">code coverage</span>
-                    <span class="mc-skill">code descriptions</span>
-                    <span class="mc-skill">specification evolution</span>
-                  </div>
-                  <a href="genetic-algorithms.html" class="mc-cta-link">Open module →</a>
-                </div>
-              </div>
-
-            </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">12</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">2</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~15m</span><span class="lbl">Duration</span></div>
           </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">course overview</span>
+            <span class="mfc-skill">CSCI 455/555</span>
+            <span class="mfc-skill">AI4SE landscape</span>
+            <span class="mfc-skill">learning objectives</span>
+          </div>
+        </a>
 
-          <!-- Coming Soon -->
-          <div id="coming-soon" style="margin-top: 56px;">
-            <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:8px; letter-spacing:-0.02em;">Coming Soon</h2>
-            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:0;">More interactive modules in development.</p>
-
-            <div class="coming-soon-grid">
-              <div class="cs-card">
-                <div class="cs-card-top">
-                  <span style="font-size:1.4rem">🔬</span>
-                  <span class="cs-badge">in development</span>
-                </div>
-                <h4>LLM Testing Strategies</h4>
-                <p>How to design evaluation suites for LLM-generated code. Coverage metrics, mutation testing, and oracle problems.</p>
+        <!-- Module 1: MSR -->
+        <a href="msr.html" class="module-full-card" id="module-1">
+          <div class="mfc-grid">
+            <div class="mfc-num">01</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-teal">Data Collection</span>
               </div>
-              <div class="cs-card">
-                <div class="cs-card-top">
-                  <span style="font-size:1.4rem">⚡</span>
-                  <span class="cs-badge">planned</span>
-                </div>
-                <h4>Prompt Engineering Fundamentals</h4>
-                <p>Zero-shot, few-shot, chain-of-thought, and role prompting — with live before/after code generation examples.</p>
+              <div class="mfc-title">Mining Software Repositories</div>
+              <div class="mfc-desc">
+                How to collect, clean, and prepare source-code data from public repositories — the critical first step before any model can learn. Includes a live preprocessing pipeline and code tokenizer.
               </div>
-              <div class="cs-card">
-                <div class="cs-card-top">
-                  <span style="font-size:1.4rem">🛡️</span>
-                  <span class="cs-badge">planned</span>
-                </div>
-                <h4>AI Safety for Developers</h4>
-                <p>Prompt injection, jailbreaks, and how to build robust guardrails into AI-powered applications.</p>
-              </div>
-              <div class="cs-card">
-                <div class="cs-card-top">
-                  <span style="font-size:1.4rem">📐</span>
-                  <span class="cs-badge">planned</span>
-                </div>
-                <h4>Software Architecture with AI</h4>
-                <p>Designing maintainable systems when your primary author is an LLM. Patterns and antipatterns.</p>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">20</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">4</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~35</span> min</div>
               </div>
             </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
           </div>
-        </main>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">20</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">4</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~35m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">repositories</span>
+            <span class="mfc-skill">version control</span>
+            <span class="mfc-skill">data quality</span>
+            <span class="mfc-skill">preprocessing</span>
+            <span class="mfc-skill">tokenization</span>
+            <span class="mfc-skill">GitHub API</span>
+            <span class="mfc-skill">deduplication</span>
+          </div>
+        </a>
 
-      </div>
-    </div>
-  </section>
+        <!-- Module 2: Probabilistic Models -->
+        <a href="probabilistic-code-models.html" class="module-full-card" id="module-2">
+          <div class="mfc-grid">
+            <div class="mfc-num">02</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-purple">Language Models</span>
+              </div>
+              <div class="mfc-title">Probabilistic Language Modeling for Code</div>
+              <div class="mfc-desc">
+                Conditional probabilities, the chain rule, n-gram language models, the Markov assumption, Zipf's law, the naturalness hypothesis (Hindle et al.), perplexity, smoothing &amp; interpolation, and the path from n-grams to LLMs.
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">18</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">4</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">18</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">4</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">chain rule</span>
+            <span class="mfc-skill">n-grams</span>
+            <span class="mfc-skill">Markov assumption</span>
+            <span class="mfc-skill">naturalness</span>
+            <span class="mfc-skill">perplexity</span>
+            <span class="mfc-skill">smoothing</span>
+            <span class="mfc-skill">sampling</span>
+          </div>
+        </a>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="footer-left">
-        <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
-        <p class="footer-tagline">Generative AI for Software Development · William &amp; Mary</p>
+        <!-- Module 3: Evaluation -->
+        <a href="evaluation-metrics.html" class="module-full-card" id="module-3">
+          <div class="mfc-grid">
+            <div class="mfc-num">03</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-red">Metrics</span>
+              </div>
+              <div class="mfc-title">Evaluating AI-enabled Software Development Techniques</div>
+              <div class="mfc-desc">
+                Classification metrics (precision, recall, F1), BLEU score deep-dive, CodeBLEU, CrystalBLEU, embedding-based metrics, contrastive learning, and the SIDE framework for code-summary semantic alignment.
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">17</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">5</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~35</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">17</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">5</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~35m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">precision</span>
+            <span class="mfc-skill">recall</span>
+            <span class="mfc-skill">F1</span>
+            <span class="mfc-skill">BLEU</span>
+            <span class="mfc-skill">CodeBLEU</span>
+            <span class="mfc-skill">contrastive learning</span>
+            <span class="mfc-skill">SIDE</span>
+          </div>
+        </a>
+
+        <!-- Module 4: DL4SE -->
+        <a href="dl4se-foundations.html" class="module-full-card" id="module-4">
+          <div class="mfc-grid">
+            <div class="mfc-num">04</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-purple">Deep Learning</span>
+              </div>
+              <div class="mfc-title">Deep Learning for Software Development Foundations</div>
+              <div class="mfc-desc">
+                Non-generative tasks (code clone detection, vulnerability prediction, code smell detection) and generative tasks (embeddings, LSTMs, seq2seq, attention, transformers, self-attention, pre-training, fine-tuning, and modern code models).
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">26</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">6</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~55</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">26</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">6</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~55m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">clone detection</span>
+            <span class="mfc-skill">vulnerability</span>
+            <span class="mfc-skill">embeddings</span>
+            <span class="mfc-skill">LSTM</span>
+            <span class="mfc-skill">seq2seq</span>
+            <span class="mfc-skill">transformers</span>
+            <span class="mfc-skill">CodeBERT</span>
+            <span class="mfc-skill">pre-training</span>
+          </div>
+        </a>
+
+        <!-- Module 5: Prompting LLMs -->
+        <a href="prompting-llms.html" class="module-full-card" id="module-5">
+          <div class="mfc-grid">
+            <div class="mfc-num">05</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-gold">Prompting</span>
+              </div>
+              <div class="mfc-title">Prompting LLMs for Software Development Automation</div>
+              <div class="mfc-desc">
+                In-Context Learning (ICL), few-shot prompting, prompting vs fine-tuning tradeoffs, code summarization case study, and why example selection matters — the lightweight adaptation mechanism for SE tasks.
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">20</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">7</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">20</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">7</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">ICL</span>
+            <span class="mfc-skill">few-shot</span>
+            <span class="mfc-skill">prompting vs fine-tuning</span>
+            <span class="mfc-skill">bug fixing</span>
+            <span class="mfc-skill">code summarization</span>
+            <span class="mfc-skill">shot selection</span>
+          </div>
+        </a>
+
+        <!-- Module 6: Hallucinations -->
+        <a href="hallucinations.html" class="module-full-card" id="module-6">
+          <div class="mfc-grid">
+            <div class="mfc-num">06</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-red">Reliability</span>
+              </div>
+              <div class="mfc-title">Hallucinations in Coding Tasks</div>
+              <div class="mfc-desc">
+                When LLMs generate plausible but incorrect code: non-existent APIs, wrong parameters, logic errors. Covers the CodeHalu taxonomy (AAAI 2025), detection via execution-based verification and AST analysis, and mitigation strategies including De-Hallucinator and MARIN (FSE 2025).
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">20</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">5</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">20</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">5</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">code hallucinations</span>
+            <span class="mfc-skill">CodeHalu taxonomy</span>
+            <span class="mfc-skill">API hallucination</span>
+            <span class="mfc-skill">De-Hallucinator</span>
+            <span class="mfc-skill">MARIN</span>
+            <span class="mfc-skill">mitigation</span>
+          </div>
+        </a>
+
+        <!-- Extra Module -->
+        <div class="semester-divider">
+          <h3>Extra Module</h3>
+        </div>
+
+        <!-- GA Module -->
+        <a href="genetic-algorithms.html" class="module-full-card" id="module-ga">
+          <div class="mfc-grid">
+            <div class="mfc-num">GA</div>
+            <div class="mfc-body">
+              <div class="mfc-tags">
+                <span class="section-tag tag-green">Spring 2026</span>
+                <span class="section-tag tag-gold">Extra</span>
+                <span class="section-tag tag-teal">Optimization</span>
+              </div>
+              <div class="mfc-title">Genetic Algorithms &amp; LLMs</div>
+              <div class="mfc-desc">
+                Fundamentals of genetic algorithms from scratch — populations, selection, crossover, mutation, and fitness functions with step-by-step visualizations. Then connects to AI for Software Engineering: using evolutionary strategies with LLM-generated prompts to achieve 100x+ speedup in testing the correctness of AI-generated methods.
+              </div>
+              <div class="mfc-meta">
+                <div class="mfc-meta-item"><span class="icon">14</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">1</span> live simulation</div>
+                <div class="mfc-meta-item"><span class="icon">~25</span> min</div>
+              </div>
+            </div>
+            <div class="mfc-action">
+              <span class="btn btn-primary btn-sm">Open Module <span class="btn-icon">&rarr;</span></span>
+            </div>
+          </div>
+          <div class="module-stats">
+            <div class="module-stat"><span class="val">14</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">1</span><span class="lbl">Simulation</span></div>
+            <div class="module-stat"><span class="val">~25m</span><span class="lbl">Duration</span></div>
+          </div>
+          <div class="mfc-skills">
+            <span class="mfc-skill">population</span>
+            <span class="mfc-skill">selection</span>
+            <span class="mfc-skill">crossover</span>
+            <span class="mfc-skill">mutation</span>
+            <span class="mfc-skill">fitness</span>
+            <span class="mfc-skill">LLM prompts</span>
+            <span class="mfc-skill">test generation</span>
+            <span class="mfc-skill">code coverage</span>
+          </div>
+        </a>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">CODELAB<span class="dot">.</span>SH</div>
+        <p>Interactive teaching modules for Generative AI for Software Development at William &amp; Mary.</p>
       </div>
-      <div class="footer-links">
-        <a href="projects.html" class="footer-link">Projects</a>
-        <a href="teaching.html" class="footer-link">Teaching</a>
-        <a href="course-intro.html" class="footer-link">0. Intro</a>
-        <a href="msr.html" class="footer-link">1. MSR</a>
-        <a href="probabilistic-code-models.html" class="footer-link">2. PLMs</a>
-        <a href="evaluation-metrics.html" class="footer-link">3. Eval</a>
-        <a href="dl4se-foundations.html" class="footer-link">4. DL4SE</a>
-        <a href="prompting-llms.html" class="footer-link">5. Prompting</a>
-        <a href="hallucinations.html" class="footer-link">6. Hallucinations</a>
-        <a href="genetic-algorithms.html" class="footer-link">GA (Extra)</a>
-        <a href="https://github.com/antonio-mastropaolo/codelab" class="footer-link" target="_blank">GitHub</a>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="teaching.html">Teaching</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="https://antoniomastropaolo.com/teaching/" target="_blank">Instructor</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Modules</h5>
+        <ul>
+          <li><a href="course-intro.html">0. Course Intro</a></li>
+          <li><a href="msr.html">1. MSR</a></li>
+          <li><a href="probabilistic-code-models.html">2. Probabilistic Models</a></li>
+          <li><a href="evaluation-metrics.html">3. Evaluation</a></li>
+          <li><a href="dl4se-foundations.html">4. DL4SE Foundations</a></li>
+          <li><a href="prompting-llms.html">5. Prompting LLMs</a></li>
+          <li><a href="hallucinations.html">6. Hallucinations</a></li>
+          <li><a href="genetic-algorithms.html">GA. Genetic Algorithms &amp; LLMs</a></li>
+        </ul>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
-      <span>Built with vibe coding ✨</span>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
+      <span class="footer-wm">W&amp;M Computer Science</span>
     </div>
-  </footer>
+  </div>
+</footer>
 
 </body>
 </html>
