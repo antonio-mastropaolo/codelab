@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Projects — CODELAB.SH</title>
+  <meta name="description" content="Student project showcase for Antonio Mastropaolo's CODELAB course at William & Mary." />
+  <link rel="stylesheet" href="platform.css" />
+  <style>
+    /* Large project card (featured) */
+    .project-featured {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow); margin-bottom: 24px;
+      display: grid; grid-template-columns: 1fr 2fr;
+      transition: transform 0.25s, box-shadow 0.25s;
+      text-decoration: none;
+    }
+    .project-featured:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .pf-visual {
+      background: var(--wm-green-dark); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 4rem; position: relative; overflow: hidden; min-height: 200px;
+    }
+    .pf-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+      background-size: 32px 32px;
+    }
+    .pf-visual .emoji { position: relative; z-index: 1; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+    .pf-body { padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
+    .pf-semester { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wm-gold); margin-bottom: 8px; }
+    .pf-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .pf-desc { font-size: 0.9rem; color: var(--text-2); line-height: 1.7; margin-bottom: 20px; }
+    .pf-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .pf-team { font-size: 0.78rem; color: var(--text-3); }
+
+    /* Regular project grid */
+    .project-cards-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+    }
+    .proj-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-sm); transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      text-decoration: none; display: block;
+    }
+    .proj-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--wm-green); }
+    .proj-card.coming-soon { border-style: dashed; background: var(--bg); box-shadow: none; cursor: default; }
+    .proj-card.coming-soon:hover { transform: none; box-shadow: none; border-color: var(--border); }
+    .proj-color-bar { height: 5px; }
+    .proj-body { padding: 22px; }
+    .proj-sem { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wm-gold); margin-bottom: 8px; }
+    .proj-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .proj-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+    .proj-stack { display: flex; flex-wrap: wrap; gap: 5px; }
+    .proj-stack-tag { font-size: 0.65rem; font-weight: 600; padding: 3px 9px; border-radius: 4px; background: var(--bg); color: var(--text-3); border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; }
+    .proj-footer { padding: 14px 22px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .proj-team { font-size: 0.72rem; color: var(--text-3); }
+    .proj-arrow { width: 28px; height: 28px; border-radius: 50%; background: var(--wm-green-mist); border: 1px solid rgba(17,87,64,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--wm-green); transition: all 0.2s; }
+    .proj-card:hover .proj-arrow { background: var(--wm-green); color: white; }
+
+    /* Coming soon content */
+    .cs-body { padding: 36px 22px; text-align: center; }
+    .cs-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.25; }
+    .cs-title { font-size: 0.88rem; font-weight: 600; color: var(--text-3); margin-bottom: 6px; }
+    .cs-desc { font-size: 0.78rem; color: var(--text-3); line-height: 1.5; }
+
+    /* Stats band */
+    .stats-band {
+      background: var(--wm-green); padding: 32px 0; margin: 60px 0;
+    }
+    .stats-band-inner { display: flex; justify-content: space-around; gap: 24px; flex-wrap: wrap; }
+    .band-stat { text-align: center; }
+    .band-val { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: white; line-height: 1; }
+    .band-lbl { font-size: 0.78rem; color: rgba(255,255,255,0.65); margin-top: 4px; font-weight: 500; }
+
+    @media (max-width: 640px) {
+      .project-featured { grid-template-columns: 1fr; }
+      .pf-visual { min-height: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark">CL</div>
+      CODELAB<span style="color:var(--wm-gold);">.</span>SH
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="teaching.html" class="nav-link">Teaching</a>
+      <a href="projects.html" class="nav-link active">Projects</a>
+      <a href="index.html#about" class="nav-link">About</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-instructor">Antonio Mastropaolo · W&amp;M</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="projects-page-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill">Student Work</span>
+      <span class="sep">·</span>
+      <span>W&amp;M CODELAB</span>
+    </div>
+    <h1 class="animate-up">Projects Gallery</h1>
+    <p class="lead animate-up animate-up-1" style="max-width:580px;margin-top:12px;">
+      Software built by CODELAB students at William &amp; Mary. Each project
+      solves a real-world problem — from tools for the campus community to
+      ambitious products built entirely through vibe coding.
+    </p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<section style="padding: 64px 0 100px; background: var(--bg);">
+  <div class="container">
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="this.parentElement.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">All Semesters</button>
+      <button class="filter-tab" onclick="this.parentElement.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Spring 2026</button>
+      <button class="filter-tab" onclick="this.parentElement.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Fall 2025</button>
+    </div>
+
+    <!-- ---- SPRING 2026 ---- -->
+    <div class="semester-divider">
+      <h3>Spring 2026</h3>
+      <span class="semester-badge">In Progress · May 2026</span>
+    </div>
+
+    <div class="project-cards-grid">
+      <div class="proj-card coming-soon">
+        <div class="proj-color-bar" style="background:var(--border);"></div>
+        <div class="cs-body">
+          <div class="cs-icon">🚧</div>
+          <div class="cs-title">Projects in Progress</div>
+          <div class="cs-desc">Spring 2026 final projects are currently being built. They will be featured here at the end of the semester — check back in May.</div>
+        </div>
+      </div>
+      <div class="proj-card coming-soon">
+        <div class="proj-color-bar" style="background:var(--border);"></div>
+        <div class="cs-body">
+          <div class="cs-icon">📝</div>
+          <div class="cs-title">Slot Reserved</div>
+          <div class="cs-desc">This space is reserved for a Spring 2026 student project. Stay tuned.</div>
+        </div>
+      </div>
+      <div class="proj-card coming-soon">
+        <div class="proj-color-bar" style="background:var(--border);"></div>
+        <div class="cs-body">
+          <div class="cs-icon">📝</div>
+          <div class="cs-title">Slot Reserved</div>
+          <div class="cs-desc">This space is reserved for a Spring 2026 student project. Stay tuned.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- FALL 2025 ---- -->
+    <div class="semester-divider">
+      <h3>Fall 2025</h3>
+      <span class="semester-badge">Completed</span>
+    </div>
+
+    <!-- Featured project -->
+    <a href="#" class="project-featured">
+      <div class="pf-visual">
+        <span class="emoji">🗓️</span>
+      </div>
+      <div class="pf-body">
+        <div>
+          <div class="pf-semester">Fall 2025 · Featured Project</div>
+          <div class="pf-title">Campus Events Aggregator</div>
+          <p class="pf-desc">
+            A real-time web platform that pulls events from 10+ campus sources — clubs,
+            athletics, academic departments, and the arts — into a single unified feed.
+            Features personalized recommendations, a shared social calendar, and Slack/email
+            digest integrations. Built and deployed in 6 weeks by a team of three.
+          </p>
+        </div>
+        <div class="pf-footer">
+          <div class="proj-stack">
+            <span class="proj-stack-tag">Next.js</span>
+            <span class="proj-stack-tag">Supabase</span>
+            <span class="proj-stack-tag">Tailwind CSS</span>
+            <span class="proj-stack-tag">Vercel</span>
+            <span class="proj-stack-tag">OpenAI API</span>
+          </div>
+          <div class="pf-team">Team of 3 · Fall 2025</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Regular grid -->
+    <div class="project-cards-grid">
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#B9975B,#D4B07A);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">StudyMatch</div>
+          <p class="proj-desc">AI-powered study partner matching for W&M students. Connects students by course, schedule, and learning style — with in-app session scheduling and resource sharing.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">React</span>
+            <span class="proj-stack-tag">Firebase</span>
+            <span class="proj-stack-tag">OpenAI</span>
+            <span class="proj-stack-tag">Tailwind</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Team of 2 · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#4F46E5,#818CF8);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">GreenRoute</div>
+          <p class="proj-desc">A routing app that prioritizes low-carbon transportation options around the W&M campus and Williamsburg. Integrates bike share, shuttle schedules, and walking routes with live transit data.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">Vue.js</span>
+            <span class="proj-stack-tag">Mapbox GL</span>
+            <span class="proj-stack-tag">Node.js</span>
+            <span class="proj-stack-tag">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Solo · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#0891B2,#22D3EE);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">ProfRater+</div>
+          <p class="proj-desc">A course and professor review platform built specifically for W&M, with AI-generated summaries of reviews and a grade distribution tracker aggregated from published data.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">SvelteKit</span>
+            <span class="proj-stack-tag">SQLite</span>
+            <span class="proj-stack-tag">Cloudflare</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Team of 3 · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#059669,#34D399);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">MarketHaven</div>
+          <p class="proj-desc">A peer-to-peer marketplace for students to buy and sell textbooks, furniture, and goods within the W&M community. Features price history, condition ratings, and in-app messaging.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">Next.js</span>
+            <span class="proj-stack-tag">Stripe</span>
+            <span class="proj-stack-tag">Prisma</span>
+            <span class="proj-stack-tag">PlanetScale</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Team of 2 · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#DC2626,#F87171);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">LectureCast</div>
+          <p class="proj-desc">Automated lecture recording and transcription tool that produces searchable transcripts, AI-generated summaries, and chapter markers — shared directly with enrolled students.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">Python</span>
+            <span class="proj-stack-tag">Whisper</span>
+            <span class="proj-stack-tag">FastAPI</span>
+            <span class="proj-stack-tag">React</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Team of 2 · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+      <a href="#" class="proj-card">
+        <div class="proj-color-bar" style="background:linear-gradient(90deg,#7C3AED,#A78BFA);"></div>
+        <div class="proj-body">
+          <div class="proj-sem">Fall 2025</div>
+          <div class="proj-title">HabitStack</div>
+          <p class="proj-desc">A minimalist habit tracking app designed around behavioral science principles. Features streak tracking, habit stacking templates, and weekly reports with actionable nudges.</p>
+          <div class="proj-stack">
+            <span class="proj-stack-tag">React Native</span>
+            <span class="proj-stack-tag">Expo</span>
+            <span class="proj-stack-tag">AsyncStorage</span>
+          </div>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-team">Solo · Fall 2025</span>
+          <div class="proj-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Stats band -->
+    <div class="stats-band" style="margin-left:-28px;margin-right:-28px;padding-left:28px;padding-right:28px;">
+      <div class="stats-band-inner">
+        <div class="band-stat"><div class="band-val">7+</div><div class="band-lbl">Projects shipped (Fall '25)</div></div>
+        <div class="band-stat"><div class="band-val">14</div><div class="band-lbl">Students contributed</div></div>
+        <div class="band-stat"><div class="band-val">5</div><div class="band-lbl">Different tech stacks</div></div>
+        <div class="band-stat"><div class="band-val">100%</div><div class="band-lbl">Deployed &amp; live</div></div>
+      </div>
+    </div>
+
+    <div class="text-center mt-40">
+      <p style="color:var(--text-3);font-size:0.88rem;margin-bottom:16px;">Have a project you'd like featured here?</p>
+      <a href="mailto:amastropaolo@wm.edu" class="btn btn-primary">
+        Submit Your Project <span class="btn-icon">→</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">CODELAB<span class="dot">.</span>SH</div>
+        <p>Teaching modules and student project showcases by Antonio Mastropaolo at William &amp; Mary.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="teaching.html">Teaching</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="index.html#about">About</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Modules</h5>
+        <ul>
+          <li><a href="vibe-coding.html">Vibe Coding (Spring '26)</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Antonio Mastropaolo · William &amp; Mary</span>
+      <span class="footer-wm">W&amp;M Computer Science</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

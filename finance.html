@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Finance Dashboard — Vibe Coding Showcase</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .sidebar-item.active { background:rgba(6,182,212,0.1)!important; color:#06b6d4!important; border-right:2px solid #06b6d4; }
+    /* Donut chart SVG */
+    .donut-wrap { display:flex;align-items:center;gap:16px; }
+    /* Spending list */
+    .spend-row { display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04); }
+    .spend-row:last-child { border-bottom:none; }
+    .spend-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0; }
+    .spend-name { flex:1;font-size:0.78rem;color:var(--text-2); }
+    .spend-amount { font-size:0.8rem;font-weight:700;color:var(--text);min-width:60px;text-align:right; }
+    .spend-pct { font-size:0.65rem;color:var(--text-3);min-width:35px;text-align:right; }
+    /* Calendar heat */
+    .cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+    .cal-day { height:20px;border-radius:3px; }
+    /* Savings goal card */
+    .goal-card { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px; }
+    .goal-label { font-size:0.7rem;color:var(--text-3);margin-bottom:6px; }
+    .goal-title { font-size:0.82rem;font-weight:700;margin-bottom:8px; }
+    .goal-row { display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;margin-bottom:6px; }
+    /* AI chat bubble */
+    .ai-bubble { background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:12px;border-top-left-radius:2px;padding:10px 14px;font-size:0.78rem;color:var(--text-2);margin-bottom:8px;line-height:1.5; }
+    .user-bubble { background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:12px;border-top-right-radius:2px;padding:10px 14px;font-size:0.78rem;color:var(--text-2);margin-bottom:8px;line-height:1.5;text-align:right; }
+  </style>
+</head>
+<body>
+
+<div class="blobs" style="opacity:0.5;">
+  <div class="blob blob-1" style="background:#06b6d4;opacity:0.07;"></div>
+  <div class="blob blob-2" style="background:#6366f1;opacity:0.07;"></div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L20 7V15L11 20L2 15V7L11 2Z" fill="rgba(124,58,237,0.3)" stroke="#a78bfa" stroke-width="1.5"/>
+        <path d="M11 2L11 20M2 7L20 15M20 7L2 15" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+      </svg>
+      Vibe Coding <span>Showcase</span>
+    </div>
+    <a href="vibe-coding.html" class="back-btn">← Back to showcase</a>
+  </div>
+</nav>
+
+<section class="project-hero">
+  <div class="container">
+    <div class="project-hero-inner">
+      <div class="tag" style="background:rgba(6,182,212,0.12);color:#06b6d4;border:1px solid rgba(6,182,212,0.25);">Personal Finance ✦ Proposed</div>
+      <h1>AI Finance<br><span style="color:#06b6d4;">Dashboard</span></h1>
+      <p>Your personal CFO in the browser. Sync bank accounts, track spending by category, set savings goals, visualize investments, and get AI-powered insights that actually help you save money.</p>
+      <div class="project-meta">
+        <div class="meta-item">
+          <span class="meta-label">Difficulty</span>
+          <span class="meta-value">Intermediate</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Stack Ideas</span>
+          <span class="meta-value">Next.js · Plaid API · Chart.js</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Inspired By</span>
+          <span class="meta-value">Mint · YNAB · Copilot</span>
+        </div>
+      </div>
+      <div class="features">
+        <div class="feature-pill"><span class="icon">🏦</span> Bank sync (Plaid)</div>
+        <div class="feature-pill"><span class="icon">📊</span> Spending breakdown</div>
+        <div class="feature-pill"><span class="icon">🎯</span> Savings goals</div>
+        <div class="feature-pill"><span class="icon">📈</span> Investment tracker</div>
+        <div class="feature-pill"><span class="icon">🤖</span> AI money coach</div>
+        <div class="feature-pill"><span class="icon">🔔</span> Bill reminders</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mockups-section">
+  <div class="container">
+    <div class="mockups-header">
+      <div class="section-label">UI Mockups</div>
+      <h2>What it could look like</h2>
+    </div>
+
+    <!-- Mockup 1: Dashboard -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 01</div>
+        <h3>Finance Overview Dashboard</h3>
+        <p>See your net worth, monthly cash flow, top spending categories, and upcoming bills — all in one beautiful view.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.mywallet.io/dashboard</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#06b6d4;">💰 MyWallet</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item active">Overview</div>
+                <div class="sidebar-item">Transactions</div>
+                <div class="sidebar-item">Budget</div>
+                <div class="sidebar-item">Goals</div>
+                <div class="sidebar-item">Investments</div>
+                <div class="sidebar-section">Accounts</div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.8rem;">🏦</span> Chase Checking
+                </div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.8rem;">💳</span> Amex Gold
+                </div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.8rem;">📈</span> Fidelity IRA
+                </div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#060612;">
+              <div class="top-bar">
+                <div class="top-bar-title">Good evening, Jordan 👋</div>
+                <div class="top-bar-actions">
+                  <span style="font-size:0.72rem;color:var(--text-3);">March 8, 2026</span>
+                  <div class="avatar" style="background:#06b6d4;">J</div>
+                </div>
+              </div>
+              <!-- Stats -->
+              <div class="stat-row">
+                <div class="stat-card">
+                  <div class="stat-label">Net Worth</div>
+                  <div class="stat-value" style="color:#06b6d4;">$42,180</div>
+                  <div class="stat-change up">↑ +$1,840 this month</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Monthly Income</div>
+                  <div class="stat-value" style="color:#10b981;">$5,200</div>
+                  <div class="stat-change" style="color:var(--text-3);">After tax · recurring</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Spent This Month</div>
+                  <div class="stat-value" style="color:#f59e0b;">$2,840</div>
+                  <div class="stat-change" style="color:#f59e0b;">87% of budget</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Saved This Month</div>
+                  <div class="stat-value" style="color:#a78bfa;">$820</div>
+                  <div class="stat-change up">↑ 15.8% savings rate</div>
+                </div>
+              </div>
+              <div class="cols-2">
+                <!-- Spending breakdown -->
+                <div class="chart-block">
+                  <div class="chart-title" style="margin-bottom:12px;">Spending by Category</div>
+                  <!-- Donut chart (SVG) -->
+                  <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+                    <svg width="90" height="90" viewBox="0 0 90 90" style="flex-shrink:0;">
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="14"/>
+                      <!-- Housing: 35% = 220deg -->
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="#6366f1" stroke-width="14" stroke-dasharray="77 143" stroke-dashoffset="0" transform="rotate(-90 45 45)"/>
+                      <!-- Food: 22% -->
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="#10b981" stroke-width="14" stroke-dasharray="48 172" stroke-dashoffset="-77" transform="rotate(-90 45 45)"/>
+                      <!-- Transport: 15% -->
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="#f59e0b" stroke-width="14" stroke-dasharray="33 187" stroke-dashoffset="-125" transform="rotate(-90 45 45)"/>
+                      <!-- Entertainment: 10% -->
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="#ec4899" stroke-width="14" stroke-dasharray="22 198" stroke-dashoffset="-158" transform="rotate(-90 45 45)"/>
+                      <!-- Other: 18% -->
+                      <circle cx="45" cy="45" r="35" fill="none" stroke="#06b6d4" stroke-width="14" stroke-dasharray="40 180" stroke-dashoffset="-180" transform="rotate(-90 45 45)"/>
+                      <text x="45" y="49" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="Inter,sans-serif">$2,840</text>
+                    </svg>
+                    <div style="flex:1;">
+                      <div class="budget-item"><div class="budget-color" style="background:#6366f1;"></div><div class="budget-name">Housing</div><div class="budget-amount">$994</div><div class="budget-pct">35%</div></div>
+                      <div class="budget-item"><div class="budget-color" style="background:#10b981;"></div><div class="budget-name">Food &amp; Dining</div><div class="budget-amount">$625</div><div class="budget-pct">22%</div></div>
+                      <div class="budget-item"><div class="budget-color" style="background:#f59e0b;"></div><div class="budget-name">Transport</div><div class="budget-amount">$426</div><div class="budget-pct">15%</div></div>
+                      <div class="budget-item"><div class="budget-color" style="background:#ec4899;"></div><div class="budget-name">Entertainment</div><div class="budget-amount">$284</div><div class="budget-pct">10%</div></div>
+                      <div class="budget-item"><div class="budget-color" style="background:#06b6d4;"></div><div class="budget-name">Other</div><div class="budget-amount">$511</div><div class="budget-pct">18%</div></div>
+                    </div>
+                  </div>
+                  <!-- Spending vs income bar -->
+                  <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:6px;">Income vs. Spending</div>
+                  <div style="background:rgba(255,255,255,0.06);border-radius:100px;height:8px;overflow:hidden;position:relative;">
+                    <div style="width:54%;height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b);border-radius:100px;"></div>
+                    <div style="position:absolute;top:0;left:0;width:2px;height:100%;background:transparent;"></div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-top:4px;">
+                    <span style="color:#ef4444;">Spent: $2,840</span>
+                    <span style="color:#10b981;">Income: $5,200</span>
+                  </div>
+                </div>
+                <!-- Upcoming bills + savings goals -->
+                <div>
+                  <div class="chart-block" style="margin-bottom:12px;">
+                    <div class="chart-title" style="margin-bottom:10px;">📅 Upcoming Bills</div>
+                    <div class="log-item">
+                      <div class="log-icon">📱</div>
+                      <div class="log-text"><strong>Verizon Wireless</strong> · $89/mo</div>
+                      <div class="log-time" style="color:#f59e0b;">3 days</div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">🏠</div>
+                      <div class="log-text"><strong>Rent</strong> · $1,200/mo</div>
+                      <div class="log-time" style="color:var(--text-3);">Apr 1</div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">🎵</div>
+                      <div class="log-text"><strong>Spotify + Netflix</strong> · $28/mo</div>
+                      <div class="log-time" style="color:var(--text-3);">Apr 5</div>
+                    </div>
+                  </div>
+                  <div class="chart-block">
+                    <div class="chart-title" style="margin-bottom:10px;">🎯 Savings Goals</div>
+                    <div style="margin-bottom:10px;">
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
+                        <span>Emergency Fund</span>
+                        <span style="color:#10b981;font-weight:700;">$4,820 / $6,000</span>
+                      </div>
+                      <div class="progress-bar"><div class="progress-fill" style="width:80%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+                    </div>
+                    <div>
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;">
+                        <span>Europe Trip ✈️</span>
+                        <span style="color:#06b6d4;font-weight:700;">$1,240 / $3,000</span>
+                      </div>
+                      <div class="progress-bar"><div class="progress-fill" style="width:41%;background:linear-gradient(90deg,#06b6d4,#22d3ee);"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 2: Transactions -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 02</div>
+        <h3>Transaction Explorer</h3>
+        <p>Browse every transaction auto-categorized by AI. Flag anomalies, search by merchant, and export data for taxes.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.mywallet.io/transactions</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#06b6d4;">💰 MyWallet</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Overview</div>
+                <div class="sidebar-item active">Transactions</div>
+                <div class="sidebar-item">Budget</div>
+                <div class="sidebar-item">Goals</div>
+                <div class="sidebar-item">Investments</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#060612;">
+              <div class="top-bar">
+                <div>
+                  <div class="top-bar-title">Transactions</div>
+                  <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">148 transactions · March 2026</div>
+                </div>
+                <div class="top-bar-actions">
+                  <div class="btn-sm btn-ghost">Export CSV</div>
+                  <div class="btn-sm btn-ghost">Filter</div>
+                </div>
+              </div>
+              <div class="search-bar">
+                <span>🔍</span>
+                <span>Search merchants, categories, amounts...</span>
+              </div>
+              <!-- Filter row -->
+              <div style="display:flex;gap:8px;margin-bottom:14px;">
+                <span class="badge cyan" style="padding:5px 12px;font-size:0.72rem;cursor:pointer;">All</span>
+                <span class="tag-sm" style="cursor:pointer;padding:5px 12px;">Income</span>
+                <span class="tag-sm" style="cursor:pointer;padding:5px 12px;">Expenses</span>
+                <span class="tag-sm" style="cursor:pointer;padding:5px 12px;">Food</span>
+                <span class="tag-sm" style="cursor:pointer;padding:5px 12px;">Transport</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>Date</th><th>Merchant</th><th>Category</th><th>Account</th><th>Amount</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="color:var(--text-3);font-size:0.72rem;">Mar 8</td>
+                    <td><div style="display:flex;align-items:center;gap:7px;"><span>🛒</span><div><div style="font-size:0.78rem;font-weight:600;color:var(--text);">Whole Foods Market</div><div style="font-size:0.65rem;color:var(--text-3);">Auto-categorized by AI</div></div></div></td>
+                    <td><span class="badge green">Food &amp; Dining</span></td>
+                    <td style="font-size:0.72rem;color:var(--text-3);">Amex Gold</td>
+                    <td style="font-family:monospace;color:#ef4444;font-weight:700;">-$84.32</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-3);">Settled</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color:var(--text-3);font-size:0.72rem;">Mar 7</td>
+                    <td><div style="display:flex;align-items:center;gap:7px;"><span>💼</span><div><div style="font-size:0.78rem;font-weight:600;color:var(--text);">Payroll Deposit</div><div style="font-size:0.65rem;color:var(--text-3);">Acme Corp · Direct deposit</div></div></div></td>
+                    <td><span class="badge blue">Income</span></td>
+                    <td style="font-size:0.72rem;color:var(--text-3);">Chase Checking</td>
+                    <td style="font-family:monospace;color:#10b981;font-weight:700;">+$2,600.00</td>
+                    <td><span class="badge green">Settled</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color:var(--text-3);font-size:0.72rem;">Mar 7</td>
+                    <td><div style="display:flex;align-items:center;gap:7px;"><span>⛽</span><div><div style="font-size:0.78rem;font-weight:600;color:var(--text);">Shell Gas Station</div><div style="font-size:0.65rem;color:var(--text-3);">Auto-categorized</div></div></div></td>
+                    <td><span class="badge yellow">Transport</span></td>
+                    <td style="font-size:0.72rem;color:var(--text-3);">Chase Checking</td>
+                    <td style="font-family:monospace;color:#ef4444;font-weight:700;">-$52.10</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-3);">Settled</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color:var(--text-3);font-size:0.72rem;">Mar 6</td>
+                    <td><div style="display:flex;align-items:center;gap:7px;"><span>🎵</span><div><div style="font-size:0.78rem;font-weight:600;color:var(--text);">Spotify Premium</div><div style="font-size:0.65rem;color:var(--text-3);">Subscription</div></div></div></td>
+                    <td><span class="badge purple">Entertainment</span></td>
+                    <td style="font-size:0.72rem;color:var(--text-3);">Amex Gold</td>
+                    <td style="font-family:monospace;color:#ef4444;font-weight:700;">-$10.99</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-3);">Settled</span></td>
+                  </tr>
+                  <tr>
+                    <td style="color:var(--text-3);font-size:0.72rem;">Mar 5</td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:7px;">
+                        <span>⚠️</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:#f59e0b;">Unknown — PYMT*348209</div>
+                          <div style="font-size:0.65rem;color:#f59e0b;">Flagged by AI · Unusual merchant</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge yellow">Uncategorized</span></td>
+                    <td style="font-size:0.72rem;color:var(--text-3);">Chase Checking</td>
+                    <td style="font-family:monospace;color:#ef4444;font-weight:700;">-$129.00</td>
+                    <td><span class="badge yellow">Review</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 3: AI Money Coach -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 03</div>
+        <h3>AI Money Coach</h3>
+        <p>Chat with an AI that has full context of your finances. Ask anything — "Am I on track to save for my trip?" or "Where am I overspending?" — and get personalized, data-driven answers.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.mywallet.io/coach</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#06b6d4;">💰 MyWallet</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Overview</div>
+                <div class="sidebar-item">Transactions</div>
+                <div class="sidebar-item">Budget</div>
+                <div class="sidebar-item active">AI Coach</div>
+                <div class="sidebar-item">Investments</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#060612;display:flex;flex-direction:column;">
+              <div class="top-bar">
+                <div>
+                  <div class="top-bar-title">🤖 AI Money Coach</div>
+                  <div style="font-size:0.72rem;color:#10b981;margin-top:2px;">● Connected to your accounts · Updated 3 min ago</div>
+                </div>
+              </div>
+              <!-- Chat interface -->
+              <div style="flex:1;display:grid;grid-template-columns:1fr 280px;gap:16px;">
+                <!-- Chat area -->
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <!-- AI intro -->
+                  <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:4px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#6366f1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+                    <div class="ai-bubble">Hi Jordan! I've analyzed your finances for March. You're at 87% of your budget with 23 days to go — you might want to cut back on dining out this week. You've spent $340 on restaurants so far, which is $90 over your usual pace. Want me to suggest where to adjust?</div>
+                  </div>
+                  <!-- User question -->
+                  <div style="display:flex;gap:8px;align-items:flex-start;justify-content:flex-end;">
+                    <div class="user-bubble">Am I on track to save enough for my Europe trip by August?</div>
+                    <div class="avatar" style="background:#06b6d4;flex-shrink:0;">J</div>
+                  </div>
+                  <!-- AI response -->
+                  <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#6366f1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+                    <div class="ai-bubble">
+                      Based on your current savings of <strong style="color:#06b6d4;">$1,240</strong> and your goal of <strong style="color:#06b6d4;">$3,000</strong>, you need to save <strong style="color:#f59e0b;">$362/month</strong> to reach your goal by August 1st.<br><br>
+                      At your current savings rate of <strong style="color:#a78bfa;">$820/month</strong>, you'll actually surpass your goal in <strong style="color:#10b981;">July</strong> — you're ahead of schedule! 🎉
+                    </div>
+                  </div>
+                  <!-- User question 2 -->
+                  <div style="display:flex;gap:8px;align-items:flex-start;justify-content:flex-end;">
+                    <div class="user-bubble">What's my biggest unnecessary expense?</div>
+                    <div class="avatar" style="background:#06b6d4;flex-shrink:0;">J</div>
+                  </div>
+                  <!-- Typing indicator -->
+                  <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#6366f1);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;">🤖</div>
+                    <div style="background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:12px;border-top-left-radius:2px;padding:12px 16px;">
+                      <div style="display:flex;gap:4px;align-items:center;">
+                        <div style="width:6px;height:6px;border-radius:50%;background:#06b6d4;animation:pulse 1s infinite;"></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:#06b6d4;animation:pulse 1s 0.2s infinite;"></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:#06b6d4;animation:pulse 1s 0.4s infinite;"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Input bar -->
+                  <div style="display:flex;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);">
+                    <div style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;font-size:0.78rem;color:var(--text-3);">Ask about your finances...</div>
+                    <div style="background:#06b6d4;border-radius:8px;padding:9px 14px;font-size:0.78rem;font-weight:600;cursor:pointer;">Send</div>
+                  </div>
+                </div>
+                <!-- Right: quick stats panel -->
+                <div>
+                  <div class="chart-block" style="margin-bottom:12px;">
+                    <div class="chart-title" style="margin-bottom:10px;">Quick Stats</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                        <span style="color:var(--text-3);">Monthly Income</span>
+                        <span style="color:#10b981;font-weight:700;">$5,200</span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                        <span style="color:var(--text-3);">Spent so far</span>
+                        <span style="color:#f59e0b;font-weight:700;">$2,840</span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                        <span style="color:var(--text-3);">Remaining</span>
+                        <span style="color:var(--text);font-weight:700;">$2,360</span>
+                      </div>
+                      <div class="progress-bar"><div class="progress-fill" style="width:55%;background:linear-gradient(90deg,#06b6d4,#a78bfa);"></div></div>
+                      <div style="font-size:0.65rem;color:var(--text-3);">55% of income spent · 23 days left</div>
+                    </div>
+                  </div>
+                  <div class="chart-block">
+                    <div class="chart-title" style="margin-bottom:10px;">Suggested Actions</div>
+                    <div class="log-item">
+                      <div class="log-icon">💡</div>
+                      <div style="font-size:0.72rem;color:var(--text-2);">Reduce dining by $90 to stay on budget</div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">🔔</div>
+                      <div style="font-size:0.72rem;color:var(--text-2);">Review flagged transaction from Mar 5</div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">📈</div>
+                      <div style="font-size:0.72rem;color:var(--text-2);">Move $500 to high-yield savings</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p><a href="index.html" style="color:var(--text-2);">← Back to all projects</a> &nbsp;·&nbsp; <span class="grad">W&amp;M CODELAB</span> Vibe Coding Showcase</p>
+  </div>
+</footer>
+</body>
+</html>

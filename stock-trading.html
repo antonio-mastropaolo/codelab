@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Trading Signal Platform — Vibe Coding Showcase</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .theme-accent { color: #10b981; }
+    .app-sidebar { border-right: 1px solid rgba(16,185,129,0.1) !important; }
+    .sidebar-item.active { background: rgba(16,185,129,0.08) !important; color: #10b981 !important; border-right: 2px solid #10b981; }
+    .signal-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 8px; }
+    .confidence-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+    .confidence-fill { height: 100%; border-radius: 100px; }
+    .ticker { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; min-width: 50px; }
+    .price-change { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; min-width: 60px; text-align: right; }
+    /* candle chart bars */
+    .candles { display: flex; align-items: flex-end; gap: 3px; height: 70px; padding: 0 4px; }
+    .candle-wrap { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .candle-wick { width: 1px; background: rgba(255,255,255,0.2); }
+    .candle-body { width: 6px; border-radius: 1px; }
+    .candle-body.up { background: #10b981; }
+    .candle-body.down { background: #ef4444; }
+    /* watchlist */
+    .watchlist-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .watchlist-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<div class="blobs" style="opacity:0.5;">
+  <div class="blob blob-1" style="background:#10b981; opacity:0.08;"></div>
+  <div class="blob blob-2" style="background:#3b82f6; opacity:0.08;"></div>
+</div>
+
+<!-- Navbar -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L20 7V15L11 20L2 15V7L11 2Z" fill="rgba(124,58,237,0.3)" stroke="#a78bfa" stroke-width="1.5"/>
+        <path d="M11 2L11 20M2 7L20 15M20 7L2 15" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+      </svg>
+      Vibe Coding <span>Showcase</span>
+    </div>
+    <a href="vibe-coding.html" class="back-btn">← Back to showcase</a>
+  </div>
+</nav>
+
+<!-- Project Hero -->
+<section class="project-hero">
+  <div class="container">
+    <div class="project-hero-inner">
+      <div class="tag" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.25);">Finance &amp; Trading</div>
+      <h1>Stock Trading<br><span style="color:#10b981;">Signal Platform</span></h1>
+      <p>A real-time dashboard that pulls financial data, runs technical analysis, and surfaces actionable buy/sell signals. Think Bloomberg Terminal — built by you, in an afternoon.</p>
+      <div class="project-meta">
+        <div class="meta-item">
+          <span class="meta-label">Difficulty</span>
+          <span class="meta-value">Intermediate</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Stack Ideas</span>
+          <span class="meta-value">Python · React · Chart.js</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Data Sources</span>
+          <span class="meta-value">Yahoo Finance · Alpha Vantage</span>
+        </div>
+      </div>
+      <div class="features">
+        <div class="feature-pill"><span class="icon">📊</span> Real-time charts</div>
+        <div class="feature-pill"><span class="icon">🔔</span> Signal alerts</div>
+        <div class="feature-pill"><span class="icon">💼</span> Portfolio tracker</div>
+        <div class="feature-pill"><span class="icon">🤖</span> AI analysis</div>
+        <div class="feature-pill"><span class="icon">📰</span> News feed</div>
+        <div class="feature-pill"><span class="icon">📱</span> Mobile alerts</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mockups -->
+<section class="mockups-section">
+  <div class="container">
+    <div class="mockups-header">
+      <div class="section-label">UI Mockups</div>
+      <h2>What it could look like</h2>
+    </div>
+
+    <!-- Mockup 1: Dashboard -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 01</div>
+        <h3>Main Dashboard</h3>
+        <p>Overview of your portfolio performance, top signals of the day, and a live market chart with candlestick patterns.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.tradepulse.io/dashboard</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <!-- Sidebar -->
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#10b981;">📈 TradePulse</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item active">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="10" y="1" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="1" y="10" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="10" y="10" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/></svg>
+                  Dashboard
+                </div>
+                <div class="sidebar-item">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><path d="M3 14L7 9L11 11L15 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Signals
+                </div>
+                <div class="sidebar-item">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M9 5v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Watchlist
+                </div>
+                <div class="sidebar-item">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 9h8M5 6h5M5 12h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  News
+                </div>
+                <div class="sidebar-section">Portfolio</div>
+                <div class="sidebar-item">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><path d="M3 15V8l6-5 6 5v7H11v-4H7v4H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                  Holdings
+                </div>
+                <div class="sidebar-item">
+                  <svg class="s-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M9 6v3.5l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  P&amp;L Report
+                </div>
+              </div>
+            </div>
+            <!-- Main -->
+            <div class="app-main" style="background:#0a0a15;">
+              <div class="top-bar">
+                <div class="top-bar-title">Good morning, Alex 👋</div>
+                <div class="top-bar-actions">
+                  <span style="font-size:0.72rem;color:var(--text-3);">S&amp;P 500: <span style="color:#10b981;">+0.8%</span></span>
+                  <span style="font-size:0.72rem;color:var(--text-3);">NASDAQ: <span style="color:#10b981;">+1.2%</span></span>
+                  <div class="avatar">A</div>
+                </div>
+              </div>
+              <!-- Stats -->
+              <div class="stat-row">
+                <div class="stat-card">
+                  <div class="stat-label">Portfolio Value</div>
+                  <div class="stat-value" style="color:var(--text);">$48,240</div>
+                  <div class="stat-change up">↑ +$1,240 today</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Total Return</div>
+                  <div class="stat-value" style="color:#10b981;">+18.4%</div>
+                  <div class="stat-change up">↑ Since Jan 1</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Signals Today</div>
+                  <div class="stat-value" style="color:#a78bfa;">7</div>
+                  <div class="stat-change" style="color:var(--text-3);">5 buy · 2 sell</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Win Rate</div>
+                  <div class="stat-value" style="color:#f59e0b;">72%</div>
+                  <div class="stat-change up">↑ Last 30 trades</div>
+                </div>
+              </div>
+              <!-- Chart + Signals -->
+              <div class="cols-2" style="margin-top:0;">
+                <div class="chart-block">
+                  <div class="chart-header">
+                    <div class="chart-title">AAPL — Apple Inc.</div>
+                    <div style="display:flex;gap:6px;">
+                      <span class="tag-sm" style="background:rgba(16,185,129,0.15);color:#10b981;">1D</span>
+                      <span class="tag-sm">1W</span>
+                      <span class="tag-sm">1M</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:1.5rem;font-weight:800;">$187.42</span>
+                    <span style="color:#10b981;font-size:0.8rem;font-weight:600;">+$3.21 (1.74%)</span>
+                  </div>
+                  <!-- Candle chart -->
+                  <div class="candles">
+                    <div class="candle-wrap"><div class="candle-wick" style="height:8px;"></div><div class="candle-body down" style="height:14px;"></div><div class="candle-wick" style="height:6px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:5px;"></div><div class="candle-body up" style="height:18px;"></div><div class="candle-wick" style="height:4px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:7px;"></div><div class="candle-body up" style="height:12px;"></div><div class="candle-wick" style="height:5px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:4px;"></div><div class="candle-body down" style="height:20px;"></div><div class="candle-wick" style="height:8px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:6px;"></div><div class="candle-body up" style="height:16px;"></div><div class="candle-wick" style="height:3px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:5px;"></div><div class="candle-body up" style="height:22px;"></div><div class="candle-wick" style="height:4px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:3px;"></div><div class="candle-body down" style="height:10px;"></div><div class="candle-wick" style="height:7px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:6px;"></div><div class="candle-body up" style="height:28px;"></div><div class="candle-wick" style="height:3px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:4px;"></div><div class="candle-body up" style="height:20px;"></div><div class="candle-wick" style="height:5px;"></div></div>
+                    <div class="candle-wrap"><div class="candle-wick" style="height:3px;"></div><div class="candle-body up" style="height:32px;"></div><div class="candle-wick" style="height:4px;"></div></div>
+                  </div>
+                  <div style="display:flex;gap:12px;margin-top:10px;">
+                    <span class="tag-sm">MA 20: $184.3</span>
+                    <span class="tag-sm">RSI: 58.4</span>
+                    <span class="tag-sm">MACD: +1.2</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="chart-block" style="margin-bottom:12px;">
+                    <div class="chart-title" style="margin-bottom:10px;">🔔 Top Signals Today</div>
+                    <div class="signal-bar">
+                      <span class="ticker">AAPL</span>
+                      <span class="badge green">BUY</span>
+                      <div class="confidence-bar"><div class="confidence-fill" style="width:88%;background:#10b981;"></div></div>
+                      <span style="font-size:0.68rem;color:var(--text-3);">88%</span>
+                    </div>
+                    <div class="signal-bar">
+                      <span class="ticker">NVDA</span>
+                      <span class="badge green">BUY</span>
+                      <div class="confidence-bar"><div class="confidence-fill" style="width:81%;background:#10b981;"></div></div>
+                      <span style="font-size:0.68rem;color:var(--text-3);">81%</span>
+                    </div>
+                    <div class="signal-bar">
+                      <span class="ticker">META</span>
+                      <span class="badge red">SELL</span>
+                      <div class="confidence-bar"><div class="confidence-fill" style="width:74%;background:#ef4444;"></div></div>
+                      <span style="font-size:0.68rem;color:var(--text-3);">74%</span>
+                    </div>
+                    <div class="signal-bar">
+                      <span class="ticker">TSLA</span>
+                      <span class="badge yellow">HOLD</span>
+                      <div class="confidence-bar"><div class="confidence-fill" style="width:62%;background:#f59e0b;"></div></div>
+                      <span style="font-size:0.68rem;color:var(--text-3);">62%</span>
+                    </div>
+                  </div>
+                  <div class="chart-block">
+                    <div class="chart-title" style="margin-bottom:10px;">📰 Market News</div>
+                    <div class="log-item">
+                      <div class="log-icon">📈</div>
+                      <div style="font-size:0.75rem;">
+                        <div style="color:var(--text);font-weight:500;margin-bottom:2px;">Fed signals rate pause through Q2</div>
+                        <div style="color:var(--text-3);">2 min ago · Reuters</div>
+                      </div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">💡</div>
+                      <div style="font-size:0.75rem;">
+                        <div style="color:var(--text);font-weight:500;margin-bottom:2px;">Apple beats earnings, raises guidance</div>
+                        <div style="color:var(--text-3);">14 min ago · Bloomberg</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 2: Signals Page -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 02</div>
+        <h3>Signal Explorer</h3>
+        <p>Browse, filter, and act on trading signals. Each entry includes confidence score, suggested entry price, and the indicator that triggered it.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.tradepulse.io/signals</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#10b981;">📈 TradePulse</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Dashboard</div>
+                <div class="sidebar-item active" style="color:#10b981;border-right:2px solid #10b981;background:rgba(16,185,129,0.08);">Signals</div>
+                <div class="sidebar-item">Watchlist</div>
+                <div class="sidebar-item">News</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#0a0a15;">
+              <div class="top-bar">
+                <div>
+                  <div class="top-bar-title">Signal Explorer</div>
+                  <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">Updated 30 seconds ago</div>
+                </div>
+                <div class="top-bar-actions">
+                  <div class="btn-sm btn-ghost">Filter</div>
+                  <div class="btn-sm btn-primary">+ Watchlist</div>
+                </div>
+              </div>
+              <!-- Filter pills -->
+              <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <span class="badge green" style="padding:5px 12px;font-size:0.75rem;">All</span>
+                <span style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#10b981;padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">BUY (5)</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">SELL (2)</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">High Confidence</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">Tech Stocks</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Symbol</th>
+                    <th>Signal</th>
+                    <th>Price</th>
+                    <th>Target</th>
+                    <th>Stop Loss</th>
+                    <th>Confidence</th>
+                    <th>Trigger</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span style="font-family:monospace;font-weight:700;color:var(--text);">AAPL</span><div style="font-size:0.65rem;color:var(--text-3);">Apple Inc.</div></td>
+                    <td><span class="badge green">BUY</span></td>
+                    <td><span style="font-family:monospace;">$187.42</span></td>
+                    <td><span style="font-family:monospace;color:#10b981;">$198.00</span></td>
+                    <td><span style="font-family:monospace;color:#ef4444;">$182.00</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="progress-bar" style="width:60px;"><div class="progress-fill" style="width:88%;background:#10b981;"></div></div>
+                        <span style="font-size:0.72rem;font-weight:700;color:#10b981;">88%</span>
+                      </div>
+                    </td>
+                    <td><span class="tag-sm">MACD Cross</span></td>
+                    <td style="color:var(--text-3);font-size:0.72rem;">9:32 AM</td>
+                  </tr>
+                  <tr>
+                    <td><span style="font-family:monospace;font-weight:700;color:var(--text);">NVDA</span><div style="font-size:0.65rem;color:var(--text-3);">NVIDIA Corp.</div></td>
+                    <td><span class="badge green">BUY</span></td>
+                    <td><span style="font-family:monospace;">$824.10</span></td>
+                    <td><span style="font-family:monospace;color:#10b981;">$880.00</span></td>
+                    <td><span style="font-family:monospace;color:#ef4444;">$800.00</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="progress-bar" style="width:60px;"><div class="progress-fill" style="width:81%;background:#10b981;"></div></div>
+                        <span style="font-size:0.72rem;font-weight:700;color:#10b981;">81%</span>
+                      </div>
+                    </td>
+                    <td><span class="tag-sm">RSI Breakout</span></td>
+                    <td style="color:var(--text-3);font-size:0.72rem;">9:45 AM</td>
+                  </tr>
+                  <tr>
+                    <td><span style="font-family:monospace;font-weight:700;color:var(--text);">META</span><div style="font-size:0.65rem;color:var(--text-3);">Meta Platforms</div></td>
+                    <td><span class="badge red">SELL</span></td>
+                    <td><span style="font-family:monospace;">$492.30</span></td>
+                    <td><span style="font-family:monospace;color:#10b981;">$460.00</span></td>
+                    <td><span style="font-family:monospace;color:#ef4444;">$505.00</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="progress-bar" style="width:60px;"><div class="progress-fill" style="width:74%;background:#ef4444;"></div></div>
+                        <span style="font-size:0.72rem;font-weight:700;color:#ef4444;">74%</span>
+                      </div>
+                    </td>
+                    <td><span class="tag-sm">Bearish Engulf</span></td>
+                    <td style="color:var(--text-3);font-size:0.72rem;">10:02 AM</td>
+                  </tr>
+                  <tr>
+                    <td><span style="font-family:monospace;font-weight:700;color:var(--text);">TSLA</span><div style="font-size:0.65rem;color:var(--text-3);">Tesla Inc.</div></td>
+                    <td><span class="badge yellow">HOLD</span></td>
+                    <td><span style="font-family:monospace;">$244.88</span></td>
+                    <td><span style="font-family:monospace;color:#f59e0b;">—</span></td>
+                    <td><span style="font-family:monospace;color:#ef4444;">$230.00</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="progress-bar" style="width:60px;"><div class="progress-fill" style="width:62%;background:#f59e0b;"></div></div>
+                        <span style="font-size:0.72rem;font-weight:700;color:#f59e0b;">62%</span>
+                      </div>
+                    </td>
+                    <td><span class="tag-sm">Sideways Range</span></td>
+                    <td style="color:var(--text-3);font-size:0.72rem;">10:15 AM</td>
+                  </tr>
+                  <tr>
+                    <td><span style="font-family:monospace;font-weight:700;color:var(--text);">MSFT</span><div style="font-size:0.65rem;color:var(--text-3);">Microsoft Corp.</div></td>
+                    <td><span class="badge green">BUY</span></td>
+                    <td><span style="font-family:monospace;">$412.66</span></td>
+                    <td><span style="font-family:monospace;color:#10b981;">$440.00</span></td>
+                    <td><span style="font-family:monospace;color:#ef4444;">$400.00</span></td>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <div class="progress-bar" style="width:60px;"><div class="progress-fill" style="width:91%;background:#10b981;"></div></div>
+                        <span style="font-size:0.72rem;font-weight:700;color:#10b981;">91%</span>
+                      </div>
+                    </td>
+                    <td><span class="tag-sm">Golden Cross</span></td>
+                    <td style="color:var(--text-3);font-size:0.72rem;">10:28 AM</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 3: Stock Detail -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 03</div>
+        <h3>Stock Detail &amp; AI Analysis</h3>
+        <p>Deep-dive on any ticker. View technical indicators, AI-generated analysis, analyst sentiment, and upcoming catalysts (earnings, FDA, etc.).</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.tradepulse.io/stock/NVDA</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#10b981;">📈 TradePulse</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Dashboard</div>
+                <div class="sidebar-item active" style="color:#10b981;border-right:2px solid #10b981;background:rgba(16,185,129,0.08);">Signals</div>
+                <div class="sidebar-item">Watchlist</div>
+                <div class="sidebar-item">News</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#0a0a15;">
+              <!-- Stock header -->
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                    <span style="font-size:1.4rem;font-weight:800;font-family:monospace;">NVDA</span>
+                    <span class="badge blue">NASDAQ</span>
+                    <span class="badge purple">Semiconductors</span>
+                  </div>
+                  <div style="font-size:0.78rem;color:var(--text-3);">NVIDIA Corporation</div>
+                  <div style="display:flex;align-items:baseline;gap:10px;margin-top:8px;">
+                    <span style="font-size:2rem;font-weight:800;">$824.10</span>
+                    <span style="color:#10b981;font-weight:600;">+$14.22 (+1.75%)</span>
+                  </div>
+                </div>
+                <div class="btn-sm btn-primary">Add to Watchlist</div>
+              </div>
+              <div class="cols-2">
+                <!-- Left: indicators -->
+                <div>
+                  <div class="chart-block" style="margin-bottom:12px;">
+                    <div class="chart-title" style="margin-bottom:12px;">Technical Indicators</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                      <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
+                        <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:4px;">RSI (14)</div>
+                        <div style="font-size:1rem;font-weight:700;color:#f59e0b;">58.4</div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">Neutral</div>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
+                        <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:4px;">MACD</div>
+                        <div style="font-size:1rem;font-weight:700;color:#10b981;">+8.24</div>
+                        <div style="font-size:0.65rem;color:#10b981;">Bullish</div>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
+                        <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:4px;">Bollinger</div>
+                        <div style="font-size:1rem;font-weight:700;color:#a78bfa;">Upper</div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">$831.00</div>
+                      </div>
+                      <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:10px;">
+                        <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:4px;">Volume</div>
+                        <div style="font-size:1rem;font-weight:700;color:#06b6d4;">142M</div>
+                        <div style="font-size:0.65rem;color:#10b981;">+38% avg</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="chart-block">
+                    <div class="chart-title" style="margin-bottom:10px;">📅 Upcoming Catalysts</div>
+                    <div class="log-item">
+                      <div class="log-icon">📊</div>
+                      <div>
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text);">Q1 Earnings Report</div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">May 22, 2026 · After Market</div>
+                      </div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">🎤</div>
+                      <div>
+                        <div style="font-size:0.75rem;font-weight:600;color:var(--text);">GTC Developer Conference</div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">Apr 3, 2026 · San Jose, CA</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Right: AI analysis -->
+                <div class="chart-block">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                    <span style="font-size:1rem;">🤖</span>
+                    <div class="chart-title">AI Analysis Summary</div>
+                    <span class="badge green" style="margin-left:auto;">Bullish</span>
+                  </div>
+                  <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:8px;padding:12px;margin-bottom:12px;">
+                    <div style="font-size:0.78rem;color:var(--text-2);line-height:1.6;">
+                      NVDA shows strong bullish momentum with a confirmed MACD crossover and above-average volume. The RSI at 58 leaves room for further upside before overbought territory. Support at <span style="color:#10b981;font-weight:600;">$800</span> has held for three sessions.
+                    </div>
+                  </div>
+                  <div style="margin-bottom:12px;">
+                    <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Analyst Sentiment</div>
+                    <div style="display:flex;gap:3px;height:10px;border-radius:100px;overflow:hidden;margin-bottom:6px;">
+                      <div style="width:68%;background:#10b981;"></div>
+                      <div style="width:18%;background:#f59e0b;"></div>
+                      <div style="width:14%;background:#ef4444;"></div>
+                    </div>
+                    <div style="display:flex;gap:16px;">
+                      <span style="font-size:0.68rem;color:#10b981;">Buy 68%</span>
+                      <span style="font-size:0.68rem;color:#f59e0b;">Hold 18%</span>
+                      <span style="font-size:0.68rem;color:#ef4444;">Sell 14%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;">Price Targets</div>
+                    <div style="font-size:0.78rem;color:var(--text-2);display:flex;justify-content:space-between;">
+                      <span>Low: <span style="color:var(--text);">$720</span></span>
+                      <span>Avg: <span style="color:#10b981;">$880</span></span>
+                      <span>High: <span style="color:#a78bfa;">$960</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p><a href="index.html" style="color:var(--text-2);">← Back to all projects</a> &nbsp;·&nbsp; <span class="grad">W&amp;M CODELAB</span> Vibe Coding Showcase</p>
+  </div>
+</footer>
+</body>
+</html>

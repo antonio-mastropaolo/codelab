@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reselling Platform — Vibe Coding Showcase</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .sidebar-item.active { background:rgba(249,115,22,0.08)!important; color:#f97316!important; border-right:2px solid #f97316; }
+    .profit-pill { display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:0.68rem;font-weight:700; }
+    .profit-pill.pos { background:rgba(16,185,129,0.15);color:#10b981; }
+    .profit-pill.neg { background:rgba(239,68,68,0.15);color:#ef4444; }
+    .item-row { display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04); }
+    .item-row:last-child { border-bottom:none; }
+    .item-thumb { width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0; }
+    .item-name { font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:2px; }
+    .item-sub { font-size:0.67rem;color:var(--text-3); }
+    .platform-icon { width:20px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0; }
+    .chart-bar-h { display:flex;align-items:center;gap:8px;margin-bottom:8px; }
+    .chart-bar-h .label { font-size:0.72rem;color:var(--text-3);min-width:80px; }
+    .chart-bar-h .bar { flex:1;height:20px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden; }
+    .chart-bar-h .fill { height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:0.65rem;font-weight:700;color:white; }
+  </style>
+</head>
+<body>
+
+<div class="blobs" style="opacity:0.5;">
+  <div class="blob blob-1" style="background:#f97316;opacity:0.07;"></div>
+  <div class="blob blob-2" style="background:#f59e0b;opacity:0.07;"></div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L20 7V15L11 20L2 15V7L11 2Z" fill="rgba(124,58,237,0.3)" stroke="#a78bfa" stroke-width="1.5"/>
+        <path d="M11 2L11 20M2 7L20 15M20 7L2 15" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+      </svg>
+      Vibe Coding <span>Showcase</span>
+    </div>
+    <a href="vibe-coding.html" class="back-btn">← Back to showcase</a>
+  </div>
+</nav>
+
+<section class="project-hero">
+  <div class="container">
+    <div class="project-hero-inner">
+      <div class="tag" style="background:rgba(249,115,22,0.12);color:#f97316;border:1px solid rgba(249,115,22,0.25);">E-Commerce</div>
+      <h1>Reselling<br><span style="color:#f97316;">Platform</span></h1>
+      <p>Your personal resale business command center. Track inventory, compare prices across marketplaces, spot deals before competitors, and maximize profit on every flip.</p>
+      <div class="project-meta">
+        <div class="meta-item">
+          <span class="meta-label">Difficulty</span>
+          <span class="meta-value">Beginner–Mid</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Stack Ideas</span>
+          <span class="meta-value">Next.js · Supabase · Tailwind</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Data Sources</span>
+          <span class="meta-value">eBay API · StockX · GOAT</span>
+        </div>
+      </div>
+      <div class="features">
+        <div class="feature-pill"><span class="icon">📦</span> Inventory tracker</div>
+        <div class="feature-pill"><span class="icon">💹</span> Price comparison</div>
+        <div class="feature-pill"><span class="icon">🔍</span> Deal finder</div>
+        <div class="feature-pill"><span class="icon">📊</span> Profit analytics</div>
+        <div class="feature-pill"><span class="icon">🚚</span> Shipping calculator</div>
+        <div class="feature-pill"><span class="icon">📣</span> Listing templates</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mockups-section">
+  <div class="container">
+    <div class="mockups-header">
+      <div class="section-label">UI Mockups</div>
+      <h2>What it could look like</h2>
+    </div>
+
+    <!-- Mockup 1: Dashboard -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 01</div>
+        <h3>Reseller Dashboard</h3>
+        <p>See your total revenue, active listings, pending shipments, and profit breakdown across all platforms at a glance.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.fliptracker.io/dashboard</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#f97316;">🛍️ FlipTracker</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item active">Dashboard</div>
+                <div class="sidebar-item">Inventory</div>
+                <div class="sidebar-item">Deal Finder</div>
+                <div class="sidebar-item">Analytics</div>
+                <div class="sidebar-section">Platforms</div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.75rem;">🟦</span> eBay
+                </div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.75rem;">⬛</span> StockX
+                </div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.75rem;">🟠</span> GOAT
+                </div>
+                <div class="sidebar-item">
+                  <span style="font-size:0.75rem;">🟣</span> Depop
+                </div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#0a0a0f;">
+              <div class="top-bar">
+                <div class="top-bar-title">Reseller Dashboard</div>
+                <div class="top-bar-actions">
+                  <span style="font-size:0.72rem;color:var(--text-3);">March 2026</span>
+                  <div class="btn-sm btn-primary">+ Add Item</div>
+                  <div class="avatar" style="background:#f97316;">J</div>
+                </div>
+              </div>
+              <!-- Stats -->
+              <div class="stat-row">
+                <div class="stat-card">
+                  <div class="stat-label">Total Revenue</div>
+                  <div class="stat-value" style="color:var(--text);">$6,842</div>
+                  <div class="stat-change up">↑ +$1,120 vs last mo.</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Net Profit</div>
+                  <div class="stat-value" style="color:#10b981;">$2,108</div>
+                  <div class="stat-change up">↑ 30.8% margin</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Active Listings</div>
+                  <div class="stat-value" style="color:#f97316;">47</div>
+                  <div class="stat-change" style="color:var(--text-3);">Across 4 platforms</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Pending Ship</div>
+                  <div class="stat-value" style="color:#f59e0b;">8</div>
+                  <div class="stat-change" style="color:#f59e0b;">2 overdue</div>
+                </div>
+              </div>
+              <div class="cols-2">
+                <!-- Recent sales -->
+                <div class="chart-block">
+                  <div class="chart-title" style="margin-bottom:12px;">Recent Sales</div>
+                  <div class="item-row">
+                    <div class="item-thumb">👟</div>
+                    <div style="flex:1;">
+                      <div class="item-name">Nike Air Jordan 1 Retro High OG</div>
+                      <div class="item-sub">Size 10 · StockX</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:0.82rem;font-weight:700;">$342</div>
+                      <div class="profit-pill pos">+$112</div>
+                    </div>
+                  </div>
+                  <div class="item-row">
+                    <div class="item-thumb">🎮</div>
+                    <div style="flex:1;">
+                      <div class="item-name">PS5 DualSense Edge Controller</div>
+                      <div class="item-sub">Black · eBay</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:0.82rem;font-weight:700;">$189</div>
+                      <div class="profit-pill pos">+$54</div>
+                    </div>
+                  </div>
+                  <div class="item-row">
+                    <div class="item-thumb">👗</div>
+                    <div style="flex:1;">
+                      <div class="item-name">Supreme Box Logo Hoodie FW24</div>
+                      <div class="item-sub">L · Depop</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:0.82rem;font-weight:700;">$280</div>
+                      <div class="profit-pill pos">+$80</div>
+                    </div>
+                  </div>
+                  <div class="item-row">
+                    <div class="item-thumb">📱</div>
+                    <div style="flex:1;">
+                      <div class="item-name">iPhone 15 Pro 256GB Unlocked</div>
+                      <div class="item-sub">Natural Titanium · eBay</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:0.82rem;font-weight:700;">$870</div>
+                      <div class="profit-pill neg">-$30</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Platform breakdown -->
+                <div>
+                  <div class="chart-block" style="margin-bottom:12px;">
+                    <div class="chart-title" style="margin-bottom:12px;">Revenue by Platform</div>
+                    <div class="chart-bar-h">
+                      <div class="label">🟦 eBay</div>
+                      <div class="bar"><div class="fill" style="width:52%;background:linear-gradient(90deg,#3b82f6,#60a5fa);">$3,558</div></div>
+                    </div>
+                    <div class="chart-bar-h">
+                      <div class="label">⬛ StockX</div>
+                      <div class="bar"><div class="fill" style="width:28%;background:linear-gradient(90deg,#374151,#6b7280);">$1,916</div></div>
+                    </div>
+                    <div class="chart-bar-h">
+                      <div class="label">🟠 GOAT</div>
+                      <div class="bar"><div class="fill" style="width:12%;background:linear-gradient(90deg,#f97316,#fb923c);">$821</div></div>
+                    </div>
+                    <div class="chart-bar-h">
+                      <div class="label">🟣 Depop</div>
+                      <div class="bar"><div class="fill" style="width:8%;background:linear-gradient(90deg,#7c3aed,#a78bfa);">$547</div></div>
+                    </div>
+                  </div>
+                  <div class="chart-block">
+                    <div class="chart-title" style="margin-bottom:10px;">⚡ Alerts</div>
+                    <div class="log-item">
+                      <div class="log-icon">🔔</div>
+                      <div>
+                        <div style="font-size:0.75rem;font-weight:500;color:var(--text);">Jordan 4 Bred drops in <strong>3 days</strong></div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">Expected resale: $480–$620</div>
+                      </div>
+                    </div>
+                    <div class="log-item">
+                      <div class="log-icon">📉</div>
+                      <div>
+                        <div style="font-size:0.75rem;font-weight:500;color:var(--text);">Yeezy 350 price dropped 12%</div>
+                        <div style="font-size:0.65rem;color:var(--text-3);">Consider selling before further dip</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 2: Inventory -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 02</div>
+        <h3>Inventory Manager</h3>
+        <p>Track every item you own — cost basis, current market value, which platform it's listed on, and real-time profit projection.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.fliptracker.io/inventory</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#f97316;">🛍️ FlipTracker</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Dashboard</div>
+                <div class="sidebar-item active">Inventory</div>
+                <div class="sidebar-item">Deal Finder</div>
+                <div class="sidebar-item">Analytics</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#0a0a0f;">
+              <div class="top-bar">
+                <div>
+                  <div class="top-bar-title">Inventory</div>
+                  <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">62 items · Total invested: $18,440</div>
+                </div>
+                <div class="top-bar-actions">
+                  <div class="btn-sm btn-ghost">Import CSV</div>
+                  <div class="btn-sm btn-primary">+ Add Item</div>
+                </div>
+              </div>
+              <!-- Filter tabs -->
+              <div style="display:flex;gap:8px;margin-bottom:16px;">
+                <span class="badge orange" style="padding:5px 12px;font-size:0.75rem;cursor:pointer;">All (62)</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">Listed (47)</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">Storage (15)</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">Sneakers</span>
+                <span style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-3);padding:5px 12px;border-radius:100px;font-size:0.75rem;cursor:pointer;">Electronics</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Cost</th>
+                    <th>List Price</th>
+                    <th>Market Value</th>
+                    <th>Profit</th>
+                    <th>Platform</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.2rem;">👟</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:var(--text);">Jordan 1 High OG 'Chicago'</div>
+                          <div style="font-size:0.65rem;color:var(--text-3);">Size 9.5 · DS</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge blue">Sneakers</span></td>
+                    <td style="font-family:monospace;">$230</td>
+                    <td style="font-family:monospace;">$420</td>
+                    <td style="font-family:monospace;color:#10b981;">$445</td>
+                    <td><span class="profit-pill pos">+$190</span></td>
+                    <td>StockX</td>
+                    <td><span class="badge green">Listed</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.2rem;">🎧</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:var(--text);">Sony WH-1000XM5</div>
+                          <div style="font-size:0.65rem;color:var(--text-3);">Black · Like New</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge purple">Electronics</span></td>
+                    <td style="font-family:monospace;">$220</td>
+                    <td style="font-family:monospace;">$280</td>
+                    <td style="font-family:monospace;color:#10b981;">$275</td>
+                    <td><span class="profit-pill pos">+$55</span></td>
+                    <td>eBay</td>
+                    <td><span class="badge green">Listed</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.2rem;">👕</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:var(--text);">Palace Tri-Ferg Tee FW24</div>
+                          <div style="font-size:0.65rem;color:var(--text-3);">XL · Unused</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge cyan">Streetwear</span></td>
+                    <td style="font-family:monospace;">$60</td>
+                    <td style="font-family:monospace;">$95</td>
+                    <td style="font-family:monospace;color:#f59e0b;">$88</td>
+                    <td><span class="profit-pill pos">+$28</span></td>
+                    <td>Depop</td>
+                    <td><span class="badge yellow">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.2rem;">📦</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:var(--text);">LEGO Technic McLaren</div>
+                          <div style="font-size:0.65rem;color:var(--text-3);">42141 · Sealed</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge yellow">Collectibles</span></td>
+                    <td style="font-family:monospace;">$180</td>
+                    <td style="font-family:monospace;">—</td>
+                    <td style="font-family:monospace;color:#a78bfa;">$240</td>
+                    <td><span class="profit-pill pos">+$60 est.</span></td>
+                    <td>—</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-3);">Storage</span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.2rem;">👟</span>
+                        <div>
+                          <div style="font-size:0.78rem;font-weight:600;color:var(--text);">Yeezy Boost 350 V2 'Zebra'</div>
+                          <div style="font-size:0.65rem;color:var(--text-3);">Size 11 · DS</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="badge blue">Sneakers</span></td>
+                    <td style="font-family:monospace;">$320</td>
+                    <td style="font-family:monospace;">$290</td>
+                    <td style="font-family:monospace;color:#ef4444;">$280</td>
+                    <td><span class="profit-pill neg">-$40</span></td>
+                    <td>GOAT</td>
+                    <td><span class="badge red">Listed</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup 3: Deal Finder -->
+    <div class="mockup-wrapper">
+      <div class="mockup-info">
+        <div class="mockup-num">Mockup 03</div>
+        <h3>Deal Finder &amp; Price Comparison</h3>
+        <p>Automatically scan marketplaces for underpriced listings. Compare buy price vs. average sell price to instantly spot profitable flips.</p>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <div class="browser-dots"><span></span><span></span><span></span></div>
+          <div class="browser-url">app.fliptracker.io/deals</div>
+        </div>
+        <div class="browser-body">
+          <div class="app-layout">
+            <div class="app-sidebar">
+              <div class="sidebar-logo" style="color:#f97316;">🛍️ FlipTracker</div>
+              <div class="sidebar-nav">
+                <div class="sidebar-item">Dashboard</div>
+                <div class="sidebar-item">Inventory</div>
+                <div class="sidebar-item active">Deal Finder</div>
+                <div class="sidebar-item">Analytics</div>
+              </div>
+            </div>
+            <div class="app-main" style="background:#0a0a0f;">
+              <div class="top-bar">
+                <div>
+                  <div class="top-bar-title">Deal Finder</div>
+                  <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">Scanning 6 marketplaces · Last updated 2 min ago</div>
+                </div>
+                <div class="top-bar-actions">
+                  <div class="btn-sm btn-ghost">Set Alerts</div>
+                  <div class="btn-sm btn-primary">Scan Now</div>
+                </div>
+              </div>
+              <!-- Search & filter -->
+              <div class="search-bar">
+                <span class="s-icon">🔍</span>
+                <span>Search sneakers, streetwear, electronics...</span>
+                <span style="margin-left:auto;background:rgba(249,115,22,0.15);color:#f97316;padding:2px 8px;border-radius:100px;font-size:0.68rem;font-weight:600;">Pro Filter</span>
+              </div>
+              <!-- Hot deals grid -->
+              <div style="font-size:0.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:12px;">🔥 Hot Deals Right Now</div>
+              <div class="product-grid" style="grid-template-columns:repeat(3,1fr);gap:12px;">
+                <!-- Deal card -->
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:12px;">
+                  <div style="font-size:1.8rem;margin-bottom:8px;">👟</div>
+                  <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Jordan 4 Bred '24</div>
+                  <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:8px;">Size 11 · eBay · BIN</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">List price</span>
+                    <span style="font-size:0.9rem;font-weight:700;color:#10b981;">$310</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">Market avg.</span>
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--text-2);">$485</span>
+                  </div>
+                  <div style="background:rgba(16,185,129,0.15);border-radius:6px;padding:6px;text-align:center;">
+                    <span style="font-size:0.78rem;font-weight:700;color:#10b981;">+$175 potential profit</span>
+                  </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(249,115,22,0.2);border-radius:10px;padding:12px;">
+                  <div style="font-size:1.8rem;margin-bottom:8px;">🎮</div>
+                  <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Nintendo Switch 2</div>
+                  <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:8px;">Bundle · Facebook Marketplace</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">List price</span>
+                    <span style="font-size:0.9rem;font-weight:700;color:#f97316;">$380</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">Market avg.</span>
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--text-2);">$540</span>
+                  </div>
+                  <div style="background:rgba(249,115,22,0.12);border-radius:6px;padding:6px;text-align:center;">
+                    <span style="font-size:0.78rem;font-weight:700;color:#f97316;">+$160 potential profit</span>
+                  </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:12px;">
+                  <div style="font-size:1.8rem;margin-bottom:8px;">👜</div>
+                  <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Coach Tabby Bag</div>
+                  <div style="font-size:0.65rem;color:var(--text-3);margin-bottom:8px;">Chalk · Poshmark</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">List price</span>
+                    <span style="font-size:0.9rem;font-weight:700;color:#a78bfa;">$140</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:0.72rem;color:var(--text-3);">Market avg.</span>
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--text-2);">$240</span>
+                  </div>
+                  <div style="background:rgba(167,139,250,0.1);border-radius:6px;padding:6px;text-align:center;">
+                    <span style="font-size:0.78rem;font-weight:700;color:#a78bfa;">+$100 potential profit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p><a href="index.html" style="color:var(--text-2);">← Back to all projects</a> &nbsp;·&nbsp; <span class="grad">W&amp;M CODELAB</span> Vibe Coding Showcase</p>
+  </div>
+</footer>
+</body>
+</html>

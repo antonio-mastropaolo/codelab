@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Coding Showcase — CODELAB.SH</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ---- Mini chart sparklines for card previews ---- */
+    .spark { width: 80px; height: 32px; }
+
+    /* ---- Stats row on hero ---- */
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px; margin-top: 56px;
+      animation: fadeUp 0.6s ease 0.35s both;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; }
+    .hero-stat-label { font-size: 0.78rem; color: var(--text-3); font-weight: 500; margin-top: 2px; }
+    .hero-stat-value.green { color: var(--green); }
+    .hero-stat-value.purple { color: var(--primary-light); }
+    .hero-stat-value.cyan { color: var(--accent); }
+
+    /* ---- Divider ---- */
+    .divider {
+      height: 1px; background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+      margin: 0 0 80px;
+    }
+
+    /* ---- CTA section ---- */
+    .cta-section {
+      text-align: center; padding: 80px 0 120px;
+      position: relative; z-index: 1;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(6,182,212,0.08) 100%);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 24px; padding: 60px 40px; max-width: 700px; margin: 0 auto;
+    }
+    .cta-box h2 { margin-bottom: 16px; }
+    .cta-box p { max-width: 480px; margin: 0 auto; }
+    .cta-steps {
+      display: flex; gap: 24px; justify-content: center; margin-top: 40px; flex-wrap: wrap;
+    }
+    .cta-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      text-align: left; max-width: 160px;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: var(--primary-light);
+    }
+    .step-text { font-size: 0.82rem; color: var(--text-2); line-height: 1.4; }
+    .step-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    /* Floating mini screens on card previews */
+    .preview-screen {
+      position: absolute; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; backdrop-filter: blur(4px);
+      font-size: 0.6rem; padding: 5px 8px; color: rgba(255,255,255,0.7);
+    }
+    .preview-screen.top-right { top: 12px; right: 12px; }
+    .preview-screen.top-left  { top: 12px; left: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- Navbar -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L20 7V15L11 20L2 15V7L11 2Z" fill="rgba(124,58,237,0.3)" stroke="#a78bfa" stroke-width="1.5"/>
+        <path d="M11 2L11 20M2 7L20 15M20 7L2 15" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+      </svg>
+      Vibe Coding <span>Showcase</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="teaching.html" style="font-size:0.78rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:4px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">← Teaching</a>
+      <a href="index.html" style="font-size:0.78rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:4px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">CODELAB.SH</a>
+      <div class="nav-pill">✦ 4 Project Ideas</div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Final Project Inspiration Platform
+    </div>
+    <h1>What will you<br><span class="grad">build next?</span></h1>
+    <p>Explore real-world applications you can create through vibe coding. Pick a project, explore the UI, and start building.</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value green">4</div>
+        <div class="hero-stat-label">Project Ideas</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value purple">12</div>
+        <div class="hero-stat-label">UI Mockups</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value cyan">∞</div>
+        <div class="hero-stat-label">Possibilities</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects -->
+<section class="projects">
+  <div class="container">
+    <div class="divider"></div>
+    <div class="projects-header">
+      <div class="section-label">Explore Projects</div>
+      <h2>Choose your build</h2>
+      <p style="margin-top:10px;">Each project tackles a real-world problem. Click any card to see UI mockups and get inspired.</p>
+    </div>
+
+    <div class="projects-grid">
+
+      <!-- Card 1: Stock Trading -->
+      <a href="stock-trading.html" class="project-card theme-green">
+        <div class="card-preview">
+          <div class="preview-icon">📈</div>
+          <div class="preview-screen top-left">
+            <span style="color:#10b981;font-weight:700;">+2.4%</span> today
+          </div>
+          <div class="card-preview-mini">
+            <div class="card-preview-stat">
+              <strong style="color:#10b981;">BUY</strong>
+              AAPL Signal
+            </div>
+            <svg class="spark" viewBox="0 0 80 32">
+              <polyline points="0,28 10,24 20,20 30,22 40,14 50,10 60,8 70,4 80,2" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.8"/>
+              <polyline points="0,28 10,24 20,20 30,22 40,14 50,10 60,8 70,4 80,2 80,32 0,32" fill="rgba(16,185,129,0.1)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Finance &amp; Trading</div>
+          <h3>Stock Trading Signal Platform</h3>
+          <p>Analyze market data, detect patterns, and surface actionable buy/sell signals. Track your portfolio in real time.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-complexity">
+            Complexity
+            <div class="dot-row">
+              <span class="active"></span>
+              <span class="active"></span>
+              <span class="active"></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <!-- Card 2: Reselling -->
+      <a href="reselling.html" class="project-card theme-orange">
+        <div class="card-preview">
+          <div class="preview-icon">🛍️</div>
+          <div class="preview-screen top-left">
+            <span style="color:#f97316;font-weight:700;">$342</span> profit today
+          </div>
+          <div class="card-preview-mini">
+            <div class="card-preview-stat">
+              <strong style="color:#f59e0b;">47</strong>
+              Active listings
+            </div>
+            <svg class="spark" viewBox="0 0 80 32">
+              <polyline points="0,20 10,18 20,22 30,16 40,10 50,14 60,8 70,6 80,4" fill="none" stroke="#f97316" stroke-width="1.5" opacity="0.8"/>
+              <polyline points="0,20 10,18 20,22 30,16 40,10 50,14 60,8 70,6 80,4 80,32 0,32" fill="rgba(249,115,22,0.1)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">E-Commerce</div>
+          <h3>Reselling Platform</h3>
+          <p>Track, list, and optimize resale opportunities. Find underpriced items, manage inventory, and maximize profit margins.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-complexity">
+            Complexity
+            <div class="dot-row">
+              <span class="active"></span>
+              <span class="active"></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <!-- Card 3: Automation -->
+      <a href="automation.html" class="project-card theme-purple">
+        <div class="card-preview">
+          <div class="preview-icon">⚡</div>
+          <div class="preview-screen top-left">
+            <span style="color:#a78bfa;font-weight:700;">12</span> tasks running
+          </div>
+          <div class="card-preview-mini">
+            <div class="card-preview-stat">
+              <strong style="color:#a78bfa;">3.2k</strong>
+              Hours saved
+            </div>
+            <svg class="spark" viewBox="0 0 80 32">
+              <polyline points="0,30 10,26 20,22 30,20 40,18 50,12 60,8 70,6 80,2" fill="none" stroke="#a78bfa" stroke-width="1.5" opacity="0.8"/>
+              <polyline points="0,30 10,26 20,22 30,20 40,18 50,12 60,8 70,6 80,2 80,32 0,32" fill="rgba(167,139,250,0.1)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Productivity</div>
+          <h3>Automation Platform</h3>
+          <p>Build visual workflows that automate repetitive tasks. Connect apps, schedule triggers, and run pipelines without code.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-complexity">
+            Complexity
+            <div class="dot-row">
+              <span class="active"></span>
+              <span class="active"></span>
+              <span class="active"></span>
+              <span class="active"></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <!-- Card 4: Personal Finance -->
+      <a href="finance.html" class="project-card theme-cyan">
+        <div class="card-preview">
+          <div class="preview-icon">💰</div>
+          <div class="preview-screen top-left">
+            <span style="color:#06b6d4;font-weight:700;">$4,820</span> saved
+          </div>
+          <div class="card-preview-mini">
+            <div class="card-preview-stat">
+              <strong style="color:#06b6d4;">82%</strong>
+              Budget on track
+            </div>
+            <svg class="spark" viewBox="0 0 80 32">
+              <polyline points="0,28 10,22 20,18 30,20 40,16 50,12 60,10 70,8 80,5" fill="none" stroke="#06b6d4" stroke-width="1.5" opacity="0.8"/>
+              <polyline points="0,28 10,22 20,18 30,20 40,16 50,12 60,10 70,8 80,5 80,32 0,32" fill="rgba(6,182,212,0.1)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Personal Finance</div>
+          <h3>AI Finance Dashboard</h3>
+          <p>Track spending, set budgets, visualize investments, and get AI-powered insights on your personal financial health.</p>
+        </div>
+        <div class="card-footer">
+          <div class="card-complexity">
+            Complexity
+            <div class="dot-row">
+              <span class="active"></span>
+              <span class="active"></span>
+              <span class="active"></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div><!-- /grid -->
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box">
+      <div class="section-label">How it works</div>
+      <h2>From idea to product</h2>
+      <p>Vibe coding turns ambitious ideas into working products. Pick a concept, describe what you want, and iterate.</p>
+      <div class="cta-steps">
+        <div class="cta-step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Pick a project</strong>Browse the four categories above and choose what excites you.</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>Explore mockups</strong>See how the UI could look and feel before writing a line.</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>Start building</strong>Use an AI coding tool and describe what you see. Iterate fast.</div>
+        </div>
+        <div class="cta-step">
+          <div class="step-num">4</div>
+          <div class="step-text"><strong>Ship it</strong>Deploy your project and demonstrate a real working product.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>A teaching module on <a href="teaching.html" style="color:rgba(255,255,255,0.5);text-decoration:underline;text-underline-offset:3px;">CODELAB.SH</a> · <span class="grad">W&amp;M</span> · Antonio Mastropaolo · Spring 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>
