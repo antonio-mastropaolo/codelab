@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hallucinations in Coding Tasks — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#F85149;--cyan:#00B8D4;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;border-color:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
+    .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .cb.blue{border-left-color:var(--blue);}
+    .cb.amber{border-left-color:var(--amber);}
+    .cb.purple{border-left-color:var(--purple);}
+    .cb.red{border-left-color:var(--red);}
+    .cb.cyan{border-left-color:var(--cyan);}
+    .cb-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .cb.blue .cb-label{color:var(--blue);}
+    .cb.amber .cb-label{color:var(--amber);}
+    .cb.purple .cb-label{color:var(--purple);}
+    .cb.red .cb-label{color:var(--red);}
+    .cb.cyan .cb-label{color:var(--cyan);}
+    .cb-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .cb-body strong{color:var(--text-primary);}
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .term-card:hover{border-color:var(--green-border);}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;white-space:pre;}
+    .ck{color:var(--purple);}
+    .cs{color:var(--green);}
+    .cc{color:var(--text-muted);font-style:italic;}
+    .cf{color:var(--blue);}
+    .cl{color:var(--amber);}
+    .ca{color:var(--cyan);}
+    .cr{color:var(--red);}
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+    .stat-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:110px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .stat-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--green);}
+    .stat-val.blue{color:var(--blue);}
+    .stat-val.amber{color:var(--amber);}
+    .stat-val.purple{color:var(--purple);}
+    .stat-val.red{color:var(--red);}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+    .quiz-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .quiz-option:hover{border-color:var(--green-border);}
+    .quiz-option .q-label{font-size:0.82rem;color:var(--text-secondary);flex:1;}
+    .quiz-option .q-tag{font-family:var(--font-mono);font-size:0.7rem;padding:3px 10px;border-radius:12px;display:none;}
+    .quiz-option.revealed .q-tag{display:inline-block;}
+    .quiz-option.correct .q-tag{background:rgba(0,217,126,0.1);color:var(--green);}
+    .quiz-option.wrong .q-tag{background:rgba(248,81,73,0.1);color:var(--red);}
+    .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
+    .quiz-option.revealed.wrong{border-color:rgba(248,81,73,0.2);background:rgba(248,81,73,0.04);}
+    .kc-box{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;}
+    .kc-q{font-size:0.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .kc-q::before{content:'?';display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.12);color:var(--blue);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;flex-shrink:0;}
+    .kc-answer{display:none;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:10px 14px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);margin-top:8px;}
+    .kc-answer.visible{display:block;}
+    .kc-answer strong{color:var(--text-primary);}
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+    .tag-blue{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .tag-red{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(248,81,73,0.08);color:var(--red);border:1px solid rgba(248,81,73,0.2);}
+    .tag-purple{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(188,140,255,0.08);color:var(--purple);border:1px solid rgba(188,140,255,0.2);}
+    .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;justify-content:center;}
+    .flow-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:var(--font-display);font-size:0.82rem;font-weight:600;text-align:center;min-width:90px;}
+    .flow-box.green{border-color:var(--green-border);color:var(--green);}
+    .flow-box.blue{border-color:rgba(88,166,255,0.3);color:var(--blue);}
+    .flow-box.amber{border-color:rgba(227,179,65,0.3);color:var(--amber);}
+    .flow-box.purple{border-color:rgba(188,140,255,0.3);color:var(--purple);}
+    .flow-box.red{border-color:rgba(248,81,73,0.3);color:var(--red);}
+    .flow-arrow{color:var(--text-muted);font-size:1.2rem;}
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:14px 0;}
+    @media(max-width:700px){.vs-grid{grid-template-columns:1fr;}}
+    .vs-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .vs-card h4{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px;}
+    .vs-card ul{list-style:none;padding:0;}
+    .vs-card li{font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:3px 0;}
+    .vs-card li::before{content:'\2192 ';color:var(--green);font-family:var(--font-mono);}
+    .vs-card.warn li::before{color:var(--amber);}
+    .vs-divider{display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--text-muted);}
+    @media(max-width:700px){.vs-divider{display:none;}}
+    .sev-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);cursor:pointer;transition:all 0.15s;}
+    .sev-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sev-btn.selected{font-weight:600;}
+    .sev-btn.sel-low{background:rgba(0,217,126,0.1);color:var(--green);border-color:var(--green-border);}
+    .sev-btn.sel-med{background:rgba(227,179,65,0.1);color:var(--amber);border-color:rgba(227,179,65,0.3);}
+    .sev-btn.sel-high{background:rgba(248,81,73,0.1);color:var(--red);border-color:rgba(248,81,73,0.3);}
+    .sev-btn.sel-crit{background:rgba(188,140,255,0.1);color:var(--purple);border-color:rgba(188,140,255,0.3);}
+    .pipeline-slot{min-height:48px;border:2px dashed var(--border);border-radius:8px;margin:6px 0;display:flex;align-items:center;padding:8px 12px;font-size:0.78rem;color:var(--text-muted);transition:all 0.2s;cursor:pointer;}
+    .pipeline-slot.filled{border-style:solid;border-color:var(--green-border);background:var(--green-dim);color:var(--text-primary);}
+    .pipeline-block{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;margin:4px;font-size:0.8rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;user-select:none;display:inline-block;}
+    .pipeline-block:hover{border-color:var(--green-border);color:var(--green);}
+    .pipeline-block.placed{opacity:0.35;cursor:default;}
+    .detect-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:5px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .detect-option:hover{border-color:var(--green-border);}
+    .detect-option.selected{border-color:var(--blue);background:rgba(88,166,255,0.06);}
+    .detect-option.revealed.correct-opt{border-color:var(--green-border);background:var(--green-dim);}
+    .detect-option.revealed.wrong-opt{border-color:rgba(248,81,73,0.2);background:rgba(248,81,73,0.04);}
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .cite{font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);}
+    .cite a{color:var(--blue);text-decoration:none;}
+    .cite a:hover{text-decoration:underline;}
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">|</span>
+  <span class="topbar-title">Hallucinations in Coding Tasks</span>
+  <span class="topbar-badge">Module 6 &middot; Interactive</span>
+  <span class="slide-counter" id="counter">1 / 20</span>
+  <a href="index.html" class="topbar-home">Home</a>
+</div>
+
+<!-- Progress -->
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:5%"></div></div>
+
+<!-- Slides -->
+<div class="slides-wrapper">
+
+<!-- ==================== SLIDE 1 ==================== -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 6 &middot; Slide 01</div>
+  <h1 class="slide-h1">6. <em>Hallucinations</em> in<br>Coding Tasks</h1>
+  <p class="slide-p">When large language models generate code that looks correct but invokes non-existent APIs, uses wrong parameters, or produces logically flawed implementations. Understanding, detecting, and mitigating code hallucinations is critical for safe AI-assisted software development.</p>
+
+  <div class="slide-h2" style="font-size:1rem;margin-top:10px;margin-bottom:12px;">Learning Objectives</div>
+  <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="term-card">
+      <div class="term-name">Objective 1</div>
+      <div class="term-def">Define code hallucinations and distinguish them from general LLM hallucinations</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">Objective 2</div>
+      <div class="term-def">Apply the CodeHalu and HalluCode taxonomies to classify hallucination types</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">Objective 3</div>
+      <div class="term-def">Evaluate mitigation strategies including De-Hallucinator and MARIN</div>
+    </div>
+  </div>
+
+  <div class="slide-h2" style="font-size:1rem;margin-top:18px;margin-bottom:8px;">Key References</div>
+  <div class="term-grid">
+    <div class="term-card"><div class="term-name">CodeHalu</div><div class="term-def">Tian et al. (AAAI 2025) &mdash; Taxonomy of 4 categories, 8 subcategories; CodeHaluEval benchmark</div></div>
+    <div class="term-card"><div class="term-name">De-Hallucinator</div><div class="term-def">Eghbali &amp; Pradel (2024) &mdash; Iterative grounding with API documentation</div></div>
+    <div class="term-card"><div class="term-name">MARIN</div><div class="term-def">FSE 2025 &mdash; Hierarchical dependency-aware hallucination mitigation</div></div>
+    <div class="term-card"><div class="term-name">HalluCode</div><div class="term-def">5 primary categories, 19 specific types of code hallucination</div></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2 ==================== -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 6 &middot; Slide 02</div>
+  <h2 class="slide-h2">What Are <em>Hallucinations</em>?</h2>
+  <p class="slide-p">In general NLP, a hallucination occurs when a model generates content that is nonsensical, unfaithful to the source, or factually incorrect. In code generation, hallucinations take on a uniquely dangerous character: they produce syntactically valid code that compiles or runs &mdash; but behaves incorrectly.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">General LLM Hallucination</div>
+        <div class="cb-body">Output that is <strong>fluent and confident</strong> but factually wrong. Example: claiming a historical event occurred on the wrong date, or citing a paper that does not exist.</div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">Code Hallucination</div>
+        <div class="cb-body">Generated code that <strong>looks plausible</strong> but calls non-existent APIs, uses wrong method signatures, introduces logical errors, or references unavailable libraries. The code often passes superficial review.<br><span class="cite">&mdash; Lee et al. 2025, arXiv:2504.20799</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="cb amber">
+        <div class="cb-label">Why Code Hallucinations Are Worse</div>
+        <div class="cb-body">
+          <strong>1. Verifiability gap:</strong> Text hallucinations can be fact-checked; code hallucinations require execution or deep expertise to detect.<br><br>
+          <strong>2. Downstream impact:</strong> A hallucinated API call can cause runtime crashes, security vulnerabilities, or silent data corruption in production.<br><br>
+          <strong>3. False confidence:</strong> Syntactically correct code creates a strong illusion of correctness, even for experienced developers.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3 ==================== -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 6 &middot; Slide 03</div>
+  <h2 class="slide-h2">Why Hallucinations <em>Matter</em> in Code</h2>
+  <p class="slide-p">Code hallucinations are not merely academic curiosities. They have real consequences across the software development lifecycle, from introducing subtle bugs to creating exploitable security vulnerabilities.</p>
+
+  <div class="term-grid">
+    <div class="term-card" style="border-left:3px solid var(--red);">
+      <div class="term-name" style="color:var(--red);">API Misuse</div>
+      <div class="term-def">LLMs frequently invent API methods that do not exist or use real APIs with incorrect parameter types and orderings. This is the most common form of code hallucination.<br><span class="cite">ISSTA 2025 &mdash; API Knowledge Conflicts</span></div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name" style="color:var(--amber);">Security Vulnerabilities</div>
+      <div class="term-def">Hallucinated code may omit input validation, use deprecated cryptographic functions, or introduce injection points that would not appear in human-written code.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name" style="color:var(--purple);">Dependency Conflicts</div>
+      <div class="term-def">Models may reference library versions that are incompatible, or combine APIs from different major versions of the same framework.<br><span class="cite">ISSTA 2025 &mdash; Dependency Conflicts</span></div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name" style="color:var(--blue);">Silent Failures</div>
+      <div class="term-def">The most insidious hallucinations produce code that runs without errors but produces incorrect results &mdash; wrong calculations, missed edge cases, or flawed logic that passes basic tests.</div>
+    </div>
+  </div>
+
+  <div class="stat-row" style="margin-top:16px;">
+    <div class="stat-card"><div class="stat-val red">699</div><div class="stat-label">Tasks in CodeHaluEval</div></div>
+    <div class="stat-card"><div class="stat-val amber">8,883</div><div class="stat-label">Hallucination Samples</div></div>
+    <div class="stat-card"><div class="stat-val purple">17</div><div class="stat-label">LLMs Evaluated</div></div>
+    <div class="stat-card"><div class="stat-val blue">4</div><div class="stat-label">Hallucination Categories</div></div>
+  </div>
+  <div class="cite" style="text-align:center;margin-top:4px;">Source: Tian et al. CodeHalu (AAAI 2025)</div>
+</div>
+
+<!-- ==================== SLIDE 4 ==================== -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 6 &middot; Slide 04</div>
+  <h2 class="slide-h2">Real-World <em>Examples</em></h2>
+  <p class="slide-p">These examples illustrate common hallucination patterns observed in LLM-generated code. Each snippet looks plausible but contains fabricated or incorrect API usage.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">Example 1: Non-Existent API</div>
+        <div class="cb-body">The model invents a method that does not exist in the library:</div>
+      </div>
+      <div class="code-block"><span class="cc"># Hallucinated: pandas has no .smart_merge()</span>
+<span class="ck">import</span> pandas <span class="ck">as</span> pd
+
+df1 = pd.read_csv(<span class="cs">"users.csv"</span>)
+df2 = pd.read_csv(<span class="cs">"orders.csv"</span>)
+
+<span class="cc"># This method does NOT exist in pandas</span>
+result = pd.<span class="cr">smart_merge</span>(df1, df2,
+    on=<span class="cs">"user_id"</span>,
+    strategy=<span class="cs">"fuzzy"</span>,   <span class="cc"># not a real param</span>
+    threshold=<span class="cl">0.8</span>)      <span class="cc"># not a real param</span></div>
+
+      <div class="cb amber">
+        <div class="cb-label">Example 2: Wrong Method Signature</div>
+        <div class="cb-body">The model uses a real API but with incorrect parameters:</div>
+      </div>
+      <div class="code-block"><span class="cc">// Hallucinated: wrong overload of Files.readString</span>
+<span class="ck">import</span> java.nio.file.Files;
+<span class="ck">import</span> java.nio.file.Path;
+
+<span class="cc">// Files.readString() takes a Path, not</span>
+<span class="cc">// a Path + boolean + Charset</span>
+String content = Files.<span class="cr">readString</span>(
+    Path.of(<span class="cs">"data.txt"</span>),
+    <span class="cl">true</span>,              <span class="cc">// no boolean param</span>
+    <span class="cs">"UTF-8"</span>);          <span class="cc">// wants Charset obj</span></div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Example 3: Fabricated Library</div>
+        <div class="cb-body">The model imports a library that has never been published:</div>
+      </div>
+      <div class="code-block"><span class="cc"># Hallucinated: no such package exists</span>
+<span class="ck">from</span> <span class="cr">sklearn.neural</span> <span class="ck">import</span> DeepClassifier
+
+model = DeepClassifier(
+    layers=[<span class="cl">128</span>, <span class="cl">64</span>, <span class="cl">32</span>],
+    activation=<span class="cs">"gelu"</span>,
+    optimizer=<span class="cs">"adamw"</span>)
+model.fit(X_train, y_train)</div>
+
+      <div class="cb blue">
+        <div class="cb-label">Example 4: Logic Hallucination</div>
+        <div class="cb-body">Syntactically valid but logically wrong &mdash; returns before completing:</div>
+      </div>
+      <div class="code-block"><span class="ck">def</span> <span class="cf">find_duplicates</span>(lst):
+    <span class="cs">"""Find all duplicate elements."""</span>
+    seen = <span class="cf">set</span>()
+    duplicates = <span class="cf">set</span>()
+    <span class="ck">for</span> item <span class="ck">in</span> lst:
+        <span class="ck">if</span> item <span class="ck">in</span> seen:
+            duplicates.add(item)
+            <span class="cr">return</span> duplicates  <span class="cc"># BUG: returns on</span>
+        seen.add(item)      <span class="cc"># first dup found</span>
+    <span class="ck">return</span> duplicates</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5 ==================== -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 6 &middot; Slide 05</div>
+  <h2 class="slide-h2">CodeHalu Taxonomy <em>(Part 1)</em></h2>
+  <p class="slide-p">Tian et al. (AAAI 2025) propose a systematic taxonomy of code hallucinations based on execution-based verification, dividing them into four categories with eight subcategories. This slide covers the first two categories.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">Category 1: Mapping Hallucinations</div>
+        <div class="cb-body">The LLM fails to correctly map the task description to executable code. The generated solution does not align with what was asked.<br><br>
+        <strong>Subcategory 1a &mdash; Task Misunderstanding:</strong> The model solves a different problem than specified. E.g., asked to sort descending but sorts ascending.<br><br>
+        <strong>Subcategory 1b &mdash; Specification Violation:</strong> The code ignores explicit constraints such as time complexity requirements or input/output formats.</div>
+      </div>
+      <div class="code-block"><span class="cc"># Mapping hallucination: task says "return indices"</span>
+<span class="cc"># but model returns values instead</span>
+<span class="ck">def</span> <span class="cf">two_sum</span>(nums, target):
+    <span class="ck">for</span> i <span class="ck">in</span> <span class="cf">range</span>(<span class="cf">len</span>(nums)):
+        <span class="ck">for</span> j <span class="ck">in</span> <span class="cf">range</span>(i+<span class="cl">1</span>, <span class="cf">len</span>(nums)):
+            <span class="ck">if</span> nums[i] + nums[j] == target:
+                <span class="ck">return</span> [nums[i], nums[j]]  <span class="cc"># wrong!</span>
+    <span class="cc"># should be: return [i, j]</span></div>
+    </div>
+    <div>
+      <div class="cb amber">
+        <div class="cb-label">Category 2: Naming Hallucinations</div>
+        <div class="cb-body">The LLM references identifiers &mdash; variable names, function names, class names &mdash; that either do not exist in the current scope or are used inconsistently.<br><br>
+        <strong>Subcategory 2a &mdash; Undefined References:</strong> Using variables or functions that were never declared or imported.<br><br>
+        <strong>Subcategory 2b &mdash; Name Confusion:</strong> Mixing up similar-sounding API names (e.g., <code>getSize()</code> vs <code>size()</code> vs <code>length()</code>).</div>
+      </div>
+      <div class="code-block"><span class="cc">// Naming hallucination: mixing up API names</span>
+<span class="ck">import</span> java.util.ArrayList;
+
+ArrayList&lt;String&gt; list = <span class="ck">new</span> ArrayList&lt;&gt;();
+list.add(<span class="cs">"hello"</span>);
+
+<span class="cc">// ArrayList uses .size(), not .length()</span>
+<span class="ck">int</span> n = list.<span class="cr">length</span>();  <span class="cc">// compile error!</span>
+
+<span class="cc">// Also confuses with array .length field</span>
+<span class="cc">// and String .length() method</span></div>
+    </div>
+  </div>
+  <div class="cite" style="margin-top:8px;">Source: Tian et al. "CodeHalu: Investigating Code Hallucinations in LLMs via Execution-based Verification" (AAAI 2025)</div>
+</div>
+
+<!-- ==================== SLIDE 6 ==================== -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 6 &middot; Slide 06</div>
+  <h2 class="slide-h2">CodeHalu Taxonomy <em>(Part 2)</em></h2>
+  <p class="slide-p">The remaining two categories in the CodeHalu taxonomy cover hallucinations related to resource management and logical reasoning &mdash; often the hardest to detect without execution.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Category 3: Resource Hallucinations</div>
+        <div class="cb-body">The LLM generates code that references external resources (files, network endpoints, database tables, environment variables) that do not exist or are inaccessible.<br><br>
+        <strong>Subcategory 3a &mdash; Missing Dependencies:</strong> Importing packages that are not installed or do not exist in the target ecosystem.<br><br>
+        <strong>Subcategory 3b &mdash; Environment Assumptions:</strong> Assuming the presence of files, directories, services, or configurations that are not guaranteed.</div>
+      </div>
+      <div class="code-block"><span class="cc"># Resource hallucination: assumes file exists</span>
+<span class="ck">import</span> json
+
+<span class="cc"># Model assumes config.json is always present</span>
+<span class="ck">with</span> <span class="cf">open</span>(<span class="cs">"config.json"</span>) <span class="ck">as</span> f:
+    config = json.load(f)
+
+<span class="cc"># No error handling, no fallback defaults</span>
+db_host = config[<span class="cs">"database"</span>][<span class="cs">"host"</span>]
+db_port = config[<span class="cs">"database"</span>][<span class="cs">"port"</span>]</div>
+    </div>
+    <div>
+      <div class="cb cyan">
+        <div class="cb-label">Category 4: Logic Hallucinations</div>
+        <div class="cb-body">The code is syntactically valid and uses real APIs correctly, but implements flawed algorithms or incorrect control flow that produces wrong results.<br><br>
+        <strong>Subcategory 4a &mdash; Algorithm Errors:</strong> Implementing a sorting algorithm that does not actually sort, or a search that misses valid results.<br><br>
+        <strong>Subcategory 4b &mdash; Edge Case Failures:</strong> Code that works for common inputs but fails on boundary conditions (empty lists, negative numbers, null values).</div>
+      </div>
+      <div class="code-block"><span class="cc"># Logic hallucination: off-by-one in binary search</span>
+<span class="ck">def</span> <span class="cf">binary_search</span>(arr, target):
+    lo, hi = <span class="cl">0</span>, <span class="cf">len</span>(arr)  <span class="cc"># should be len-1</span>
+    <span class="ck">while</span> lo <= hi:
+        mid = (lo + hi) // <span class="cl">2</span>
+        <span class="ck">if</span> arr[mid] == target:  <span class="cc"># IndexError!</span>
+            <span class="ck">return</span> mid
+        <span class="ck">elif</span> arr[mid] < target:
+            lo = mid + <span class="cl">1</span>
+        <span class="ck">else</span>:
+            hi = mid <span class="cr">- 1</span>
+    <span class="ck">return</span> -<span class="cl">1</span></div>
+    </div>
+  </div>
+  <div class="cite" style="margin-top:8px;">Source: Tian et al. "CodeHalu: Investigating Code Hallucinations in LLMs via Execution-based Verification" (AAAI 2025)</div>
+</div>
+
+<!-- ==================== SLIDE 7 ==================== -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 6 &middot; Slide 07 &middot; Interactive</div>
+  <h2 class="slide-h2">Spot the <em>Hallucination</em></h2>
+  <p class="slide-p">Each pair below contains one snippet with a real API call and one with a hallucinated API. Click the snippet you believe is hallucinated.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Challenge 1: Python HTTP Requests <span class="inter-badge">interactive</span></div>
+      <div id="s7-score1" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);"></div>
+    </div>
+    <div class="inter-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="detect-option" onclick="checkSpot(this,'s7c1','wrong')" data-group="s7c1">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;"><span class="ck">import</span> requests
+response = requests.get(<span class="cs">"https://api.example.com"</span>)
+data = response.json()</div>
+          </div>
+        </div>
+        <div class="detect-option" onclick="checkSpot(this,'s7c1','right')" data-group="s7c1">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;"><span class="ck">import</span> requests
+response = requests.<span class="cr">fetch</span>(<span class="cs">"https://api.example.com"</span>)
+data = response.to_json()</div>
+          </div>
+        </div>
+      </div>
+      <div id="s7c1-explain" style="display:none;" class="cb" style="margin-top:8px;">
+        <div class="cb-label">Explanation</div>
+        <div class="cb-body"><strong>Right snippet is hallucinated.</strong> The <code>requests</code> library uses <code>.get()</code>, not <code>.fetch()</code>. Also, the response method is <code>.json()</code> not <code>.to_json()</code>. This is a <strong>Naming Hallucination</strong> per the CodeHalu taxonomy.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="inter-panel" style="margin-top:10px;">
+    <div class="inter-header">
+      <div class="inter-title">Challenge 2: Java Collections <span class="inter-badge">interactive</span></div>
+      <div id="s7-score2" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);"></div>
+    </div>
+    <div class="inter-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="detect-option" onclick="checkSpot(this,'s7c2','right')" data-group="s7c2">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;">Map&lt;String,Integer&gt; map = <span class="ck">new</span> HashMap&lt;&gt;();
+map.put(<span class="cs">"a"</span>, <span class="cl">1</span>);
+<span class="ck">int</span> val = map.<span class="cr">getOrDefault</span>(<span class="cs">"b"</span>, <span class="cl">0</span>, <span class="cl">true</span>);</div>
+          </div>
+        </div>
+        <div class="detect-option" onclick="checkSpot(this,'s7c2','wrong')" data-group="s7c2">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;">Map&lt;String,Integer&gt; map = <span class="ck">new</span> HashMap&lt;&gt;();
+map.put(<span class="cs">"a"</span>, <span class="cl">1</span>);
+<span class="ck">int</span> val = map.getOrDefault(<span class="cs">"b"</span>, <span class="cl">0</span>);</div>
+          </div>
+        </div>
+      </div>
+      <div id="s7c2-explain" style="display:none;" class="cb">
+        <div class="cb-label">Explanation</div>
+        <div class="cb-body"><strong>Left snippet is hallucinated.</strong> <code>Map.getOrDefault()</code> takes exactly 2 parameters (key, defaultValue). The third boolean parameter does not exist. This is a <strong>Naming Hallucination (Name Confusion)</strong> &mdash; the model added a phantom parameter.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="inter-panel" style="margin-top:10px;">
+    <div class="inter-header">
+      <div class="inter-title">Challenge 3: Python File I/O <span class="inter-badge">interactive</span></div>
+      <div id="s7-score3" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);"></div>
+    </div>
+    <div class="inter-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="detect-option" onclick="checkSpot(this,'s7c3','wrong')" data-group="s7c3">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;"><span class="ck">from</span> pathlib <span class="ck">import</span> Path
+text = Path(<span class="cs">"file.txt"</span>).read_text()
+lines = text.splitlines()</div>
+          </div>
+        </div>
+        <div class="detect-option" onclick="checkSpot(this,'s7c3','right')" data-group="s7c3">
+          <div class="q-label">
+            <div class="code-block" style="margin:0;font-size:0.72rem;"><span class="ck">from</span> pathlib <span class="ck">import</span> Path
+text = Path(<span class="cs">"file.txt"</span>).<span class="cr">read_lines</span>()
+lines = text.to_list()</div>
+          </div>
+        </div>
+      </div>
+      <div id="s7c3-explain" style="display:none;" class="cb">
+        <div class="cb-label">Explanation</div>
+        <div class="cb-body"><strong>Right snippet is hallucinated.</strong> <code>pathlib.Path</code> has <code>.read_text()</code> and <code>.read_bytes()</code>, but no <code>.read_lines()</code> method. The model fabricated both the method name and the <code>.to_list()</code> conversion. This is a <strong>Naming Hallucination</strong>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8 ==================== -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 6 &middot; Slide 08</div>
+  <h2 class="slide-h2"><em>HalluCode</em> Taxonomy</h2>
+  <p class="slide-p">HalluCode proposes a complementary taxonomy focusing on the relationship between generated code and the developer's intent, context, and domain knowledge. It defines 5 primary categories and 19 specific types.</p>
+
+  <div class="term-grid">
+    <div class="term-card" style="border-left:3px solid var(--red);">
+      <div class="term-name" style="color:var(--red);">1. Intent Conflicting</div>
+      <div class="term-def">Generated code contradicts the user's stated intent or task description. The code runs but does something fundamentally different from what was requested. Example: asked to delete duplicates, but the code deletes unique elements instead.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name" style="color:var(--amber);">2. Context Inconsistency</div>
+      <div class="term-def">Code is inconsistent with the surrounding context &mdash; uses variables defined elsewhere with wrong types, breaks established patterns in the codebase, or contradicts previous lines in the same function.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name" style="color:var(--purple);">3. Context Repetition</div>
+      <div class="term-def">The model unnecessarily repeats code blocks, re-declares variables, or duplicates logic that is already present. This can indicate the model has lost track of what it has already generated.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name" style="color:var(--blue);">4. Dead Code</div>
+      <div class="term-def">Generated code includes unreachable statements, unused variables, redundant conditions, or function definitions that are never called. While not always incorrect, dead code signals the model is generating without genuine understanding.</div>
+    </div>
+    <div class="term-card" style="grid-column:span 2;border-left:3px solid var(--cyan);">
+      <div class="term-name" style="color:var(--cyan);">5. Knowledge Conflicting</div>
+      <div class="term-def">Code contradicts established programming knowledge: using deprecated APIs, violating language-specific idioms, applying algorithms to unsuitable data structures, or using patterns that are known anti-patterns. Example: using a bubble sort where the prompt requires O(n log n) complexity. This category overlaps with CodeHalu's Naming and Resource hallucinations.</div>
+    </div>
+  </div>
+  <div class="cite" style="margin-top:8px;">Source: HalluCode &mdash; 5 primary categories, 19 specific types of code hallucination</div>
+</div>
+
+<!-- ==================== SLIDE 9 ==================== -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 6 &middot; Slide 09</div>
+  <h2 class="slide-h2">Comparing <em>Taxonomies</em></h2>
+  <p class="slide-p">CodeHalu and HalluCode approach code hallucination classification from different angles. Understanding both provides a more complete picture of the hallucination landscape.</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>CodeHalu (AAAI 2025)</th>
+        <th>HalluCode</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Focus</strong></td>
+        <td>Execution-based verification; what goes wrong at runtime</td>
+        <td>Intent alignment; how code deviates from user expectations</td>
+      </tr>
+      <tr>
+        <td><strong>Categories</strong></td>
+        <td><span class="tag-red">Mapping</span> <span class="tag-amber">Naming</span> <span class="tag-purple">Resource</span> <span class="tag-blue">Logic</span></td>
+        <td><span class="tag-red">Intent</span> <span class="tag-amber">Context</span> <span class="tag-purple">Repetition</span> <span class="tag-blue">Dead Code</span> <span class="tag-green">Knowledge</span></td>
+      </tr>
+      <tr>
+        <td><strong>Granularity</strong></td>
+        <td>4 categories, 8 subcategories</td>
+        <td>5 categories, 19 specific types</td>
+      </tr>
+      <tr>
+        <td><strong>Detection Method</strong></td>
+        <td>Execution-based: run code, compare outputs against expected results</td>
+        <td>Hybrid: static analysis + semantic comparison to intent</td>
+      </tr>
+      <tr>
+        <td><strong>Benchmark</strong></td>
+        <td>CodeHaluEval (699 tasks, 8,883 samples, 17 LLMs)</td>
+        <td>Curated examples across 19 types</td>
+      </tr>
+      <tr>
+        <td><strong>Overlap</strong></td>
+        <td colspan="2" style="text-align:center;">CodeHalu's <em>Naming</em> &asymp; HalluCode's <em>Knowledge Conflicting</em>; CodeHalu's <em>Mapping</em> &asymp; HalluCode's <em>Intent Conflicting</em></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cb blue" style="margin-top:16px;">
+    <div class="cb-label">Takeaway</div>
+    <div class="cb-body">Neither taxonomy is strictly superior. CodeHalu excels at automated, execution-based detection of hallucinations that cause runtime failures. HalluCode captures subtler issues like dead code and context repetition that may not cause crashes but still indicate poor code quality. A comprehensive hallucination analysis should draw from both frameworks.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10 ==================== -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 6 &middot; Slide 10</div>
+  <h2 class="slide-h2">How LLMs <em>Hallucinate</em> Code</h2>
+  <p class="slide-p">Understanding the mechanisms behind code hallucinations helps inform both detection and mitigation strategies. Several factors contribute to hallucination in code generation.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Training Data Gaps</h4>
+      <p>APIs that are infrequent in training data are more likely to be hallucinated. The model may have seen similar but different APIs and conflates them. Less popular libraries have far fewer training examples, leading to fabricated method names and signatures.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>API Version Confusion</h4>
+      <p>Training data contains code using multiple versions of the same library (e.g., TensorFlow 1.x vs 2.x, Python 2 vs 3). The model may blend APIs across incompatible versions, producing code that was valid in an older version but fails in the current one.<br><span class="cite">ISSTA 2025 &mdash; Environment Conflicts</span></p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Distribution Shift</h4>
+      <p>When a prompt asks for code combining libraries in novel ways not well-represented in training data, the model falls back on statistical patterns rather than genuine understanding, increasing hallucination probability.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Autoregressive Accumulation</h4>
+      <p>Each generated token conditions on all previous tokens. A small error early in generation (e.g., wrong import) cascades &mdash; the model then generates code consistent with the hallucinated import, compounding the hallucination throughout the function.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Pattern Mimicry over Semantics</h4>
+      <p>LLMs are pattern-matching systems. They learn that methods are often named <code>get_X()</code>, <code>set_X()</code>, <code>to_X()</code>, and may synthesize plausible-sounding method names that follow common conventions but do not actually exist in the target library.<br><span class="cite">Lee et al. 2025, arXiv:2504.20799</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11 ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 6 &middot; Slide 11</div>
+  <h2 class="slide-h2">Measuring <em>Hallucinations</em></h2>
+  <p class="slide-p">Quantifying code hallucinations requires specialized benchmarks and metrics. The CodeHaluEval benchmark by Tian et al. provides a rigorous framework for evaluation.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">CodeHaluEval Benchmark</div>
+        <div class="cb-body">
+          <strong>Scale:</strong> 699 tasks generating 8,883 code samples across 17 LLMs<br><br>
+          <strong>Process:</strong> Each task is paired with a specification and test cases. Generated code is executed against the tests. Failures are categorized by hallucination type using the CodeHalu taxonomy.<br><br>
+          <strong>Coverage:</strong> Tasks span algorithm design, data structure manipulation, API usage, and systems programming.
+        </div>
+      </div>
+      <div class="cb purple">
+        <div class="cb-label">ISSTA 2025 Framework</div>
+        <div class="cb-body">Focuses on hallucinations detectable via <strong>static analysis</strong> without execution:<br>
+        &bull; <strong>Dependency Conflicts</strong> &mdash; incompatible library versions<br>
+        &bull; <strong>Environment Conflicts</strong> &mdash; wrong Python/Java versions<br>
+        &bull; <strong>API Knowledge Conflicts</strong> &mdash; non-existent or misused APIs</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Key Metrics</div>
+        <div class="cb-body">
+          <strong>MiHN (Micro Hallucination Number):</strong> The total count of individual hallucinated elements (wrong API calls, incorrect parameters, etc.) across all generated samples. Lower is better.<br><br>
+          <strong>MaHR (Macro Hallucination Rate):</strong> The fraction of generated code samples that contain at least one hallucination. Captures how frequently the model produces any hallucination at all.<br><br>
+          <strong>Edit Distance:</strong> How many edits are needed to fix hallucinated code to match correct code. Used by De-Hallucinator to measure improvement.<br><br>
+          <strong>API Recall:</strong> The fraction of required API calls that are correctly included in generated code.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val">67.5%</div><div class="stat-label">MiHN Decrease (MARIN)</div></div>
+    <div class="stat-card"><div class="stat-val blue">73.6%</div><div class="stat-label">MaHR Decrease (MARIN)</div></div>
+    <div class="stat-card"><div class="stat-val amber">50.6%</div><div class="stat-label">Edit Dist. Improvement</div></div>
+    <div class="stat-card"><div class="stat-val purple">61.0%</div><div class="stat-label">API Recall Improvement</div></div>
+  </div>
+  <div class="cite" style="text-align:center;">MARIN (FSE 2025) and De-Hallucinator (Eghbali &amp; Pradel 2024) results</div>
+</div>
+
+<!-- ==================== SLIDE 12 ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 6 &middot; Slide 12 &middot; Interactive</div>
+  <h2 class="slide-h2">Rate the <em>Severity</em></h2>
+  <p class="slide-p">Not all hallucinations are equally dangerous. Classify each example below by severity: Low (cosmetic / style issue), Medium (will cause errors but detectable), High (runtime crash or wrong results), or Critical (security vulnerability or data loss).</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Severity Classification <span class="inter-badge">interactive</span></div>
+      <button class="sim-btn primary" onclick="checkSeverity()">Check Answers</button>
+    </div>
+    <div class="inter-body" id="sev-quiz">
+      <div class="kc-box" data-correct="low" id="sev-q1">
+        <div class="kc-q">An unused import statement is generated at the top of the file</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="sev-btn" onclick="pickSev(this,'low')">Low</button>
+          <button class="sev-btn" onclick="pickSev(this,'med')">Medium</button>
+          <button class="sev-btn" onclick="pickSev(this,'high')">High</button>
+          <button class="sev-btn" onclick="pickSev(this,'crit')">Critical</button>
+        </div>
+        <div class="kc-answer" id="sev-a1">An unused import is a <strong>Dead Code</strong> hallucination (HalluCode). It does not affect execution &mdash; at worst, it adds a minor dependency. Severity: <strong>Low</strong>.</div>
+      </div>
+      <div class="kc-box" data-correct="high" id="sev-q2">
+        <div class="kc-q">The model calls <code>torch.cuda.memory_optimized_forward()</code>, a method that does not exist</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="sev-btn" onclick="pickSev(this,'low')">Low</button>
+          <button class="sev-btn" onclick="pickSev(this,'med')">Medium</button>
+          <button class="sev-btn" onclick="pickSev(this,'high')">High</button>
+          <button class="sev-btn" onclick="pickSev(this,'crit')">Critical</button>
+        </div>
+        <div class="kc-answer" id="sev-a2">A non-existent method causes an <strong>AttributeError</strong> at runtime. This is a <strong>Naming Hallucination</strong> (CodeHalu). Easily caught by testing but will crash in production if undetected. Severity: <strong>High</strong>.</div>
+      </div>
+      <div class="kc-box" data-correct="crit" id="sev-q3">
+        <div class="kc-q">User input is concatenated directly into a SQL query string instead of using parameterized queries</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="sev-btn" onclick="pickSev(this,'low')">Low</button>
+          <button class="sev-btn" onclick="pickSev(this,'med')">Medium</button>
+          <button class="sev-btn" onclick="pickSev(this,'high')">High</button>
+          <button class="sev-btn" onclick="pickSev(this,'crit')">Critical</button>
+        </div>
+        <div class="kc-answer" id="sev-a3">SQL injection is a <strong>security vulnerability</strong>. The code runs fine in normal testing but is exploitable. This is a <strong>Knowledge Conflicting</strong> hallucination (HalluCode) &mdash; the model ignores known security practices. Severity: <strong>Critical</strong>.</div>
+      </div>
+      <div class="kc-box" data-correct="med" id="sev-q4">
+        <div class="kc-q">A function re-declares a variable that was already defined 3 lines above with the same value</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="sev-btn" onclick="pickSev(this,'low')">Low</button>
+          <button class="sev-btn" onclick="pickSev(this,'med')">Medium</button>
+          <button class="sev-btn" onclick="pickSev(this,'high')">High</button>
+          <button class="sev-btn" onclick="pickSev(this,'crit')">Critical</button>
+        </div>
+        <div class="kc-answer" id="sev-a4">This is a <strong>Context Repetition</strong> hallucination (HalluCode). It may cause confusion and in some languages could shadow variables leading to subtle bugs. Severity: <strong>Medium</strong>.</div>
+      </div>
+      <div class="kc-box" data-correct="high" id="sev-q5">
+        <div class="kc-q">A sorting function returns after finding the first unsorted pair instead of fully sorting the list</div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="sev-btn" onclick="pickSev(this,'low')">Low</button>
+          <button class="sev-btn" onclick="pickSev(this,'med')">Medium</button>
+          <button class="sev-btn" onclick="pickSev(this,'high')">High</button>
+          <button class="sev-btn" onclick="pickSev(this,'crit')">Critical</button>
+        </div>
+        <div class="kc-answer" id="sev-a5">A <strong>Logic Hallucination</strong> (CodeHalu). The function appears to work on small or nearly-sorted inputs but silently produces wrong results on general inputs. Severity: <strong>High</strong>.</div>
+      </div>
+    </div>
+  </div>
+  <div id="sev-result" style="display:none;margin-top:10px;"></div>
+</div>
+
+<!-- ==================== SLIDE 13 ==================== -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 6 &middot; Slide 13</div>
+  <h2 class="slide-h2">Detection <em>Approaches</em></h2>
+  <p class="slide-p">Detecting code hallucinations requires multiple complementary strategies, ranging from dynamic execution to static analysis and semantic reasoning.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">Execution-Based Verification</div>
+        <div class="cb-body">
+          <strong>How it works:</strong> Execute generated code against test suites and compare actual outputs to expected results. Any mismatch indicates a hallucination.<br><br>
+          <strong>Strengths:</strong> Definitive &mdash; if code fails a test, something is wrong. Catches all categories of hallucination that affect behavior.<br><br>
+          <strong>Limitations:</strong> Requires comprehensive test suites. Cannot detect dead code or stylistic issues. Expensive for large-scale evaluation.<br><br>
+          <span class="cite">Used by: CodeHaluEval (AAAI 2025)</span>
+        </div>
+      </div>
+      <div class="cb purple">
+        <div class="cb-label">AST-Based Analysis</div>
+        <div class="cb-body">
+          <strong>How it works:</strong> Parse the generated code into an Abstract Syntax Tree and check for structural anomalies: undefined references, type mismatches, unreachable code paths, redundant expressions.<br><br>
+          <strong>Strengths:</strong> Fast, no execution needed. Good at catching naming hallucinations and dead code.<br><br>
+          <strong>Limitations:</strong> Cannot catch logic hallucinations or semantic errors that are structurally valid.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Static Analysis</div>
+        <div class="cb-body">
+          <strong>How it works:</strong> Use existing static analysis tools (linters, type checkers, dependency resolvers) to identify hallucinated dependencies, version conflicts, and API misuse without running the code.<br><br>
+          <strong>Detects:</strong><br>
+          &bull; <strong>Dependency Conflicts</strong> &mdash; incompatible package versions<br>
+          &bull; <strong>Environment Conflicts</strong> &mdash; wrong runtime assumptions<br>
+          &bull; <strong>API Knowledge Conflicts</strong> &mdash; non-existent or misused APIs<br><br>
+          <span class="cite">ISSTA 2025 &mdash; "LLM Hallucinations in Practical Code Generation"</span>
+        </div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">LLM-Based Self-Verification</div>
+        <div class="cb-body">
+          <strong>How it works:</strong> Use a second LLM pass (or the same model) to review generated code for correctness, asking it to identify potential issues.<br><br>
+          <strong>Strengths:</strong> Can catch semantic and logic issues that static tools miss. No test suite required.<br><br>
+          <strong>Limitations:</strong> The verifier LLM may itself hallucinate and approve incorrect code. Not reliable as a sole detection method.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 14 ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 6 &middot; Slide 14</div>
+  <h2 class="slide-h2">Mitigation: <em>De-Hallucinator</em></h2>
+  <p class="slide-p">Eghbali &amp; Pradel (2024) introduce De-Hallucinator, an iterative grounding approach that retrieves relevant API documentation to reduce hallucinations in generated code.</p>
+
+  <div class="flow-row">
+    <div class="flow-box green">User Prompt</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Initial LLM Generation</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box amber">Extract API Calls</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Retrieve API Docs</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Re-query with Context</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Refined Output</div>
+  </div>
+
+  <div class="two-col" style="margin-top:14px;">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Initial Generation</h4>
+          <p>The LLM generates code from the user's prompt as usual. This code may contain hallucinated API calls.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>API Extraction</h4>
+          <p>Parse the generated code to identify all external API calls, library imports, and method invocations.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Documentation Retrieval</h4>
+          <p>For each identified API, retrieve the official documentation including correct method signatures, parameter types, return types, and usage examples.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Iterative Re-query</h4>
+          <p>Re-prompt the LLM with the original request augmented by the retrieved API docs. The model uses this grounding to correct hallucinated calls. This process can repeat for multiple iterations.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Results</div>
+        <div class="cb-body">De-Hallucinator achieves significant improvements across multiple metrics when tested on code generation benchmarks:</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">23.3-50.6%</div><div class="stat-label">Edit Distance Improvement</div></div>
+        <div class="stat-card"><div class="stat-val blue">23.9-61.0%</div><div class="stat-label">API Recall Improvement</div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val amber">63.2%</div><div class="stat-label">More Fixed Tests</div></div>
+        <div class="stat-card"><div class="stat-val purple">15.5%</div><div class="stat-label">Statement Coverage Increase</div></div>
+      </div>
+      <div class="cb blue" style="margin-top:8px;">
+        <div class="cb-label">Key Insight</div>
+        <div class="cb-body">The iterative approach is crucial. A single round of documentation retrieval helps, but <strong>multiple iterations</strong> allow the model to progressively resolve cascading hallucinations where one incorrect API call leads to further errors.</div>
+      </div>
+    </div>
+  </div>
+  <div class="cite" style="margin-top:8px;">Source: Eghbali &amp; Pradel "De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative Grounding" (2024)</div>
+</div>
+
+<!-- ==================== SLIDE 15 ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 6 &middot; Slide 15</div>
+  <h2 class="slide-h2">Mitigation: <em>MARIN</em></h2>
+  <p class="slide-p">MARIN (FSE 2025) takes a hierarchical, dependency-aware approach to mitigating API hallucinations by modeling the relationships between APIs in a project's dependency graph.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">Core Idea</div>
+        <div class="cb-body">Rather than treating each API call independently, MARIN builds a <strong>hierarchical dependency graph</strong> that captures relationships between packages, classes, and methods. When generating code, the model is constrained to only use APIs that are <strong>reachable</strong> in this dependency hierarchy.</div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Dependency Graph Construction</h4>
+          <p>Build a hierarchical graph of all available APIs from the project's declared dependencies, organized by package &rarr; class &rarr; method.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Hierarchical Context Retrieval</h4>
+          <p>When the model needs an API, retrieve candidates at each level of the hierarchy: first the package, then the class, then compatible methods.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Constrained Generation</h4>
+          <p>Provide the LLM with only verified, reachable APIs as context, preventing hallucination of non-existent methods.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">MARIN vs RAG Baseline</div>
+        <div class="cb-body">MARIN significantly outperforms standard RAG (Retrieval-Augmented Generation) approaches because RAG retrieves documentation by text similarity, which can return irrelevant APIs with similar names. MARIN's hierarchical approach ensures structural compatibility.</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">67.52%</div><div class="stat-label">MiHN Decrease vs RAG</div></div>
+        <div class="stat-card"><div class="stat-val blue">73.56%</div><div class="stat-label">MaHR Decrease vs RAG</div></div>
+      </div>
+
+      <div class="cb amber" style="margin-top:8px;">
+        <div class="cb-label">Why Hierarchy Matters</div>
+        <div class="cb-body">
+          <strong>Without hierarchy (flat RAG):</strong> A query for "read file" might retrieve <code>BufferedReader.read()</code>, <code>FileInputStream.read()</code>, and <code>Scanner.nextLine()</code> &mdash; all valid but from different APIs, creating mixing errors.<br><br>
+          <strong>With hierarchy (MARIN):</strong> If the code already imports <code>java.nio.file.Files</code>, MARIN retrieves only methods from that package tree, ensuring consistency.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cite" style="margin-top:8px;">Source: "MARIN: Towards Mitigating API Hallucination in Code Generated by LLMs with Hierarchical Dependency Aware" (FSE 2025)</div>
+</div>
+
+<!-- ==================== SLIDE 16 ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 6 &middot; Slide 16</div>
+  <h2 class="slide-h2">Mitigation: <em>RAG-Based</em> Approaches</h2>
+  <p class="slide-p">Retrieval-Augmented Generation (RAG) is the foundation for many hallucination mitigation strategies. By grounding the LLM with retrieved documentation, we reduce the model's reliance on potentially incorrect parametric knowledge.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">How RAG Reduces Hallucinations</div>
+        <div class="cb-body">
+          <strong>Standard LLM Generation:</strong> The model relies entirely on patterns learned during training. If the training data was sparse or contradictory for a given API, hallucinations are likely.<br><br>
+          <strong>RAG-Augmented Generation:</strong> Before generating code, the system retrieves relevant documentation, code examples, or API specifications from an external knowledge base. This retrieved context is prepended to the prompt, giving the model accurate, up-to-date information.
+        </div>
+      </div>
+
+      <div class="cb blue">
+        <div class="cb-label">RAG Pipeline Components</div>
+        <div class="cb-body">
+          <strong>1. Knowledge Base:</strong> API docs, code examples, Stack Overflow answers, library changelogs<br>
+          <strong>2. Embedding Model:</strong> Converts queries and documents to vectors for similarity search<br>
+          <strong>3. Retriever:</strong> Finds the most relevant documents for the current code generation task<br>
+          <strong>4. Generator:</strong> The LLM produces code grounded in retrieved context
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb amber">
+        <div class="cb-label">Limitations of Naive RAG</div>
+        <div class="cb-body">
+          <strong>Retrieval noise:</strong> Similar text does not mean compatible APIs. Searching for "read file Python" may return docs for <code>open()</code>, <code>pathlib</code>, <code>io</code>, and <code>csv</code> &mdash; overwhelming the model with options.<br><br>
+          <strong>Context window limits:</strong> Stuffing too much documentation into the prompt can degrade model performance and push out the actual task description.<br><br>
+          <strong>Stale indexes:</strong> If the knowledge base is not updated when libraries release new versions, RAG can reinforce outdated API usage.
+        </div>
+      </div>
+
+      <div class="cb purple">
+        <div class="cb-label">Advanced RAG Strategies</div>
+        <div class="cb-body">
+          <strong>MARIN's hierarchical RAG</strong> solves retrieval noise by constraining to dependency-compatible APIs (FSE 2025).<br><br>
+          <strong>De-Hallucinator's iterative RAG</strong> solves context limits by retrieving docs only for APIs the model actually uses, then re-querying (Eghbali &amp; Pradel 2024).<br><br>
+          <strong>Version-aware RAG</strong> indexes API docs by version, ensuring retrieved context matches the project's declared dependencies.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17 ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 6 &middot; Slide 17 &middot; Interactive</div>
+  <h2 class="slide-h2">Design a <em>Mitigation Pipeline</em></h2>
+  <p class="slide-p">Arrange the components below into the correct order for a hallucination mitigation pipeline. Click a component to place it in the next available slot, or click a filled slot to remove it.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Pipeline Builder <span class="inter-badge">interactive</span></div>
+      <div style="display:flex;gap:8px;">
+        <button class="sim-btn" onclick="resetPipeline()">Reset</button>
+        <button class="sim-btn primary" onclick="checkPipeline()">Check Order</button>
+      </div>
+    </div>
+    <div class="inter-body">
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;font-family:var(--font-mono);text-transform:uppercase;">Available Components (click to place):</div>
+        <div id="pipeline-blocks">
+          <span class="pipeline-block" data-step="3" onclick="placeBlock(this)">Retrieve API Documentation</span>
+          <span class="pipeline-block" data-step="5" onclick="placeBlock(this)">Verify with Test Execution</span>
+          <span class="pipeline-block" data-step="1" onclick="placeBlock(this)">Receive User Prompt</span>
+          <span class="pipeline-block" data-step="4" onclick="placeBlock(this)">Re-generate with Grounded Context</span>
+          <span class="pipeline-block" data-step="6" onclick="placeBlock(this)">Static Analysis Check</span>
+          <span class="pipeline-block" data-step="2" onclick="placeBlock(this)">Initial LLM Code Generation</span>
+        </div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;font-family:var(--font-mono);text-transform:uppercase;">Pipeline Order:</div>
+      <div id="pipeline-slots">
+        <div class="pipeline-slot" data-pos="1" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 1: click a component above</span></div>
+        <div class="pipeline-slot" data-pos="2" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 2</span></div>
+        <div class="pipeline-slot" data-pos="3" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 3</span></div>
+        <div class="pipeline-slot" data-pos="4" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 4</span></div>
+        <div class="pipeline-slot" data-pos="5" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 5</span></div>
+        <div class="pipeline-slot" data-pos="6" onclick="clearSlot(this)"><span style="opacity:0.4;">Step 6</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="pipeline-result" style="display:none;margin-top:10px;"></div>
+</div>
+
+<!-- ==================== SLIDE 18 ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 6 &middot; Slide 18 &middot; Interactive</div>
+  <h2 class="slide-h2">Practical <em>Detection</em> Exercise</h2>
+  <p class="slide-p">For each code snippet below, identify the hallucination type using the CodeHalu taxonomy and select the best fix. This exercise combines taxonomy knowledge with practical debugging skills.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Exercise: Classify &amp; Fix <span class="inter-badge">interactive</span></div>
+      <button class="sim-btn primary" onclick="checkDetection()">Check All</button>
+    </div>
+    <div class="inter-body" id="detect-quiz">
+
+      <div class="kc-box" id="det-q1">
+        <div class="kc-q">Snippet 1</div>
+        <div class="code-block" style="font-size:0.72rem;margin-bottom:8px;"><span class="ck">from</span> collections <span class="ck">import</span> <span class="cr">OrderedSet</span>
+
+unique_items = OrderedSet([<span class="cl">3</span>, <span class="cl">1</span>, <span class="cl">4</span>, <span class="cl">1</span>, <span class="cl">5</span>])
+<span class="ck">print</span>(<span class="cf">list</span>(unique_items))</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">What type of hallucination is this?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="sev-btn" onclick="pickDetect(this,'det-q1','mapping')">Mapping</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q1','naming')">Naming</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q1','resource')">Resource</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q1','logic')">Logic</button>
+        </div>
+        <div class="kc-answer" id="det-a1"><strong>Resource Hallucination (Missing Dependencies).</strong> <code>collections.OrderedSet</code> does not exist in Python's standard library. The <code>collections</code> module provides <code>OrderedDict</code>, but there is no <code>OrderedSet</code>. Fix: use <code>dict.fromkeys()</code> for insertion-ordered uniqueness in Python 3.7+, or install the third-party <code>ordered-set</code> package.</div>
+      </div>
+
+      <div class="kc-box" id="det-q2">
+        <div class="kc-q">Snippet 2</div>
+        <div class="code-block" style="font-size:0.72rem;margin-bottom:8px;"><span class="ck">def</span> <span class="cf">flatten</span>(nested_list):
+    <span class="cs">"""Flatten a nested list of arbitrary depth."""</span>
+    result = []
+    <span class="ck">for</span> item <span class="ck">in</span> nested_list:
+        <span class="ck">if</span> <span class="cf">isinstance</span>(item, <span class="cf">list</span>):
+            result.extend(item)     <span class="cc"># only 1 level!</span>
+        <span class="ck">else</span>:
+            result.append(item)
+    <span class="ck">return</span> result</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">What type of hallucination is this?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="sev-btn" onclick="pickDetect(this,'det-q2','mapping')">Mapping</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q2','naming')">Naming</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q2','resource')">Resource</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q2','logic')">Logic</button>
+        </div>
+        <div class="kc-answer" id="det-a2"><strong>Mapping Hallucination (Task Misunderstanding).</strong> The docstring says "arbitrary depth" but the code only flattens one level. <code>extend(item)</code> handles <code>[[1,2],[3,4]]</code> but fails on <code>[[[1,2],[3]],4]</code>. Fix: use recursion &mdash; replace <code>result.extend(item)</code> with <code>result.extend(flatten(item))</code>.</div>
+      </div>
+
+      <div class="kc-box" id="det-q3">
+        <div class="kc-q">Snippet 3</div>
+        <div class="code-block" style="font-size:0.72rem;margin-bottom:8px;">List&lt;String&gt; names = Arrays.asList(<span class="cs">"Alice"</span>, <span class="cs">"Bob"</span>);
+names.stream()
+    .<span class="cr">filterBy</span>(name -> name.length() > <span class="cl">3</span>)
+    .collect(Collectors.toList());</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">What type of hallucination is this?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="sev-btn" onclick="pickDetect(this,'det-q3','mapping')">Mapping</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q3','naming')">Naming</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q3','resource')">Resource</button>
+          <button class="sev-btn" onclick="pickDetect(this,'det-q3','logic')">Logic</button>
+        </div>
+        <div class="kc-answer" id="det-a3"><strong>Naming Hallucination (Name Confusion).</strong> The Java Stream API method is <code>.filter()</code>, not <code>.filterBy()</code>. The model likely conflated Java streams with a different framework's naming convention. Fix: replace <code>.filterBy()</code> with <code>.filter()</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19 ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Module 6 &middot; Slide 19</div>
+  <h2 class="slide-h2">Open <em>Challenges</em></h2>
+  <p class="slide-p">Despite significant progress, several fundamental challenges remain in the study and mitigation of code hallucinations. These represent active areas of research and important open problems.</p>
+
+  <div class="takeaway-grid">
+    <div class="takeaway-card" style="border-top:3px solid var(--red);">
+      <div class="takeaway-num">Challenge 01</div>
+      <h4>Benchmark Coverage</h4>
+      <p>Current benchmarks like CodeHaluEval focus on algorithmic tasks. Real-world hallucinations often involve framework-specific APIs, multi-file contexts, and system-level interactions that are poorly represented in existing benchmarks.</p>
+    </div>
+    <div class="takeaway-card" style="border-top:3px solid var(--amber);">
+      <div class="takeaway-num">Challenge 02</div>
+      <h4>Multi-Language Support</h4>
+      <p>Most research focuses on Python and Java. Hallucination patterns in languages like Rust, Go, TypeScript, and Kotlin remain understudied. Each language's type system and ecosystem create unique hallucination profiles.</p>
+    </div>
+    <div class="takeaway-card" style="border-top:3px solid var(--purple);">
+      <div class="takeaway-num">Challenge 03</div>
+      <h4>Long-Context Hallucinations</h4>
+      <p>As context windows grow, models can hallucinate consistency with earlier parts of a long file while introducing subtle contradictions. Detecting hallucinations across thousands of lines of code remains extremely difficult.</p>
+    </div>
+    <div class="takeaway-card" style="border-top:3px solid var(--blue);">
+      <div class="takeaway-num">Challenge 04</div>
+      <h4>Logic Hallucination Detection</h4>
+      <p>Mapping, naming, and resource hallucinations can often be caught by static analysis. Logic hallucinations &mdash; where the code uses real APIs correctly but implements wrong algorithms &mdash; fundamentally require semantic understanding or comprehensive tests.</p>
+    </div>
+    <div class="takeaway-card" style="border-top:3px solid var(--green);">
+      <div class="takeaway-num">Challenge 05</div>
+      <h4>Mitigation-Performance Tradeoff</h4>
+      <p>Techniques like De-Hallucinator and MARIN add latency through retrieval and re-querying. Finding the right balance between hallucination reduction and generation speed is critical for practical adoption in IDE-integrated tools.</p>
+    </div>
+    <div class="takeaway-card" style="border-top:3px solid var(--cyan);">
+      <div class="takeaway-num">Challenge 06</div>
+      <h4>Evolving API Landscapes</h4>
+      <p>Libraries update frequently. An API that was correct when the model was trained may be deprecated or modified. Keeping knowledge bases current across thousands of libraries and versions is an ongoing infrastructure challenge.</p>
+    </div>
+  </div>
+
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-label">Research Frontier</div>
+    <div class="cb-body">Future work includes combining static analysis with execution-based verification, developing language-specific hallucination profiles, creating adversarial benchmarks that specifically target model weaknesses, and integrating hallucination detection directly into code editors as real-time feedback.<br><span class="cite">Lee et al. 2025, arXiv:2504.20799 &mdash; Survey of open challenges</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20 ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Module 6 &middot; Slide 20 &middot; Interactive</div>
+  <h2 class="slide-h2">Knowledge <em>Check</em></h2>
+  <p class="slide-p">Test your understanding of the key concepts covered in this module. Click each question to reveal the answer.</p>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">What are the four categories in the CodeHalu taxonomy?</div>
+    <div class="kc-answer"><strong>Mapping, Naming, Resource, and Logic hallucinations.</strong> Mapping hallucinations occur when the model misinterprets the task. Naming hallucinations involve incorrect identifiers or API names. Resource hallucinations reference non-existent dependencies or files. Logic hallucinations produce syntactically valid but semantically incorrect algorithms. (Tian et al., AAAI 2025)</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">How does De-Hallucinator differ from standard RAG approaches?</div>
+    <div class="kc-answer"><strong>De-Hallucinator uses iterative grounding.</strong> Instead of a single retrieval step, it: (1) generates code, (2) extracts API calls from the generated code, (3) retrieves documentation for those specific APIs, and (4) re-queries the model with the documentation as context. This iterative process allows it to correct cascading hallucinations that a single RAG pass would miss. (Eghbali &amp; Pradel 2024)</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">What is MARIN's key advantage over flat RAG for API hallucination?</div>
+    <div class="kc-answer"><strong>Hierarchical dependency awareness.</strong> MARIN models the package &rarr; class &rarr; method hierarchy of available APIs. This ensures retrieved API documentation is structurally compatible with the project's actual dependencies, achieving a <strong>67.52% decrease in MiHN</strong> and <strong>73.56% decrease in MaHR</strong> compared to standard RAG. (FSE 2025)</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">Name the three types of conflicts detectable by static analysis (ISSTA 2025).</div>
+    <div class="kc-answer"><strong>Dependency Conflicts, Environment Conflicts, and API Knowledge Conflicts.</strong> Dependency conflicts involve incompatible library versions. Environment conflicts involve wrong runtime assumptions (e.g., Python version). API knowledge conflicts involve non-existent or misused API calls. All three can be detected without executing the code. (ISSTA 2025)</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">Why are logic hallucinations the hardest to detect?</div>
+    <div class="kc-answer"><strong>They are syntactically valid and use real APIs correctly.</strong> Unlike naming or resource hallucinations (which can be caught by static analysis or dependency checking), logic hallucinations implement wrong algorithms or miss edge cases. The code compiles, runs, and may even pass simple test cases &mdash; but produces incorrect results on certain inputs. Detection requires either comprehensive test suites or deep semantic analysis of the algorithm's intent. (Tian et al., AAAI 2025)</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">What distinguishes HalluCode's "Context Repetition" from other categories?</div>
+    <div class="kc-answer"><strong>Context Repetition captures when the model loses track of its own output.</strong> It unnecessarily re-declares variables, duplicates code blocks, or repeats logic already present. While this is often harmless (the code still works), it signals that the model is generating tokens based on local patterns rather than maintaining a coherent understanding of the full function it has already produced.</div>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Nav Bar -->
+<div class="nav-bar" id="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>&larr; Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next &rarr;</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 20;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+}
+
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+// ── Slide 7: Spot the Hallucination ──────────────────────────────
+function checkSpot(el, group, answer) {
+  const opts = document.querySelectorAll('[data-group="' + group + '"]');
+  let alreadyRevealed = false;
+  opts.forEach(o => { if (o.classList.contains('revealed')) alreadyRevealed = true; });
+  if (alreadyRevealed) return;
+
+  opts.forEach(o => {
+    o.classList.add('revealed');
+    o.style.cursor = 'default';
+  });
+
+  if (answer === 'right') {
+    el.classList.add('correct-opt');
+  } else {
+    el.classList.add('wrong-opt');
+    opts.forEach(o => { if (o !== el) o.classList.add('correct-opt'); });
+  }
+
+  const explain = document.getElementById(group + '-explain');
+  if (explain) explain.style.display = 'block';
+}
+
+// ── Slide 12: Rate the Severity ──────────────────────────────────
+function pickSev(btn, level) {
+  const box = btn.closest('.kc-box');
+  if (box.classList.contains('locked')) return;
+  const siblings = box.querySelectorAll('.sev-btn');
+  siblings.forEach(b => {
+    b.classList.remove('selected', 'sel-low', 'sel-med', 'sel-high', 'sel-crit');
+  });
+  btn.classList.add('selected');
+  const cls = level === 'low' ? 'sel-low' : level === 'med' ? 'sel-med' : level === 'high' ? 'sel-high' : 'sel-crit';
+  btn.classList.add(cls);
+  box.dataset.selected = level;
+}
+
+function checkSeverity() {
+  const boxes = document.querySelectorAll('#sev-quiz .kc-box');
+  let correct = 0;
+  boxes.forEach(box => {
+    box.classList.add('locked');
+    const ans = document.getElementById(box.id.replace('q', 'a'));
+    if (ans) ans.classList.add('visible');
+    if (box.dataset.selected === box.dataset.correct) correct++;
+  });
+  const res = document.getElementById('sev-result');
+  res.style.display = 'block';
+  if (correct === 5) {
+    res.innerHTML = '<div class="cb"><div class="cb-label">Perfect Score!</div><div class="cb-body">You correctly classified all 5 hallucinations by severity. You have a strong understanding of how different hallucination types impact production code.</div></div>';
+  } else {
+    res.innerHTML = '<div class="cb amber"><div class="cb-label">' + correct + '/5 Correct</div><div class="cb-body">Review the explanations above. Key insight: security vulnerabilities are always <strong>Critical</strong>, API errors that crash at runtime are <strong>High</strong>, code quality issues like repetition are <strong>Medium</strong>, and cosmetic issues like unused imports are <strong>Low</strong>.</div></div>';
+  }
+}
+
+// ── Slide 17: Pipeline Builder ───────────────────────────────────
+let pipelineState = [];
+
+function placeBlock(block) {
+  if (block.classList.contains('placed')) return;
+  const slots = document.querySelectorAll('#pipeline-slots .pipeline-slot');
+  let targetSlot = null;
+  for (let s of slots) {
+    if (!s.classList.contains('filled')) { targetSlot = s; break; }
+  }
+  if (!targetSlot) return;
+
+  block.classList.add('placed');
+  targetSlot.classList.add('filled');
+  targetSlot.innerHTML = block.textContent;
+  targetSlot.dataset.step = block.dataset.step;
+  targetSlot.dataset.blockId = Array.from(document.querySelectorAll('#pipeline-blocks .pipeline-block')).indexOf(block);
+}
+
+function clearSlot(slot) {
+  if (!slot.classList.contains('filled')) return;
+  const idx = parseInt(slot.dataset.blockId);
+  const blocks = document.querySelectorAll('#pipeline-blocks .pipeline-block');
+  if (blocks[idx]) blocks[idx].classList.remove('placed');
+  slot.classList.remove('filled');
+  slot.innerHTML = '<span style="opacity:0.4;">Step ' + slot.dataset.pos + '</span>';
+  delete slot.dataset.step;
+  delete slot.dataset.blockId;
+}
+
+function resetPipeline() {
+  document.querySelectorAll('#pipeline-blocks .pipeline-block').forEach(b => b.classList.remove('placed'));
+  document.querySelectorAll('#pipeline-slots .pipeline-slot').forEach((s, i) => {
+    s.classList.remove('filled');
+    s.innerHTML = '<span style="opacity:0.4;">Step ' + (i + 1) + (i === 0 ? ': click a component above' : '') + '</span>';
+    delete s.dataset.step;
+    delete s.dataset.blockId;
+  });
+  document.getElementById('pipeline-result').style.display = 'none';
+}
+
+function checkPipeline() {
+  const slots = document.querySelectorAll('#pipeline-slots .pipeline-slot');
+  let correct = 0;
+  let total = 0;
+  slots.forEach((s, i) => {
+    if (s.classList.contains('filled')) {
+      total++;
+      const expected = i + 1;
+      if (parseInt(s.dataset.step) === expected) {
+        correct++;
+        s.style.borderColor = 'var(--green)';
+        s.style.background = 'var(--green-dim)';
+      } else {
+        s.style.borderColor = 'var(--red)';
+        s.style.background = 'rgba(248,81,73,0.06)';
+      }
+    }
+  });
+  const res = document.getElementById('pipeline-result');
+  res.style.display = 'block';
+  if (correct === 6) {
+    res.innerHTML = '<div class="cb"><div class="cb-label">Correct Pipeline!</div><div class="cb-body">The optimal order is: <strong>(1) Receive User Prompt</strong> &rarr; <strong>(2) Initial LLM Code Generation</strong> &rarr; <strong>(3) Retrieve API Documentation</strong> (for APIs used in generated code) &rarr; <strong>(4) Re-generate with Grounded Context</strong> (De-Hallucinator approach) &rarr; <strong>(5) Verify with Test Execution</strong> &rarr; <strong>(6) Static Analysis Check</strong> for remaining issues.</div></div>';
+  } else {
+    res.innerHTML = '<div class="cb amber"><div class="cb-label">' + correct + '/6 Correct</div><div class="cb-body">The correct pipeline follows the De-Hallucinator pattern: first generate, then retrieve docs for the APIs actually used, re-generate with grounding, and finally verify. The key insight is that documentation retrieval happens <em>after</em> initial generation, not before &mdash; because you need to know which APIs the model attempted to use.</div></div>';
+  }
+}
+
+// ── Slide 18: Detection Exercise ─────────────────────────────────
+const detectAnswers = {
+  'det-q1': 'resource',
+  'det-q2': 'mapping',
+  'det-q3': 'naming'
+};
+
+function pickDetect(btn, qid, answer) {
+  const box = document.getElementById(qid);
+  if (box.classList.contains('locked')) return;
+  const siblings = box.querySelectorAll('.sev-btn');
+  siblings.forEach(b => b.classList.remove('selected', 'sel-low', 'sel-med', 'sel-high', 'sel-crit'));
+  btn.classList.add('selected');
+  btn.classList.add('sel-med');
+  box.dataset.selected = answer;
+}
+
+function checkDetection() {
+  const quiz = document.getElementById('detect-quiz');
+  for (const qid in detectAnswers) {
+    const box = document.getElementById(qid);
+    box.classList.add('locked');
+    const ans = document.getElementById(qid.replace('q', 'a'));
+    if (ans) ans.classList.add('visible');
+    const btns = box.querySelectorAll('.sev-btn');
+    btns.forEach(b => {
+      b.classList.remove('sel-med');
+      if (b.classList.contains('selected')) {
+        if (box.dataset.selected === detectAnswers[qid]) {
+          b.classList.add('sel-low');
+        } else {
+          b.classList.add('sel-high');
+        }
+      }
+    });
+  }
+}
+</script>
+</body>
+</html>

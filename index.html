@@ -35,17 +35,7 @@
       transform: translateX(-50%);
       width: 900px;
       height: 600px;
-      background:
-        radial-gradient(ellipse 60% 50% at 35% 40%, rgba(0,78,56,0.18) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 50% at 65% 50%, rgba(183,146,87,0.10) 0%, transparent 70%),
-        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(0,217,126,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-wm-pattern {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 120px;
-      background: linear-gradient(180deg, transparent 0%, rgba(0,78,56,0.04) 100%);
+      background: radial-gradient(ellipse, rgba(0,217,126,0.12) 0%, transparent 70%);
       pointer-events: none;
     }
     .hero-content {
@@ -89,7 +79,7 @@
     }
     .hero h1 em {
       font-style: normal;
-      background: linear-gradient(135deg, var(--green) 0%, var(--wm-patina) 50%, var(--wm-gold) 100%);
+      background: linear-gradient(135deg, var(--green) 0%, #00B8D4 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -229,28 +219,7 @@
     .pcard-body p  { font-size: 0.87rem; color: var(--text-secondary); line-height: 1.55; margin: 0; }
 
     /* ── Teaching Section ─────────────────────────────────────── */
-    .teaching-section {
-      background: var(--bg-2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-    .teaching-section::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--wm-gold), transparent);
-    }
-    .teaching-section::after {
-      content: '';
-      position: absolute;
-      top: 0; right: -100px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(0,78,56,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .teaching-section { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .teaching-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -349,16 +318,15 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--wm-green), var(--wm-gold));
+      background: linear-gradient(135deg, var(--green), #00B8D4);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
       font-weight: 700;
-      color: var(--wm-silver);
+      color: var(--bg);
       flex-shrink: 0;
       font-family: var(--font-display);
-      box-shadow: 0 0 0 3px rgba(183,146,87,0.2), 0 4px 20px rgba(0,78,56,0.3);
     }
     .about-text h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
     .about-text p  { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; max-width: 580px; }
@@ -373,14 +341,74 @@
       transition: color 0.2s;
     }
     .about-link:hover { color: var(--green); }
+
+    /* ── Course Info Section ─────────────────────────────────── */
+    .course-section { background: var(--bg); }
+    .course-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    @media (max-width: 768px) { .course-grid { grid-template-columns: 1fr; } }
+    .course-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .course-card h3 { font-size: 1.1rem; margin-bottom: 16px; }
+    .course-detail {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .course-detail:last-child { border-bottom: none; }
+    .course-detail-label { color: var(--text-muted); font-size: 0.82rem; }
+    .course-detail-value { color: var(--text-primary); font-weight: 500; }
+    .course-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .course-topic {
+      font-size: 0.76rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* ── What You'll Learn Section ───────────────────────────── */
+    .learn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 40px;
+    }
+    @media (max-width: 768px) { .learn-grid { grid-template-columns: 1fr; } }
+    .learn-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .learn-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+    .learn-card-icon { font-size: 1.6rem; margin-bottom: 12px; display: block; }
+    .learn-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .learn-card p  { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.55; }
   </style>
 </head>
 <body>
 
-  <div class="wm-accent-bar"></div>
-
   <!-- Navigation -->
-  <nav class="nav" style="top:3px">
+  <nav class="nav">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo">
         <span class="logo-mark">&lt;/&gt;</span>
@@ -391,7 +419,7 @@
         <li><a href="teaching.html" class="nav-link">Teaching</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
       </ul>
-      <a href="projects.html" class="btn btn-primary">Explore Projects</a>
+      <a href="teaching.html" class="btn btn-primary">Start Learning</a>
     </div>
   </nav>
 
@@ -399,32 +427,106 @@
   <section class="hero">
     <div class="hero-grid"></div>
     <div class="hero-glow"></div>
-    <div class="hero-wm-pattern"></div>
-    <div class="wm-stripes"></div>
     <div class="container hero-content">
-      <div class="wm-badge">W&amp;M · Generative AI for Software Development</div>
+      <div class="hero-badge">CSCI 455 / 555 · Spring 2026 · William &amp; Mary</div>
       <h1>Where AI Meets<br /><em>Real Software</em></h1>
       <p class="hero-sub">
-        Student projects, teaching modules, and open resources from Prof. Antonio Mastropaolo's course at William &amp; Mary. Build real things with generative AI.
+        The companion platform for <strong>Generative AI for Software Development</strong> at W&amp;M. Interactive teaching modules, student-built projects, and open resources — a window for students to learn, experiment, and showcase their work with modern AI tools.
       </p>
       <div class="hero-ctas">
-        <a href="projects.html" class="btn btn-primary btn-lg">Browse Projects →</a>
-        <a href="teaching.html" class="btn btn-outline btn-lg">Teaching Resources</a>
+        <a href="teaching.html" class="btn btn-primary btn-lg">Start Learning →</a>
+        <a href="projects.html" class="btn btn-outline btn-lg">Student Projects</a>
       </div>
       <div class="hero-meta">
         <div class="hero-stat">
-          <span class="hero-stat-num">04</span>
-          <span class="hero-stat-label">Vibe Coding Projects</span>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">05</span>
+          <span class="hero-stat-num">07</span>
           <span class="hero-stat-label">Teaching Modules</span>
         </div>
         <div class="hero-stat-divider"></div>
         <div class="hero-stat">
-          <span class="hero-stat-num">∞</span>
-          <span class="hero-stat-label">Ideas to Build</span>
+          <span class="hero-stat-num">06</span>
+          <span class="hero-stat-label">Vibe Coding Projects</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">100+</span>
+          <span class="hero-stat-label">Interactive Demos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Info -->
+  <section class="section course-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-label">Course Details</div>
+          <h2>CSCI 455 / 555<br />Spring 2026</h2>
+        </div>
+      </div>
+      <div class="course-grid">
+        <div class="course-card">
+          <h3>Course Information</h3>
+          <div class="course-detail">
+            <span class="course-detail-label">Course</span>
+            <span class="course-detail-value">CSCI 455 (UG) / CSCI 555 (Grad)</span>
+          </div>
+          <div class="course-detail">
+            <span class="course-detail-label">Semester</span>
+            <span class="course-detail-value">Spring 2026</span>
+          </div>
+          <div class="course-detail">
+            <span class="course-detail-label">Credits</span>
+            <span class="course-detail-value">3</span>
+          </div>
+          <div class="course-detail">
+            <span class="course-detail-label">Instructor</span>
+            <span class="course-detail-value">Prof. Antonio Mastropaolo</span>
+          </div>
+          <div class="course-detail">
+            <span class="course-detail-label">Department</span>
+            <span class="course-detail-value">Computer Science, W&amp;M</span>
+          </div>
+          <div class="course-detail">
+            <span class="course-detail-label">Class Size</span>
+            <span class="course-detail-value">~36 students</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <h3>What This Course Covers</h3>
+          <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.65;margin-bottom:16px">
+            Students develop foundational skills in deep learning and generative AI applied to software engineering, from mining software repositories and training language models to prompting LLMs and detecting hallucinations in generated code.
+          </p>
+          <div class="course-topics">
+            <span class="course-topic">mining repositories</span>
+            <span class="course-topic">language models</span>
+            <span class="course-topic">evaluation metrics</span>
+            <span class="course-topic">deep learning</span>
+            <span class="course-topic">prompting</span>
+            <span class="course-topic">code hallucinations</span>
+            <span class="course-topic">code generation</span>
+            <span class="course-topic">vibe coding</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- What You'll Learn -->
+      <div class="learn-grid">
+        <div class="learn-card">
+          <span class="learn-card-icon">&#x26A1;</span>
+          <h4>Build with AI</h4>
+          <p>Go from zero to shipping real applications using LLMs as your coding partner. Learn what works, what doesn't, and why.</p>
+        </div>
+        <div class="learn-card">
+          <span class="learn-card-icon">&#x1F9EA;</span>
+          <h4>Understand the Science</h4>
+          <p>Explore how language models learn from code: tokenization, probability, attention, and the training pipeline behind tools like Copilot.</p>
+        </div>
+        <div class="learn-card">
+          <span class="learn-card-icon">&#x1F50D;</span>
+          <h4>Think Critically</h4>
+          <p>Evaluate AI-generated code rigorously. Measure quality, detect hallucinations, and understand when to trust — and when not to.</p>
         </div>
       </div>
     </div>
@@ -440,6 +542,9 @@
         </div>
         <a href="projects.html" class="btn btn-ghost">View All →</a>
       </div>
+      <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;max-width:640px;margin-bottom:40px">
+        In this course, students use generative AI tools to build real, functional applications from scratch — a practice we call <em>vibe coding</em>. Each project below was prototyped primarily through natural language prompts and AI pair-programming.
+      </p>
       <div class="projects-grid-home">
 
         <a href="project-stock-trading.html" class="pcard green">
@@ -490,11 +595,34 @@
           </div>
         </a>
 
+        <!-- NEW: Two additional project ideas -->
+        <a href="#" class="pcard blue">
+          <div class="pcard-top">
+            <span class="pcard-icon">&#x1F4DD;</span>
+          </div>
+          <div class="pcard-body">
+            <span class="pcard-tag">documentation</span>
+            <h3>DocBot — AI Documentation Generator</h3>
+            <p>Point at any codebase and auto-generate API docs, README files, and architecture diagrams using LLM-powered analysis.</p>
+          </div>
+        </a>
+
+        <a href="#" class="pcard purple">
+          <div class="pcard-top">
+            <span class="pcard-icon">&#x1F6E1;&#xFE0F;</span>
+          </div>
+          <div class="pcard-body">
+            <span class="pcard-tag">security</span>
+            <h3>VulnScout — AI Vulnerability Detector</h3>
+            <p>Upload code snippets and get instant security analysis: injection risks, dependency vulnerabilities, and remediation suggestions.</p>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
 
-  <!-- Teaching / GA Module Teaser -->
+  <!-- Teaching Modules -->
   <section class="section teaching-section">
     <div class="container">
       <div class="teaching-inner">
@@ -502,22 +630,22 @@
           <div class="section-label">Teaching Resources</div>
           <h2>Interactive<br />Learning Modules</h2>
           <p>
-            Hands-on webslides designed to make complex topics tangible. Our flagship module walks through Genetic Algorithms by evolving AI prompts — watch selection, crossover, and mutation happen live in your browser.
+            Seven self-paced, browser-based modules covering the full pipeline of AI-enabled software development — from mining repositories and training language models to prompting LLMs and detecting hallucinations. Each module features interactive demos, quizzes, and hands-on exercises.
           </p>
-          <a href="genetic-algorithms.html" class="btn btn-primary">Open GA Module →</a>
+          <a href="teaching.html" class="btn btn-primary">Browse All Modules →</a>
         </div>
         <div class="module-card-preview">
           <div class="mcp-header">
-            <span class="mcp-title">Genetic Algorithms via Prompt Evolution</span>
-            <span class="mcp-badge">14 slides</span>
+            <span class="mcp-title">7 Modules · 100+ Slides · 30+ Demos</span>
+            <span class="mcp-badge">self-paced</span>
           </div>
           <div class="mcp-slides">
-            <div class="mcp-slide">🧬<span class="mcp-slide-num">01</span></div>
-            <div class="mcp-slide">📊<span class="mcp-slide-num">02</span></div>
-            <div class="mcp-slide">⚙️<span class="mcp-slide-num">03</span></div>
-            <div class="mcp-slide">🔀<span class="mcp-slide-num">04</span></div>
-            <div class="mcp-slide">🎯<span class="mcp-slide-num">05</span></div>
-            <div class="mcp-slide">▶️<span class="mcp-slide-num">06</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x26A1;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">0. Intro</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x26CF;&#xFE0F;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">1. MSR</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F4CA;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">2. PLMs</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F3AF;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">3. Eval</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F9E0;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">4. DL4SE</span></div>
+            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F4AC;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">5. Prompt</span></div>
           </div>
           <div class="mcp-footer">
             <span>Interactive · Self-paced · No install</span>
@@ -525,7 +653,9 @@
               <div class="mcp-dot active"></div>
               <div class="mcp-dot active"></div>
               <div class="mcp-dot active"></div>
-              <div class="mcp-dot"></div>
+              <div class="mcp-dot active"></div>
+              <div class="mcp-dot active"></div>
+              <div class="mcp-dot active"></div>
               <div class="mcp-dot"></div>
             </div>
           </div>
@@ -542,7 +672,7 @@
         <div class="about-text">
           <h3>Prof. Antonio Mastropaolo · William &amp; Mary</h3>
           <p>
-            CodeLab is the open companion to <em>Generative AI for Software Development</em>, an undergraduate course exploring how LLMs reshape programming practice — from vibe coding experiments to systematic prompt engineering and software testing automation.
+            CodeLab is the open companion to <em>Generative AI for Software Development</em> (CSCI 455/555), an undergraduate and graduate course at William &amp; Mary exploring how LLMs reshape programming practice. Students learn to mine repositories, train language models, evaluate AI-generated code, and build real applications through vibe coding and systematic prompt engineering.
           </p>
           <div class="about-links">
             <a href="https://github.com/antonio-mastropaolo" class="about-link" target="_blank">
@@ -563,8 +693,6 @@
     </div>
   </section>
 
-  <hr class="wm-divider" />
-
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -583,8 +711,8 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · <span style="color:var(--wm-gold);font-weight:600">William &amp; Mary</span></span>
-      <span style="color:var(--wm-patina)">Built with vibe coding ✨</span>
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
+      <span>Built with vibe coding ✨</span>
     </div>
   </footer>
 

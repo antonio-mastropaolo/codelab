@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Introduction — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#F85149;--cyan:#00B8D4;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+    /* ── Topbar ──────────────────────────────────────────── */
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+
+    /* ── Progress ────────────────────────────────────────── */
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+
+    /* ── Slides ──────────────────────────────────────────── */
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+
+    /* ── Navigation ──────────────────────────────────────── */
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;border-color:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+
+    /* ── Slide Content Components ────────────────────────── */
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
+    .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .cb.blue{border-left-color:var(--blue);}
+    .cb.amber{border-left-color:var(--amber);}
+    .cb.purple{border-left-color:var(--purple);}
+    .cb.red{border-left-color:var(--red);}
+    .cb.cyan{border-left-color:var(--cyan);}
+    .cb-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .cb.blue .cb-label{color:var(--blue);}
+    .cb.amber .cb-label{color:var(--amber);}
+    .cb.purple .cb-label{color:var(--purple);}
+    .cb.red .cb-label{color:var(--red);}
+    .cb.cyan .cb-label{color:var(--cyan);}
+    .cb-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .cb-body strong{color:var(--text-primary);}
+
+    /* ── Cards & Grids ──────────────────────────────────── */
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .term-card:hover{border-color:var(--green-border);}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+    .stat-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:110px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .stat-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--green);}
+    .stat-val.blue{color:var(--blue);}
+    .stat-val.amber{color:var(--amber);}
+    .stat-val.purple{color:var(--purple);}
+    .stat-val.cyan{color:var(--cyan);}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+
+    /* ── Quiz & Interactive ──────────────────────────────── */
+    .quiz-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .quiz-option:hover{border-color:var(--green-border);}
+    .quiz-option .q-label{font-size:0.82rem;color:var(--text-secondary);flex:1;}
+    .quiz-option .q-tag{font-family:var(--font-mono);font-size:0.7rem;padding:3px 10px;border-radius:12px;display:none;}
+    .quiz-option.revealed .q-tag{display:inline-block;}
+    .quiz-option.correct .q-tag{background:rgba(0,217,126,0.1);color:var(--green);}
+    .quiz-option.wrong .q-tag{background:rgba(248,81,73,0.1);color:var(--red);}
+    .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
+    .quiz-option.revealed.wrong{border-color:rgba(248,81,73,0.2);background:rgba(248,81,73,0.04);}
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+
+    /* ── Title Slide Specific ────────────────────────────── */
+    .title-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;gap:8px;}
+    .title-university{font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+    .title-course-code{display:inline-flex;gap:8px;margin-bottom:12px;}
+    .title-course-code span{font-family:var(--font-mono);font-size:0.82rem;padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-3);}
+    .title-course-code .code-green{color:var(--green);border-color:var(--green-border);background:var(--green-dim);}
+    .title-course-code .code-blue{color:var(--blue);border-color:rgba(88,166,255,0.2);background:rgba(88,166,255,0.08);}
+    .title-subtitle{color:var(--text-secondary);font-size:1.05rem;max-width:560px;line-height:1.6;margin-top:8px;}
+    .title-meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;justify-content:center;}
+    .title-meta-item{font-size:0.78rem;color:var(--text-muted);font-family:var(--font-mono);}
+    .title-meta-item strong{color:var(--text-secondary);}
+
+    /* ── Module card grid ────────────────────────────────── */
+    .mod-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:700px){.mod-grid{grid-template-columns:1fr;}}
+    .mod-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;border-top:3px solid var(--green);transition:border-color 0.2s;}
+    .mod-card:hover{border-color:var(--green-border);}
+    .mod-card.blue{border-top-color:var(--blue);}
+    .mod-card.purple{border-top-color:var(--purple);}
+    .mod-card.amber{border-top-color:var(--amber);}
+    .mod-card.cyan{border-top-color:var(--cyan);}
+    .mod-card.red{border-top-color:var(--red);}
+    .mod-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:4px;}
+    .mod-card h4{font-size:0.82rem;font-weight:600;margin-bottom:4px;}
+    .mod-card p{font-size:0.74rem;color:var(--text-secondary);line-height:1.45;margin:0;}
+
+    /* ── Objective list ──────────────────────────────────── */
+    .obj-list{list-style:none;padding:0;margin:10px 0;}
+    .obj-list li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.86rem;color:var(--text-secondary);line-height:1.55;}
+    .obj-list li:last-child{border-bottom:none;}
+    .obj-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.72rem;font-family:var(--font-mono);font-weight:700;}
+    .obj-icon.g{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .obj-icon.b{background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .obj-icon.p{background:rgba(188,140,255,0.08);color:var(--purple);border:1px solid rgba(188,140,255,0.2);}
+    .obj-icon.a{background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+
+    /* ── Landscape cards ─────────────────────────────────── */
+    .landscape-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+    @media(max-width:700px){.landscape-grid{grid-template-columns:1fr;}}
+    .landscape-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+    .landscape-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+    .landscape-card.lc-green::before{background:var(--green);}
+    .landscape-card.lc-blue::before{background:var(--blue);}
+    .landscape-card.lc-purple::before{background:var(--purple);}
+    .landscape-card.lc-amber::before{background:var(--amber);}
+    .landscape-card h4{font-size:0.88rem;font-weight:600;margin-bottom:6px;}
+    .landscape-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .landscape-card ul{list-style:none;padding:0;margin-top:6px;}
+    .landscape-card li{font-size:0.78rem;color:var(--text-secondary);padding:2px 0;}
+    .landscape-card li::before{content:'\2192 ';color:var(--green);font-family:var(--font-mono);}
+    .landscape-card.lc-blue li::before{color:var(--blue);}
+    .landscape-card.lc-purple li::before{color:var(--purple);}
+    .landscape-card.lc-amber li::before{color:var(--amber);}
+
+    /* ── Tool cards ──────────────────────────────────────── */
+    .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+    @media(max-width:700px){.tool-grid{grid-template-columns:1fr 1fr;}}
+    .tool-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:border-color 0.2s;}
+    .tool-card:hover{border-color:var(--green-border);}
+    .tool-card .tool-icon{font-size:1.4rem;margin-bottom:6px;}
+    .tool-card h4{font-size:0.82rem;font-weight:600;margin-bottom:4px;}
+    .tool-card p{font-size:0.74rem;color:var(--text-secondary);line-height:1.45;margin:0;}
+    .tool-card .tool-tag{display:inline-block;margin-top:6px;font-size:0.66rem;font-family:var(--font-mono);padding:2px 7px;border-radius:4px;}
+    .tag-commercial{background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .tag-open{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-ide{background:rgba(188,140,255,0.08);color:var(--purple);border:1px solid rgba(188,140,255,0.2);}
+
+    /* ── Drag-and-drop matching ──────────────────────────── */
+    .match-container{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:10px;}
+    @media(max-width:700px){.match-container{grid-template-columns:1fr;}}
+    .match-pool{display:flex;flex-direction:column;gap:6px;}
+    .match-targets{display:flex;flex-direction:column;gap:8px;}
+    .match-item{padding:9px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);font-size:0.8rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;user-select:none;}
+    .match-item:hover{border-color:var(--green-border);color:var(--green);}
+    .match-item.selected{border-color:var(--green);background:var(--green-dim);color:var(--green);}
+    .match-item.placed{opacity:0.35;cursor:default;pointer-events:none;}
+    .match-item.correct-match{border-color:var(--green);background:var(--green-dim);}
+    .match-item.wrong-match{border-color:var(--red);background:rgba(248,81,73,0.06);}
+    .match-target{padding:10px 14px;border-radius:8px;border:2px dashed var(--border);min-height:44px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.2s;}
+    .match-target:hover{border-color:var(--text-muted);}
+    .match-target.waiting{border-color:var(--green-border);background:var(--green-dim);}
+    .match-target .mt-label{font-size:0.78rem;color:var(--text-muted);flex:1;}
+    .match-target .mt-placed{font-size:0.8rem;color:var(--text-primary);font-weight:500;}
+    .match-target.filled{border-style:solid;border-color:var(--border);}
+    .match-target.correct-slot{border-color:var(--green);background:var(--green-dim);}
+    .match-target.wrong-slot{border-color:var(--red);background:rgba(248,81,73,0.06);}
+
+    /* ── Assessment table ────────────────────────────────── */
+    .assess-table{width:100%;border-collapse:collapse;margin-top:10px;}
+    .assess-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .assess-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);font-size:0.82rem;vertical-align:top;}
+    .assess-table tr:hover td{background:var(--bg-2);}
+    .pct-bar{display:flex;align-items:center;gap:8px;}
+    .pct-fill{height:8px;border-radius:4px;background:var(--green);}
+    .pct-fill.blue{background:var(--blue);}
+    .pct-fill.amber{background:var(--amber);}
+    .pct-fill.purple{background:var(--purple);}
+
+    /* ── CTA / transition slide ──────────────────────────── */
+    .cta-center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;gap:16px;}
+    .cta-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;background:var(--green);color:var(--bg);font-family:var(--font-display);font-weight:700;font-size:0.95rem;text-decoration:none;border:none;cursor:pointer;transition:all 0.15s;}
+    .cta-btn:hover{background:#00F58C;transform:translateY(-1px);}
+
+    /* ── Self-assessment ─────────────────────────────────── */
+    .sa-question{margin-bottom:14px;}
+    .sa-question h4{font-size:0.86rem;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+    .sa-question h4 .sa-num{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);}
+    .sa-options{display:flex;gap:6px;flex-wrap:wrap;}
+    .sa-opt{padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-muted);font-size:0.76rem;font-family:var(--font-mono);cursor:pointer;transition:all 0.15s;}
+    .sa-opt:hover{border-color:var(--green-border);color:var(--green);}
+    .sa-opt.chosen{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sa-result{margin-top:14px;padding:14px 16px;border-radius:10px;background:var(--bg-2);border:1px solid var(--border);display:none;}
+    .sa-result.visible{display:block;}
+    .sa-result h4{font-size:0.86rem;font-weight:600;margin-bottom:8px;}
+    .sa-result p{font-size:0.82rem;color:var(--text-secondary);line-height:1.55;margin:0;}
+    .sa-meter{height:8px;background:var(--bg-3);border-radius:4px;overflow:hidden;margin:8px 0;}
+    .sa-meter-fill{height:100%;border-radius:4px;transition:width 0.4s ease;}
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">|</span>
+  <span class="topbar-title">Course Introduction</span>
+  <span class="topbar-badge">Module 0 &middot; Overview</span>
+  <span class="slide-counter" id="counter">1 / 12</span>
+  <a href="index.html" class="topbar-home">Home</a>
+</div>
+
+<!-- Progress -->
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:8.33%"></div></div>
+
+<!-- Slides -->
+<div class="slides-wrapper">
+
+<!-- ==================== SLIDE 1 : Title ==================== -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 0 &middot; Slide 01</div>
+  <div class="title-center">
+    <div class="title-university">William &amp; Mary &middot; Department of Computer Science</div>
+    <div class="title-course-code">
+      <span class="code-green">CSCI 455</span>
+      <span class="code-blue">CSCI 555</span>
+    </div>
+    <h1 class="slide-h1" style="margin-bottom:12px;">0. <em>Course Introduction</em></h1>
+    <p class="title-subtitle">Generative AI for Software Development &mdash; equipping the next generation of developers with AI-powered tools and techniques.</p>
+    <div class="title-meta">
+      <span class="title-meta-item"><strong>Spring 2026</strong></span>
+      <span class="title-meta-item"><strong>3 Credits</strong></span>
+      <span class="title-meta-item">Prof. Antonio Mastropaolo</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2 : Welcome & Vision ==================== -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 0 &middot; Slide 02</div>
+  <h2 class="slide-h2">Welcome &amp; <em>Course Vision</em></h2>
+  <p class="slide-p">Software development is being fundamentally reshaped by generative AI. This course is designed to put you at the forefront of that transformation &mdash; not just as users of AI tools, but as engineers who understand the science behind them.</p>
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">What This Course Is About</div>
+        <div class="cb-body">We explore how <strong>deep learning and large language models</strong> can automate core software engineering tasks: code generation, documentation, testing, code review, and more. You will learn both the theory and the hands-on practice.</div>
+      </div>
+      <div class="cb blue">
+        <div class="cb-label">Why It Matters</div>
+        <div class="cb-body">AI coding assistants are already changing how professional software is built. Understanding their foundations &mdash; and limitations &mdash; will make you a <strong>more effective, more employable engineer</strong>.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Our Approach</div>
+        <div class="cb-body">This is a <strong>hands-on, project-driven course</strong>. You will design, prompt, evaluate, and build with state-of-the-art AI systems. Every module includes interactive exercises and real-world applications.</div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">Who This Is For</div>
+        <div class="cb-body">Whether you are an undergraduate (CSCI 455) or a graduate student (CSCI 555), if you are curious about the intersection of <strong>AI and software engineering</strong>, you are in the right place.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3 : Instructor ==================== -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 0 &middot; Slide 03</div>
+  <h2 class="slide-h2">Your Instructor: <em>Prof. Antonio Mastropaolo</em></h2>
+  <p class="slide-p">A software engineering researcher passionate about the intersection of artificial intelligence and code.</p>
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">Research Focus</div>
+        <div class="cb-body">My work centers on <strong>AI for Software Engineering (AI4SE)</strong>: using deep learning and large language models to automate software development tasks including code generation, code summarization, bug fixing, and code review.</div>
+      </div>
+      <div class="cb cyan">
+        <div class="cb-label">Background</div>
+        <div class="cb-body">Ph.D. in Software Engineering with a focus on applying <strong>neural machine translation techniques</strong> to source code. Published research on code generation, automated documentation, and empirical software engineering.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Teaching Philosophy</div>
+        <div class="cb-body">I believe in <strong>learning by doing</strong>. In this course, you will not just read about AI tools &mdash; you will build with them, evaluate them, and push their boundaries. My goal is to help you develop critical thinking about what AI can and cannot do for software development.</div>
+      </div>
+      <div class="cb purple">
+        <div class="cb-label">Office &amp; Contact</div>
+        <div class="cb-body">Department of Computer Science, William &amp; Mary<br><strong>Office hours:</strong> Check the syllabus for schedule<br>I encourage you to reach out early and often &mdash; collaboration is key to learning.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4 : Course Structure ==================== -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 0 &middot; Slide 04</div>
+  <h2 class="slide-h2">Course <em>Structure</em></h2>
+  <p class="slide-p">The course is organized into focused modules, each building on the last. Here is the roadmap of what you will learn.</p>
+  <div class="mod-grid">
+    <div class="mod-card">
+      <div class="mod-num">Module 1</div>
+      <h4>Mining Software Repositories</h4>
+      <p>Extracting insights from version control, issue trackers, and code databases to fuel AI models.</p>
+    </div>
+    <div class="mod-card blue">
+      <div class="mod-num">Module 2</div>
+      <h4>Probabilistic Code Models</h4>
+      <p>Understanding n-grams, language models, and statistical approaches to modeling source code.</p>
+    </div>
+    <div class="mod-card purple">
+      <div class="mod-num">Module 3</div>
+      <h4>Evaluating AI Techniques</h4>
+      <p>Metrics and methodologies for rigorously assessing AI-generated code quality and correctness.</p>
+    </div>
+    <div class="mod-card amber">
+      <div class="mod-num">Module 4</div>
+      <h4>Deep Learning for SE</h4>
+      <p>Neural networks, transformers, and architectures that power modern code intelligence systems.</p>
+    </div>
+    <div class="mod-card cyan">
+      <div class="mod-num">Module 5</div>
+      <h4>Prompting LLMs</h4>
+      <p>Prompt engineering strategies for maximizing the effectiveness of large language models in SE.</p>
+    </div>
+    <div class="mod-card red">
+      <div class="mod-num">Module 6</div>
+      <h4>Hallucinations &amp; Reliability</h4>
+      <p>Understanding and mitigating AI errors, biases, and the challenge of trustworthy code generation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5 : Learning Objectives ==================== -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 0 &middot; Slide 05</div>
+  <h2 class="slide-h2">Learning <em>Objectives</em></h2>
+  <p class="slide-p">By the end of this course, you will be able to:</p>
+  <div class="two-col">
+    <div>
+      <ul class="obj-list">
+        <li><span class="obj-icon g">1</span>Design and implement <strong>deep learning pipelines</strong> tailored to software engineering tasks such as code generation and summarization.</li>
+        <li><span class="obj-icon b">2</span>Apply <strong>prompt engineering techniques</strong> to effectively leverage large language models for real-world development workflows.</li>
+        <li><span class="obj-icon p">3</span>Critically <strong>evaluate AI-generated code</strong> using established metrics (BLEU, CodeBLEU, pass@k) and identify failure modes.</li>
+        <li><span class="obj-icon a">4</span><strong>Mine software repositories</strong> to extract datasets suitable for training and evaluating AI models.</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="obj-list">
+        <li><span class="obj-icon g">5</span>Analyze <strong>state-of-the-art research</strong> in AI4SE and propose innovative refinements to existing techniques.</li>
+        <li><span class="obj-icon b">6</span>Identify and mitigate <strong>AI hallucinations</strong> and reliability issues in code generation systems.</li>
+        <li><span class="obj-icon p">7</span>Build complete, functional applications using <strong>AI-assisted "vibe coding"</strong> workflows from concept to deployment.</li>
+        <li><span class="obj-icon a">8</span>Communicate findings through <strong>technical presentations</strong> and written reports at a professional level.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6 : Course Logistics ==================== -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 0 &middot; Slide 06</div>
+  <h2 class="slide-h2">Course <em>Logistics</em></h2>
+  <p class="slide-p">Essential details about enrollment, prerequisites, and how the course is structured.</p>
+  <div class="two-col">
+    <div>
+      <div class="cb">
+        <div class="cb-label">Course Numbers</div>
+        <div class="cb-body">
+          <strong>CSCI 455</strong> &mdash; Undergraduate section<br>
+          <strong>CSCI 555</strong> &mdash; Graduate section<br>
+          Both sections meet together. Graduate students have additional depth requirements on projects and presentations.
+        </div>
+      </div>
+      <div class="cb blue">
+        <div class="cb-label">Schedule &amp; Credits</div>
+        <div class="cb-body">
+          <strong>Semester:</strong> Spring 2026 (also offered Spring 2025)<br>
+          <strong>Credits:</strong> 3 credit hours<br>
+          <strong>Class size:</strong> ~36 students<br>
+          <strong>Format:</strong> In-person lectures with hands-on lab components
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Prerequisites</div>
+        <div class="cb-body">
+          Solid foundation in <strong>programming</strong> (Python preferred)<br>
+          Basic understanding of <strong>data structures &amp; algorithms</strong><br>
+          Familiarity with <strong>version control</strong> (Git)<br>
+          No prior ML/AI experience required &mdash; we build from the fundamentals
+        </div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">What You Will Need</div>
+        <div class="cb-body">
+          A laptop capable of running Python and Jupyter notebooks<br>
+          Access to <strong>GitHub</strong> (free account)<br>
+          Willingness to experiment with AI tools &mdash; some may require API keys (provided or free-tier)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7 : Why GenAI for SE? ==================== -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 0 &middot; Slide 07</div>
+  <h2 class="slide-h2">Why <em>GenAI for Software Development</em>?</h2>
+  <p class="slide-p">Generative AI is not a distant future &mdash; it is transforming software development right now. Here is the landscape.</p>
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-val">92%</div>
+      <div class="stat-label">of developers use AI coding tools</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val blue">55%</div>
+      <div class="stat-label">faster task completion with AI assistance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val amber">$1.5B+</div>
+      <div class="stat-label">invested in AI coding startups</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val purple">150M+</div>
+      <div class="stat-label">GitHub Copilot users worldwide</div>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:10px;">
+    <div class="cb">
+      <div class="cb-label">The Opportunity</div>
+      <div class="cb-body">Developers who understand AI-assisted coding are in <strong>high demand</strong>. Companies are integrating these tools into every stage of the software lifecycle. Knowing how they work &mdash; and where they fail &mdash; gives you a significant competitive advantage.</div>
+    </div>
+    <div class="cb cyan">
+      <div class="cb-label">The Challenge</div>
+      <div class="cb-body">AI tools are powerful but not infallible. They can <strong>hallucinate code</strong>, introduce subtle bugs, and perpetuate bad practices. This course teaches you to leverage AI effectively while maintaining the <strong>critical thinking</strong> that defines a great engineer.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8 : SE + AI Landscape ==================== -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 0 &middot; Slide 08</div>
+  <h2 class="slide-h2">The SE + AI <em>Landscape</em></h2>
+  <p class="slide-p">AI is transforming every phase of the software development lifecycle. Here are the key areas we will explore.</p>
+  <div class="landscape-grid">
+    <div class="landscape-card lc-green">
+      <h4>Code Generation</h4>
+      <p>From natural language descriptions to working code. AI models can now write functions, classes, and entire modules.</p>
+      <ul>
+        <li>Function-level synthesis from docstrings</li>
+        <li>Autocomplete and inline suggestions</li>
+        <li>Full application scaffolding</li>
+      </ul>
+    </div>
+    <div class="landscape-card lc-blue">
+      <h4>Code Review &amp; Quality</h4>
+      <p>Automated detection of bugs, code smells, and security vulnerabilities before they reach production.</p>
+      <ul>
+        <li>Static analysis augmented by AI</li>
+        <li>Automated PR review comments</li>
+        <li>Vulnerability detection</li>
+      </ul>
+    </div>
+    <div class="landscape-card lc-purple">
+      <h4>Testing &amp; Verification</h4>
+      <p>AI-generated test cases, property-based testing, and automated regression detection.</p>
+      <ul>
+        <li>Unit test generation from source code</li>
+        <li>Fuzz testing with AI guidance</li>
+        <li>Test oracle synthesis</li>
+      </ul>
+    </div>
+    <div class="landscape-card lc-amber">
+      <h4>Documentation &amp; Maintenance</h4>
+      <p>Automatic code summarization, API documentation generation, and commit message synthesis.</p>
+      <ul>
+        <li>Javadoc / docstring generation</li>
+        <li>README and changelog automation</li>
+        <li>Code-to-explanation pipelines</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9 : Tools of the Trade ==================== -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 0 &middot; Slide 09</div>
+  <h2 class="slide-h2">Tools of the <em>Trade</em></h2>
+  <p class="slide-p">Throughout this course, you will work with a variety of AI models and tools &mdash; both commercial and open-source.</p>
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="tool-icon">&#x1F9E0;</div>
+      <h4>GPT-4 / GPT-4o</h4>
+      <p>OpenAI's flagship multimodal models for code generation, analysis, and reasoning.</p>
+      <span class="tool-tag tag-commercial">commercial</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">&#x1F4AC;</div>
+      <h4>Claude</h4>
+      <p>Anthropic's assistant with strong coding, analysis, and long-context capabilities.</p>
+      <span class="tool-tag tag-commercial">commercial</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">&#x2699;&#xFE0F;</div>
+      <h4>GitHub Copilot</h4>
+      <p>AI pair programmer integrated directly into your IDE for real-time code suggestions.</p>
+      <span class="tool-tag tag-ide">ide-integrated</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">&#x1F310;</div>
+      <h4>CodeLlama / StarCoder</h4>
+      <p>Open-source code LLMs you can run locally, fine-tune, and study architecturally.</p>
+      <span class="tool-tag tag-open">open-source</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">&#x1F4D3;</div>
+      <h4>Jupyter + Python</h4>
+      <p>Your primary workspace for experiments, model evaluation, and data analysis.</p>
+      <span class="tool-tag tag-open">open-source</span>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">&#x1F6E0;&#xFE0F;</div>
+      <h4>HuggingFace</h4>
+      <p>The platform for accessing pre-trained models, datasets, and the Transformers library.</p>
+      <span class="tool-tag tag-open">open-source</span>
+    </div>
+  </div>
+
+  <!-- Interactive: Match the Tool -->
+  <div class="inter-panel" style="margin-top:18px;">
+    <div class="inter-header">
+      <span class="inter-title">&#x1F3AF; Match the Tool <span class="inter-badge">interactive</span></span>
+      <button class="sim-btn" onclick="resetMatch()">Reset</button>
+    </div>
+    <div class="inter-body">
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:12px;">Click a tool on the left, then click the matching capability on the right. Match all pairs correctly.</p>
+      <div class="match-container" id="match-game">
+        <div class="match-pool" id="match-pool">
+          <div class="match-item" data-tool="copilot" onclick="selectTool(this)">GitHub Copilot</div>
+          <div class="match-item" data-tool="huggingface" onclick="selectTool(this)">HuggingFace</div>
+          <div class="match-item" data-tool="gpt4" onclick="selectTool(this)">GPT-4</div>
+          <div class="match-item" data-tool="codellama" onclick="selectTool(this)">CodeLlama</div>
+          <div class="match-item" data-tool="jupyter" onclick="selectTool(this)">Jupyter Notebooks</div>
+        </div>
+        <div class="match-targets" id="match-targets">
+          <div class="match-target" data-answer="jupyter" onclick="placeTool(this)">
+            <span class="mt-label">Interactive environment for running Python experiments and visualizing results</span>
+          </div>
+          <div class="match-target" data-answer="copilot" onclick="placeTool(this)">
+            <span class="mt-label">Real-time AI code suggestions directly inside your IDE as you type</span>
+          </div>
+          <div class="match-target" data-answer="huggingface" onclick="placeTool(this)">
+            <span class="mt-label">Platform for downloading pre-trained models and NLP datasets</span>
+          </div>
+          <div class="match-target" data-answer="gpt4" onclick="placeTool(this)">
+            <span class="mt-label">Multimodal reasoning model for complex code generation and analysis</span>
+          </div>
+          <div class="match-target" data-answer="codellama" onclick="placeTool(this)">
+            <span class="mt-label">Open-source code LLM you can run locally and fine-tune</span>
+          </div>
+        </div>
+      </div>
+      <div id="match-result" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10 : Course Projects ==================== -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 0 &middot; Slide 10</div>
+  <h2 class="slide-h2">Course <em>Projects</em></h2>
+  <p class="slide-p">The heart of this course: you will build real, functional applications using AI-assisted development &mdash; what we call "vibe coding."</p>
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Concept &amp; Design</h4>
+          <p>Start with a problem statement. Use AI to brainstorm architectures, generate wireframes, and plan your tech stack.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>AI-Assisted Implementation</h4>
+          <p>Build your application using LLMs as coding partners. Learn when to trust, when to verify, and when to override AI suggestions.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Testing &amp; Refinement</h4>
+          <p>Use AI to generate tests, identify edge cases, and refactor your code. Evaluate the quality of AI-generated components.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Presentation &amp; Reflection</h4>
+          <p>Present your project to the class. Reflect on where AI helped, where it hindered, and what you learned about the process.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Example Projects</div>
+        <div class="cb-body">
+          <strong>Stock Trading Dashboard</strong> &mdash; Real-time financial data visualization with AI-generated components<br><br>
+          <strong>AI Interview Prep Platform</strong> &mdash; Practice coding interviews with AI-powered feedback<br><br>
+          <strong>Automated Code Reviewer</strong> &mdash; Build a tool that reviews PRs using LLM analysis<br><br>
+          <strong>Prompt Engineering Studio</strong> &mdash; A platform to test, compare, and optimize prompts for code generation
+        </div>
+      </div>
+      <div class="cb cyan">
+        <div class="cb-label">Vibe Coding Philosophy</div>
+        <div class="cb-body">The goal is not to have AI write everything for you. It is to learn the art of <strong>human-AI collaboration</strong> &mdash; knowing how to guide AI, validate its output, and integrate it into a professional development workflow.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11 : Assessment & Expectations ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 0 &middot; Slide 11</div>
+  <h2 class="slide-h2">Assessment &amp; <em>Expectations</em></h2>
+  <p class="slide-p">This is a hands-on course. Your grade reflects both your technical skills and your engagement with the material.</p>
+  <div class="two-col">
+    <div>
+      <table class="assess-table">
+        <thead>
+          <tr><th>Component</th><th>Weight</th><th style="width:120px;"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Vibe Coding Projects</strong></td>
+            <td>40%</td>
+            <td><div class="pct-bar"><div class="pct-fill" style="width:40%;min-width:48px;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Paper Presentations</strong></td>
+            <td>20%</td>
+            <td><div class="pct-bar"><div class="pct-fill blue" style="width:20%;min-width:24px;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Assignments &amp; Labs</strong></td>
+            <td>25%</td>
+            <td><div class="pct-bar"><div class="pct-fill amber" style="width:25%;min-width:30px;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong>Participation</strong></td>
+            <td>15%</td>
+            <td><div class="pct-bar"><div class="pct-fill purple" style="width:15%;min-width:18px;"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">What We Expect From You</div>
+        <div class="cb-body">
+          <strong>Be curious.</strong> Experiment with tools beyond what is assigned.<br><br>
+          <strong>Be critical.</strong> Do not blindly trust AI output &mdash; verify, test, and question.<br><br>
+          <strong>Be collaborative.</strong> Share discoveries and help your peers.<br><br>
+          <strong>Be honest.</strong> Academic integrity applies to AI-assisted work &mdash; always document how AI contributed to your submissions.
+        </div>
+      </div>
+      <div class="cb blue">
+        <div class="cb-label">CSCI 555 (Graduate) Additional Requirements</div>
+        <div class="cb-body">Graduate students are expected to engage with primary research literature at greater depth, produce more rigorous project reports, and lead at least one paper presentation during the semester.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive: Self-Assessment Quiz -->
+  <div class="inter-panel" style="margin-top:18px;">
+    <div class="inter-header">
+      <span class="inter-title">&#x1F4CB; What Do You Already Know? <span class="inter-badge">self-assessment</span></span>
+      <button class="sim-btn" onclick="resetQuiz()">Reset</button>
+    </div>
+    <div class="inter-body" id="sa-quiz">
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">Rate your familiarity with each topic. This helps you understand where you are starting from &mdash; no wrong answers here.</p>
+      <div class="sa-question" data-q="0">
+        <h4><span class="sa-num">Q1</span> Python programming &amp; scripting</h4>
+        <div class="sa-options">
+          <span class="sa-opt" data-val="1" onclick="pickSA(this)">New to it</span>
+          <span class="sa-opt" data-val="2" onclick="pickSA(this)">Some experience</span>
+          <span class="sa-opt" data-val="3" onclick="pickSA(this)">Comfortable</span>
+          <span class="sa-opt" data-val="4" onclick="pickSA(this)">Expert</span>
+        </div>
+      </div>
+      <div class="sa-question" data-q="1">
+        <h4><span class="sa-num">Q2</span> Machine learning / deep learning concepts</h4>
+        <div class="sa-options">
+          <span class="sa-opt" data-val="1" onclick="pickSA(this)">New to it</span>
+          <span class="sa-opt" data-val="2" onclick="pickSA(this)">Some experience</span>
+          <span class="sa-opt" data-val="3" onclick="pickSA(this)">Comfortable</span>
+          <span class="sa-opt" data-val="4" onclick="pickSA(this)">Expert</span>
+        </div>
+      </div>
+      <div class="sa-question" data-q="2">
+        <h4><span class="sa-num">Q3</span> Using AI coding assistants (Copilot, ChatGPT, etc.)</h4>
+        <div class="sa-options">
+          <span class="sa-opt" data-val="1" onclick="pickSA(this)">Never used</span>
+          <span class="sa-opt" data-val="2" onclick="pickSA(this)">Tried a few times</span>
+          <span class="sa-opt" data-val="3" onclick="pickSA(this)">Regular user</span>
+          <span class="sa-opt" data-val="4" onclick="pickSA(this)">Power user</span>
+        </div>
+      </div>
+      <div class="sa-question" data-q="3">
+        <h4><span class="sa-num">Q4</span> Natural language processing (NLP)</h4>
+        <div class="sa-options">
+          <span class="sa-opt" data-val="1" onclick="pickSA(this)">New to it</span>
+          <span class="sa-opt" data-val="2" onclick="pickSA(this)">Some exposure</span>
+          <span class="sa-opt" data-val="3" onclick="pickSA(this)">Comfortable</span>
+          <span class="sa-opt" data-val="4" onclick="pickSA(this)">Expert</span>
+        </div>
+      </div>
+      <div class="sa-question" data-q="4">
+        <h4><span class="sa-num">Q5</span> Git &amp; version control workflows</h4>
+        <div class="sa-options">
+          <span class="sa-opt" data-val="1" onclick="pickSA(this)">New to it</span>
+          <span class="sa-opt" data-val="2" onclick="pickSA(this)">Basic commands</span>
+          <span class="sa-opt" data-val="3" onclick="pickSA(this)">Comfortable</span>
+          <span class="sa-opt" data-val="4" onclick="pickSA(this)">Expert</span>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:14px;">
+        <button class="sim-btn primary" onclick="showSAResult()">See My Profile</button>
+      </div>
+      <div class="sa-result" id="sa-result">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12 : Let's Get Started ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 0 &middot; Slide 12</div>
+  <div class="cta-center">
+    <div class="title-university">William &amp; Mary &middot; CSCI 455 / 555</div>
+    <h1 class="slide-h1">Let's <em>Get Started</em></h1>
+    <p class="slide-p" style="text-align:center;max-width:580px;">You are about to embark on a journey at the intersection of artificial intelligence and software engineering. The future of development is collaborative &mdash; human and AI, working together.</p>
+    <div class="stat-row" style="justify-content:center;">
+      <div class="stat-card" style="max-width:140px;">
+        <div class="stat-val">6</div>
+        <div class="stat-label">Core Modules</div>
+      </div>
+      <div class="stat-card" style="max-width:140px;">
+        <div class="stat-val blue">4+</div>
+        <div class="stat-label">Vibe Coding Projects</div>
+      </div>
+      <div class="stat-card" style="max-width:140px;">
+        <div class="stat-val purple">1</div>
+        <div class="stat-label">Semester of Discovery</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <a href="msr.html" class="cta-btn">Begin Module 1: Mining Software Repositories &rarr;</a>
+    </div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:16px;font-family:var(--font-mono);">// welcome to the future of software development</p>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Nav Bar -->
+<div class="nav-bar" id="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>&larr; Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next &rarr;</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 12;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+}
+
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+// ── Slide 9: Match the Tool (click-to-match) ─────────────────────
+let selectedTool = null;
+
+function selectTool(el) {
+  if (el.classList.contains('placed')) return;
+  // Deselect previous
+  document.querySelectorAll('#match-pool .match-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTool = el;
+  // Highlight targets that are waiting
+  document.querySelectorAll('#match-targets .match-target').forEach(t => {
+    if (!t.classList.contains('filled')) t.classList.add('waiting');
+  });
+}
+
+function placeTool(target) {
+  if (!selectedTool || target.classList.contains('filled')) return;
+  const toolId = selectedTool.dataset.tool;
+  const answer = target.dataset.answer;
+
+  // Place the tool
+  target.classList.add('filled');
+  target.classList.remove('waiting');
+  const placedSpan = document.createElement('span');
+  placedSpan.className = 'mt-placed';
+  placedSpan.textContent = selectedTool.textContent;
+  placedSpan.dataset.tool = toolId;
+  target.appendChild(placedSpan);
+
+  // Mark the pool item
+  selectedTool.classList.add('placed');
+  selectedTool.classList.remove('selected');
+  selectedTool = null;
+
+  // Remove waiting from all targets
+  document.querySelectorAll('#match-targets .match-target').forEach(t => t.classList.remove('waiting'));
+
+  // Check if all placed
+  const allPlaced = document.querySelectorAll('#match-pool .match-item.placed').length;
+  if (allPlaced === 5) {
+    checkMatches();
+  }
+}
+
+function checkMatches() {
+  let correct = 0;
+  document.querySelectorAll('#match-targets .match-target').forEach(t => {
+    const answer = t.dataset.answer;
+    const placed = t.querySelector('.mt-placed');
+    if (placed) {
+      if (placed.dataset.tool === answer) {
+        t.classList.add('correct-slot');
+        correct++;
+      } else {
+        t.classList.add('wrong-slot');
+      }
+    }
+  });
+  const resultEl = document.getElementById('match-result');
+  if (correct === 5) {
+    resultEl.innerHTML = '<div class="cb"><div class="cb-label">Perfect Score!</div><div class="cb-body">You matched all 5 tools correctly. You already have a great sense of the AI development landscape. This course will deepen that understanding significantly.</div></div>';
+  } else {
+    resultEl.innerHTML = '<div class="cb amber"><div class="cb-label">' + correct + ' / 5 Correct</div><div class="cb-body">Don\'t worry &mdash; by the end of this course, you will know these tools inside and out. Click <strong>Reset</strong> to try again, or move on to the next slide.</div></div>';
+  }
+}
+
+function resetMatch() {
+  selectedTool = null;
+  document.querySelectorAll('#match-pool .match-item').forEach(i => {
+    i.classList.remove('placed', 'selected');
+  });
+  document.querySelectorAll('#match-targets .match-target').forEach(t => {
+    t.classList.remove('filled', 'waiting', 'correct-slot', 'wrong-slot');
+    const placed = t.querySelector('.mt-placed');
+    if (placed) placed.remove();
+  });
+  document.getElementById('match-result').innerHTML = '';
+}
+
+// ── Slide 11: Self-Assessment Quiz ────────────────────────────────
+const saAnswers = [0, 0, 0, 0, 0];
+
+function pickSA(el) {
+  const q = parseInt(el.closest('.sa-question').dataset.q);
+  const val = parseInt(el.dataset.val);
+  saAnswers[q] = val;
+  // Mark selected
+  el.closest('.sa-options').querySelectorAll('.sa-opt').forEach(o => o.classList.remove('chosen'));
+  el.classList.add('chosen');
+}
+
+function showSAResult() {
+  const answered = saAnswers.filter(v => v > 0).length;
+  if (answered < 5) {
+    document.getElementById('sa-result').innerHTML = '<p style="color:var(--amber);">Please answer all 5 questions first.</p>';
+    document.getElementById('sa-result').classList.add('visible');
+    return;
+  }
+
+  const total = saAnswers.reduce((a, b) => a + b, 0);
+  const max = 20;
+  const pct = Math.round((total / max) * 100);
+
+  let level, color, message;
+  if (total <= 8) {
+    level = 'Beginner';
+    color = 'var(--green)';
+    message = 'Welcome! You are starting fresh, and that is perfectly fine. This course is designed to take you from fundamentals to advanced applications. You will build a strong foundation in AI-assisted development from the ground up.';
+  } else if (total <= 13) {
+    level = 'Intermediate';
+    color = 'var(--blue)';
+    message = 'You have a solid baseline. You know your way around programming and may have experimented with AI tools. This course will deepen your understanding and give you frameworks for using these tools professionally.';
+  } else {
+    level = 'Advanced';
+    color = 'var(--purple)';
+    message = 'You are coming in with strong experience. This course will challenge you with cutting-edge research, complex project work, and opportunities to push the boundaries of what is possible with AI-assisted development.';
+  }
+
+  const labels = ['Python', 'ML/DL', 'AI Tools', 'NLP', 'Git'];
+  let bars = '';
+  for (let i = 0; i < 5; i++) {
+    const w = (saAnswers[i] / 4) * 100;
+    const colors = ['var(--green)', 'var(--blue)', 'var(--purple)', 'var(--amber)', 'var(--cyan)'];
+    bars += '<div style="display:flex;align-items:center;gap:10px;margin:4px 0;">' +
+      '<span style="font-size:0.74rem;font-family:var(--font-mono);color:var(--text-muted);min-width:70px;">' + labels[i] + '</span>' +
+      '<div class="sa-meter" style="flex:1;"><div class="sa-meter-fill" style="width:' + w + '%;background:' + colors[i] + ';"></div></div>' +
+      '<span style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);">' + saAnswers[i] + '/4</span></div>';
+  }
+
+  document.getElementById('sa-result').innerHTML =
+    '<h4 style="color:' + color + ';">Your Profile: ' + level + ' (' + pct + '%)</h4>' +
+    '<div style="margin:10px 0;">' + bars + '</div>' +
+    '<p>' + message + '</p>';
+  document.getElementById('sa-result').classList.add('visible');
+}
+
+function resetQuiz() {
+  for (let i = 0; i < 5; i++) saAnswers[i] = 0;
+  document.querySelectorAll('#sa-quiz .sa-opt').forEach(o => o.classList.remove('chosen'));
+  document.getElementById('sa-result').classList.remove('visible');
+  document.getElementById('sa-result').innerHTML = '';
+}
+</script>
+</body>
+</html>

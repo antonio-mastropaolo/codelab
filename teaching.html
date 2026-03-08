@@ -20,9 +20,7 @@
       position: absolute;
       top: -60px; right: -40px;
       width: 400px; height: 400px;
-      background:
-        radial-gradient(circle at 30% 40%, rgba(0,78,56,0.12) 0%, transparent 60%),
-        radial-gradient(circle at 70% 60%, rgba(183,146,87,0.08) 0%, transparent 60%);
+      background: radial-gradient(circle, rgba(88,166,255,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
     .breadcrumb {
@@ -213,9 +211,7 @@
 </head>
 <body>
 
-  <div class="wm-accent-bar"></div>
-
-  <nav class="nav" style="top:3px">
+  <nav class="nav">
     <div class="container nav-inner">
       <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
       <ul class="nav-links">
@@ -247,7 +243,10 @@
         <!-- Sidebar -->
         <aside class="teaching-sidebar">
           <div class="sidebar-heading">Modules</div>
-          <a href="#interactive" class="sidebar-nav-item active">
+          <a href="#module-intro" class="sidebar-nav-item active">
+            <span class="sidebar-nav-icon">&#x26A1;</span> 0. Intro
+          </a>
+          <a href="#module-msr" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">⛏️</span> 1. MSR
           </a>
           <a href="#module-plcm" class="sidebar-nav-item">
@@ -261,6 +260,9 @@
           </a>
           <a href="#module-prompting" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">💬</span> 5. Prompting LLMs
+          </a>
+          <a href="#module-hallucinations" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">&#x1F47B;</span> 6. Hallucinations
           </a>
           <a href="#module-ga" class="sidebar-nav-item">
             <span class="sidebar-nav-icon">🧬</span> GA (Extra)
@@ -281,11 +283,19 @@
             <h3>Course Details</h3>
             <div class="course-detail">
               <span class="cd-key">Course</span>
-              <span class="cd-val">Gen AI for Software Development</span>
+              <span class="cd-val">CSCI 455 / 555</span>
             </div>
             <div class="course-detail">
-              <span class="cd-key">Level</span>
-              <span class="cd-val">Undergraduate</span>
+              <span class="cd-key">Title</span>
+              <span class="cd-val">GenAI for Software Development</span>
+            </div>
+            <div class="course-detail">
+              <span class="cd-key">Semester</span>
+              <span class="cd-val">Spring 2026</span>
+            </div>
+            <div class="course-detail">
+              <span class="cd-key">Credits</span>
+              <span class="cd-val">3</span>
             </div>
             <div class="course-detail">
               <span class="cd-key">Instructor</span>
@@ -305,6 +315,35 @@
             <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:28px;">Self-contained web apps you can open directly in a browser — no install required.</p>
 
             <div class="module-list">
+
+              <!-- Module 0: Course Introduction -->
+              <div class="module-card" id="module-intro">
+                <div class="mc-header">
+                  <div class="mc-icon blue">&#x26A1;</div>
+                  <div class="mc-meta">
+                    <span class="mc-tag blue">module 0 · interactive</span>
+                    <h3>Course Introduction</h3>
+                    <p>Welcome to Generative AI for Software Development (CSCI 455/555). Course overview, learning objectives, structure, tools, and what to expect — everything you need to get started.</p>
+                  </div>
+                </div>
+                <div class="mc-stats">
+                  <div class="mc-stat"><span class="mc-stat-val">12</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">2</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~15m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
+                </div>
+                <div class="mc-footer">
+                  <div class="mc-skills">
+                    <span class="mc-skill">course overview</span>
+                    <span class="mc-skill">CSCI 455/555</span>
+                    <span class="mc-skill">Spring 2026</span>
+                    <span class="mc-skill">AI4SE landscape</span>
+                    <span class="mc-skill">learning objectives</span>
+                    <span class="mc-skill">vibe coding</span>
+                  </div>
+                  <a href="course-intro.html" class="mc-cta-link">Open module →</a>
+                </div>
+              </div>
 
               <!-- Module 1: MSR -->
               <div class="module-card" id="module-msr">
@@ -461,6 +500,37 @@
                 </div>
               </div>
 
+              <!-- Module 6: Hallucinations in Coding Tasks -->
+              <div class="module-card" id="module-hallucinations">
+                <div class="mc-header">
+                  <div class="mc-icon purple">&#x1F47B;</div>
+                  <div class="mc-meta">
+                    <span class="mc-tag purple">module 6 · interactive</span>
+                    <h3>Hallucinations in Coding Tasks</h3>
+                    <p>When LLMs generate plausible but incorrect code: non-existent APIs, wrong parameters, logic errors. Covers the CodeHalu taxonomy (AAAI 2025), detection via execution-based verification and AST analysis, and mitigation strategies including De-Hallucinator and MARIN (FSE 2025).</p>
+                  </div>
+                </div>
+                <div class="mc-stats">
+                  <div class="mc-stat"><span class="mc-stat-val">20</span><span class="mc-stat-key">Slides</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">5</span><span class="mc-stat-key">Live Demos</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">~40m</span><span class="mc-stat-key">Duration</span></div>
+                  <div class="mc-stat"><span class="mc-stat-val">0</span><span class="mc-stat-key">Install</span></div>
+                </div>
+                <div class="mc-footer">
+                  <div class="mc-skills">
+                    <span class="mc-skill">code hallucinations</span>
+                    <span class="mc-skill">CodeHalu taxonomy</span>
+                    <span class="mc-skill">API hallucination</span>
+                    <span class="mc-skill">detection</span>
+                    <span class="mc-skill">AST analysis</span>
+                    <span class="mc-skill">De-Hallucinator</span>
+                    <span class="mc-skill">MARIN</span>
+                    <span class="mc-skill">mitigation</span>
+                  </div>
+                  <a href="hallucinations.html" class="mc-cta-link">Open module →</a>
+                </div>
+              </div>
+
               <!-- GA Module [Extra] -->
               <div class="module-card" id="module-ga">
                 <div class="mc-header">
@@ -541,7 +611,6 @@
     </div>
   </section>
 
-  <hr class="wm-divider" />
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-left">
@@ -551,18 +620,20 @@
       <div class="footer-links">
         <a href="projects.html" class="footer-link">Projects</a>
         <a href="teaching.html" class="footer-link">Teaching</a>
+        <a href="course-intro.html" class="footer-link">0. Intro</a>
         <a href="msr.html" class="footer-link">1. MSR</a>
-        <a href="probabilistic-code-models.html" class="footer-link">2. Probabilistic Models</a>
-        <a href="evaluation-metrics.html" class="footer-link">3. Evaluation</a>
-        <a href="dl4se-foundations.html" class="footer-link">4. DL4SE Foundations</a>
-        <a href="prompting-llms.html" class="footer-link">5. Prompting LLMs</a>
-        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
+        <a href="probabilistic-code-models.html" class="footer-link">2. PLMs</a>
+        <a href="evaluation-metrics.html" class="footer-link">3. Eval</a>
+        <a href="dl4se-foundations.html" class="footer-link">4. DL4SE</a>
+        <a href="prompting-llms.html" class="footer-link">5. Prompting</a>
+        <a href="hallucinations.html" class="footer-link">6. Hallucinations</a>
+        <a href="genetic-algorithms.html" class="footer-link">GA (Extra)</a>
         <a href="https://github.com/antonio-mastropaolo/codelab" class="footer-link" target="_blank">GitHub</a>
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · <span style="color:var(--wm-gold);font-weight:600">William &amp; Mary</span></span>
-      <span style="color:var(--wm-patina)">Built with vibe coding ✨</span>
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
+      <span>Built with vibe coding ✨</span>
     </div>
   </footer>
 
