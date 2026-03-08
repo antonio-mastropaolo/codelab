@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluating AI-enabled Software Development Techniques — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0D1117; --bg-2: #161B22; --bg-3: #21262D;
+      --border: #30363D;
+      --green: #00D97E; --green-dim: rgba(0,217,126,0.08); --green-border: rgba(0,217,126,0.2);
+      --blue: #58A6FF; --purple: #BC8CFF; --amber: #E3B341; --red: #FF5F57;
+      --text-primary: #E6EDF3; --text-secondary: #8B949E; --text-muted: #484F58;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text-primary); font-family: var(--font-body); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+    /* ── Topbar ─────────────────────────────────────────── */
+    .topbar { display:flex; align-items:center; padding:0 24px; height:52px; border-bottom:1px solid var(--border); background:var(--bg-2); flex-shrink:0; gap:16px; z-index:100; }
+    .topbar-logo { font-family:var(--font-display); font-weight:700; font-size:0.9rem; color:var(--text-primary); text-decoration:none; display:flex; align-items:center; gap:6px; }
+    .logo-mark { color:var(--green); }
+    .topbar-sep { color:var(--text-muted); opacity:0.4; }
+    .topbar-title { font-size:0.85rem; color:var(--text-secondary); flex:1; }
+    .topbar-badge { font-size:0.72rem; font-family:var(--font-mono); background:var(--green-dim); color:var(--green); border:1px solid var(--green-border); padding:3px 8px; border-radius:4px; }
+    .slide-counter { font-family:var(--font-mono); font-size:0.8rem; color:var(--text-muted); }
+    .topbar-home { font-size:0.8rem; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .topbar-home:hover { color:var(--green); }
+
+    /* ── Progress ───────────────────────────────────────── */
+    .progress-track { height:3px; background:var(--border); flex-shrink:0; }
+    .progress-fill { height:100%; background:var(--green); transition:width 0.3s ease; }
+
+    /* ── Slides ─────────────────────────────────────────── */
+    .slides-wrapper { flex:1; overflow:hidden; position:relative; }
+    .slide { position:absolute; inset:0; padding:40px 60px; display:none; flex-direction:column; overflow-y:auto; }
+    .slide.active { display:flex; }
+    @media(max-width:800px){ .slide { padding:24px 20px; } }
+
+    /* ── Nav ─────────────────────────────────────────────── */
+    .nav-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 24px; border-top:1px solid var(--border); background:var(--bg-2); flex-shrink:0; }
+    .nav-btn { display:flex; align-items:center; gap:6px; padding:8px 18px; border-radius:8px; border:1px solid var(--border); background:var(--bg-3); color:var(--text-secondary); font-size:0.85rem; font-family:var(--font-display); cursor:pointer; transition:all 0.15s; }
+    .nav-btn:hover:not(:disabled){ border-color:var(--green-border); color:var(--green); }
+    .nav-btn:disabled { opacity:0.3; cursor:not-allowed; }
+    .nav-btn.primary { background:var(--green); color:var(--bg); border-color:var(--green); font-weight:600; }
+    .nav-btn.primary:hover { background:#00F58C; border-color:#00F58C; }
+    .slide-dots { display:flex; gap:5px; }
+    .slide-dot { width:7px; height:7px; border-radius:50%; background:var(--border); cursor:pointer; transition:background 0.2s; }
+    .slide-dot.active { background:var(--green); }
+
+    /* ── Shared slide components ─────────────────────────── */
+    .slide-label { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+    .slide-label::before { content:'//'; color:var(--green); }
+    .slide-h1 { font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; line-height:1.1; letter-spacing:-0.025em; margin-bottom:20px; font-family:var(--font-display); }
+    .slide-h1 em { font-style:normal; background:linear-gradient(135deg,var(--green),#00B8D4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .slide-h2 { font-size:clamp(1.4rem,2.5vw,2rem); font-weight:700; margin-bottom:16px; font-family:var(--font-display); letter-spacing:-0.02em; }
+    .slide-p { color:var(--text-secondary); line-height:1.7; font-size:0.95rem; margin-bottom:16px; max-width:680px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; margin-top:8px; }
+    @media(max-width:700px){ .two-col { grid-template-columns:1fr; gap:16px; } }
+
+    /* Concept box */
+    .cb { background:var(--bg-2); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:0 10px 10px 0; padding:16px 20px; margin:12px 0; }
+    .cb.blue { border-left-color:var(--blue); }
+    .cb.amber { border-left-color:var(--amber); }
+    .cb.purple { border-left-color:var(--purple); }
+    .cb.red { border-left-color:var(--red); }
+    .cb-label { font-size:0.7rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.08em; color:var(--green); margin-bottom:6px; }
+    .cb.blue .cb-label { color:var(--blue); }  .cb.amber .cb-label { color:var(--amber); }
+    .cb.purple .cb-label { color:var(--purple); }  .cb.red .cb-label { color:var(--red); }
+    .cb-body { font-size:0.88rem; color:var(--text-secondary); line-height:1.6; }
+    .cb-body strong { color:var(--text-primary); }
+
+    /* Term grid */
+    .term-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    @media(max-width:600px){ .term-grid { grid-template-columns:1fr; } }
+    .term-card { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; transition:border-color 0.2s; }
+    .term-card:hover { border-color:var(--green-border); }
+    .term-emoji { font-size:1.3rem; margin-bottom:6px; }
+    .term-name { font-size:0.76rem; font-family:var(--font-mono); color:var(--green); font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em; }
+    .term-def { font-size:0.82rem; color:var(--text-secondary); line-height:1.5; }
+
+    /* VS layout */
+    .vs-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:start; margin:14px 0; }
+    @media(max-width:700px){ .vs-grid { grid-template-columns:1fr; } }
+    .vs-card { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .vs-card h4 { font-family:var(--font-display); font-size:0.95rem; margin-bottom:10px; }
+    .vs-card ul { list-style:none; padding:0; }
+    .vs-card li { font-size:0.82rem; color:var(--text-secondary); line-height:1.6; padding:3px 0; }
+    .vs-card li::before { content:'→ '; color:var(--green); font-family:var(--font-mono); }
+    .vs-card.warn li::before { color:var(--amber); }
+    .vs-divider { display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:1.2rem; color:var(--text-muted); }
+    @media(max-width:700px){ .vs-divider { display:none; } }
+
+    /* Code block */
+    .code-block { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; font-family:var(--font-mono); font-size:0.78rem; line-height:1.7; overflow-x:auto; margin:10px 0; }
+    .code-block .kw { color:var(--purple); }  .code-block .fn { color:var(--blue); }
+    .code-block .str { color:var(--green); }  .code-block .cmt { color:var(--text-muted); font-style:italic; }
+    .code-block .num { color:var(--amber); }  .code-block .type { color:var(--blue); }
+
+    /* Score badge */
+    .score-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; font-family:var(--font-mono); font-size:0.8rem; font-weight:600; }
+    .score-badge.low { background:rgba(255,95,87,0.12); border:1px solid rgba(255,95,87,0.3); color:var(--red); }
+    .score-badge.mid { background:rgba(227,179,65,0.12); border:1px solid rgba(227,179,65,0.3); color:var(--amber); }
+    .score-badge.high { background:rgba(0,217,126,0.08); border:1px solid var(--green-border); color:var(--green); }
+
+    /* Metric map cards */
+    .metric-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-top:12px; }
+    .metric-card { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; cursor:pointer; transition:all 0.2s; }
+    .metric-card:hover, .metric-card.active { border-color:var(--green-border); background:rgba(0,217,126,0.04); }
+    .mc-name { font-family:var(--font-mono); font-size:0.82rem; font-weight:600; color:var(--green); margin-bottom:4px; }
+    .mc-type { font-size:0.68rem; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; }
+    .mc-desc { font-size:0.78rem; color:var(--text-secondary); line-height:1.5; display:none; }
+    .metric-card.active .mc-desc { display:block; }
+
+    /* Embedding viz */
+    .embed-viz { display:flex; gap:20px; margin:14px 0; flex-wrap:wrap; align-items:start; }
+    .embed-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:16px; flex:1; min-width:240px; }
+    .embed-panel h5 { font-family:var(--font-display); font-size:0.85rem; margin-bottom:8px; }
+    .vec-row { display:flex; gap:4px; flex-wrap:wrap; margin:6px 0; }
+    .vec-cell { width:32px; height:20px; border-radius:3px; font-family:var(--font-mono); font-size:0.6rem; display:flex; align-items:center; justify-content:center; color:#fff; }
+    .sim-result { font-family:var(--font-mono); font-size:1.1rem; font-weight:700; text-align:center; margin-top:12px; }
+
+    /* Contrastive viz canvas */
+    .cl-canvas-wrap { position:relative; width:100%; max-width:500px; }
+    .cl-canvas { width:100%; border-radius:12px; border:1px solid var(--border); background:var(--bg-2); }
+    .cl-controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .cl-btn { padding:6px 16px; border-radius:8px; border:1px solid var(--border); background:var(--bg-3); color:var(--text-secondary); font-family:var(--font-display); font-size:0.82rem; cursor:pointer; transition:all 0.15s; }
+    .cl-btn:hover { border-color:var(--green-border); color:var(--green); }
+    .cl-btn.active { background:var(--green); color:var(--bg); border-color:var(--green); }
+
+    /* Slider */
+    .range-row { display:flex; align-items:center; gap:12px; margin:10px 0; }
+    .range-row label { font-size:0.82rem; color:var(--text-secondary); min-width:100px; }
+    .range-row input[type=range] { flex:1; accent-color:var(--green); }
+    .range-row .rv { font-family:var(--font-mono); font-size:0.82rem; color:var(--green); min-width:40px; text-align:right; }
+
+    /* Word overlap viz */
+    .wo-sentence { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0; }
+    .wo-word { padding:3px 8px; border-radius:5px; font-family:var(--font-mono); font-size:0.78rem; border:1px solid var(--border); background:var(--bg-3); color:var(--text-secondary); transition:all 0.2s; }
+    .wo-word.match { border-color:var(--green-border); background:var(--green-dim); color:var(--green); }
+    .wo-word.miss { border-color:rgba(255,95,87,0.3); background:rgba(255,95,87,0.08); color:var(--red); opacity:0.7; }
+
+    /* Takeaway cards */
+    .tk-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    @media(max-width:700px){ .tk-grid { grid-template-columns:1fr; } }
+    .tk-card { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:14px 18px; }
+    .tk-num { font-size:0.66rem; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; margin-bottom:5px; }
+    .tk-card h4 { font-family:var(--font-display); font-size:0.92rem; margin-bottom:5px; }
+    .tk-card p { font-size:0.8rem; color:var(--text-secondary); line-height:1.5; }
+
+    /* Hard-neg quiz */
+    .hn-option { display:flex; align-items:center; gap:10px; padding:10px 14px; margin:6px 0; border-radius:10px; border:1px solid var(--border); background:var(--bg-2); cursor:pointer; transition:all 0.2s; }
+    .hn-option:hover { border-color:var(--green-border); }
+    .hn-option .hn-label { font-size:0.82rem; color:var(--text-secondary); flex:1; }
+    .hn-option .hn-tag { font-family:var(--font-mono); font-size:0.7rem; padding:3px 10px; border-radius:12px; display:none; }
+    .hn-option.revealed .hn-tag { display:inline-block; }
+    .hn-option.easy .hn-tag { background:rgba(0,217,126,0.1); color:var(--green); }
+    .hn-option.medium .hn-tag { background:rgba(227,179,65,0.1); color:var(--amber); }
+    .hn-option.hard .hn-tag { background:rgba(255,95,87,0.1); color:var(--red); }
+
+    /* Side-by-side score comparison */
+    .score-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin:12px 0; }
+    .score-box { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:12px; text-align:center; }
+    .score-box .sb-name { font-family:var(--font-mono); font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; }
+    .score-box .sb-val { font-family:var(--font-display); font-size:1.4rem; font-weight:700; }
+
+    /* Flow arrows */
+    .flow-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0; justify-content:center; }
+    .flow-box { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:10px 16px; font-family:var(--font-display); font-size:0.82rem; font-weight:600; text-align:center; min-width:90px; }
+    .flow-box.green { border-color:var(--green-border); color:var(--green); }
+    .flow-box.blue { border-color:rgba(88,166,255,0.3); color:var(--blue); }
+    .flow-box.amber { border-color:rgba(227,179,65,0.3); color:var(--amber); }
+    .flow-box.purple { border-color:rgba(188,140,255,0.3); color:var(--purple); }
+    .flow-arrow { color:var(--text-muted); font-size:1.2rem; }
+
+    /* Stat row */
+    .stat-row { display:flex; gap:14px; margin:14px 0; flex-wrap:wrap; }
+    .stat-card { flex:1; min-width:110px; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; }
+    .stat-val { font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--green); }
+    .stat-val.blue { color:var(--blue); }  .stat-val.amber { color:var(--amber); }  .stat-val.purple { color:var(--purple); }
+    .stat-label { font-size:0.72rem; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.04em; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="teaching.html" class="topbar-logo"><span class="logo-mark">&gt;</span> CodeLab</a>
+    <span class="topbar-sep">/</span>
+    <span class="topbar-title">Evaluating AI-enabled SD Techniques</span>
+    <span class="topbar-badge">interactive</span>
+    <span class="slide-counter" id="counter">1 / 14</span>
+    <a href="teaching.html" class="topbar-home">← modules</a>
+  </header>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+
+  <div class="slides-wrapper">
+
+    <!-- ═══ Slide 1: Title ═══════════════════════════════════ -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-label">Evaluation Metrics · Slide 1</div>
+      <h1 class="slide-h1">Beyond Exact Matches:<br/><em>Metrics for Evaluating Technical NL &amp; Code</em></h1>
+      <p class="slide-p">When we evaluate AI systems for software engineering, we compare model predictions against reference answers. But an exact textual match is not always necessary for correctness. This module explores why overlap-based metrics can fail and what alternatives exist.</p>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">8</div><div class="stat-label">Metrics Covered</div></div>
+        <div class="stat-card"><div class="stat-val blue">3</div><div class="stat-label">Loss Functions</div></div>
+        <div class="stat-card"><div class="stat-val amber">SIDE</div><div class="stat-label">Final Framework</div></div>
+        <div class="stat-card"><div class="stat-val purple">4</div><div class="stat-label">Live Demos</div></div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">Core Question</div>
+        <div class="cb-body"><strong>If two outputs mean the same thing, should a metric give them a low score just because they use different words?</strong></div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 2: Semantic Equivalence Problem ════════════ -->
+    <div class="slide" id="slide-2">
+      <div class="slide-label">Evaluation Metrics · Slide 2</div>
+      <h2 class="slide-h2">The Semantic Equivalence Problem</h2>
+      <p class="slide-p">Consider a Java method <code style="color:var(--blue);">read()</code> that opens a stream, reads contents, converts to string, and closes resources. Two summaries describe it:</p>
+      <div class="two-col">
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">Prediction (PR)</div>
+            <div class="cb-body" style="font-size:1rem;font-weight:600;color:var(--text-primary);">"Reads the contents of this source as a string."</div>
+          </div>
+          <div class="cb">
+            <div class="cb-label">Ground Truth (GT)</div>
+            <div class="cb-body" style="font-size:1rem;font-weight:600;color:var(--text-primary);">"Get the textual information from this source and represent it as a string."</div>
+          </div>
+          <div style="margin-top:12px;">
+            <span class="score-badge low">BLEU: 0.21</span>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.9rem;margin-bottom:10px;">Interactive: Word Overlap</h4>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">PR tokens:</p>
+          <div class="wo-sentence" id="wo-pr"></div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;margin-top:10px;">GT tokens:</p>
+          <div class="wo-sentence" id="wo-gt"></div>
+          <div class="cb amber" style="margin-top:14px;">
+            <div class="cb-label">Insight</div>
+            <div class="cb-body">Only <strong id="wo-count">3</strong> tokens overlap — yet the summaries are <strong>semantically equivalent</strong>. A model can be right in meaning and still look wrong to a token-overlap metric.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 3: Automated vs Manual ═════════════════════ -->
+    <div class="slide" id="slide-3">
+      <div class="slide-label">Evaluation Metrics · Slide 3</div>
+      <h2 class="slide-h2">Automated vs. Manual Evaluation</h2>
+      <p class="slide-p">Every evaluation approach trades off between scalability and semantic sensitivity.</p>
+      <div class="vs-grid">
+        <div class="vs-card">
+          <h4 style="color:var(--green);">⚡ Automated Metrics</h4>
+          <ul>
+            <li>Quick, cheap, easy to apply at scale</li>
+            <li>Useful for benchmarking many predictions</li>
+            <li>May fail to capture semantic equivalence</li>
+            <li>Can over-reward surface similarity</li>
+          </ul>
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="vs-card warn">
+          <h4 style="color:var(--amber);">👤 Manual Evaluation</h4>
+          <ul>
+            <li>Expert analyzes prediction vs. ground truth</li>
+            <li>Captures nuance, correctness, usefulness</li>
+            <li>Expensive in time and money ($$$)</li>
+            <li>Subject to annotator variability</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">Takeaway</div>
+        <div class="cb-body">Automated metrics are attractive because they are fast and inexpensive, but that convenience comes with a risk: <strong>surface-level similarity is not the same as semantic correctness</strong>.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 4: Metric Landscape ════════════════════════ -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Evaluation Metrics · Slide 4</div>
+      <h2 class="slide-h2">The Metric Landscape</h2>
+      <p class="slide-p">Click each metric to learn what it measures, when it helps, and where it fails.</p>
+      <div class="two-col">
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin-bottom:8px;color:var(--blue);">Code Metrics</h4>
+          <div class="metric-grid" id="code-metrics"></div>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin-bottom:8px;color:var(--purple);">Technical NL Metrics</h4>
+          <div class="metric-grid" id="nl-metrics"></div>
+        </div>
+      </div>
+      <div class="cb blue" style="margin-top:14px;" id="metric-detail">
+        <div class="cb-label">Select a metric</div>
+        <div class="cb-body">Click any card above to see details.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 5: Embedding-based Metrics ═════════════════ -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Evaluation Metrics · Slide 5</div>
+      <h2 class="slide-h2">Embedding-based Metrics</h2>
+      <p class="slide-p">Instead of comparing surface tokens, encode each text into a vector and measure geometric closeness.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">Sentence A (PR)</div>
+            <div class="cb-body" style="font-family:var(--font-mono);font-size:0.82rem;">"Reads the contents of this source as a string."</div>
+          </div>
+          <div class="embed-panel">
+            <h5>Vector A</h5>
+            <div class="vec-row" id="vec-a"></div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">Sentence B (GT)</div>
+            <div class="cb-body" style="font-family:var(--font-mono);font-size:0.82rem;">"Get the textual information from this source and represent it as a string."</div>
+          </div>
+          <div class="embed-panel">
+            <h5>Vector B</h5>
+            <div class="vec-row" id="vec-b"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sim-result" id="cosine-result" style="margin-top:14px;"></div>
+      <div class="cb" style="margin-top:10px;">
+        <div class="cb-label">Key Point</div>
+        <div class="cb-body">The choice of <strong>encoder</strong> determines the similarity: a <strong>code-trained</strong> encoder gives code-specific embeddings; a <strong>NL-trained</strong> encoder gives NL embeddings; a <strong>bimodal</strong> model handles both.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 6: CodeBLEU ════════════════════════════════ -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Evaluation Metrics · Slide 6</div>
+      <h2 class="slide-h2">CodeBLEU</h2>
+      <p class="slide-p">CodeBLEU extends BLEU by recognizing that code should be evaluated not only as text, but also as structure and behavior.</p>
+      <div class="flow-row">
+        <div class="flow-box green">N-gram Match<br/><span style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">0.25</span></div>
+        <span class="flow-arrow">+</span>
+        <div class="flow-box blue">Weighted N-gram<br/><span style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">0.25</span></div>
+        <span class="flow-arrow">+</span>
+        <div class="flow-box amber">AST Match<br/><span style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">0.25</span></div>
+        <span class="flow-arrow">+</span>
+        <div class="flow-box purple">Data-flow Match<br/><span style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">0.25</span></div>
+        <span class="flow-arrow">=</span>
+        <div class="flow-box green" style="font-size:1rem;">CodeBLEU</div>
+      </div>
+      <div class="two-col" style="margin-top:16px;">
+        <div>
+          <div class="term-grid" style="grid-template-columns:1fr;">
+            <div class="term-card"><div class="term-emoji">📝</div><div class="term-name">N-gram Match</div><div class="term-def">Surface overlap of token sequences — classic BLEU approach.</div></div>
+            <div class="term-card"><div class="term-emoji">⚖️</div><div class="term-name">Weighted N-gram</div><div class="term-def">Emphasizes more informative tokens over boilerplate.</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="term-grid" style="grid-template-columns:1fr;">
+            <div class="term-card"><div class="term-emoji">🌲</div><div class="term-name">AST Match</div><div class="term-def">Compares syntactic structure — balanced brackets, control flow, nesting.</div></div>
+            <div class="term-card"><div class="term-emoji">🔀</div><div class="term-name">Data-flow Match</div><div class="term-def">Compares how values and dependencies move through the program.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cb amber" style="margin-top:14px;">
+        <div class="cb-label">Takeaway</div>
+        <div class="cb-body"><strong>CodeBLEU is a stronger fit for code</strong> because it treats code as more than just a string — it evaluates structure and behavior too.</div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 7: CrystalBLEU ═════════════════════════════ -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Evaluation Metrics · Slide 7</div>
+      <h2 class="slide-h2">CrystalBLEU</h2>
+      <p class="slide-p">CrystalBLEU rewards <strong>correct yet novel</strong> outputs and discourages direct copying from training examples by reducing the influence of frequent boilerplate tokens.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">The Problem</div>
+            <div class="cb-body">Code contains many <strong>common, repeated, low-information tokens</strong> (generic variable names, routine syntax like <code>;</code>, <code>{</code>, <code>return</code>). These inflate BLEU scores without reflecting meaningful similarity.</div>
+          </div>
+          <div class="cb blue" style="margin-top:10px;">
+            <div class="cb-label">CrystalBLEU Solution</div>
+            <div class="cb-body">Discount the contribution of <strong>trivially frequent tokens</strong> so the score better reflects <strong>substantive similarity</strong> rather than boilerplate reuse.</div>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin-bottom:10px;">Interactive: Token Informativeness</h4>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Click tokens to classify them:</p>
+          <div id="crystal-tokens"></div>
+          <div class="cb amber" style="margin-top:12px;">
+            <div class="cb-label">Result</div>
+            <div class="cb-body" id="crystal-result">Select tokens above to see how discounting boilerplate changes the similarity judgment.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 8: Contrastive Learning Intro ══════════════ -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Evaluation Metrics · Slide 8</div>
+      <h2 class="slide-h2">Contrastive Learning: Core Idea</h2>
+      <p class="slide-p">If lexical metrics aren't enough for technical summaries, how else might we learn what "similar meaning" looks like? The answer: <strong>shape the embedding space itself</strong>.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Goal</div>
+            <div class="cb-body">Learn an embedding space in which <strong>similar pairs stay close</strong> and <strong>dissimilar pairs are pushed far apart</strong>. The model learns a geometry of meaning.</div>
+          </div>
+          <div class="cb blue" style="margin-top:10px;">
+            <div class="cb-label">Why This Matters for SE</div>
+            <div class="cb-body">Code summarization produces many valid paraphrases. Instead of hand-crafting similarity rules, we can <strong>train a model to recognize semantic equivalence</strong> directly.</div>
+          </div>
+        </div>
+        <div>
+          <div class="cl-canvas-wrap">
+            <canvas id="cl-canvas" class="cl-canvas" width="460" height="300"></canvas>
+          </div>
+          <div class="cl-controls">
+            <button class="cl-btn active" onclick="clReset()">Reset</button>
+            <button class="cl-btn" onclick="clTrain()">Train Step →</button>
+            <button class="cl-btn" onclick="clTrainAll()">Train 10 Steps</button>
+          </div>
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">🟢 Positive pairs &nbsp; 🔴 Negative pairs &nbsp; Points drift together/apart during training.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 9: Loss Functions ══════════════════════════ -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Evaluation Metrics · Slide 9</div>
+      <h2 class="slide-h2">Contrastive Loss Functions</h2>
+      <p class="slide-p">Three progressively more powerful objectives for shaping the embedding space.</p>
+      <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="term-card">
+          <div class="term-emoji">🔗</div>
+          <div class="term-name">Contrastive Loss</div>
+          <div class="term-def" style="margin-bottom:8px;">Pull similar pairs together, push dissimilar pairs apart up to a margin.</div>
+          <div class="code-block" style="font-size:0.68rem;padding:8px 12px;">
+            L = (1-y)·D² + y·max(0, m-D)²
+          </div>
+          <div class="term-def" style="font-size:0.72rem;margin-top:6px;"><strong>y</strong> = similar (0) / dissimilar (1)<br/><strong>D</strong> = distance<br/><strong>m</strong> = margin</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🔺</div>
+          <div class="term-name">Triplet Loss</div>
+          <div class="term-def" style="margin-bottom:8px;">Anchor should be closer to positive than to negative by margin m.</div>
+          <div class="code-block" style="font-size:0.68rem;padding:8px 12px;">
+            L = max(0, D(A,P) - D(A,N) + m)
+          </div>
+          <div class="term-def" style="font-size:0.72rem;margin-top:6px;"><strong>A</strong> = anchor<br/><strong>P</strong> = positive<br/><strong>N</strong> = negative</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🌐</div>
+          <div class="term-name">N-pair Loss</div>
+          <div class="term-def" style="margin-bottom:8px;">Generalize to multiple negatives — distinguish the correct match from many wrong candidates.</div>
+          <div class="code-block" style="font-size:0.68rem;padding:8px 12px;">
+            L = -log(e^(a·p) / Σ e^(a·nᵢ))
+          </div>
+          <div class="term-def" style="font-size:0.72rem;margin-top:6px;">Scales contrastive idea from 1 wrong alternative to <strong>many</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 10: Triplet Loss Interactive ═══════════════ -->
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Evaluation Metrics · Slide 10</div>
+      <h2 class="slide-h2">Interactive: Triplet Loss Explorer</h2>
+      <p class="slide-p">Drag the Anchor (A), Positive (P), and Negative (N) points. Watch the loss update live.</p>
+      <div class="two-col">
+        <div>
+          <canvas id="triplet-canvas" class="cl-canvas" width="420" height="320"></canvas>
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">Drag points to explore. The loss is zero when D(A,P) + margin &lt; D(A,N).</p>
+        </div>
+        <div>
+          <div class="range-row">
+            <label>Margin (m):</label>
+            <input type="range" id="margin-slider" min="10" max="120" value="50" oninput="updateTriplet()"/>
+            <span class="rv" id="margin-val">50</span>
+          </div>
+          <div class="cb" id="triplet-info">
+            <div class="cb-label">Loss</div>
+            <div class="cb-body" id="triplet-loss-text">Drag points to begin.</div>
+          </div>
+          <div class="cb blue" style="margin-top:10px;">
+            <div class="cb-label">Intuition</div>
+            <div class="cb-body">Triplet loss doesn't just say "similar" or "different" — it says <strong>the right match should be closer than the wrong one by a meaningful gap</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 11: Hard Negatives & Batch Size ════════════ -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Evaluation Metrics · Slide 11</div>
+      <h2 class="slide-h2">Hard Negatives &amp; Batch Size</h2>
+      <p class="slide-p">The quality of contrastive learning depends on how informative the training comparisons are.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">Hard-Negative Mining</div>
+            <div class="cb-body">A <strong>hard negative</strong> is a negative sample that is very close to the anchor in embedding space — challenging to distinguish from a positive. These force the model to learn <strong>fine-grained semantic distinctions</strong>.</div>
+          </div>
+          <h4 style="font-family:var(--font-display);font-size:0.85rem;margin:14px 0 8px;">Classify These Negatives:</h4>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px;">Anchor: <em>"The dog is playing with the bone"</em></p>
+          <p style="font-size:0.78rem;color:var(--green);margin-bottom:10px;">Positive: <em>"The dog is enjoying his bone"</em></p>
+          <div id="hn-quiz"></div>
+          <button class="cl-btn" onclick="revealHN()" style="margin-top:8px;">Reveal Difficulty →</button>
+        </div>
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">Large Batch Size</div>
+            <div class="cb-body">Larger batches expose the model to a <strong>more diverse set of negatives</strong>. That richer contrast helps learn more discriminative representations.</div>
+          </div>
+          <div class="range-row" style="margin-top:14px;">
+            <label>Batch size:</label>
+            <input type="range" id="batch-slider" min="4" max="128" value="16" step="4" oninput="updateBatch()"/>
+            <span class="rv" id="batch-val">16</span>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Negatives per Anchor</div>
+            <div class="cb-body" id="batch-info">With batch size 16, each anchor sees up to <strong>15</strong> negatives per step.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 12: Application to SE — SIDE ═══════════════ -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Evaluation Metrics · Slide 12</div>
+      <h2 class="slide-h2">From Summary-to-Summary → Summary-to-Code</h2>
+      <p class="slide-p">Traditional metrics compare prediction vs. reference summary. But a summary can sound fluent and still be wrong with respect to the code. A stronger metric should measure <strong>alignment with code semantics</strong>.</p>
+      <div class="two-col">
+        <div>
+          <div class="code-block">
+            <span class="kw">public</span> <span class="type">ConnectionConsumer</span> <span class="fn">createConnectionConsumer</span>(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Destination</span> dest, <span class="type">String</span> selector,<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">ServerSessionPool</span> pool, <span class="kw">int</span> max) {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="kw">new</span> <span class="type">ActiveMQConnectionConsumer</span>(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">this</span>, pool, dest, selector, max);<br/>
+            }
+          </div>
+          <div style="margin-top:10px;">
+            <div class="cb">
+              <div class="cb-label">Good Summary ✓</div>
+              <div class="cb-body" style="color:var(--green);">"Create a connection to the consumer."</div>
+            </div>
+            <div class="cb red" style="margin-top:8px;">
+              <div class="cb-label">Bad Summary ✗</div>
+              <div class="cb-body" style="color:var(--red);">"Connect to the server and return the status."</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">SIDE — Summary alIgnment to coDe sEmantic</div>
+            <div class="cb-body">Instead of only comparing prediction vs. reference summary, <strong>SIDE</strong> learns a metric that measures whether the summary aligns with the <strong>meaning of the code itself</strong>, using contrastive learning on ~180K method-summary pairs from CodeXGLUE.</div>
+          </div>
+          <div class="flow-row" style="margin-top:14px;">
+            <div class="flow-box green">Code Method</div>
+            <span class="flow-arrow">↔</span>
+            <div class="flow-box blue">Summary</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box purple">MPNet Encoder</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box amber">SIDE Score</div>
+          </div>
+          <div class="cb" style="margin-top:12px;">
+            <div class="cb-label">Result</div>
+            <div class="cb-body">Good summary: <span class="score-badge high">SIDE: 0.81</span><br/>Bad summary: <span class="score-badge low" style="margin-top:6px;">SIDE: 0.23</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 13: Side-by-side Comparison ════════════════ -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Evaluation Metrics · Slide 13</div>
+      <h2 class="slide-h2">Interactive: Multi-Metric Comparison</h2>
+      <p class="slide-p">Compare how different metrics score the same prediction. Select a scenario:</p>
+      <div class="cl-controls" id="scenario-tabs" style="margin-bottom:14px;"></div>
+      <div class="two-col">
+        <div>
+          <div class="cb blue" id="scen-pr"><div class="cb-label">Prediction</div><div class="cb-body" id="scen-pr-text"></div></div>
+          <div class="cb" id="scen-gt" style="margin-top:8px;"><div class="cb-label">Ground Truth</div><div class="cb-body" id="scen-gt-text"></div></div>
+        </div>
+        <div>
+          <div class="score-grid" id="scen-scores"></div>
+          <div class="cb amber" style="margin-top:12px;" id="scen-insight">
+            <div class="cb-label">Insight</div>
+            <div class="cb-body" id="scen-insight-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Slide 14: Key Takeaways ══════════════════════════ -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Evaluation Metrics · Slide 14</div>
+      <h2 class="slide-h2">Key Takeaways</h2>
+      <div class="tk-grid">
+        <div class="tk-card"><div class="tk-num">01 · Foundation</div><h4>Exact Overlap ≠ Semantic Correctness</h4><p>A model can be right in meaning and still look wrong to a token-overlap metric like BLEU.</p></div>
+        <div class="tk-card"><div class="tk-num">02 · Tradeoffs</div><h4>Automated: Fast but Shallow</h4><p>Automated metrics scale well but can miss semantics. Manual evaluation is rich but expensive.</p></div>
+        <div class="tk-card"><div class="tk-num">03 · Embeddings</div><h4>Meaning Through Geometry</h4><p>Embedding-based metrics capture semantic relatedness better than pure overlap, but depend on encoder quality.</p></div>
+        <div class="tk-card"><div class="tk-num">04 · Code Needs More</div><h4>CodeBLEU &amp; CrystalBLEU</h4><p>Code requires structure-aware evaluation (AST, data-flow). CrystalBLEU further reduces boilerplate distortion.</p></div>
+        <div class="tk-card"><div class="tk-num">05 · Contrastive Learning</div><h4>Shape the Space</h4><p>Contrastive learning arranges embeddings so similar items cluster and dissimilar items separate. Hard negatives are crucial.</p></div>
+        <div class="tk-card"><div class="tk-num">06 · SIDE</div><h4>Summary ↔ Code Alignment</h4><p>The strongest evaluation aligns summaries with code semantics — not just with a reference sentence. This is the SIDE idea.</p></div>
+      </div>
+      <div class="flow-row" style="margin-top:20px;">
+        <div class="flow-box green">Overlap Metrics</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box blue">Embedding Similarity</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box amber">Contrastive Learning</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box purple">SIDE: Code-Semantic Alignment</div>
+      </div>
+    </div>
+
+  </div><!-- /slides-wrapper -->
+
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>← Prev</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next →</button>
+  </nav>
+
+  <!-- ═══ JavaScript ═════════════════════════════════════════ -->
+  <script>
+    const TOTAL = 14;
+    let current = 1;
+
+    // ── Navigation ──────────────────────────────────────────
+    function goSlide(d) {
+      const n = current + d;
+      if (n < 1 || n > TOTAL) return;
+      document.getElementById('slide-'+current).classList.remove('active');
+      current = n;
+      document.getElementById('slide-'+current).classList.add('active');
+      updateUI();
+      initSlide(current);
+    }
+    function setSlide(n) {
+      document.getElementById('slide-'+current).classList.remove('active');
+      current = n;
+      document.getElementById('slide-'+current).classList.add('active');
+      updateUI();
+      initSlide(current);
+    }
+    function updateUI() {
+      document.getElementById('counter').textContent = current+' / '+TOTAL;
+      document.getElementById('progress').style.width = (current/TOTAL*100).toFixed(2)+'%';
+      document.getElementById('prev-btn').disabled = current===1;
+      document.getElementById('next-btn').disabled = current===TOTAL;
+      document.getElementById('next-btn').textContent = current===TOTAL ? 'Finish' : 'Next →';
+      const dots = document.getElementById('dots');
+      dots.innerHTML = '';
+      for (let i=1;i<=TOTAL;i++){
+        const d=document.createElement('div');
+        d.className='slide-dot'+(i===current?' active':'');
+        d.onclick=()=>setSlide(i);
+        dots.appendChild(d);
+      }
+    }
+    document.addEventListener('keydown', e => {
+      if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goSlide(1);}
+      if(e.key==='ArrowLeft'){e.preventDefault();goSlide(-1);}
+    });
+    function initSlide(n) {
+      if(n===2) setTimeout(initWordOverlap,50);
+      if(n===4) setTimeout(initMetricMap,50);
+      if(n===5) setTimeout(initEmbedViz,50);
+      if(n===7) setTimeout(initCrystal,50);
+      if(n===8) setTimeout(clReset,50);
+      if(n===10) setTimeout(initTriplet,50);
+      if(n===11) setTimeout(initHNQuiz,50);
+      if(n===13) setTimeout(initScenarios,50);
+    }
+
+    // ── Interactive 1: Word Overlap (Slide 2) ───────────────
+    const PR_WORDS = 'Reads the contents of this source as a string'.split(' ');
+    const GT_WORDS = 'Get the textual information from this source and represent it as a string'.split(' ');
+    function initWordOverlap() {
+      const prSet = new Set(PR_WORDS.map(w=>w.toLowerCase()));
+      const gtSet = new Set(GT_WORDS.map(w=>w.toLowerCase()));
+      let matches = 0;
+      document.getElementById('wo-pr').innerHTML = PR_WORDS.map(w => {
+        const m = gtSet.has(w.toLowerCase());
+        if(m) matches++;
+        return `<span class="wo-word ${m?'match':'miss'}">${w}</span>`;
+      }).join('');
+      document.getElementById('wo-gt').innerHTML = GT_WORDS.map(w => {
+        const m = prSet.has(w.toLowerCase());
+        return `<span class="wo-word ${m?'match':'miss'}">${w}</span>`;
+      }).join('');
+      document.getElementById('wo-count').textContent = matches;
+    }
+
+    // ── Interactive 2: Metric Map (Slide 4) ─────────────────
+    const METRICS = {
+      code: [
+        { name:'BLEU', type:'code', measures:'N-gram overlap between generated and reference tokens.', helps:'Quick surface comparison.', fails:'Misses structural and semantic equivalence in code.' },
+        { name:'CodeBLEU', type:'code', measures:'N-gram + weighted n-gram + AST structure + data-flow match.', helps:'Code-specific evaluation that captures syntax and semantics.', fails:'Requires parseable code; complex to compute.' },
+        { name:'CrystalBLEU', type:'code', measures:'BLEU with discounted frequent/boilerplate tokens.', helps:'Reduces distortion from trivially common tokens.', fails:'Depends on corpus-specific frequency statistics.' },
+        { name:'Embedding', type:'code', measures:'Cosine similarity between encoded vectors.', helps:'Captures semantic relatedness beyond surface tokens.', fails:'Depends heavily on encoder training domain.' },
+      ],
+      nl: [
+        { name:'BLEU', type:'nl', measures:'N-gram precision between prediction and reference.', helps:'Standard MT benchmark, widely used.', fails:'Under-scores valid paraphrases and meaning-preserving rewrites.' },
+        { name:'ROUGE', type:'nl', measures:'N-gram recall between prediction and reference.', helps:'Good for summarization — captures recall of key content.', fails:'Focuses on recall; can miss precision issues.' },
+        { name:'METEOR', type:'nl', measures:'Unigram matches with stemming and synonym support.', helps:'Better than BLEU at handling paraphrases.', fails:'Slower; depends on synonym dictionaries.' },
+        { name:'chrF', type:'nl', measures:'Character n-gram F-score.', helps:'Language-agnostic; robust to morphological variation.', fails:'May miss higher-level semantic structure.' },
+      ]
+    };
+    let activeMetric = null;
+    function initMetricMap() {
+      ['code','nl'].forEach(cat => {
+        const el = document.getElementById(cat===''?'code-metrics':cat+'-metrics');
+        if(!el) return;
+        el.innerHTML = METRICS[cat].map((m,i) =>
+          `<div class="metric-card" id="mc-${cat}-${i}" onclick="selectMetric('${cat}',${i})">`+
+          `<div class="mc-name">${m.name}</div>`+
+          `<div class="mc-type">${cat==='code'?'code':'nat. lang.'}</div>`+
+          `</div>`
+        ).join('');
+      });
+    }
+    function selectMetric(cat,i) {
+      document.querySelectorAll('.metric-card').forEach(c=>c.classList.remove('active'));
+      document.getElementById('mc-'+cat+'-'+i).classList.add('active');
+      const m = METRICS[cat][i];
+      document.getElementById('metric-detail').innerHTML =
+        `<div class="cb-label">${m.name}</div>`+
+        `<div class="cb-body"><strong>Measures:</strong> ${m.measures}<br/><strong>Helps when:</strong> ${m.helps}<br/><strong>Fails when:</strong> ${m.fails}</div>`;
+    }
+
+    // ── Interactive 3: Embedding Viz (Slide 5) ──────────────
+    function initEmbedViz() {
+      // Simulated embedding vectors (8-dim for visualization)
+      const vA = [0.82, 0.14, -0.45, 0.67, 0.91, -0.23, 0.55, 0.38];
+      const vB = [0.79, 0.18, -0.41, 0.63, 0.88, -0.19, 0.51, 0.42];
+      function renderVec(id, v) {
+        document.getElementById(id).innerHTML = v.map(x => {
+          const h = x > 0 ? 142 : 0;
+          const s = Math.abs(x) * 100;
+          return `<span class="vec-cell" style="background:hsla(${h},70%,${30+s*0.4}%,0.9);">${x.toFixed(2)}</span>`;
+        }).join('');
+      }
+      renderVec('vec-a', vA);
+      renderVec('vec-b', vB);
+      // Cosine similarity
+      let dot = 0, magA = 0, magB = 0;
+      for (let i=0;i<vA.length;i++) { dot += vA[i]*vB[i]; magA += vA[i]*vA[i]; magB += vB[i]*vB[i]; }
+      const cos = dot / (Math.sqrt(magA)*Math.sqrt(magB));
+      document.getElementById('cosine-result').innerHTML =
+        `<span style="color:var(--text-muted);">Cosine Similarity:</span> <span style="color:var(--green);font-size:1.4rem;">${cos.toFixed(4)}</span> `+
+        `<span class="score-badge high" style="margin-left:8px;">High Semantic Similarity</span>`;
+    }
+
+    // ── Interactive 4: CrystalBLEU Token Classifier (Slide 7) ─
+    const CRYSTAL_TOKENS = [
+      {t:'public', info:'low'}, {t:'static', info:'low'}, {t:'void', info:'low'},
+      {t:'processTransaction', info:'high'}, {t:'(', info:'low'}, {t:'Account', info:'high'},
+      {t:'src', info:'mid'}, {t:',', info:'low'}, {t:'Account', info:'high'},
+      {t:'dest', info:'mid'}, {t:',', info:'low'}, {t:'double', info:'low'},
+      {t:'amount', info:'high'}, {t:')', info:'low'}, {t:'{', info:'low'},
+      {t:'if', info:'low'}, {t:'(', info:'low'}, {t:'src', info:'mid'},
+      {t:'.balance', info:'high'}, {t:'>=', info:'mid'}, {t:'amount', info:'high'},
+      {t:')', info:'low'}, {t:'{', info:'low'},
+    ];
+    let crystalRevealed = false;
+    function initCrystal() {
+      crystalRevealed = false;
+      const el = document.getElementById('crystal-tokens');
+      el.innerHTML = CRYSTAL_TOKENS.map((tk,i) =>
+        `<span class="wo-word" id="ct-${i}" onclick="toggleCrystal(${i})" style="cursor:pointer;margin:3px;">${tk.t}</span>`
+      ).join('');
+    }
+    function toggleCrystal(i) {
+      const el = document.getElementById('ct-'+i);
+      const tk = CRYSTAL_TOKENS[i];
+      if(!crystalRevealed) {
+        crystalRevealed = true;
+        CRYSTAL_TOKENS.forEach((t,j) => {
+          const e = document.getElementById('ct-'+j);
+          if(t.info==='high') { e.classList.add('match'); e.style.borderColor='var(--green-border)'; }
+          else if(t.info==='mid') { e.style.borderColor='rgba(227,179,65,0.4)'; e.style.color='var(--amber)'; }
+          else { e.classList.add('miss'); }
+        });
+        const high = CRYSTAL_TOKENS.filter(t=>t.info==='high').length;
+        const low = CRYSTAL_TOKENS.filter(t=>t.info==='low').length;
+        document.getElementById('crystal-result').innerHTML =
+          `<strong style="color:var(--green);">${high}</strong> high-info tokens, `+
+          `<strong style="color:var(--red);">${low}</strong> boilerplate tokens. `+
+          `CrystalBLEU discounts the <strong>${low}</strong> low-info tokens so the score reflects <strong>meaningful</strong> similarity.`;
+      }
+    }
+
+    // ── Interactive 5: Contrastive Learning Canvas (Slide 8) ─
+    let clPoints = [];
+    let clStep = 0;
+    function clReset() {
+      clStep = 0;
+      clPoints = [
+        // Positive pairs (green)
+        {x:120,y:80,pair:0,type:'pos',label:'A₁'}, {x:320,y:220,pair:0,type:'pos',label:'A₂'},
+        {x:80,y:240,pair:1,type:'pos',label:'B₁'}, {x:350,y:100,pair:1,type:'pos',label:'B₂'},
+        // Negatives (red) — unrelated
+        {x:220,y:60,pair:-1,type:'neg',label:'N₁'}, {x:180,y:260,pair:-2,type:'neg',label:'N₂'},
+      ];
+      drawCL();
+    }
+    function drawCL() {
+      const c = document.getElementById('cl-canvas');
+      if(!c) return;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      // Draw pair lines
+      for(let i=0;i<clPoints.length;i++){
+        for(let j=i+1;j<clPoints.length;j++){
+          if(clPoints[i].pair>=0 && clPoints[i].pair===clPoints[j].pair){
+            ctx.beginPath(); ctx.moveTo(clPoints[i].x,clPoints[i].y);
+            ctx.lineTo(clPoints[j].x,clPoints[j].y);
+            ctx.strokeStyle='rgba(0,217,126,0.3)'; ctx.lineWidth=2; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+          }
+        }
+      }
+      // Draw points
+      clPoints.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x,p.y,12,0,Math.PI*2);
+        ctx.fillStyle = p.type==='pos' ? '#00D97E' : '#FF5F57';
+        ctx.fill();
+        ctx.fillStyle='#0D1117'; ctx.font='bold 9px JetBrains Mono';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(p.label,p.x,p.y);
+      });
+      // Step counter
+      ctx.fillStyle='#484F58'; ctx.font='12px JetBrains Mono'; ctx.textAlign='left';
+      ctx.fillText('Step: '+clStep, 10, c.height-10);
+    }
+    function clTrain() {
+      clStep++;
+      // Positive pairs attract
+      for(let i=0;i<clPoints.length;i++){
+        for(let j=i+1;j<clPoints.length;j++){
+          if(clPoints[i].pair>=0 && clPoints[i].pair===clPoints[j].pair){
+            const dx=clPoints[j].x-clPoints[i].x, dy=clPoints[j].y-clPoints[i].y;
+            const d=Math.sqrt(dx*dx+dy*dy);
+            if(d>20){
+              const f=0.08;
+              clPoints[i].x+=dx*f; clPoints[i].y+=dy*f;
+              clPoints[j].x-=dx*f; clPoints[j].y-=dy*f;
+            }
+          }
+        }
+      }
+      // Negatives repel from positives
+      clPoints.filter(p=>p.type==='neg').forEach(neg => {
+        clPoints.filter(p=>p.type==='pos').forEach(pos => {
+          const dx=neg.x-pos.x, dy=neg.y-pos.y;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d<150){
+            const f=0.06;
+            neg.x+=dx*f; neg.y+=dy*f;
+          }
+        });
+      });
+      // Clamp
+      clPoints.forEach(p=>{ p.x=Math.max(15,Math.min(445,p.x)); p.y=Math.max(15,Math.min(285,p.y)); });
+      drawCL();
+    }
+    function clTrainAll(){ for(let i=0;i<10;i++) clTrain(); }
+
+    // ── Interactive 6: Triplet Loss Explorer (Slide 10) ─────
+    let tripletPts = {A:{x:210,y:160}, P:{x:120,y:80}, N:{x:340,y:100}};
+    let dragTarget = null;
+    function initTriplet() {
+      const c = document.getElementById('triplet-canvas');
+      if(!c) return;
+      drawTriplet();
+      c.onmousedown = c.ontouchstart = (e) => {
+        e.preventDefault();
+        const r=c.getBoundingClientRect();
+        const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+        const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+        const sx=c.width/r.width, sy=c.height/r.height;
+        const mx=cx*sx, my=cy*sy;
+        ['A','P','N'].forEach(k=>{
+          if(Math.hypot(tripletPts[k].x-mx,tripletPts[k].y-my)<20) dragTarget=k;
+        });
+      };
+      c.onmousemove = c.ontouchmove = (e) => {
+        if(!dragTarget) return;
+        e.preventDefault();
+        const r=c.getBoundingClientRect();
+        const cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+        const cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+        const sx=c.width/r.width, sy=c.height/r.height;
+        tripletPts[dragTarget].x=Math.max(15,Math.min(405,cx*sx));
+        tripletPts[dragTarget].y=Math.max(15,Math.min(305,cy*sy));
+        drawTriplet();
+      };
+      c.onmouseup = c.ontouchend = () => { dragTarget=null; };
+    }
+    function drawTriplet() {
+      const c=document.getElementById('triplet-canvas');
+      if(!c) return;
+      const ctx=c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      const m=parseInt(document.getElementById('margin-slider').value);
+      document.getElementById('margin-val').textContent=m;
+      const {A,P,N}=tripletPts;
+      const dAP=Math.hypot(A.x-P.x,A.y-P.y);
+      const dAN=Math.hypot(A.x-N.x,A.y-N.y);
+      // Lines
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(P.x,P.y);
+      ctx.strokeStyle='rgba(0,217,126,0.5)'; ctx.lineWidth=2; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(N.x,N.y);
+      ctx.strokeStyle='rgba(255,95,87,0.5)'; ctx.lineWidth=2; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+      // Distance labels
+      ctx.fillStyle='#8B949E'; ctx.font='11px JetBrains Mono'; ctx.textAlign='center';
+      ctx.fillText('D(A,P)='+dAP.toFixed(0), (A.x+P.x)/2-20, (A.y+P.y)/2-8);
+      ctx.fillText('D(A,N)='+dAN.toFixed(0), (A.x+N.x)/2+20, (A.y+N.y)/2-8);
+      // Points
+      [{p:A,c:'#E3B341',l:'A'},{p:P,c:'#00D97E',l:'P'},{p:N,c:'#FF5F57',l:'N'}].forEach(({p:pt,c,l})=>{
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,14,0,Math.PI*2); ctx.fillStyle=c; ctx.fill();
+        ctx.fillStyle='#0D1117'; ctx.font='bold 11px JetBrains Mono'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(l,pt.x,pt.y);
+      });
+      // Loss
+      const loss=Math.max(0, dAP-dAN+m);
+      const lossText=`D(A,P) = ${dAP.toFixed(0)} &nbsp;|&nbsp; D(A,N) = ${dAN.toFixed(0)} &nbsp;|&nbsp; margin = ${m}<br/>`+
+        `<strong>Loss = max(0, ${dAP.toFixed(0)} − ${dAN.toFixed(0)} + ${m}) = <span style="color:${loss===0?'var(--green)':'var(--red)'};">${loss.toFixed(0)}</span></strong>`+
+        (loss===0?' &nbsp; ✓ Constraint satisfied':'  &nbsp; ✗ Model needs to push N farther or pull P closer');
+      document.getElementById('triplet-loss-text').innerHTML=lossText;
+    }
+    function updateTriplet(){ drawTriplet(); }
+
+    // ── Interactive 7: Hard-Negative Quiz (Slide 11) ────────
+    const HN_ITEMS = [
+      {text:'"A cat sits on the mat"', diff:'easy', why:'Completely different topic.'},
+      {text:'"The dog is sleeping on the bone"', diff:'medium', why:'Same entities, different action.'},
+      {text:'"The dog is not playing with the bone"', diff:'hard', why:'High lexical overlap, but negation flips meaning.'},
+      {text:'"Cars race on the highway"', diff:'easy', why:'Unrelated domain entirely.'},
+    ];
+    function initHNQuiz() {
+      document.getElementById('hn-quiz').innerHTML = HN_ITEMS.map((h,i) =>
+        `<div class="hn-option ${h.diff}" id="hn-${i}">`+
+        `<span class="hn-label">${h.text}</span>`+
+        `<span class="hn-tag">${h.diff}</span></div>`
+      ).join('');
+    }
+    function revealHN() {
+      HN_ITEMS.forEach((_,i) => document.getElementById('hn-'+i).classList.add('revealed'));
+    }
+
+    // ── Interactive 8: Batch Size (Slide 11) ────────────────
+    function updateBatch() {
+      const bs=parseInt(document.getElementById('batch-slider').value);
+      document.getElementById('batch-val').textContent=bs;
+      document.getElementById('batch-info').innerHTML=
+        `With batch size <strong>${bs}</strong>, each anchor sees up to <strong>${bs-1}</strong> negatives per step.`+
+        (bs>=64?' <span style="color:var(--green);">Excellent diversity!</span>':
+         bs>=32?' <span style="color:var(--amber);">Good diversity.</span>':
+         ' <span style="color:var(--red);">Limited negative variety.</span>');
+    }
+
+    // ── Interactive 9: Multi-Metric Comparison (Slide 13) ───
+    const SCENARIOS = [
+      { name:'Near-exact', pr:'Create a connection to the consumer.', gt:'Create a connection to the consumer.',
+        scores:{BLEU:1.00,ROUGE:1.00,METEOR:1.00,CodeBLEU:'—',Embedding:0.99,SIDE:0.81},
+        insight:'When prediction matches reference exactly, all overlap metrics score perfectly. SIDE scores based on code alignment, not reference overlap.' },
+      { name:'Paraphrase', pr:'Reads the contents of this source as a string.', gt:'Get the textual information from this source and represent it as a string.',
+        scores:{BLEU:0.21,ROUGE:0.33,METEOR:0.38,CodeBLEU:'—',Embedding:0.91,SIDE:0.78},
+        insight:'Lexical metrics (BLEU, ROUGE) drop sharply on paraphrases. Embedding-based and SIDE metrics capture the preserved meaning.' },
+      { name:'Wrong summary', pr:'Connect to the server and return the status.', gt:'Create a connection to the consumer.',
+        scores:{BLEU:0.12,ROUGE:0.18,METEOR:0.22,CodeBLEU:'—',Embedding:0.54,SIDE:0.23},
+        insight:'All metrics agree this is a poor match. Even embedding similarity drops, and SIDE confirms the summary doesn\'t align with code semantics.' },
+      { name:'Code variant', pr:'int total = a + b;', gt:'int sum = a + b;',
+        scores:{BLEU:0.56,ROUGE:0.60,METEOR:0.62,CodeBLEU:0.82,Embedding:0.95,SIDE:'—'},
+        insight:'Only a variable name differs. CodeBLEU\'s AST/data-flow components recognize the structural equivalence that surface BLEU partially misses.' },
+    ];
+    function initScenarios() {
+      const tabs = document.getElementById('scenario-tabs');
+      tabs.innerHTML = SCENARIOS.map((s,i)=>
+        `<button class="cl-btn${i===0?' active':''}" onclick="selectScenario(${i})">${s.name}</button>`
+      ).join('');
+      selectScenario(0);
+    }
+    function selectScenario(i) {
+      const s=SCENARIOS[i];
+      document.querySelectorAll('#scenario-tabs .cl-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+      document.getElementById('scen-pr-text').textContent=s.pr;
+      document.getElementById('scen-gt-text').textContent=s.gt;
+      document.getElementById('scen-insight-text').innerHTML=s.insight;
+      const grid=document.getElementById('scen-scores');
+      grid.innerHTML=Object.entries(s.scores).map(([k,v])=>{
+        let color='var(--text-muted)';
+        if(typeof v==='number'){ color=v>=0.7?'var(--green)':v>=0.4?'var(--amber)':'var(--red)'; }
+        return `<div class="score-box"><div class="sb-name">${k}</div><div class="sb-val" style="color:${color};">${typeof v==='number'?v.toFixed(2):v}</div></div>`;
+      }).join('');
+    }
+
+    // ── Init ────────────────────────────────────────────────
+    updateUI();
+    setTimeout(()=>initSlide(1),100);
+  </script>
+</body>
+</html>
