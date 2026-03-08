@@ -480,6 +480,98 @@
     .quiz-answer { margin-top: 10px; padding: 12px 16px; background: var(--bg-3); border-radius: 8px; border: 1px solid var(--green-border); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; display: none; }
     .quiz-answer.visible { display: block; }
     .quiz-answer strong { color: var(--green); }
+
+    /* Landscape card grid */
+    .landscape-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+    @media (max-width: 700px) { .landscape-grid { grid-template-columns: 1fr; } }
+    .landscape-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .landscape-card h4 { font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 6px; }
+    .landscape-card p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Warning card (red accent) */
+    .warn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 900px) { .warn-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .warn-grid { grid-template-columns: 1fr; } }
+    .warn-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 16px;
+    }
+    .warn-card h4 { font-family: var(--font-display); font-size: 0.85rem; color: var(--red); margin-bottom: 4px; }
+    .warn-card p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+    .warn-card .tip { font-size: 0.72rem; color: var(--green); margin-top: 6px; font-family: var(--font-mono); }
+
+    /* AST tree visualization */
+    .ast-tree { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.8; color: var(--text-secondary); background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+    .ast-tree .ast-node { color: var(--blue); font-weight: 600; }
+    .ast-tree .ast-leaf { color: var(--green); }
+    .ast-tree .ast-branch { color: var(--text-muted); }
+
+    /* BPE comparison panels */
+    .bpe-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+    @media (max-width: 700px) { .bpe-compare { grid-template-columns: 1fr; } }
+    .bpe-panel { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .bpe-panel-label { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; }
+
+    /* Dropdown select */
+    .tok-select {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    .tok-select:focus { outline: none; border-color: var(--green-border); }
+
+    /* Similarity meter */
+    .sim-meter { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+    .sim-bar { flex: 1; height: 24px; background: var(--bg-3); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .sim-fill { height: 100%; border-radius: 6px 0 0 6px; transition: width 0.4s ease, background 0.3s; }
+    .sim-val { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; min-width: 60px; text-align: right; }
+
+    /* Threshold slider row */
+    .threshold-row { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+    .threshold-row label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
+    .threshold-row input[type=range] { flex: 1; accent-color: var(--green); }
+    .threshold-row .threshold-val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--green); font-weight: 600; min-width: 45px; }
+
+    /* Hash display */
+    .hash-display { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; word-break: break-all; line-height: 1.6; margin: 8px 0; }
+    .hash-display .hash-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
+    .hash-display .hash-val { color: var(--green); }
+
+    /* Diff highlighting */
+    .diff-match { background: rgba(0,217,126,0.15); border-radius: 3px; padding: 0 2px; }
+    .diff-diff { background: rgba(255,95,87,0.15); border-radius: 3px; padding: 0 2px; }
+
+    /* Pseudo-code block */
+    .pseudo-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    .pseudo-block .cmt { color: var(--text-muted); font-style: italic; }
+    .pseudo-block .kw { color: var(--purple); }
+    .pseudo-block .fn { color: var(--blue); }
+    .pseudo-block .str { color: var(--green); }
   </style>
 </head>
 <body>
@@ -490,7 +582,7 @@
     <span class="topbar-sep">/</span>
     <span class="topbar-title">Mining Software Repositories</span>
     <span class="topbar-badge">Module 1 · Interactive</span>
-    <span class="slide-counter" id="counter">1 / 20</span>
+    <span class="slide-counter" id="counter">1 / 32</span>
     <a href="teaching.html" class="topbar-home">← modules</a>
   </header>
 
@@ -567,9 +659,48 @@
       </div>
     </div>
 
-    <!-- ── Slide 4: Rule-based vs Data-driven ─────────────── -->
+    <!-- ── NEW: Version Control Refresher ─────────────────── -->
     <div class="slide" id="slide-4">
       <div class="slide-label">Module 1 · Slide4</div>
+      <h2 class="slide-h2">Version Control <em>Refresher</em></h2>
+      <p class="slide-p">MSR depends on version control history. Here is a quick Git refresher of the concepts that become data points for AI models.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-emoji">&#128248;</div>
+          <div class="term-name">Commit</div>
+          <div class="term-def">A snapshot of changes to one or more files. Each commit has a unique SHA hash and records who, when, and why.</div>
+          <div class="term-analogy">Think of it as a save point in a video game.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">&#127795;</div>
+          <div class="term-name">Branch</div>
+          <div class="term-def">A parallel line of development. Developers create branches to work on features or fixes without disturbing the main codebase.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">&#128256;</div>
+          <div class="term-name">Merge / Pull Request</div>
+          <div class="term-def">Combining changes from one branch into another. Pull requests add a code-review layer before merging.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">&#127991;&#65039;</div>
+          <div class="term-name">Tag</div>
+          <div class="term-def">A named reference to a specific commit, typically marking a release version (e.g., v2.1.0).</div>
+        </div>
+        <div class="term-card" style="grid-column:1/-1;">
+          <div class="term-emoji">&#128203;</div>
+          <div class="term-name">Diff</div>
+          <div class="term-def">Shows the exact changes between two versions of a file: lines added, removed, or modified. Diffs are central to code review and change-aware AI models.</div>
+        </div>
+      </div>
+      <div class="concept-box">
+        <div class="concept-box-label">Key Insight</div>
+        <div class="concept-box-body"><strong>Every commit is a data point.</strong> MSR treats version history as a rich dataset for training AI models &mdash; commit messages become natural language labels, diffs become input features, and branches capture development workflows.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 4: Rule-based vs Data-driven ─────────────── -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Module 1 · Slide5</div>
       <h2 class="slide-h2">Rule-based vs. Data-driven Approaches</h2>
       <p class="slide-p">AI systems don't have to be grounded in data-driven methods. Some systems encode expert knowledge directly as rules. But for modern SE automation, data-driven approaches (especially deep learning) dominate.</p>
       <div class="vs-grid">
@@ -607,8 +738,8 @@
     </div>
 
     <!-- ── Slide 5: Why So Much Data? ─────────────────────── -->
-    <div class="slide" id="slide-5">
-      <div class="slide-label">Module 1 · Slide5</div>
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Module 1 · Slide6</div>
       <h2 class="slide-h2">Why So Much Data?</h2>
       <p class="slide-p">Deep learning models, especially LLMs, learn statistical patterns from enormous corpora. More data means better generalization — but the data must be <em>high quality</em>.</p>
       <div class="two-col">
@@ -641,8 +772,8 @@
     </div>
 
     <!-- ── Slide 6: Data Quality ──────────────────────────── -->
-    <div class="slide" id="slide-6">
-      <div class="slide-label">Module 1 · Slide6</div>
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Module 1 · Slide7</div>
       <h2 class="slide-h2">Ensuring Data Quality</h2>
       <p class="slide-p">Not all data is useful. We need to ensure high-quality datasets through careful repository selection and rigorous preprocessing.</p>
       <div class="two-col">
@@ -666,8 +797,8 @@
     </div>
 
     <!-- ── Slide 7: Preprocessing Pipeline ────────────────── -->
-    <div class="slide" id="slide-7">
-      <div class="slide-label">Module 1 · Slide7</div>
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Module 1 · Slide8</div>
       <h2 class="slide-h2">Preprocessing Source Code</h2>
       <p class="slide-p">Raw code from repositories needs systematic cleaning before it can be used for training. Here are the essential preprocessing steps applied to each method/function.</p>
       <ol class="step-list">
@@ -681,8 +812,8 @@
     </div>
 
     <!-- ── Slide 8: Interactive Preprocessing Pipeline ─────── -->
-    <div class="slide" id="slide-8">
-      <div class="slide-label">Module 1 · Slide8</div>
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Module 1 · Slide9</div>
       <h2 class="slide-h2">Interactive: Preprocessing Pipeline</h2>
       <p class="slide-p">Toggle each preprocessing step and watch the code get cleaned in real time.</p>
       <div class="pipeline-controls" id="pipeline-controls"></div>
@@ -691,8 +822,8 @@
     </div>
 
     <!-- ── Slide 9: Tokenization ──────────────────────────── -->
-    <div class="slide" id="slide-9">
-      <div class="slide-label">Module 1 · Slide9</div>
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Module 1 · Slide10</div>
       <h2 class="slide-h2">Tokenization</h2>
       <p class="slide-p">Tokenization is the process that breaks down text into smaller units (tokens) that can be analyzed separately. For code, this means converting raw source into a structured sequence of keywords, identifiers, operators, and literals.</p>
       <div class="two-col">
@@ -724,8 +855,8 @@
     </div>
 
     <!-- ── Slide 10: Why Tokenization? ────────────────────── -->
-    <div class="slide" id="slide-10">
-      <div class="slide-label">Module 1 · Slide10</div>
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Module 1 · Slide11</div>
       <h2 class="slide-h2">Why Is Tokenization Needed?</h2>
       <div class="two-col">
         <div>
@@ -767,8 +898,8 @@
     </div>
 
     <!-- ── Slide 11: Interactive Tokenizer ─────────────────── -->
-    <div class="slide" id="slide-11">
-      <div class="slide-label">Module 1 · Slide11</div>
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Module 1 · Slide12</div>
       <h2 class="slide-h2">Interactive: Code Tokenizer</h2>
       <p class="slide-p">Enter Java code below and click "Tokenize" to see it broken into classified tokens.</p>
       <textarea class="tok-input" id="tok-input">public int addNumbers(int a, int b) {
@@ -787,9 +918,134 @@
       </div>
     </div>
 
+    <!-- ── NEW: Beyond Lexer Tokens — Subword Tokenization ── -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Module 1 · Slide13</div>
+      <h2 class="slide-h2">Beyond Lexer Tokens: <em>Subword Tokenization</em></h2>
+      <p class="slide-p">Lexer-based tokenization is great for analysis, but modern LLMs use a different approach: Byte Pair Encoding (BPE). Understanding both is essential.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Lexer-based Tokenization</div>
+            <div class="concept-box-body">
+              <strong>Language-aware</strong> &mdash; knows Java keywords, operators, types<br/>
+              <strong>Fixed vocabulary</strong> per language (keyword set + identifiers)<br/>
+              <strong>Whole identifiers</strong> as single tokens<br/>
+              <strong>Example:</strong> <code style="color:var(--green);">getMaxValue</code> &rarr; <code>[getMaxValue]</code> (1 token)
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="concept-box blue">
+            <div class="concept-box-label">Subword / BPE Tokenization</div>
+            <div class="concept-box-body">
+              <strong>Language-agnostic</strong> &mdash; learns frequent character sequences<br/>
+              <strong>Learned vocabulary</strong> from training data (32K&ndash;100K tokens)<br/>
+              <strong>Splits identifiers</strong> into common subwords<br/>
+              <strong>Example:</strong> <code style="color:var(--green);">getMaxValue</code> &rarr; <code>[get, Max, Value]</code> (3 tokens)
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="concept-box amber" style="margin-top:8px;">
+        <div class="concept-box-label">Why BPE Wins for LLMs</div>
+        <div class="concept-box-body"><strong>Modern LLMs (GPT, CodeLlama, StarCoder) use BPE</strong> because it handles any vocabulary &mdash; including unseen identifiers, mixed languages, and even natural language comments &mdash; with a fixed-size token dictionary. No out-of-vocabulary problem.</div>
+      </div>
+      <div class="stat-row" style="margin-top:12px;">
+        <div class="stat-card"><div class="stat-val">32K</div><div class="stat-label">GPT-2 Vocab Size</div></div>
+        <div class="stat-card"><div class="stat-val blue">50K</div><div class="stat-label">CodeLlama Vocab</div></div>
+        <div class="stat-card"><div class="stat-val amber">49K</div><div class="stat-label">StarCoder Vocab</div></div>
+        <div class="stat-card"><div class="stat-val purple">100K</div><div class="stat-label">GPT-4 Vocab Size</div></div>
+      </div>
+    </div>
+
+    <!-- ── NEW: Interactive BPE vs Lexer Tokenizer ─────────── -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Module 1 · Slide14</div>
+      <h2 class="slide-h2">Interactive: <em>BPE vs Lexer</em> Tokenizer</h2>
+      <p class="slide-p">Type Java code below to see side-by-side comparison: lexer tokens (colored by type) vs simulated BPE tokens (showing how identifiers get split).</p>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <select class="tok-select" id="bpe-mode" onchange="runBpeCompare()">
+          <option value="both">Side-by-Side</option>
+          <option value="lexer">Java Lexer Only</option>
+          <option value="bpe">BPE (GPT-style) Only</option>
+        </select>
+        <button class="tok-btn" onclick="runBpeCompare()" style="margin-top:0;">Compare &rarr;</button>
+      </div>
+      <textarea class="tok-input" id="bpe-input" style="min-height:60px;">public int getMaxValue(int[] numbers) {
+    int maxVal = Integer.MIN_VALUE;
+    for (int num : numbers) {
+        if (num > maxVal) maxVal = num;
+    }
+    return maxVal;
+}</textarea>
+      <div class="bpe-compare" id="bpe-compare-output">
+        <div class="bpe-panel">
+          <div class="bpe-panel-label">Java Lexer Tokens</div>
+          <div class="tok-result" id="bpe-lexer-result"></div>
+        </div>
+        <div class="bpe-panel">
+          <div class="bpe-panel-label">BPE (GPT-style) Tokens</div>
+          <div class="tok-result" id="bpe-bpe-result"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:24px;margin-top:8px;">
+        <span class="pipeline-stat">Lexer tokens: <strong id="bpe-lexer-count">0</strong></span>
+        <span class="pipeline-stat">BPE tokens: <strong id="bpe-bpe-count">0</strong></span>
+      </div>
+    </div>
+
+    <!-- ── NEW: Abstract Syntax Trees (ASTs) ─────────────── -->
+    <div class="slide" id="slide-15">
+      <div class="slide-label">Module 1 · Slide15</div>
+      <h2 class="slide-h2">Abstract Syntax Trees <em>(ASTs)</em></h2>
+      <p class="slide-p">While tokenization produces a flat sequence, an AST captures the hierarchical structure of code. ASTs are used for code understanding tasks and semantic analysis.</p>
+      <div class="two-col">
+        <div>
+          <div class="code-block">
+            <span class="kw">public</span> <span class="fn">int</span> <span class="fn">add</span>(<span class="fn">int</span> a, <span class="fn">int</span> b) {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> a + b;<br/>
+            }
+          </div>
+          <div class="concept-box" style="margin-top:12px;">
+            <div class="concept-box-label">Key Points</div>
+            <div class="concept-box-body">
+              <strong>1.</strong> ASTs capture program <strong>structure</strong>, not just tokens<br/>
+              <strong>2.</strong> Used for code understanding and semantic analysis<br/>
+              <strong>3.</strong> Enable tree-based neural models (Tree-LSTM, code2seq)<br/>
+              <strong>4.</strong> Built by parsers like JavaParser, tree-sitter
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ast-tree">
+            <span class="ast-node">MethodDeclaration</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Type:</span> <span class="ast-leaf">int</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Name:</span> <span class="ast-leaf">add</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Parameters</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Parameter</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Type:</span> <span class="ast-leaf">int</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">Name:</span> <span class="ast-leaf">a</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">Parameter</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Type:</span> <span class="ast-leaf">int</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">Name:</span> <span class="ast-leaf">b</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">Body</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">ReturnStatement</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">BinaryExpression</span> <span class="ast-leaf">(+)</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;</span> <span class="ast-node">Left:</span> <span class="ast-leaf">a</span><br/>
+            <span class="ast-branch">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;</span> <span class="ast-node">Right:</span> <span class="ast-leaf">b</span>
+          </div>
+        </div>
+      </div>
+      <div class="concept-box purple" style="margin-top:12px;">
+        <div class="concept-box-label">Tokens vs Trees</div>
+        <div class="concept-box-body">While n-gram models see code as <strong>flat text</strong>, ASTs preserve the <strong>hierarchical structure</strong> that makes code different from natural language. This distinction becomes important when we discuss code embeddings and transformer architectures in later modules.</div>
+      </div>
+    </div>
+
     <!-- ── Slide 12: GitHub API & SEART-GHS ───────────────── -->
-    <div class="slide" id="slide-12">
-      <div class="slide-label">Module 1 · Slide12</div>
+    <div class="slide" id="slide-16">
+      <div class="slide-label">Module 1 · Slide16</div>
       <h2 class="slide-h2">Tools for Mining at Scale</h2>
       <p class="slide-p">Mining millions of repositories by hand isn't practical. Specialized APIs and search platforms make large-scale dataset construction possible.</p>
       <div class="two-col">
@@ -826,8 +1082,8 @@
     </div>
 
     <!-- ── Slide 13: The MSR Pipeline (Summary) ───────────── -->
-    <div class="slide" id="slide-13">
-      <div class="slide-label">Module 1 · Slide13</div>
+    <div class="slide" id="slide-17">
+      <div class="slide-label">Module 1 · Slide17</div>
       <h2 class="slide-h2">The MSR Pipeline: End to End</h2>
       <p class="slide-p">From raw repositories to a clean, tokenized dataset ready for model training — here's the complete pipeline.</p>
       <div class="flow-row">
@@ -863,51 +1119,38 @@
       </div>
     </div>
 
-    <!-- ── Slide 14: Key Takeaways ────────────────────────── -->
-    <div class="slide" id="slide-14">
-      <div class="slide-label">Module 1 · Slide14</div>
-      <h2 class="slide-h2">Key Takeaways</h2>
-      <div class="takeaway-grid">
-        <div class="takeaway-card">
-          <div class="takeaway-num">01 · Foundation</div>
-          <h4>Data Is the Foundation</h4>
-          <p>AI-driven software engineering starts with data. Mining software repositories provides the raw material for every downstream model.</p>
+    <!-- ── NEW: Code as Data — What Makes It Special ──────── -->
+    <div class="slide" id="slide-18">
+      <div class="slide-label">Module 1 · Slide18</div>
+      <h2 class="slide-h2">Code as Data: <em>What Makes It Special?</em></h2>
+      <p class="slide-p">Source code is unlike natural language text in several important ways. Understanding these differences shapes how we build datasets and models.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-name">Formal Syntax</div>
+          <div class="term-def">Code must compile or parse. A single misplaced semicolon breaks everything. This rigid structure is both a constraint and an advantage for learning.</div>
         </div>
-        <div class="takeaway-card">
-          <div class="takeaway-num">02 · Three Repo Types</div>
-          <h4>Source, Bug, Communication</h4>
-          <p>Each repository type contributes different artifacts — source code, bug reports, mailing lists — all valuable for learning SE patterns.</p>
+        <div class="term-card">
+          <div class="term-name">Executable Semantics</div>
+          <div class="term-def">Code has deterministic meaning: we can run it, test it, and verify outputs. This enables automatic labeling and evaluation unlike natural language.</div>
         </div>
-        <div class="takeaway-card">
-          <div class="takeaway-num">03 · Quality Over Quantity</div>
-          <h4>Preprocessing Is Critical</h4>
-          <p>Deduplication, outlier removal, boilerplate filtering, and sanity checks are essential before any model sees the data. Garbage in, garbage out.</p>
+        <div class="term-card">
+          <div class="term-name">Multi-level Representation</div>
+          <div class="term-def">The same code can be viewed as characters, tokens, AST nodes, control-flow graphs, or data-flow graphs. Each level reveals different patterns.</div>
         </div>
-        <div class="takeaway-card">
-          <div class="takeaway-num">04 · Tokenization</div>
-          <h4>From Characters to Tokens</h4>
-          <p>Tokenization converts raw code into structured sequences that models can process — reducing complexity and building a manageable vocabulary.</p>
-        </div>
-        <div class="takeaway-card">
-          <div class="takeaway-num">05 · Tools Exist</div>
-          <h4>Mine at Scale</h4>
-          <p>GitHub APIs, SEART-GHS, PyGitHub, javalang, Pygments — a rich ecosystem of tools exists for every stage of the pipeline.</p>
-        </div>
-        <div class="takeaway-card">
-          <div class="takeaway-num">06 · The Big Picture</div>
-          <h4>MSR → Train → Deploy</h4>
-          <p>This pipeline feeds directly into the next modules: probabilistic language models, deep learning architectures, and pre-trained transformers for code.</p>
+        <div class="term-card">
+          <div class="term-name">Bimodal Nature</div>
+          <div class="term-def">Repositories contain both code and natural language (comments, docs, commit messages). Models can learn the mapping between intent and implementation.</div>
         </div>
       </div>
-      <div class="concept-box" style="margin-top:20px;">
-        <div class="concept-box-label">Next Steps</div>
-        <div class="concept-box-body">Now that you know how to <strong>collect and prepare</strong> data from software repositories, the next module explores <strong>Probabilistic Language Models</strong> — how to model the statistical properties of code using n-grams.</div>
+      <div class="concept-box purple" style="margin-top:14px;">
+        <div class="concept-box-label">Key Implication</div>
+        <div class="concept-box-body">Because code is <strong>formal, executable, and multi-level</strong>, MSR datasets can be richer than typical NLP corpora. We can extract not just text, but <strong>structure (ASTs), behavior (tests), and evolution (diffs)</strong> from the same repository.</div>
       </div>
     </div>
 
     <!-- ── Slide 15: Real-World MSR Datasets ────────────── -->
-    <div class="slide" id="slide-15">
-      <div class="slide-label">Module 1 · Slide15</div>
+    <div class="slide" id="slide-19">
+      <div class="slide-label">Module 1 · Slide19</div>
       <h2 class="slide-h2">Real-World MSR Datasets</h2>
       <p class="slide-p">Researchers have curated benchmark datasets from mined repositories. These standardized datasets enable reproducible experiments and fair comparisons across techniques.</p>
       <div style="overflow-x:auto;">
@@ -936,9 +1179,56 @@
       </div>
     </div>
 
+    <!-- ── NEW: Dataset Licensing & Legal Considerations ──── -->
+    <div class="slide" id="slide-20">
+      <div class="slide-label">Module 1 · Slide20</div>
+      <h2 class="slide-h2">Dataset Licensing &amp; <em>Legal Considerations</em></h2>
+      <p class="slide-p">Public code is not necessarily free to use for any purpose. Ethical and legal issues are critical when building MSR datasets.</p>
+      <div class="landscape-grid">
+        <div class="landscape-card">
+          <h4 style="color:var(--green);">&#9878;&#65039; License Compliance</h4>
+          <p><strong>MIT</strong> &mdash; permissive, almost no restrictions. <strong>Apache 2.0</strong> &mdash; permissive with patent grants. <strong>GPL</strong> &mdash; copyleft, derivatives must also be GPL. Always check if a license permits use as training data.</p>
+        </div>
+        <div class="landscape-card">
+          <h4 style="color:var(--amber);">&#9888;&#65039; The Copilot Controversy</h4>
+          <p>GitHub Copilot trained on public repos regardless of license, sparking a class-action lawsuit. Developers argued their copyleft code was used without respecting license terms.</p>
+        </div>
+        <div class="landscape-card">
+          <h4 style="color:var(--red);">&#128274; Privacy in Code</h4>
+          <p>Repositories often contain PII in comments (names, emails), hardcoded API keys, database credentials, and internal URLs. These must be scrubbed from training data.</p>
+        </div>
+        <div class="landscape-card">
+          <h4 style="color:var(--blue);">&#129309; Responsible Collection</h4>
+          <p>Respect <strong>robots.txt</strong> and API rate limits. Provide attribution when possible. Consider opt-out mechanisms for developers who do not want their code used for training.</p>
+        </div>
+      </div>
+      <div class="concept-box amber" style="margin-top:14px;">
+        <div class="concept-box-label">Remember</div>
+        <div class="concept-box-body"><strong>Just because code is public does not mean it is free to use for any purpose.</strong> Always verify license compatibility, scrub sensitive data, and respect the intent of open-source contributors.</div>
+      </div>
+    </div>
+
+    <!-- ── NEW: Data Provenance & Reproducibility ──────────── -->
+    <div class="slide" id="slide-21">
+      <div class="slide-label">Module 1 · Slide21</div>
+      <h2 class="slide-h2">Data Provenance &amp; <em>Reproducibility</em></h2>
+      <p class="slide-p">Tracking where data comes from and how it was processed is essential for scientific rigor and reproducibility in MSR research.</p>
+      <ol class="step-list">
+        <li><strong>Record source repos</strong> &mdash; Store full URLs, commit hashes, and timestamps for every repository you mine. This lets others verify and replicate your dataset.</li>
+        <li><strong>Version your filters</strong> &mdash; Document every inclusion/exclusion criterion (min stars, language, file patterns). Even small filter changes can drastically alter results.</li>
+        <li><strong>Timestamp your collection</strong> &mdash; Repositories change constantly. Code added, deleted, or relicensed after your snapshot may differ from what you collected.</li>
+        <li><strong>Share your pipeline</strong> &mdash; Publish your mining scripts, configuration files, and random seeds. A dataset without reproducible construction is scientifically weak.</li>
+        <li><strong>Use standardized formats</strong> &mdash; Store datasets in well-known formats like JSONL (one JSON object per line) or Parquet (columnar, compressed, fast). Include metadata fields.</li>
+      </ol>
+      <div class="concept-box" style="margin-top:14px;">
+        <div class="concept-box-label">Golden Rule</div>
+        <div class="concept-box-body"><strong>A dataset without provenance is scientifically useless.</strong> Always document HOW you built it, so others can reproduce, verify, and extend your work.</div>
+      </div>
+    </div>
+
     <!-- ── Slide 16: Interactive Repository Filter Simulator ── -->
-    <div class="slide" id="slide-16">
-      <div class="slide-label">Module 1 · Slide16</div>
+    <div class="slide" id="slide-22">
+      <div class="slide-label">Module 1 · Slide22</div>
       <h2 class="slide-h2">Interactive: Repository Filter Simulator</h2>
       <p class="slide-p">Configure repository selection criteria and watch how quickly the pool of usable repositories shrinks. Every filter trades quantity for quality.</p>
       <div class="filter-grid" id="filter-grid">
@@ -980,8 +1270,8 @@
     </div>
 
     <!-- ── Slide 17: Deduplication ──────────────────────── -->
-    <div class="slide" id="slide-17">
-      <div class="slide-label">Module 1 · Slide17</div>
+    <div class="slide" id="slide-23">
+      <div class="slide-label">Module 1 · Slide23</div>
       <h2 class="slide-h2">Deduplication: Why &amp; How</h2>
       <p class="slide-p">Duplicate code inflates datasets and causes data leakage. Removing duplicates is essential for training models that generalize rather than memorize.</p>
       <div class="two-col">
@@ -1025,9 +1315,86 @@
       </div>
     </div>
 
+    <!-- ── NEW: Interactive Duplicate Detector ────────────── -->
+    <div class="slide" id="slide-24">
+      <div class="slide-label">Module 1 · Slide24</div>
+      <h2 class="slide-h2">Interactive: <em>Duplicate Detector</em></h2>
+      <p class="slide-p">Paste two code snippets below to compute similarity. See how near-duplicates can fool exact matching.</p>
+      <div class="bpe-compare">
+        <div class="bpe-panel">
+          <div class="bpe-panel-label">Snippet A</div>
+          <textarea class="tok-input" id="dup-input-a" style="min-height:90px;" oninput="runDupDetect()">public int calculateSum(int x, int y) {
+    int result = x + y;
+    return result;
+}</textarea>
+        </div>
+        <div class="bpe-panel">
+          <div class="bpe-panel-label">Snippet B</div>
+          <textarea class="tok-input" id="dup-input-b" style="min-height:90px;" oninput="runDupDetect()">public int addNumbers(int a, int b) {
+    int sum = a + b;
+    return sum;
+}</textarea>
+        </div>
+      </div>
+      <div class="sim-meter">
+        <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);min-width:100px;">Exact match:</span>
+        <div class="sim-bar"><div class="sim-fill" id="dup-exact-fill" style="width:0%;background:var(--red);"></div></div>
+        <div class="sim-val" id="dup-exact-val" style="color:var(--red);">0%</div>
+      </div>
+      <div class="sim-meter">
+        <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);min-width:100px;">Token Jaccard:</span>
+        <div class="sim-bar"><div class="sim-fill" id="dup-jaccard-fill" style="width:0%;background:var(--amber);"></div></div>
+        <div class="sim-val" id="dup-jaccard-val" style="color:var(--amber);">0%</div>
+      </div>
+      <div class="threshold-row">
+        <label>Duplicate threshold:</label>
+        <input type="range" id="dup-threshold" min="0" max="100" value="70" oninput="runDupDetect()">
+        <span class="threshold-val" id="dup-threshold-val">70%</span>
+      </div>
+      <div class="concept-box" id="dup-verdict" style="margin-top:8px;">
+        <div class="concept-box-label">Verdict</div>
+        <div class="concept-box-body" id="dup-verdict-text">Adjust the snippets above to see similarity analysis.</div>
+      </div>
+    </div>
+
+    <!-- ── NEW: Hashing for Deduplication ──────────────────── -->
+    <div class="slide" id="slide-25">
+      <div class="slide-label">Module 1 · Slide25</div>
+      <h2 class="slide-h2">Hashing for <em>Deduplication</em></h2>
+      <p class="slide-p">Deduplication at scale relies on hashing. Here are the key concepts and how they fit into the MSR pipeline.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-name">What Is a Hash?</div>
+          <div class="term-def">A deterministic function that maps any input to a fixed-size output (digest). Same input always produces the same hash. Even a 1-character change produces a completely different hash.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">MD5 / SHA-256</div>
+          <div class="term-def">Collision-resistant, fast to compute. Used for exact duplicate detection: hash each file, group by hash, keep one per group. SHA-256 is preferred for security.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">MinHash</div>
+          <div class="term-def">Approximates Jaccard similarity efficiently. Instead of comparing all token sets pairwise, MinHash creates compact signatures that can be compared in O(1).</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">LSH (Locality-Sensitive Hashing)</div>
+          <div class="term-def">Groups similar items into the same buckets with high probability. Combined with MinHash, it finds near-duplicates in sub-linear time across millions of files.</div>
+        </div>
+      </div>
+      <p class="slide-p" style="margin-top:12px;">Type some code below to see a simulated hash update in real time:</p>
+      <textarea class="tok-input" id="hash-input" style="min-height:50px;" oninput="updateHashDisplay()">public int add(int a, int b) { return a + b; }</textarea>
+      <div class="hash-display">
+        <span class="hash-label">Simulated SHA-256</span>
+        <span class="hash-val" id="hash-output">...</span>
+      </div>
+      <div class="concept-box blue" style="margin-top:8px;">
+        <div class="concept-box-label">Pipeline Fit</div>
+        <div class="concept-box-body"><strong>Step 1:</strong> Use SHA-256 to remove exact duplicates (fast, O(n)). <strong>Step 2:</strong> Use MinHash+LSH to find near-duplicates (scalable, sub-quadratic). This two-phase approach handles datasets with millions of files.</div>
+      </div>
+    </div>
+
     <!-- ── Slide 18: Data Splitting Strategies ──────────── -->
-    <div class="slide" id="slide-18">
-      <div class="slide-label">Module 1 · Slide18</div>
+    <div class="slide" id="slide-26">
+      <div class="slide-label">Module 1 · Slide26</div>
       <h2 class="slide-h2">Data Splitting Strategies</h2>
       <p class="slide-p">How you split data into train, validation, and test sets matters as much as the data itself. The wrong strategy can silently invalidate your results.</p>
       <div class="two-col">
@@ -1092,8 +1459,8 @@
     </div>
 
     <!-- ── Slide 19: Worked Example ────────────────────── -->
-    <div class="slide" id="slide-19">
-      <div class="slide-label">Module 1 · Slide19</div>
+    <div class="slide" id="slide-27">
+      <div class="slide-label">Module 1 · Slide27</div>
       <h2 class="slide-h2">Worked Example: From Repo to Dataset</h2>
       <p class="slide-p">Let us walk through a concrete example of building a dataset for <strong>Java code summarization</strong> &mdash; generating a natural-language description for a given method.</p>
       <div class="funnel-steps">
@@ -1139,9 +1506,174 @@
       </div>
     </div>
 
-    <!-- ── Slide 20: Knowledge Check ────────────────────── -->
-    <div class="slide" id="slide-20">
-      <div class="slide-label">Module 1 · Slide20</div>
+    <!-- ── NEW: Common Pitfalls in MSR Research ──────────── -->
+    <div class="slide" id="slide-28">
+      <div class="slide-label">Module 1 · Slide28</div>
+      <h2 class="slide-h2">Common Pitfalls in <em>MSR Research</em></h2>
+      <p class="slide-p">Avoid these frequent mistakes that can silently invalidate your MSR experiments and models.</p>
+      <div class="warn-grid">
+        <div class="warn-card">
+          <h4>Leaky Splits</h4>
+          <p>Same project (or near-duplicate code) appears in both training and test sets, inflating evaluation metrics.</p>
+          <div class="tip">&#10003; Use project-based splitting + deduplication across splits.</div>
+        </div>
+        <div class="warn-card">
+          <h4>Stale Data</h4>
+          <p>Using outdated repository snapshots that no longer reflect current coding practices or APIs.</p>
+          <div class="tip">&#10003; Timestamp collections and re-mine periodically.</div>
+        </div>
+        <div class="warn-card">
+          <h4>Selection Bias</h4>
+          <p>Only mining popular repos (high stars) or English-only projects skews the dataset toward specific demographics.</p>
+          <div class="tip">&#10003; Document selection criteria; include diverse sources.</div>
+        </div>
+        <div class="warn-card">
+          <h4>Ignoring Tests</h4>
+          <p>Test files mixed with production source code introduce repetitive patterns and assertions into training data.</p>
+          <div class="tip">&#10003; Filter by file path: exclude **/test/**, *Test.java.</div>
+        </div>
+        <div class="warn-card">
+          <h4>Auto-generated Code</h4>
+          <p>Protobuf stubs, build outputs, and boilerplate generators inflate datasets with non-human code.</p>
+          <div class="tip">&#10003; Check for generation markers; filter by heuristics.</div>
+        </div>
+        <div class="warn-card">
+          <h4>Missing Documentation</h4>
+          <p>No record of filters, versions, or parameters used. Others cannot reproduce or verify results.</p>
+          <div class="tip">&#10003; Publish mining scripts, configs, and random seeds.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEW: From MSR to Model Training ─────────────────── -->
+    <div class="slide" id="slide-29">
+      <div class="slide-label">Module 1 · Slide29</div>
+      <h2 class="slide-h2">From MSR to <em>Model Training</em></h2>
+      <p class="slide-p">This module built the foundation. Now let us connect MSR to what comes next: training probabilistic models that understand and predict code.</p>
+      <div class="flow-row" style="margin:20px 0;">
+        <div class="flow-box green" style="min-width:140px;">What We Built<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Clean, tokenized,<br/>deduplicated dataset</span></div>
+        <span class="flow-arrow">&#8594;</span>
+        <div class="flow-box blue" style="min-width:140px;">What's Next<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Train probabilistic<br/>models on this data</span></div>
+        <span class="flow-arrow">&#8594;</span>
+        <div class="flow-box purple" style="min-width:140px;">The Key Question<br/><span style="font-size:0.7rem;font-weight:400;color:var(--text-muted);">Can we compute<br/>P(next_token | context)?</span></div>
+      </div>
+      <div class="concept-box" style="margin-top:16px;">
+        <div class="concept-box-label">Preview &mdash; N-gram Language Models</div>
+        <div class="concept-box-body">In Module 2, we will use the datasets built in this module to train <strong>n-gram language models</strong>. These models estimate the probability of the next token given the previous n&minus;1 tokens: <strong>P(t<sub>n</sub> | t<sub>1</sub>, ..., t<sub>n-1</sub>)</strong>. This is the simplest form of code completion &mdash; and the foundation for understanding how modern LLMs work.</div>
+      </div>
+      <div class="concept-box blue" style="margin-top:12px;">
+        <div class="concept-box-label">The Pipeline So Far</div>
+        <div class="concept-box-body">
+          <strong>Repos</strong> &#8594; <strong>Filter</strong> &#8594; <strong>Extract</strong> &#8594; <strong>Preprocess</strong> &#8594; <strong>Tokenize (Lexer or BPE)</strong> &#8594; <strong>Deduplicate</strong> &#8594; <strong>Split</strong> &#8594; <strong style="color:var(--amber);">Train Model (Module 2)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEW: Try It Yourself — Mini MSR Exercise ────────── -->
+    <div class="slide" id="slide-30">
+      <div class="slide-label">Module 1 · Slide30</div>
+      <h2 class="slide-h2">Try It Yourself: <em>Mini MSR Exercise</em></h2>
+      <p class="slide-p">Put your knowledge into practice with this hands-on mini-assignment. You will use this dataset in the next module.</p>
+      <div class="concept-box" style="margin-top:8px;">
+        <div class="concept-box-label">Assignment</div>
+        <div class="concept-box-body">
+          <strong>1.</strong> Clone 3 Java repositories from GitHub (pick repos with 50+ stars).<br/>
+          <strong>2.</strong> Extract all methods using a parser (JavaParser or javalang).<br/>
+          <strong>3.</strong> Count the vocabulary (unique tokens after lexer tokenization).<br/>
+          <strong>4.</strong> Compute basic statistics: average method length (in tokens), most common tokens, number of duplicates.<br/>
+          <strong>5.</strong> Save the cleaned methods as a JSONL file (one method per line).
+        </div>
+      </div>
+      <div class="pseudo-block" style="margin-top:14px;">
+<span class="cmt"># Skeleton: mini_msr.py</span>
+<span class="kw">import</span> javalang, json, os, hashlib
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+repos = [<span class="str">"user/repo1"</span>, <span class="str">"user/repo2"</span>, <span class="str">"user/repo3"</span>]
+
+<span class="kw">def</span> <span class="fn">clone_repos</span>(repos):
+    <span class="kw">for</span> r <span class="kw">in</span> repos:
+        os.<span class="fn">system</span>(f<span class="str">"git clone https://github.com/{r}.git"</span>)
+
+<span class="kw">def</span> <span class="fn">extract_methods</span>(java_file):
+    <span class="cmt"># Parse with javalang, yield method bodies</span>
+    ...
+
+<span class="kw">def</span> <span class="fn">tokenize_method</span>(code):
+    <span class="cmt"># Use javalang.tokenizer to get tokens</span>
+    ...
+
+<span class="kw">def</span> <span class="fn">deduplicate</span>(methods):
+    seen = <span class="fn">set</span>()
+    <span class="kw">for</span> m <span class="kw">in</span> methods:
+        h = hashlib.<span class="fn">sha256</span>(m.encode()).<span class="fn">hexdigest</span>()
+        <span class="kw">if</span> h <span class="kw">not in</span> seen:
+            seen.<span class="fn">add</span>(h)
+            <span class="kw">yield</span> m
+
+<span class="cmt"># Main pipeline: clone -> extract -> tokenize -> dedup -> stats -> save</span>
+      </div>
+      <div class="concept-box purple" style="margin-top:12px;">
+        <div class="concept-box-label">Deliverables</div>
+        <div class="concept-box-body">A JSONL file with your cleaned methods and a short report: <strong>how many repos, how many methods extracted, vocabulary size, avg method length, and how many duplicates you removed.</strong> Bring this dataset to the next class &mdash; we will use it to build n-gram models.</div>
+      </div>
+    </div>
+
+    <!-- ── Key Takeaways (moved to slide 31) ──────────────── -->
+    <div class="slide" id="slide-31">
+      <div class="slide-label">Module 1 · Slide31</div>
+      <h2 class="slide-h2">Key Takeaways</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-card">
+          <div class="takeaway-num">01 · Foundation</div>
+          <h4>Data Is the Foundation</h4>
+          <p>AI-driven SE starts with data. Mining software repositories provides the raw material for every downstream model.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">02 · Repo Types</div>
+          <h4>Source, Bug, Communication</h4>
+          <p>Each repository type contributes different artifacts. Version control history is a rich dataset of commits, diffs, and branches.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">03 · Preprocessing</div>
+          <h4>Quality Over Quantity</h4>
+          <p>Deduplication (hashing, MinHash+LSH), outlier removal, boilerplate filtering, and sanity checks are essential. Garbage in, garbage out.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">04 · Tokenization</div>
+          <h4>Lexer Tokens and BPE</h4>
+          <p>Lexer-based tokenization is language-aware; BPE is language-agnostic and used by modern LLMs. ASTs add structural understanding beyond flat tokens.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">05 · Ethics &amp; Law</div>
+          <h4>Licensing &amp; Privacy</h4>
+          <p>Public code is not free to use for any purpose. Respect licenses, scrub PII, document provenance, and ensure reproducibility.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">06 · Avoid Pitfalls</div>
+          <h4>Leakage, Bias, Staleness</h4>
+          <p>Project-based splits prevent leakage. Diverse selection avoids bias. Timestamped collections prevent staleness. Document everything.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">07 · Tools</div>
+          <h4>Mine at Scale</h4>
+          <p>GitHub APIs, SEART-GHS, PyGitHub, javalang, Pygments, tree-sitter &mdash; a rich ecosystem exists for every pipeline stage.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">08 · The Big Picture</div>
+          <h4>MSR &#8594; Train &#8594; Deploy</h4>
+          <p>This pipeline feeds directly into n-gram models, deep learning architectures, and pre-trained transformers for code.</p>
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:16px;">
+        <div class="concept-box-label">Next Steps</div>
+        <div class="concept-box-body">Now that you know how to <strong>collect and prepare</strong> data from software repositories, the next module explores <strong>Probabilistic Language Models</strong> &mdash; how to model the statistical properties of code using n-grams.</div>
+      </div>
+    </div>
+
+    <!-- ── Knowledge Check (slide 32) ──────────────────────── -->
+    <div class="slide" id="slide-32">
+      <div class="slide-label">Module 1 · Slide32</div>
       <h2 class="slide-h2">Knowledge Check</h2>
       <p class="slide-p">Test your understanding of the MSR pipeline. Click "Reveal Answer" to check your reasoning.</p>
 
@@ -1180,8 +1712,24 @@
 
   <!-- ── JavaScript ──────────────────────────────────────── -->
   <script>
-    const TOTAL = 20;
+    const TOTAL = 32;
     let current = 1;
+
+    // Map of slide numbers to their init functions
+    const SLIDE_INITS = {
+      3: 'initRepoExplorer',
+      9: 'initPipeline',
+      12: 'initTokenizer',
+      14: 'initBpeCompare',
+      22: 'initFilterSim',
+      24: 'initDupDetect',
+      25: 'initHashDemo'
+    };
+
+    function initSlide(n) {
+      const fn = SLIDE_INITS[n];
+      if (fn && typeof window[fn] === 'function') setTimeout(window[fn], 50);
+    }
 
     // ── Navigation ──────────────────────────────────────────
     function goSlide(delta) {
@@ -1191,11 +1739,7 @@
       current = next;
       document.getElementById('slide-' + current).classList.add('active');
       updateUI();
-      // Init interactive components on their slides
-      if (current === 3) setTimeout(initRepoExplorer, 50);
-      if (current === 8) setTimeout(initPipeline, 50);
-      if (current === 11) setTimeout(initTokenizer, 50);
-      if (current === 16) setTimeout(initFilterSim, 50);
+      initSlide(current);
     }
 
     function updateUI() {
@@ -1209,7 +1753,7 @@
       for (let i = 1; i <= TOTAL; i++) {
         const d = document.createElement('div');
         d.className = 'slide-dot' + (i === current ? ' active' : '');
-        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); if(i===3) setTimeout(initRepoExplorer,50); if(i===8) setTimeout(initPipeline,50); if(i===11) setTimeout(initTokenizer,50); if(i===16) setTimeout(initFilterSim,50); };
+        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); initSlide(i); };
         dots.appendChild(d);
       }
     }
@@ -1682,6 +2226,171 @@ public void logMensaje(String café) {
       const btn = el.previousElementSibling;
       btn.textContent = el.classList.contains('visible') ? 'Hide Answer' : 'Reveal Answer';
     }
+
+    // ── Interactive 6: BPE vs Lexer Comparison ─────────────
+    function splitBPE(code) {
+      // Simplified BPE simulation: split camelCase, common subwords, operators
+      const tokens = [];
+      let i = 0;
+      while (i < code.length) {
+        if (/\s/.test(code[i])) { i++; continue; }
+        // Skip comments
+        if (code[i] === '/' && code[i+1] === '/') { while (i < code.length && code[i] !== '\n') i++; continue; }
+        if (code[i] === '/' && code[i+1] === '*') { i += 2; while (i < code.length - 1 && !(code[i] === '*' && code[i+1] === '/')) i++; i += 2; continue; }
+        // String literal
+        if (code[i] === '"') { let s = '"'; i++; while (i < code.length && code[i] !== '"') { if (code[i] === '\\') s += code[i++]; s += code[i++]; } s += '"'; i++; tokens.push(s); continue; }
+        // Numbers
+        if (/[0-9]/.test(code[i])) { let n = ''; while (i < code.length && /[0-9.xXa-fA-FLl]/.test(code[i])) n += code[i++]; tokens.push(n); continue; }
+        // Multi-char operators
+        if (i+1 < code.length && ['==','!=','<=','>=','&&','||','++','--','+=','-=','<<','>>'].includes(code[i]+code[i+1])) {
+          tokens.push(code[i]+code[i+1]); i += 2; continue;
+        }
+        // Separators and single operators
+        if ('(){}[];,.+-*/%=<>!&|^~?:@'.includes(code[i])) { tokens.push(code[i]); i++; continue; }
+        // Identifiers: split by camelCase and common boundaries
+        if (/[a-zA-Z_$]/.test(code[i])) {
+          let word = ''; while (i < code.length && /[a-zA-Z0-9_$]/.test(code[i])) word += code[i++];
+          // Split camelCase and underscores
+          const parts = word.replace(/([a-z])([A-Z])/g, '$1\x00$2')
+                            .replace(/([A-Z]+)([A-Z][a-z])/g, '$1\x00$2')
+                            .replace(/_/g, '\x00_')
+                            .split('\x00')
+                            .filter(p => p.length > 0);
+          // Common short keywords stay as single tokens
+          const COMMON = new Set(['public','private','protected','static','final','void','return','int','new','if','else','for','while','class','this','true','false','null','String','boolean','double','float','long','char','byte','short','import','package','throw','throws','try','catch','extends','implements','super','break','continue','switch','case','default','do','enum','abstract','interface','volatile','synchronized','transient','native','instanceof','Integer','MIN','MAX','VALUE','num','get','set','put','add','size','length','out','println','System']);
+          if (COMMON.has(word) || word.length <= 3) {
+            tokens.push(word);
+          } else {
+            tokens.push(...parts);
+          }
+          continue;
+        }
+        i++;
+      }
+      return tokens;
+    }
+
+    function runBpeCompare() {
+      const code = document.getElementById('bpe-input').value;
+      const mode = document.getElementById('bpe-mode').value;
+      const lexerTokens = lexJava(code);
+      const bpeTokens = splitBPE(code);
+
+      const lexerResult = document.getElementById('bpe-lexer-result');
+      const bpeResult = document.getElementById('bpe-bpe-result');
+      const compareDiv = document.getElementById('bpe-compare-output');
+
+      // Adjust layout based on mode
+      if (mode === 'lexer') {
+        compareDiv.style.gridTemplateColumns = '1fr';
+        bpeResult.parentElement.style.display = 'none';
+        lexerResult.parentElement.style.display = '';
+      } else if (mode === 'bpe') {
+        compareDiv.style.gridTemplateColumns = '1fr';
+        lexerResult.parentElement.style.display = 'none';
+        bpeResult.parentElement.style.display = '';
+      } else {
+        compareDiv.style.gridTemplateColumns = '1fr 1fr';
+        lexerResult.parentElement.style.display = '';
+        bpeResult.parentElement.style.display = '';
+      }
+
+      lexerResult.innerHTML = lexerTokens.map(t =>
+        '<span class="tok-chip ' + t.type + '" title="' + t.type + '">' + escapeHtml(t.value) + '</span>'
+      ).join('');
+
+      bpeResult.innerHTML = bpeTokens.map(t => {
+        let cls = 'identifier';
+        if (JAVA_KEYWORDS.has(t)) cls = 'keyword';
+        else if (JAVA_TYPES.has(t)) cls = 'type';
+        else if (SEPARATORS.has(t)) cls = 'separator';
+        else if (OPERATORS.has(t)) cls = 'operator';
+        else if (/^["']/.test(t) || /^\d/.test(t)) cls = 'literal';
+        return '<span class="tok-chip ' + cls + '">' + escapeHtml(t) + '</span>';
+      }).join('');
+
+      document.getElementById('bpe-lexer-count').textContent = lexerTokens.length;
+      document.getElementById('bpe-bpe-count').textContent = bpeTokens.length;
+    }
+
+    function initBpeCompare() { runBpeCompare(); }
+
+    // ── Interactive 7: Duplicate Detector ─────────────────────
+    function runDupDetect() {
+      const a = document.getElementById('dup-input-a').value;
+      const b = document.getElementById('dup-input-b').value;
+      const threshold = parseInt(document.getElementById('dup-threshold').value);
+      document.getElementById('dup-threshold-val').textContent = threshold + '%';
+
+      // Exact match: character-by-character
+      const exactMatch = a.trim() === b.trim() ? 100 : 0;
+
+      // Token-level Jaccard similarity
+      const tokensA = new Set(lexJava(a).map(t => t.value));
+      const tokensB = new Set(lexJava(b).map(t => t.value));
+      const intersection = new Set([...tokensA].filter(x => tokensB.has(x)));
+      const union = new Set([...tokensA, ...tokensB]);
+      const jaccard = union.size === 0 ? 0 : Math.round((intersection.size / union.size) * 100);
+
+      // Update exact match meter
+      document.getElementById('dup-exact-fill').style.width = exactMatch + '%';
+      document.getElementById('dup-exact-fill').style.background = exactMatch > 0 ? 'var(--green)' : 'var(--red)';
+      document.getElementById('dup-exact-val').textContent = exactMatch + '%';
+      document.getElementById('dup-exact-val').style.color = exactMatch > 0 ? 'var(--green)' : 'var(--red)';
+
+      // Update Jaccard meter
+      const jColor = jaccard >= threshold ? 'var(--amber)' : 'var(--green)';
+      document.getElementById('dup-jaccard-fill').style.width = jaccard + '%';
+      document.getElementById('dup-jaccard-fill').style.background = jColor;
+      document.getElementById('dup-jaccard-val').textContent = jaccard + '%';
+      document.getElementById('dup-jaccard-val').style.color = jColor;
+
+      // Verdict
+      const verdictEl = document.getElementById('dup-verdict-text');
+      const verdictBox = document.getElementById('dup-verdict');
+      if (exactMatch === 100) {
+        verdictEl.innerHTML = '<strong>Exact duplicate detected.</strong> These snippets are character-for-character identical. A simple hash check (MD5/SHA-256) would catch this.';
+        verdictBox.className = 'concept-box amber';
+      } else if (jaccard >= threshold) {
+        verdictEl.innerHTML = '<strong>Near-duplicate detected</strong> (Jaccard ' + jaccard + '% >= threshold ' + threshold + '%). Exact matching misses this, but token-level Jaccard with MinHash+LSH would catch it.';
+        verdictBox.className = 'concept-box amber';
+      } else {
+        verdictEl.innerHTML = '<strong>Not a duplicate</strong> (Jaccard ' + jaccard + '% < threshold ' + threshold + '%). These snippets are sufficiently different to keep both in the dataset.';
+        verdictBox.className = 'concept-box';
+      }
+    }
+
+    function initDupDetect() { runDupDetect(); }
+
+    // ── Interactive 8: Hash Demo ──────────────────────────────
+    // Simple non-cryptographic hash for demo purposes (simulates SHA-256 output)
+    function simHash(str) {
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57, h3 = 0x9e3779b9, h4 = 0x85ebca6b;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 0x5bd1e995);
+        h2 = Math.imul(h2 ^ ch, 0x1b873593);
+        h3 = Math.imul(h3 ^ ch, 0xcc9e2d51);
+        h4 = Math.imul(h4 ^ ch, 0x85ebca6b);
+        h1 = (h1 << 13) | (h1 >>> 19);
+        h2 = (h2 << 15) | (h2 >>> 17);
+        h3 = (h3 << 17) | (h3 >>> 15);
+        h4 = (h4 << 19) | (h4 >>> 13);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 0x85ebca6b);
+      h2 = Math.imul(h2 ^ (h2 >>> 13), 0xc2b2ae35);
+      h3 = Math.imul(h3 ^ (h3 >>> 16), 0x5bd1e995);
+      h4 = Math.imul(h4 ^ (h4 >>> 13), 0x1b873593);
+      const hex = (n) => (n >>> 0).toString(16).padStart(8, '0');
+      return hex(h1) + hex(h2) + hex(h3) + hex(h4) + hex(h1^h3) + hex(h2^h4) + hex(h1^h4) + hex(h2^h3);
+    }
+
+    function updateHashDisplay() {
+      const input = document.getElementById('hash-input').value;
+      document.getElementById('hash-output').textContent = simHash(input);
+    }
+
+    function initHashDemo() { updateHashDisplay(); }
 
     // ── Init ────────────────────────────────────────────────
     updateUI();

@@ -170,6 +170,37 @@
     .cite{font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);}
     .cite a{color:var(--blue);text-decoration:none;}
     .cite a:hover{text-decoration:underline;}
+
+    /* NEW CSS for temperature slider and spot-the-hallucination interactives */
+    .temp-slider-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0;}
+    .temp-slider{width:100%;max-width:500px;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none;cursor:pointer;}
+    .temp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--green);border:2px solid var(--bg);cursor:pointer;}
+    .temp-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--green);border:2px solid var(--bg);cursor:pointer;}
+    .temp-val{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--green);}
+    .prob-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;justify-content:center;margin:10px 0;}
+    .prob-bar{display:flex;flex-direction:column;align-items:center;gap:4px;width:70px;}
+    .prob-bar .bar{width:40px;border-radius:4px 4px 0 0;background:var(--green);transition:height 0.3s ease;}
+    .prob-bar .bar-label{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);}
+    .prob-bar .bar-pct{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-secondary);}
+    .spot-snippet{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:8px 0;cursor:pointer;transition:all 0.2s;}
+    .spot-snippet:hover{border-color:var(--green-border);}
+    .spot-snippet.revealed-correct{border-color:var(--green);background:var(--green-dim);}
+    .spot-snippet.revealed-wrong{border-color:var(--red);background:rgba(248,81,73,0.04);}
+    .spot-snippet .line{font-family:var(--font-mono);font-size:0.75rem;line-height:1.7;padding:2px 6px;border-radius:4px;cursor:pointer;transition:background 0.15s;}
+    .spot-snippet .line:hover{background:rgba(88,166,255,0.08);}
+    .spot-snippet .line.selected{background:rgba(248,81,73,0.12);border-left:2px solid var(--red);}
+    .spot-snippet .line.correct-line{background:var(--green-dim);border-left:2px solid var(--green);}
+    .landscape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:10px;}
+    .landscape-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .landscape-card:hover{border-color:var(--green-border);}
+    .landscape-card h4{font-size:0.82rem;font-weight:600;margin-bottom:5px;color:var(--text-primary);}
+    .landscape-card p{font-size:0.78rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .before-after{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:10px 0;}
+    @media(max-width:700px){.before-after{grid-template-columns:1fr;}}
+    .before-after .ba-col{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+    .before-after .ba-col h4{font-size:0.78rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+    .before-after .ba-col.before h4{color:var(--red);}
+    .before-after .ba-col.after h4{color:var(--green);}
   </style>
 </head>
 <body>
@@ -180,12 +211,12 @@
   <span class="topbar-sep">|</span>
   <span class="topbar-title">Hallucinations in Coding Tasks</span>
   <span class="topbar-badge">Module 6 &middot; Interactive</span>
-  <span class="slide-counter" id="counter">1 / 20</span>
+  <span class="slide-counter" id="counter">1 / 30</span>
   <a href="index.html" class="topbar-home">Home</a>
 </div>
 
 <!-- Progress -->
-<div class="progress-track"><div class="progress-fill" id="progress" style="width:5%"></div></div>
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:3.33%"></div></div>
 
 <!-- Slides -->
 <div class="slides-wrapper">
@@ -251,9 +282,138 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 3 ==================== -->
+<!-- ==================== SLIDE 3 (NEW) ==================== -->
 <div class="slide" id="slide-3">
   <div class="slide-label">Module 6 &middot; Slide 03</div>
+  <h2 class="slide-h2">How LLMs <em>Generate</em> Code: A Quick Primer</h2>
+  <p class="slide-p">Before understanding hallucinations, we need to understand how LLMs produce code token by token. The autoregressive generation process is the root cause of many hallucination patterns.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Receive Prompt / Context</h4>
+          <p>The LLM receives the user's prompt plus any system instructions or retrieved context as input tokens.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Compute Probability Distribution</h4>
+          <p>The model computes a probability distribution over its entire vocabulary for the next token. Each possible token gets a score based on what the model has learned.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Sample a Token</h4>
+          <p>A token is selected from the distribution using sampling parameters (temperature, top-k, top-p). Lower temperature means more deterministic choices.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Append &amp; Repeat</h4>
+          <p>The chosen token is appended to the context. The model now sees the original prompt plus all previously generated tokens, and computes the next distribution. This repeats until a stop condition is met.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Visual: Token-by-Token Generation</div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box green" style="font-size:0.75rem;">Prompt: "sort a list"</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box blue" style="font-size:0.75rem;">P(def)=0.42</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box amber" style="font-size:0.75rem;">Token: <strong>def</strong></div>
+      </div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box green" style="font-size:0.75rem;">...sort a list <strong>def</strong></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box blue" style="font-size:0.75rem;">P(sort)=0.38</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box amber" style="font-size:0.75rem;">Token: <strong>sort</strong></div>
+      </div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-box green" style="font-size:0.75rem;">...def <strong>sort</strong></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box blue" style="font-size:0.75rem;">P(_list)=0.31</div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box amber" style="font-size:0.75rem;">Token: <strong>_list</strong></div>
+      </div>
+
+      <div class="cb red" style="margin-top:14px;">
+        <div class="cb-label">Key Insight</div>
+        <div class="cb-body">Hallucinations emerge because the model always produces the most <strong>plausible-sounding</strong> token, even when it has no knowledge of the correct answer. It cannot say "I don't know" mid-generation &mdash; it must always pick the next token.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4 (NEW) ==================== -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 6 &middot; Slide 04 &middot; Interactive</div>
+  <h2 class="slide-h2">Temperature &amp; Sampling: <em>The Hallucination Knob</em></h2>
+  <p class="slide-p">Generation parameters directly affect hallucination rates. Temperature controls how "peaked" or "flat" the probability distribution is when selecting the next token.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Low Temperature (0.1 &ndash; 0.3)</div>
+        <div class="cb-body">
+          <strong>More deterministic</strong> &mdash; the model strongly favors the highest-probability token.<br>
+          &bull; Fewer hallucinations<br>
+          &bull; Less creative / more repetitive<br>
+          &bull; Best for production code generation<br>
+          &bull; May repeat common patterns
+        </div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">High Temperature (0.8 &ndash; 1.2)</div>
+        <div class="cb-body">
+          <strong>More diverse</strong> &mdash; lower-probability tokens get a real chance of being selected.<br>
+          &bull; More hallucinations<br>
+          &bull; More creative / exploratory<br>
+          &bull; Better for brainstorming<br>
+          &bull; Can produce surprising (and wrong) outputs
+        </div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">Practical Guidelines</div>
+        <div class="cb-body">For <strong>production code generation</strong>, use T=0.0&ndash;0.2. For <strong>brainstorming and exploration</strong>, use T=0.7&ndash;1.0. <strong>Never use T&gt;1.0</strong> for code you will actually ship.</div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header">
+          <div class="inter-title">Temperature Visualizer <span class="inter-badge">interactive</span></div>
+        </div>
+        <div class="inter-body">
+          <div class="temp-slider-wrap">
+            <div>Temperature: <span class="temp-val" id="temp-display">0.5</span></div>
+            <input type="range" class="temp-slider" id="temp-slider" min="0" max="200" value="50" oninput="updateTemp(this.value)">
+            <div style="display:flex;justify-content:space-between;width:100%;max-width:500px;font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono);">
+              <span>0.0 (greedy)</span><span>1.0 (balanced)</span><span>2.0 (chaotic)</span>
+            </div>
+          </div>
+          <div class="prob-bar-wrap" id="prob-bars">
+            <div class="prob-bar"><div class="bar" id="bar-0" style="height:80px;background:var(--green);"></div><div class="bar-pct" id="pct-0">45%</div><div class="bar-label">def</div></div>
+            <div class="prob-bar"><div class="bar" id="bar-1" style="height:50px;background:var(--blue);"></div><div class="bar-pct" id="pct-1">25%</div><div class="bar-label">func</div></div>
+            <div class="prob-bar"><div class="bar" id="bar-2" style="height:30px;background:var(--amber);"></div><div class="bar-pct" id="pct-2">15%</div><div class="bar-label">class</div></div>
+            <div class="prob-bar"><div class="bar" id="bar-3" style="height:16px;background:var(--purple);"></div><div class="bar-pct" id="pct-3">10%</div><div class="bar-label">async</div></div>
+            <div class="prob-bar"><div class="bar" id="bar-4" style="height:8px;background:var(--red);"></div><div class="bar-pct" id="pct-4">5%</div><div class="bar-label">xyzq</div></div>
+          </div>
+          <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Probability distribution over next-token candidates</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5 ==================== -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 6 &middot; Slide 05</div>
   <h2 class="slide-h2">Why Hallucinations <em>Matter</em> in Code</h2>
   <p class="slide-p">Code hallucinations are not merely academic curiosities. They have real consequences across the software development lifecycle, from introducing subtle bugs to creating exploitable security vulnerabilities.</p>
 
@@ -285,9 +445,9 @@
   <div class="cite" style="text-align:center;margin-top:4px;">Source: Tian et al. CodeHalu (AAAI 2025)</div>
 </div>
 
-<!-- ==================== SLIDE 4 ==================== -->
-<div class="slide" id="slide-4">
-  <div class="slide-label">Module 6 &middot; Slide 04</div>
+<!-- ==================== SLIDE 6 ==================== -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 6 &middot; Slide 06</div>
   <h2 class="slide-h2">Real-World <em>Examples</em></h2>
   <p class="slide-p">These examples illustrate common hallucination patterns observed in LLM-generated code. Each snippet looks plausible but contains fabricated or incorrect API usage.</p>
 
@@ -356,9 +516,9 @@ model.fit(X_train, y_train)</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 5 ==================== -->
-<div class="slide" id="slide-5">
-  <div class="slide-label">Module 6 &middot; Slide 05</div>
+<!-- ==================== SLIDE 7 ==================== -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 6 &middot; Slide 07</div>
   <h2 class="slide-h2">CodeHalu Taxonomy <em>(Part 1)</em></h2>
   <p class="slide-p">Tian et al. (AAAI 2025) propose a systematic taxonomy of code hallucinations based on execution-based verification, dividing them into four categories with eight subcategories. This slide covers the first two categories.</p>
 
@@ -402,9 +562,9 @@ list.add(<span class="cs">"hello"</span>);
   <div class="cite" style="margin-top:8px;">Source: Tian et al. "CodeHalu: Investigating Code Hallucinations in LLMs via Execution-based Verification" (AAAI 2025)</div>
 </div>
 
-<!-- ==================== SLIDE 6 ==================== -->
-<div class="slide" id="slide-6">
-  <div class="slide-label">Module 6 &middot; Slide 06</div>
+<!-- ==================== SLIDE 8 ==================== -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 6 &middot; Slide 08</div>
   <h2 class="slide-h2">CodeHalu Taxonomy <em>(Part 2)</em></h2>
   <p class="slide-p">The remaining two categories in the CodeHalu taxonomy cover hallucinations related to resource management and logical reasoning &mdash; often the hardest to detect without execution.</p>
 
@@ -451,9 +611,9 @@ db_port = config[<span class="cs">"database"</span>][<span class="cs">"port"</sp
   <div class="cite" style="margin-top:8px;">Source: Tian et al. "CodeHalu: Investigating Code Hallucinations in LLMs via Execution-based Verification" (AAAI 2025)</div>
 </div>
 
-<!-- ==================== SLIDE 7 ==================== -->
-<div class="slide" id="slide-7">
-  <div class="slide-label">Module 6 &middot; Slide 07 &middot; Interactive</div>
+<!-- ==================== SLIDE 9 ==================== -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 6 &middot; Slide 09 &middot; Interactive</div>
   <h2 class="slide-h2">Spot the <em>Hallucination</em></h2>
   <p class="slide-p">Each pair below contains one snippet with a real API call and one with a hallucinated API. Click the snippet you believe is hallucinated.</p>
 
@@ -479,7 +639,7 @@ data = response.to_json()</div>
           </div>
         </div>
       </div>
-      <div id="s7c1-explain" style="display:none;" class="cb" style="margin-top:8px;">
+      <div id="s7c1-explain" style="display:none;" class="cb">
         <div class="cb-label">Explanation</div>
         <div class="cb-body"><strong>Right snippet is hallucinated.</strong> The <code>requests</code> library uses <code>.get()</code>, not <code>.fetch()</code>. Also, the response method is <code>.json()</code> not <code>.to_json()</code>. This is a <strong>Naming Hallucination</strong> per the CodeHalu taxonomy.</div>
       </div>
@@ -545,9 +705,9 @@ lines = text.to_list()</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 8 ==================== -->
-<div class="slide" id="slide-8">
-  <div class="slide-label">Module 6 &middot; Slide 08</div>
+<!-- ==================== SLIDE 10 ==================== -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 6 &middot; Slide 10</div>
   <h2 class="slide-h2"><em>HalluCode</em> Taxonomy</h2>
   <p class="slide-p">HalluCode proposes a complementary taxonomy focusing on the relationship between generated code and the developer's intent, context, and domain knowledge. It defines 5 primary categories and 19 specific types.</p>
 
@@ -576,9 +736,9 @@ lines = text.to_list()</div>
   <div class="cite" style="margin-top:8px;">Source: HalluCode &mdash; 5 primary categories, 19 specific types of code hallucination</div>
 </div>
 
-<!-- ==================== SLIDE 9 ==================== -->
-<div class="slide" id="slide-9">
-  <div class="slide-label">Module 6 &middot; Slide 09</div>
+<!-- ==================== SLIDE 11 ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 6 &middot; Slide 11</div>
   <h2 class="slide-h2">Comparing <em>Taxonomies</em></h2>
   <p class="slide-p">CodeHalu and HalluCode approach code hallucination classification from different angles. Understanding both provides a more complete picture of the hallucination landscape.</p>
 
@@ -629,9 +789,79 @@ lines = text.to_list()</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 10 ==================== -->
-<div class="slide" id="slide-10">
-  <div class="slide-label">Module 6 &middot; Slide 10</div>
+<!-- ==================== SLIDE 12 (NEW) ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 6 &middot; Slide 12 &middot; Interactive</div>
+  <h2 class="slide-h2">Interactive: <em>Spot the Hallucination</em> in Code</h2>
+  <p class="slide-p">Each code snippet below was generated by an LLM and contains a specific hallucination. Click the line you think is hallucinated, then click "Reveal" to check your answer.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Code Hallucination Hunt <span class="inter-badge">interactive</span></div>
+      <button class="sim-btn primary" onclick="revealAllSpots()">Reveal All</button>
+    </div>
+    <div class="inter-body">
+
+      <div class="kc-box" id="spot-q1">
+        <div class="kc-q" style="cursor:default;">Snippet A: Python List Sorting</div>
+        <div class="spot-snippet" id="spot-s1">
+          <div class="line" data-line="1" onclick="pickSpotLine(this)"><span class="ck">import</span> random</div>
+          <div class="line" data-line="2" onclick="pickSpotLine(this)">data = [random.randint(<span class="cl">1</span>, <span class="cl">100</span>) <span class="ck">for</span> _ <span class="ck">in</span> <span class="cf">range</span>(<span class="cl">20</span>)]</div>
+          <div class="line" data-line="3" onclick="pickSpotLine(this)" data-hallucinated="true">sorted_data = data.<span class="cr">sortDescending</span>()</div>
+          <div class="line" data-line="4" onclick="pickSpotLine(this)"><span class="cf">print</span>(sorted_data)</div>
+        </div>
+        <div class="kc-answer" id="spot-a1"><strong>Line 3 is hallucinated.</strong> Python lists have no <code>.sortDescending()</code> method. The correct approach is <code>data.sort(reverse=True)</code> or <code>sorted_data = sorted(data, reverse=True)</code>. This is a <strong>Naming Hallucination</strong> &mdash; the model invented a Java-style method name.</div>
+      </div>
+
+      <div class="kc-box" id="spot-q2">
+        <div class="kc-q" style="cursor:default;">Snippet B: Scikit-learn Import</div>
+        <div class="spot-snippet" id="spot-s2">
+          <div class="line" data-line="1" onclick="pickSpotLine(this)" data-hallucinated="true"><span class="ck">from</span> <span class="cr">sklearn.neural</span> <span class="ck">import</span> MLPClassifier</div>
+          <div class="line" data-line="2" onclick="pickSpotLine(this)">clf = MLPClassifier(hidden_layer_sizes=(<span class="cl">100</span>,), max_iter=<span class="cl">300</span>)</div>
+          <div class="line" data-line="3" onclick="pickSpotLine(this)">clf.fit(X_train, y_train)</div>
+          <div class="line" data-line="4" onclick="pickSpotLine(this)">score = clf.score(X_test, y_test)</div>
+        </div>
+        <div class="kc-answer" id="spot-a2"><strong>Line 1 is hallucinated.</strong> The correct import is <code>from sklearn.neural_network import MLPClassifier</code>. The module <code>sklearn.neural</code> does not exist &mdash; it is <code>sklearn.neural_network</code>. This is a <strong>Resource Hallucination (Missing Dependencies)</strong>.</div>
+      </div>
+
+      <div class="kc-box" id="spot-q3">
+        <div class="kc-q" style="cursor:default;">Snippet C: JavaScript String Method</div>
+        <div class="spot-snippet" id="spot-s3">
+          <div class="line" data-line="1" onclick="pickSpotLine(this)"><span class="ck">const</span> text = <span class="cs">"Hello, World!"</span>;</div>
+          <div class="line" data-line="2" onclick="pickSpotLine(this)" data-hallucinated="true"><span class="ck">const</span> reversed = text.<span class="cr">reverse</span>();</div>
+          <div class="line" data-line="3" onclick="pickSpotLine(this)">console.log(reversed);</div>
+        </div>
+        <div class="kc-answer" id="spot-a3"><strong>Line 2 is hallucinated.</strong> JavaScript strings do not have a <code>.reverse()</code> method. Only arrays have <code>.reverse()</code>. The correct approach is <code>text.split('').reverse().join('')</code>. This is a <strong>Naming Hallucination (Name Confusion)</strong> &mdash; confusing Array and String APIs.</div>
+      </div>
+
+      <div class="kc-box" id="spot-q4">
+        <div class="kc-q" style="cursor:default;">Snippet D: Python JSON Handling</div>
+        <div class="spot-snippet" id="spot-s4">
+          <div class="line" data-line="1" onclick="pickSpotLine(this)"><span class="ck">import</span> json</div>
+          <div class="line" data-line="2" onclick="pickSpotLine(this)">data = {<span class="cs">"name"</span>: <span class="cs">"Alice"</span>, <span class="cs">"age"</span>: <span class="cl">30</span>}</div>
+          <div class="line" data-line="3" onclick="pickSpotLine(this)" data-hallucinated="true">json_str = json.<span class="cr">stringify</span>(data)</div>
+          <div class="line" data-line="4" onclick="pickSpotLine(this)"><span class="cf">print</span>(json_str)</div>
+        </div>
+        <div class="kc-answer" id="spot-a4"><strong>Line 3 is hallucinated.</strong> Python's <code>json</code> module uses <code>json.dumps()</code>, not <code>json.stringify()</code>. The model confused Python with JavaScript's <code>JSON.stringify()</code>. This is a <strong>Knowledge Conflicting</strong> hallucination &mdash; mixing language conventions.</div>
+      </div>
+
+      <div class="kc-box" id="spot-q5">
+        <div class="kc-q" style="cursor:default;">Snippet E: Semantic Error (Logic)</div>
+        <div class="spot-snippet" id="spot-s5">
+          <div class="line" data-line="1" onclick="pickSpotLine(this)"><span class="ck">def</span> <span class="cf">is_palindrome</span>(s):</div>
+          <div class="line" data-line="2" onclick="pickSpotLine(this)">    s = s.lower().strip()</div>
+          <div class="line" data-line="3" onclick="pickSpotLine(this)" data-hallucinated="true">    <span class="ck">return</span> s == s[:<span class="cl">-1</span>]  <span class="cc"># missing the full reverse</span></div>
+        </div>
+        <div class="kc-answer" id="spot-a5"><strong>Line 3 is hallucinated.</strong> The code compares <code>s</code> to <code>s[:-1]</code> (all characters except the last), not to the reversed string <code>s[::-1]</code>. This would return <code>True</code> for strings like "aa" but <code>False</code> for actual palindromes like "racecar". This is a <strong>Logic Hallucination</strong> &mdash; syntactically valid but semantically wrong.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 13 ==================== -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 6 &middot; Slide 13</div>
   <h2 class="slide-h2">How LLMs <em>Hallucinate</em> Code</h2>
   <p class="slide-p">Understanding the mechanisms behind code hallucinations helps inform both detection and mitigation strategies. Several factors contribute to hallucination in code generation.</p>
 
@@ -672,9 +902,9 @@ lines = text.to_list()</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 11 ==================== -->
-<div class="slide" id="slide-11">
-  <div class="slide-label">Module 6 &middot; Slide 11</div>
+<!-- ==================== SLIDE 14 ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 6 &middot; Slide 14</div>
   <h2 class="slide-h2">Measuring <em>Hallucinations</em></h2>
   <p class="slide-p">Quantifying code hallucinations requires specialized benchmarks and metrics. The CodeHaluEval benchmark by Tian et al. provides a rigorous framework for evaluation.</p>
 
@@ -718,9 +948,9 @@ lines = text.to_list()</div>
   <div class="cite" style="text-align:center;">MARIN (FSE 2025) and De-Hallucinator (Eghbali &amp; Pradel 2024) results</div>
 </div>
 
-<!-- ==================== SLIDE 12 ==================== -->
-<div class="slide" id="slide-12">
-  <div class="slide-label">Module 6 &middot; Slide 12 &middot; Interactive</div>
+<!-- ==================== SLIDE 15 ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 6 &middot; Slide 15 &middot; Interactive</div>
   <h2 class="slide-h2">Rate the <em>Severity</em></h2>
   <p class="slide-p">Not all hallucinations are equally dangerous. Classify each example below by severity: Low (cosmetic / style issue), Medium (will cause errors but detectable), High (runtime crash or wrong results), or Critical (security vulnerability or data loss).</p>
 
@@ -785,9 +1015,9 @@ lines = text.to_list()</div>
   <div id="sev-result" style="display:none;margin-top:10px;"></div>
 </div>
 
-<!-- ==================== SLIDE 13 ==================== -->
-<div class="slide" id="slide-13">
-  <div class="slide-label">Module 6 &middot; Slide 13</div>
+<!-- ==================== SLIDE 16 ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 6 &middot; Slide 16</div>
   <h2 class="slide-h2">Detection <em>Approaches</em></h2>
   <p class="slide-p">Detecting code hallucinations requires multiple complementary strategies, ranging from dynamic execution to static analysis and semantic reasoning.</p>
 
@@ -835,9 +1065,99 @@ lines = text.to_list()</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 14 ==================== -->
-<div class="slide" id="slide-14">
-  <div class="slide-label">Module 6 &middot; Slide 14</div>
+<!-- ==================== SLIDE 17 (NEW) ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 6 &middot; Slide 17</div>
+  <h2 class="slide-h2">Hallucination Detection: <em>Automated Approaches</em></h2>
+  <p class="slide-p">Beyond manual code review, several automated techniques can detect hallucinations at scale. The best strategies combine multiple signals for robust detection.</p>
+
+  <div class="landscape-grid">
+    <div class="landscape-card" style="border-top:3px solid var(--green);">
+      <h4 style="color:var(--green);">Static Analysis</h4>
+      <p>Check if generated APIs exist in library documentation. Linters and type checkers catch non-existent methods and wrong signatures automatically.</p>
+    </div>
+    <div class="landscape-card" style="border-top:3px solid var(--blue);">
+      <h4 style="color:var(--blue);">Type Checking</h4>
+      <p>Run a type checker (mypy, TypeScript compiler) on generated code. Type errors often indicate hallucinated APIs or wrong parameter types.</p>
+    </div>
+    <div class="landscape-card" style="border-top:3px solid var(--amber);">
+      <h4 style="color:var(--amber);">Test Generation</h4>
+      <p>Generate tests for the code and run them. Failing tests suggest hallucinations. This can be automated with the same LLM that generated the code.</p>
+    </div>
+    <div class="landscape-card" style="border-top:3px solid var(--purple);">
+      <h4 style="color:var(--purple);">Cross-Model Verification</h4>
+      <p>Ask multiple LLMs to solve the same task, then compare outputs. Disagreement between models suggests at least one is hallucinating.</p>
+    </div>
+    <div class="landscape-card" style="border-top:3px solid var(--red);">
+      <h4 style="color:var(--red);">Confidence Scoring</h4>
+      <p>Low-probability tokens in the generation are more likely to be hallucinated. Token-level confidence can flag suspicious API calls and parameter names.</p>
+    </div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:14px;">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body">No single detection method is perfect. <strong>Static analysis</strong> catches naming and resource hallucinations but misses logic errors. <strong>Testing</strong> catches behavioral issues but requires good test coverage. <strong>Cross-model verification</strong> adds a probabilistic signal but is expensive. The best approaches combine multiple signals into a detection pipeline.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 18 (NEW) ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 6 &middot; Slide 18</div>
+  <h2 class="slide-h2"><em>RAG</em> for Hallucination Reduction</h2>
+  <p class="slide-p">Retrieval-Augmented Generation (RAG) is a foundational technique for reducing hallucinations. Instead of relying on the model's parametric memory alone, RAG retrieves relevant documentation at query time to ground the generation in factual data.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>The Problem</h4>
+      <p>LLMs hallucinate because they generate from statistical patterns, not factual knowledge. When the training data is sparse or outdated for a given API, the model invents plausible-sounding but incorrect code.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>The Solution: Retrieve at Query Time</h4>
+      <p>Instead of relying solely on what the model memorized during training, retrieve relevant documentation, code examples, and API specifications from an external knowledge base before generating.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>The Pipeline</h4>
+      <p>User query &rarr; Embed the query &rarr; Search codebase / docs &rarr; Retrieve relevant files &rarr; Add retrieved context to prompt &rarr; Generate code with grounded context.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>The Result</h4>
+      <p>The model generates code based on actual documentation and real code examples rather than imagination. API names, parameter types, and method signatures are grounded in retrieved facts.</p>
+    </div>
+  </div>
+
+  <div class="flow-row">
+    <div class="flow-box green">User Query</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Embed</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box amber">Search Docs</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Retrieve Context</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Augmented Prompt</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Grounded Code</div>
+  </div>
+
+  <div class="cb" style="margin-top:10px;">
+    <div class="cb-label">Important Caveat</div>
+    <div class="cb-body">RAG does not eliminate hallucinations, but it <strong>dramatically reduces</strong> them by providing the model with factual grounding. The model can still hallucinate if retrieved context is irrelevant, incomplete, or if the model ignores the context. More advanced RAG variants (like MARIN and De-Hallucinator) address these limitations.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19 ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Module 6 &middot; Slide 19</div>
   <h2 class="slide-h2">Mitigation: <em>De-Hallucinator</em></h2>
   <p class="slide-p">Eghbali &amp; Pradel (2024) introduce De-Hallucinator, an iterative grounding approach that retrieves relevant API documentation to reduce hallucinations in generated code.</p>
 
@@ -908,9 +1228,9 @@ lines = text.to_list()</div>
   <div class="cite" style="margin-top:8px;">Source: Eghbali &amp; Pradel "De-Hallucinator: Mitigating LLM Hallucinations in Code Generation Tasks via Iterative Grounding" (2024)</div>
 </div>
 
-<!-- ==================== SLIDE 15 ==================== -->
-<div class="slide" id="slide-15">
-  <div class="slide-label">Module 6 &middot; Slide 15</div>
+<!-- ==================== SLIDE 20 ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Module 6 &middot; Slide 20</div>
   <h2 class="slide-h2">Mitigation: <em>MARIN</em></h2>
   <p class="slide-p">MARIN (FSE 2025) takes a hierarchical, dependency-aware approach to mitigating API hallucinations by modeling the relationships between APIs in a project's dependency graph.</p>
 
@@ -966,9 +1286,9 @@ lines = text.to_list()</div>
   <div class="cite" style="margin-top:8px;">Source: "MARIN: Towards Mitigating API Hallucination in Code Generated by LLMs with Hierarchical Dependency Aware" (FSE 2025)</div>
 </div>
 
-<!-- ==================== SLIDE 16 ==================== -->
-<div class="slide" id="slide-16">
-  <div class="slide-label">Module 6 &middot; Slide 16</div>
+<!-- ==================== SLIDE 21 ==================== -->
+<div class="slide" id="slide-21">
+  <div class="slide-label">Module 6 &middot; Slide 21</div>
   <h2 class="slide-h2">Mitigation: <em>RAG-Based</em> Approaches</h2>
   <p class="slide-p">Retrieval-Augmented Generation (RAG) is the foundation for many hallucination mitigation strategies. By grounding the LLM with retrieved documentation, we reduce the model's reliance on potentially incorrect parametric knowledge.</p>
 
@@ -1014,9 +1334,132 @@ lines = text.to_list()</div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 17 ==================== -->
-<div class="slide" id="slide-17">
-  <div class="slide-label">Module 6 &middot; Slide 17 &middot; Interactive</div>
+<!-- ==================== SLIDE 22 (NEW) ==================== -->
+<div class="slide" id="slide-22">
+  <div class="slide-label">Module 6 &middot; Slide 22</div>
+  <h2 class="slide-h2">Prompt Engineering as <em>Mitigation</em></h2>
+  <p class="slide-p">Careful prompt design is one of the simplest and most effective ways to reduce hallucinations. These techniques require no infrastructure changes &mdash; just better prompts.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Be Explicit About Constraints</h4>
+          <p>Tell the model exactly what it can and cannot use: "Only use Python standard library functions. Do not import any third-party packages."</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Provide API Documentation in Context</h4>
+          <p>Paste the relevant API docs directly into the prompt. The model is far less likely to hallucinate APIs when it has the real docs in its context window.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Ask for Citations / Reasoning</h4>
+          <p>Prompt: "Cite which library each method comes from" or "Explain why you chose this approach before writing code." Chain-of-thought reduces hallucination.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Add Negative Examples</h4>
+          <p>"Do NOT use deprecated methods. Do NOT use eval(). Do NOT use string concatenation for SQL queries."</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Request Self-Verification</h4>
+          <p>"After generating the code, verify that all API methods you used actually exist in the specified library version."</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="before-after">
+        <div class="ba-col before">
+          <h4>Before (Vague Prompt)</h4>
+          <div class="code-block" style="font-size:0.72rem;margin:0;">Write a Python function
+to read a CSV file
+and find duplicates.</div>
+        </div>
+        <div class="ba-col after">
+          <h4>After (Constrained Prompt)</h4>
+          <div class="code-block" style="font-size:0.72rem;margin:0;">Write a Python function using
+only the csv module from the
+standard library. Read a CSV
+file, find duplicate rows based
+on all columns, and return them
+as a list of dicts.
+
+Do NOT use pandas.
+Do NOT use third-party libs.
+Explain your approach first.</div>
+        </div>
+      </div>
+
+      <div class="cb" style="margin-top:14px;">
+        <div class="cb-label">Why This Works</div>
+        <div class="cb-body">Constrained prompts reduce the model's "degrees of freedom" for hallucination. When you specify <strong>which libraries to use</strong>, the model cannot fabricate new ones. When you request <strong>chain-of-thought reasoning</strong>, the model is forced to justify its choices, making it more likely to catch its own errors before they appear in code.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 23 (NEW) ==================== -->
+<div class="slide" id="slide-23">
+  <div class="slide-label">Module 6 &middot; Slide 23</div>
+  <h2 class="slide-h2"><em>Tool-Augmented</em> Generation</h2>
+  <p class="slide-p">Tool-augmented generation gives LLMs access to external tools that can verify code in real time, dramatically reducing hallucinations by providing ground truth feedback during the generation process.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>LLM Generates Code</h4>
+      <p>The model produces an initial code solution based on the user's prompt, as in standard generation.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Code Execution Tool Runs It</h4>
+      <p>A sandboxed code interpreter executes the generated code. Runtime errors (ImportError, AttributeError, TypeError) are caught immediately and fed back to the model.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Static Analysis Tool Checks It</h4>
+      <p>Linters and type checkers analyze the code for issues that might not cause immediate runtime errors: type mismatches, unused imports, deprecated API usage, and potential security vulnerabilities.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Documentation Lookup Verifies APIs</h4>
+      <p>A documentation search tool verifies that every API method, class, and parameter used in the code actually exists in the specified library version.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>LLM Self-Corrects</h4>
+      <p>The model receives all feedback from the tools and generates a corrected version. This loop can repeat multiple times until the code passes all checks.</p>
+    </div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:6px;">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body">Tool-augmented generation reduces hallucinations by giving the LLM access to <strong>ground truth</strong>. Instead of guessing whether an API exists, the model can verify its own outputs against real execution results, documentation, and static analysis. This is the approach used by "code interpreter" features in modern LLM products.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 24 ==================== -->
+<div class="slide" id="slide-24">
+  <div class="slide-label">Module 6 &middot; Slide 24 &middot; Interactive</div>
   <h2 class="slide-h2">Design a <em>Mitigation Pipeline</em></h2>
   <p class="slide-p">Arrange the components below into the correct order for a hallucination mitigation pipeline. Click a component to place it in the next available slot, or click a filled slot to remove it.</p>
 
@@ -1054,9 +1497,9 @@ lines = text.to_list()</div>
   <div id="pipeline-result" style="display:none;margin-top:10px;"></div>
 </div>
 
-<!-- ==================== SLIDE 18 ==================== -->
-<div class="slide" id="slide-18">
-  <div class="slide-label">Module 6 &middot; Slide 18 &middot; Interactive</div>
+<!-- ==================== SLIDE 25 ==================== -->
+<div class="slide" id="slide-25">
+  <div class="slide-label">Module 6 &middot; Slide 25 &middot; Interactive</div>
   <h2 class="slide-h2">Practical <em>Detection</em> Exercise</h2>
   <p class="slide-p">For each code snippet below, identify the hallucination type using the CodeHalu taxonomy and select the best fix. This exercise combines taxonomy knowledge with practical debugging skills.</p>
 
@@ -1123,9 +1566,113 @@ names.stream()
   </div>
 </div>
 
-<!-- ==================== SLIDE 19 ==================== -->
-<div class="slide" id="slide-19">
-  <div class="slide-label">Module 6 &middot; Slide 19</div>
+<!-- ==================== SLIDE 26 (NEW) ==================== -->
+<div class="slide" id="slide-26">
+  <div class="slide-label">Module 6 &middot; Slide 26</div>
+  <h2 class="slide-h2">Case Study: <em>Hallucinations</em> in Production</h2>
+  <p class="slide-p">These are real-world cases where LLM hallucinations caused significant problems. They demonstrate why hallucination mitigation is not just an academic concern.</p>
+
+  <div class="term-grid">
+    <div class="term-card" style="border-left:3px solid var(--red);">
+      <div class="term-name" style="color:var(--red);">The Lawyer Who Cited Fake Cases</div>
+      <div class="term-def">In 2023, a lawyer used ChatGPT to research legal precedents. The model generated citations to cases that sounded real but did not exist. The lawyer submitted these to a federal court, leading to sanctions. The hallucinated case names followed real naming conventions, making them appear legitimate.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name" style="color:var(--amber);">Package Hallucination Attacks</div>
+      <div class="term-def">Researchers discovered that LLMs consistently recommend npm and PyPI packages that do not exist. Attackers then register those package names with malicious code. When developers follow the LLM's recommendation and run <code>pip install</code> or <code>npm install</code>, they install malware. This is called "package confusion" or "slopsquatting."</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name" style="color:var(--purple);">API Version Confusion</div>
+      <div class="term-def">LLMs trained on older documentation regularly generate TensorFlow 1.x code for users expecting TensorFlow 2.x. The code is syntactically valid Python but uses deprecated session-based execution instead of eager mode. This wastes developer time debugging version mismatches.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name" style="color:var(--blue);">Security Vulnerability Injection</div>
+      <div class="term-def">Studies show LLMs sometimes generate code with known vulnerability patterns (CVEs): buffer overflows in C, SQL injection in web apps, insecure deserialization in Java. The model has learned these patterns from training data that included vulnerable code alongside secure code.</div>
+    </div>
+  </div>
+
+  <div class="cb red" style="margin-top:14px;">
+    <div class="cb-label">Takeaway</div>
+    <div class="cb-body">These are not hypothetical scenarios &mdash; they have all happened. This is why we study hallucinations: the consequences range from <strong>embarrassment</strong> (fake legal citations) to <strong>security breaches</strong> (malicious packages, vulnerability injection). Every code output from an LLM should be treated as <strong>untrusted input</strong> that requires verification.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 27 (NEW) ==================== -->
+<div class="slide" id="slide-27">
+  <div class="slide-label">Module 6 &middot; Slide 27</div>
+  <h2 class="slide-h2">Building a <em>Hallucination-Resistant</em> Workflow</h2>
+  <p class="slide-p">A practical framework you can apply to your course projects and beyond. This workflow layers multiple mitigation strategies for increasing levels of protection.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Use RAG to Ground Generation</h4>
+      <p>Provide relevant documentation and code context in your prompts. The model is far less likely to hallucinate APIs when it has real docs in its context window.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Set Low Temperature for Production Code</h4>
+      <p>Use T=0.0&ndash;0.2 for code you plan to ship. Save higher temperatures for brainstorming and exploration only.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Add Explicit Constraints in Prompts</h4>
+      <p>Specify which libraries, versions, and patterns to use. Include negative constraints ("do NOT use deprecated APIs").</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Run Linting + Type Checking</h4>
+      <p>Automatically catch naming and resource hallucinations with static analysis tools (pylint, mypy, ESLint, TypeScript compiler).</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Generate and Run Tests Automatically</h4>
+      <p>Ask the LLM to generate tests for its own code, then execute them. Failing tests indicate hallucinations or logic errors.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Human Review for Critical Logic</h4>
+      <p>Logic hallucinations cannot be caught by automated tools alone. Have a human review the algorithm design and edge case handling for critical code paths.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Monitor in Production</h4>
+      <p>Log LLM outputs, track error rates, and set up alerts for unexpected failures. Production monitoring catches hallucinations that slip through earlier stages.</p>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:10px;">
+    <div class="cb">
+      <div class="cb-label">Minimum Viable Safety (Steps 1&ndash;4)</div>
+      <div class="cb-body">These four steps are the <strong>bare minimum</strong> for any project using LLM-generated code. They catch the majority of naming, resource, and API hallucinations with low effort. You should always do at least these steps.</div>
+    </div>
+    <div class="cb purple">
+      <div class="cb-label">Full Protection (All 7 Steps)</div>
+      <div class="cb-body">For production systems, critical infrastructure, or security-sensitive code, apply <strong>all seven steps</strong>. The additional cost of testing, human review, and monitoring is justified by the risk reduction.</div>
+    </div>
+  </div>
+
+  <div class="cb amber" style="margin-top:6px;">
+    <div class="cb-label">Course Projects</div>
+    <div class="cb-body">You will apply this workflow in your course projects. At minimum, every LLM-generated code submission must include evidence of steps 1&ndash;4 (grounding, low temperature, constrained prompts, linting).</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 28 ==================== -->
+<div class="slide" id="slide-28">
+  <div class="slide-label">Module 6 &middot; Slide 28</div>
   <h2 class="slide-h2">Open <em>Challenges</em></h2>
   <p class="slide-p">Despite significant progress, several fundamental challenges remain in the study and mitigation of code hallucinations. These represent active areas of research and important open problems.</p>
 
@@ -1168,9 +1715,67 @@ names.stream()
   </div>
 </div>
 
-<!-- ==================== SLIDE 20 ==================== -->
-<div class="slide" id="slide-20">
-  <div class="slide-label">Module 6 &middot; Slide 20 &middot; Interactive</div>
+<!-- ==================== SLIDE 29 (NEW) ==================== -->
+<div class="slide" id="slide-29">
+  <div class="slide-label">Module 6 &middot; Slide 29</div>
+  <h2 class="slide-h2">Lab Challenge: <em>Hallucination Hunt</em></h2>
+  <p class="slide-p">Your assignment: systematically investigate LLM hallucinations in code generation across multiple tasks. This exercise combines detection, classification, and mitigation skills.</p>
+
+  <div class="cb blue">
+    <div class="cb-label">Assignment Overview</div>
+    <div class="cb-body">Use an LLM to generate code for each of the 5 tasks below. For each task: <strong>(a)</strong> identify any hallucinations in the output, <strong>(b)</strong> classify the type using CodeHalu or HalluCode taxonomies (intent-conflicting, context-conflicting, knowledge-conflicting, dead code, naming, resource, logic, mapping), <strong>(c)</strong> apply one mitigation strategy and regenerate, <strong>(d)</strong> compare before and after. Write a <strong>2-page analysis</strong> of patterns you observed.</div>
+  </div>
+
+  <div class="term-grid" style="margin-top:14px;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name" style="color:var(--green);">Task 1: Data Processing</div>
+      <div class="term-def">"Write a Python function using pandas to read a CSV file, remove duplicate rows, normalize column names to snake_case, and export to Parquet format."</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name" style="color:var(--blue);">Task 2: Web API Client</div>
+      <div class="term-def">"Write a Python class that wraps the GitHub REST API. Include methods to list repositories, create issues, and fetch pull request details. Handle rate limiting and authentication."</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name" style="color:var(--amber);">Task 3: Algorithm</div>
+      <div class="term-def">"Implement a balanced BST (AVL tree) in Java with insert, delete, and search operations. Include proper rotation logic and height balancing."</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name" style="color:var(--purple);">Task 4: Database Query</div>
+      <div class="term-def">"Write SQLAlchemy ORM models for a blog platform (Users, Posts, Comments, Tags with many-to-many). Include a function to query the 10 most commented posts in the last 30 days."</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--red);">
+      <div class="term-name" style="color:var(--red);">Task 5: Security</div>
+      <div class="term-def">"Write a Node.js Express middleware for JWT authentication. Include token generation, validation, refresh token rotation, and proper error handling for expired/invalid tokens."</div>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:14px;">
+    <div class="cb">
+      <div class="cb-label">Deliverables</div>
+      <div class="cb-body">
+        &bull; Original LLM output for each of the 5 tasks<br>
+        &bull; Annotated hallucinations with taxonomy classification<br>
+        &bull; Mitigation strategy applied for each task<br>
+        &bull; Regenerated output after mitigation<br>
+        &bull; 2-page written analysis of patterns observed
+      </div>
+    </div>
+    <div class="cb amber">
+      <div class="cb-label">Analysis Questions</div>
+      <div class="cb-body">
+        &bull; Which hallucination types were most common?<br>
+        &bull; Did certain task types produce more hallucinations?<br>
+        &bull; Which mitigation strategy was most effective?<br>
+        &bull; Were there hallucinations you only caught on second review?<br>
+        &bull; What patterns did you notice across all 5 tasks?
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 30 ==================== -->
+<div class="slide" id="slide-30">
+  <div class="slide-label">Module 6 &middot; Slide 30 &middot; Interactive</div>
   <h2 class="slide-h2">Knowledge <em>Check</em></h2>
   <p class="slide-p">Test your understanding of the key concepts covered in this module. Click each question to reveal the answer.</p>
 
@@ -1216,7 +1821,7 @@ names.stream()
 
 <script>
 // ── Navigation ────────────────────────────────────────────────────
-const TOTAL = 20;
+const TOTAL = 30;
 let cur = 1;
 
 function buildDots() {
@@ -1248,7 +1853,7 @@ document.addEventListener('keydown', e => {
 });
 buildDots();
 
-// ── Slide 7: Spot the Hallucination ──────────────────────────────
+// ── Slide 9: Spot the Hallucination (pair comparison) ────────────
 function checkSpot(el, group, answer) {
   const opts = document.querySelectorAll('[data-group="' + group + '"]');
   let alreadyRevealed = false;
@@ -1271,7 +1876,66 @@ function checkSpot(el, group, answer) {
   if (explain) explain.style.display = 'block';
 }
 
-// ── Slide 12: Rate the Severity ──────────────────────────────────
+// ── Slide 4: Temperature Slider ──────────────────────────────────
+const baseLogits = [4.5, 2.5, 1.5, 1.0, 0.5];
+const tokenLabels = ['def','func','class','async','xyzq'];
+
+function softmax(logits, temp) {
+  const t = Math.max(temp, 0.01);
+  const scaled = logits.map(l => l / t);
+  const maxS = Math.max(...scaled);
+  const exps = scaled.map(s => Math.exp(s - maxS));
+  const sum = exps.reduce((a, b) => a + b, 0);
+  return exps.map(e => e / sum);
+}
+
+function updateTemp(val) {
+  const temp = val / 100;
+  document.getElementById('temp-display').textContent = temp.toFixed(1);
+  const probs = softmax(baseLogits, temp);
+  const maxH = 100;
+  for (let i = 0; i < 5; i++) {
+    const h = Math.max(4, probs[i] * maxH * 2);
+    document.getElementById('bar-' + i).style.height = h + 'px';
+    document.getElementById('pct-' + i).textContent = (probs[i] * 100).toFixed(1) + '%';
+  }
+}
+updateTemp(50);
+
+// ── Slide 12: Spot the Hallucination (line-click) ────────────────
+function pickSpotLine(lineEl) {
+  const snippet = lineEl.closest('.spot-snippet');
+  if (snippet.classList.contains('revealed-correct') || snippet.classList.contains('revealed-wrong')) return;
+  snippet.querySelectorAll('.line').forEach(l => l.classList.remove('selected'));
+  lineEl.classList.add('selected');
+}
+
+function revealAllSpots() {
+  for (let i = 1; i <= 5; i++) {
+    const snippet = document.getElementById('spot-s' + i);
+    if (!snippet) continue;
+    const lines = snippet.querySelectorAll('.line');
+    let selectedLine = snippet.querySelector('.line.selected');
+    let hallucinatedLine = snippet.querySelector('.line[data-hallucinated="true"]');
+
+    lines.forEach(l => l.classList.remove('selected'));
+
+    if (hallucinatedLine) {
+      hallucinatedLine.classList.add('correct-line');
+    }
+
+    if (selectedLine && selectedLine === hallucinatedLine) {
+      snippet.classList.add('revealed-correct');
+    } else {
+      snippet.classList.add('revealed-wrong');
+    }
+
+    const ans = document.getElementById('spot-a' + i);
+    if (ans) ans.classList.add('visible');
+  }
+}
+
+// ── Slide 15: Rate the Severity ──────────────────────────────────
 function pickSev(btn, level) {
   const box = btn.closest('.kc-box');
   if (box.classList.contains('locked')) return;
@@ -1303,7 +1967,7 @@ function checkSeverity() {
   }
 }
 
-// ── Slide 17: Pipeline Builder ───────────────────────────────────
+// ── Slide 24: Pipeline Builder ───────────────────────────────────
 let pipelineState = [];
 
 function placeBlock(block) {
@@ -1371,7 +2035,7 @@ function checkPipeline() {
   }
 }
 
-// ── Slide 18: Detection Exercise ─────────────────────────────────
+// ── Slide 25: Detection Exercise ─────────────────────────────────
 const detectAnswers = {
   'det-q1': 'resource',
   'det-q2': 'mapping',

@@ -66,7 +66,7 @@
     }
 
     .teaching-layout { display: grid; grid-template-columns: 260px 1fr; gap: 48px; align-items: start; }
-    .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); }
+    .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); max-height: calc(100vh - var(--nav-h) - 48px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
     .sidebar-section { margin-bottom: 28px; }
     .sidebar-title {
       font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
@@ -268,12 +268,12 @@
               </div>
               <div class="mfc-title">Course Introduction</div>
               <div class="mfc-desc">
-                Welcome to Generative AI for Software Development (CSCI 455/555). Course overview, learning objectives, structure, tools of the trade, and what to expect throughout the semester.
+                Welcome to Generative AI for Software Development (CSCI 455/555). What is GenAI, the evolution of AI for code, course structure, tools of the trade, AI usage policy, ethics &amp; responsible AI, and getting set up for the semester.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">30</span> slides</div>
                 <div class="mfc-meta-item"><span class="icon">4</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~25</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -283,13 +283,15 @@
           <div class="module-stats">
             <div class="module-stat"><span class="val">30</span><span class="lbl">Slides</span></div>
             <div class="module-stat"><span class="val">4</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~25m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
-            <span class="mfc-skill">course overview</span>
-            <span class="mfc-skill">CSCI 455/555</span>
+            <span class="mfc-skill">GenAI primer</span>
             <span class="mfc-skill">AI4SE landscape</span>
-            <span class="mfc-skill">learning objectives</span>
+            <span class="mfc-skill">tools of the trade</span>
+            <span class="mfc-skill">AI usage policy</span>
+            <span class="mfc-skill">ethics</span>
+            <span class="mfc-skill">vibe coding</span>
           </div>
         </a>
 
@@ -304,12 +306,12 @@
               </div>
               <div class="mfc-title">Mining Software Repositories</div>
               <div class="mfc-desc">
-                How to collect, clean, and prepare source-code data from public repositories — the critical first step before any model can learn. Includes a live preprocessing pipeline and code tokenizer.
+                How to collect, clean, and prepare source-code data from public repositories. Covers preprocessing, lexer vs BPE tokenization, ASTs, deduplication with hashing, data splitting, ethics &amp; licensing, and data provenance.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">32</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">5</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">8</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~50</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -318,17 +320,17 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">32</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">5</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">8</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~50m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
             <span class="mfc-skill">repositories</span>
-            <span class="mfc-skill">version control</span>
-            <span class="mfc-skill">data quality</span>
             <span class="mfc-skill">preprocessing</span>
             <span class="mfc-skill">tokenization</span>
-            <span class="mfc-skill">GitHub API</span>
+            <span class="mfc-skill">BPE</span>
+            <span class="mfc-skill">ASTs</span>
             <span class="mfc-skill">deduplication</span>
+            <span class="mfc-skill">ethics &amp; licensing</span>
           </div>
         </a>
 
@@ -343,12 +345,12 @@
               </div>
               <div class="mfc-title">Probabilistic Language Modeling for Code</div>
               <div class="mfc-desc">
-                Conditional probabilities, the chain rule, n-gram language models, the Markov assumption, Zipf's law, the naturalness hypothesis (Hindle et al.), perplexity, smoothing &amp; interpolation, and the path from n-grams to LLMs.
+                Probability refresher, MLE, chain rule, n-gram models, Zipf's law, the naturalness hypothesis, perplexity &amp; cross-entropy, smoothing, temperature &amp; sampling strategies, OOV handling, and the path from n-grams to LLMs.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">28</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">4</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~35</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">9</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~45</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -357,16 +359,16 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">28</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">4</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~35m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">9</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~45m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
-            <span class="mfc-skill">chain rule</span>
+            <span class="mfc-skill">MLE</span>
             <span class="mfc-skill">n-grams</span>
-            <span class="mfc-skill">Markov assumption</span>
-            <span class="mfc-skill">naturalness</span>
             <span class="mfc-skill">perplexity</span>
+            <span class="mfc-skill">cross-entropy</span>
             <span class="mfc-skill">smoothing</span>
+            <span class="mfc-skill">temperature</span>
             <span class="mfc-skill">sampling</span>
           </div>
         </a>
@@ -382,12 +384,12 @@
               </div>
               <div class="mfc-title">Evaluating AI-enabled Software Development Techniques</div>
               <div class="mfc-desc">
-                Classification metrics (precision, recall, F1), BLEU score deep-dive, CodeBLEU, CrystalBLEU, embedding-based metrics, contrastive learning, and the SIDE framework for code-summary semantic alignment.
+                Classification metrics, BLEU (with worked example), ROUGE, METEOR, CodeBLEU, CrystalBLEU, pass@k for code generation, embeddings primer, cosine similarity, contrastive learning, SIDE framework, human evaluation, and common evaluation pitfalls.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">30</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">5</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~35</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">12</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~50</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -396,17 +398,17 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">30</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">5</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~35m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">12</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~50m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
-            <span class="mfc-skill">precision</span>
-            <span class="mfc-skill">recall</span>
-            <span class="mfc-skill">F1</span>
             <span class="mfc-skill">BLEU</span>
+            <span class="mfc-skill">ROUGE</span>
+            <span class="mfc-skill">pass@k</span>
             <span class="mfc-skill">CodeBLEU</span>
+            <span class="mfc-skill">embeddings</span>
             <span class="mfc-skill">contrastive learning</span>
-            <span class="mfc-skill">SIDE</span>
+            <span class="mfc-skill">human evaluation</span>
           </div>
         </a>
 
@@ -421,12 +423,12 @@
               </div>
               <div class="mfc-title">Deep Learning for Software Development Foundations</div>
               <div class="mfc-desc">
-                Non-generative tasks (code clone detection, vulnerability prediction, code smell detection) and generative tasks (embeddings, LSTMs, seq2seq, attention, transformers, self-attention, pre-training, fine-tuning, and modern code models).
+                Neural network fundamentals, backpropagation, hyperparameters, non-generative tasks (clone detection, vulnerability prediction), embeddings, LSTMs, GRUs, seq2seq, attention, transformers, autoregressive generation, pre-training vs fine-tuning, and the DL4SE toolkit.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">34</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">6</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~50</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">15</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~60</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -435,18 +437,17 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">34</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">6</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~50m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">15</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~60m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
-            <span class="mfc-skill">clone detection</span>
-            <span class="mfc-skill">vulnerability</span>
-            <span class="mfc-skill">embeddings</span>
-            <span class="mfc-skill">LSTM</span>
-            <span class="mfc-skill">seq2seq</span>
+            <span class="mfc-skill">neural networks</span>
+            <span class="mfc-skill">backpropagation</span>
+            <span class="mfc-skill">LSTM / GRU</span>
             <span class="mfc-skill">transformers</span>
+            <span class="mfc-skill">autoregressive</span>
+            <span class="mfc-skill">fine-tuning</span>
             <span class="mfc-skill">CodeBERT</span>
-            <span class="mfc-skill">pre-training</span>
           </div>
         </a>
 
@@ -461,12 +462,12 @@
               </div>
               <div class="mfc-title">Prompting LLMs for Software Development Automation</div>
               <div class="mfc-desc">
-                In-Context Learning (ICL), few-shot prompting, prompting vs fine-tuning tradeoffs, code summarization case study, and why example selection matters — the lightweight adaptation mechanism for SE tasks.
+                In-Context Learning, few-shot prompting, chain-of-thought, prompt engineering best practices, RAG, tool use &amp; function calling, context window management, prompt chaining, self-consistency, and evaluating prompt effectiveness.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">30</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">7</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">10</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~50</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -475,16 +476,16 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">30</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">7</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">10</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~50m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
             <span class="mfc-skill">ICL</span>
-            <span class="mfc-skill">few-shot</span>
-            <span class="mfc-skill">prompting vs fine-tuning</span>
-            <span class="mfc-skill">bug fixing</span>
-            <span class="mfc-skill">code summarization</span>
-            <span class="mfc-skill">shot selection</span>
+            <span class="mfc-skill">chain-of-thought</span>
+            <span class="mfc-skill">RAG</span>
+            <span class="mfc-skill">tool use</span>
+            <span class="mfc-skill">prompt chaining</span>
+            <span class="mfc-skill">self-consistency</span>
           </div>
         </a>
 
@@ -499,12 +500,12 @@
               </div>
               <div class="mfc-title">Hallucinations in Coding Tasks</div>
               <div class="mfc-desc">
-                When LLMs generate plausible but incorrect code: non-existent APIs, wrong parameters, logic errors. Covers the CodeHalu taxonomy (AAAI 2025), detection via execution-based verification and AST analysis, and mitigation strategies including De-Hallucinator and MARIN (FSE 2025).
+                How LLMs generate code, temperature &amp; sampling as a hallucination factor, the CodeHalu taxonomy, spot-the-hallucination exercises, RAG for mitigation, prompt engineering defenses, tool-augmented generation, production case studies, and building hallucination-resistant workflows.
               </div>
               <div class="mfc-meta">
                 <div class="mfc-meta-item"><span class="icon">30</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">5</span> interactive demos</div>
-                <div class="mfc-meta-item"><span class="icon">~40</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">7</span> interactive demos</div>
+                <div class="mfc-meta-item"><span class="icon">~50</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -513,16 +514,16 @@
           </div>
           <div class="module-stats">
             <div class="module-stat"><span class="val">30</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">5</span><span class="lbl">Demos</span></div>
-            <div class="module-stat"><span class="val">~40m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">7</span><span class="lbl">Demos</span></div>
+            <div class="module-stat"><span class="val">~50m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
-            <span class="mfc-skill">code hallucinations</span>
-            <span class="mfc-skill">CodeHalu taxonomy</span>
-            <span class="mfc-skill">API hallucination</span>
-            <span class="mfc-skill">De-Hallucinator</span>
-            <span class="mfc-skill">MARIN</span>
-            <span class="mfc-skill">mitigation</span>
+            <span class="mfc-skill">LLM generation</span>
+            <span class="mfc-skill">temperature</span>
+            <span class="mfc-skill">CodeHalu</span>
+            <span class="mfc-skill">RAG mitigation</span>
+            <span class="mfc-skill">tool-augmented</span>
+            <span class="mfc-skill">production cases</span>
           </div>
         </a>
 
@@ -543,12 +544,12 @@
               </div>
               <div class="mfc-title">Genetic Algorithms &amp; LLMs</div>
               <div class="mfc-desc">
-                Fundamentals of genetic algorithms from scratch — populations, selection, crossover, mutation, and fitness functions with step-by-step visualizations. Then connects to AI for Software Engineering: using evolutionary strategies with LLM-generated prompts to achieve 100x+ speedup in testing the correctness of AI-generated methods.
+                GA fundamentals (selection, crossover, mutation), the evaluation bottleneck in code generation, why CodeBLEU is not enough, fitness approximation with LLM predictors (95% accuracy, 5 orders of magnitude speedup), the GA+LLM architecture, honest limitations, and research frontiers.
               </div>
               <div class="mfc-meta">
-                <div class="mfc-meta-item"><span class="icon">20</span> slides</div>
-                <div class="mfc-meta-item"><span class="icon">4</span> live simulations</div>
-                <div class="mfc-meta-item"><span class="icon">~30</span> min</div>
+                <div class="mfc-meta-item"><span class="icon">30</span> slides</div>
+                <div class="mfc-meta-item"><span class="icon">6</span> live simulations</div>
+                <div class="mfc-meta-item"><span class="icon">~45</span> min</div>
               </div>
             </div>
             <div class="mfc-action">
@@ -556,19 +557,17 @@
             </div>
           </div>
           <div class="module-stats">
-            <div class="module-stat"><span class="val">20</span><span class="lbl">Slides</span></div>
-            <div class="module-stat"><span class="val">4</span><span class="lbl">Simulations</span></div>
-            <div class="module-stat"><span class="val">~30m</span><span class="lbl">Duration</span></div>
+            <div class="module-stat"><span class="val">30</span><span class="lbl">Slides</span></div>
+            <div class="module-stat"><span class="val">6</span><span class="lbl">Simulations</span></div>
+            <div class="module-stat"><span class="val">~45m</span><span class="lbl">Duration</span></div>
           </div>
           <div class="mfc-skills">
             <span class="mfc-skill">population</span>
             <span class="mfc-skill">selection</span>
             <span class="mfc-skill">crossover</span>
-            <span class="mfc-skill">mutation</span>
-            <span class="mfc-skill">fitness</span>
-            <span class="mfc-skill">LLM prompts</span>
-            <span class="mfc-skill">test generation</span>
-            <span class="mfc-skill">code coverage</span>
+            <span class="mfc-skill">fitness approximation</span>
+            <span class="mfc-skill">evaluation bottleneck</span>
+            <span class="mfc-skill">GA + LLM</span>
           </div>
         </a>
 

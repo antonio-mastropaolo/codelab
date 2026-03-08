@@ -183,7 +183,7 @@
   <span class="topbar-sep">|</span>
   <span class="topbar-title">Prompting LLMs for Software Development Automation</span>
   <span class="topbar-badge">Module 5 &middot; Interactive</span>
-  <span class="slide-counter" id="counter">1 / 20</span>
+  <span class="slide-counter" id="counter">1 / 30</span>
   <a href="index.html" class="topbar-home">Home</a>
 </div>
 
@@ -502,6 +502,100 @@
 <!-- ==================== SLIDE 10 ==================== -->
 <div class="slide" id="slide-10">
   <div class="slide-label">Module 5 &middot; Slide 10</div>
+  <h2 class="slide-h2">Chain-of-Thought <em>Prompting Deep Dive</em></h2>
+  <p class="slide-p">Chain-of-Thought (CoT) prompting asks the model to show its reasoning step by step, dramatically improving accuracy on complex analysis tasks.</p>
+
+  <div class="two-col">
+    <div class="cb amber">
+      <div class="cb-label">Standard Prompt</div>
+      <div class="cb-body">
+        <strong>Q:</strong> "Is this code thread-safe?"<br><br>
+        <strong>A:</strong> "No."<br><br>
+        <span style="font-size:0.78rem;color:var(--text-muted);">The model jumps to a conclusion without showing its work. Hard to verify, easy to be wrong.</span>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="cb-label">CoT Prompt</div>
+      <div class="cb-body">
+        <strong>Q:</strong> "Is this code thread-safe? Let's analyze step by step."<br><br>
+        <strong>A:</strong> "Step 1: Identify shared state &mdash; <code>counter</code> is accessed by multiple threads.<br>
+        Step 2: Check for synchronization &mdash; no locks or atomic operations found.<br>
+        Step 3: Look for race conditions &mdash; increment is read-modify-write, not atomic.<br>
+        Conclusion: No, because the shared counter has no synchronization."
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row" style="margin-top:14px;">
+    <div class="stat-card"><div class="stat-val">25-40%</div><div class="stat-label">Accuracy improvement on code analysis</div></div>
+    <div class="stat-card"><div class="stat-val blue">2022</div><div class="stat-label">Introduced by Wei et al. (Google)</div></div>
+    <div class="stat-card"><div class="stat-val purple">100B+</div><div class="stat-label">Parameters needed for CoT to emerge</div></div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:10px;">
+    <div class="cb-label">Why It Works</div>
+    <div class="cb-body">CoT works because it forces the model to show <strong>intermediate reasoning</strong>, making it harder to skip to wrong conclusions. Each step constrains the next, creating a logical chain that reduces errors on multi-step problems.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11 ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 5 &middot; Slide 11</div>
+  <h2 class="slide-h2">Prompt Engineering <em>Best Practices</em></h2>
+  <p class="slide-p">A systematic framework for writing effective prompts. Each principle is a lever you can pull to improve output quality.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Be Specific</h4>
+      <p><span class="tag-amber">Bad:</span> "Write a function" &rarr; <span class="tag-green">Good:</span> "Write a Python function that takes a list of integers and returns the second largest unique value"</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Provide Context</h4>
+      <p>Include imports, class structure, coding style, and framework details. The model cannot read your mind or your codebase.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Specify Output Format</h4>
+      <p>Request JSON output, docstring format, test structure, or specific coding conventions. Ambiguity in format wastes iterations.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Use Delimiters</h4>
+      <p>Triple backticks, XML tags, or markers to separate code from instructions. Prevents the model from confusing code with prompt text.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Include Examples</h4>
+      <p>One good input-output example is worth more than ten words of explanation. Show, don't just tell.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Iterate &amp; Refine</h4>
+      <p>Your first prompt is rarely perfect. Examine the output, identify gaps, and refine. Prompt engineering is an iterative process.</p>
+    </div>
+  </div>
+
+  <div class="cb purple" style="margin-top:8px;">
+    <div class="cb-label">Rule of Thumb</div>
+    <div class="cb-body">If you have to explain to the model what went wrong after seeing the output, that explanation should have been <strong>in your original prompt</strong>. Every clarification is a missed constraint.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12 ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 5 &middot; Slide 12</div>
   <h2 class="slide-h2">Case Study: <em>Code Summarization</em></h2>
   <p class="slide-p">A research study on using few-shot prompting for automatic code summarization. Can we generate natural-language summaries of code methods using only a few demonstrations?</p>
 
@@ -526,9 +620,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 11 ==================== -->
-<div class="slide" id="slide-11">
-  <div class="slide-label">Module 5 &middot; Slide 11</div>
+<!-- ==================== SLIDE 13 ==================== -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 5 &middot; Slide 13</div>
   <h2 class="slide-h2">Few-Shot <em>Prompt Structure</em></h2>
   <p class="slide-p">The anatomy of a few-shot prompt for code summarization. Each demonstration pairs a code method with its summary.</p>
 
@@ -562,9 +656,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 12 ==================== -->
-<div class="slide" id="slide-12">
-  <div class="slide-label">Module 5 &middot; Slide 12</div>
+<!-- ==================== SLIDE 14 ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 5 &middot; Slide 14</div>
   <h2 class="slide-h2">Interactive: <em>Build a Prompt</em></h2>
   <p class="slide-p">Assemble a valid few-shot prompt by clicking the blocks in the correct order. One block is a distractor that should not be included.</p>
 
@@ -601,9 +695,45 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 13 ==================== -->
-<div class="slide" id="slide-13">
-  <div class="slide-label">Module 5 &middot; Slide 13</div>
+<!-- ==================== SLIDE 15 ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 5 &middot; Slide 15</div>
+  <h2 class="slide-h2">Interactive: <em>Prompt Playground</em></h2>
+  <p class="slide-p">Explore how different prompting strategies affect output quality. Select a scenario, then compare a basic prompt with an optimized one.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Prompt Playground <span class="inter-badge">Interactive</span></span>
+    </div>
+    <div class="inter-body">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        <button class="sim-btn primary" onclick="loadPlayground(0)">Generate Unit Test</button>
+        <button class="sim-btn" onclick="loadPlayground(1)">Explain This Code</button>
+        <button class="sim-btn" onclick="loadPlayground(2)">Find the Bug</button>
+        <button class="sim-btn" onclick="loadPlayground(3)">Refactor Function</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">BASIC PROMPT</div>
+          <div class="code-block" id="pg-basic" style="min-height:80px;font-size:0.76rem;white-space:pre-wrap;">Select a scenario above to begin.</div>
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--red);margin-top:8px;margin-bottom:4px;">BASIC OUTPUT</div>
+          <div class="code-block" id="pg-basic-out" style="min-height:60px;font-size:0.76rem;white-space:pre-wrap;border-left:2px solid var(--red);">&mdash;</div>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">OPTIMIZED PROMPT</div>
+          <div class="code-block" id="pg-good" style="min-height:80px;font-size:0.76rem;white-space:pre-wrap;">&mdash;</div>
+          <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--green);margin-top:8px;margin-bottom:4px;">OPTIMIZED OUTPUT</div>
+          <div class="code-block" id="pg-good-out" style="min-height:60px;font-size:0.76rem;white-space:pre-wrap;border-left:2px solid var(--green);">&mdash;</div>
+        </div>
+      </div>
+      <div id="pg-insight" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16 ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 5 &middot; Slide 16</div>
   <h2 class="slide-h2">Results: <em>What the Research Found</em></h2>
   <p class="slide-p">Four key observations from studying few-shot code summarization with large language models.</p>
 
@@ -631,9 +761,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 14 ==================== -->
-<div class="slide" id="slide-14">
-  <div class="slide-label">Module 5 &middot; Slide 14</div>
+<!-- ==================== SLIDE 17 ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 5 &middot; Slide 17</div>
   <h2 class="slide-h2">Interactive: <em>Interpret the Results</em></h2>
   <p class="slide-p">Why does 10-shot help while 0-shot and 1-shot fail for code summarization? Select all correct explanations.</p>
 
@@ -669,9 +799,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 15 ==================== -->
-<div class="slide" id="slide-15">
-  <div class="slide-label">Module 5 &middot; Slide 15</div>
+<!-- ==================== SLIDE 18 ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 5 &middot; Slide 18</div>
   <h2 class="slide-h2">Shot Selection <em>Matters</em></h2>
   <p class="slide-p">It is not just about how many examples you provide &mdash; it is about which ones. This is a major transition in understanding few-shot prompting.</p>
 
@@ -697,9 +827,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 16 ==================== -->
-<div class="slide" id="slide-16">
-  <div class="slide-label">Module 5 &middot; Slide 16</div>
+<!-- ==================== SLIDE 19 ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Module 5 &middot; Slide 19</div>
   <h2 class="slide-h2">Interactive: <em>Rank the Shots</em></h2>
   <p class="slide-p">You need 3 demonstrations for a code summarization prompt. The target method processes HTTP requests using Spring Boot. Select the 3 best candidates from the 6 below.</p>
 
@@ -743,9 +873,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 17 ==================== -->
-<div class="slide" id="slide-17">
-  <div class="slide-label">Module 5 &middot; Slide 17</div>
+<!-- ==================== SLIDE 20 ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Module 5 &middot; Slide 20</div>
   <h2 class="slide-h2">Why Selection is a <em>Retrieval Problem</em></h2>
   <p class="slide-p">Connecting shot selection to information retrieval. Finding the best demonstrations is essentially a search problem.</p>
 
@@ -785,9 +915,274 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 18 ==================== -->
-<div class="slide" id="slide-18">
-  <div class="slide-label">Module 5 &middot; Slide 18</div>
+<!-- ==================== SLIDE 21 ==================== -->
+<div class="slide" id="slide-21">
+  <div class="slide-label">Module 5 &middot; Slide 21</div>
+  <h2 class="slide-h2">RAG: <em>Retrieval-Augmented Generation</em></h2>
+  <p class="slide-p">RAG combines retrieval with generation: instead of hoping the model knows your codebase, retrieve relevant snippets and include them in the prompt.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Problem</h4>
+      <p>The LLM does not know your codebase, your APIs, or your coding conventions. It hallucinates when it guesses.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Solution</h4>
+      <p>Retrieve relevant code snippets at query time and inject them into the prompt as context before generation.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Pipeline</h4>
+      <p>Query &rarr; Embed query &rarr; Search vector database &rarr; Retrieve top-k docs &rarr; Concatenate with prompt &rarr; Send to LLM.</p>
+    </div>
+  </div>
+
+  <div class="flow-row" style="margin-top:12px;">
+    <div class="flow-box amber">Query</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Embed</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Vector DB</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Top-k Docs</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box" style="border-color:var(--cyan);color:var(--cyan);">LLM + Context</div>
+  </div>
+
+  <div class="two-col" style="margin-top:14px;">
+    <div class="cb blue">
+      <div class="cb-label">When to Use RAG</div>
+      <div class="cb-body"><strong>Large codebases</strong> that exceed context limits. <strong>Domain-specific knowledge</strong> the model was not trained on. <strong>Up-to-date info</strong> that changes frequently (docs, APIs).</div>
+    </div>
+    <div class="cb">
+      <div class="cb-label">Key Insight</div>
+      <div class="cb-body">RAG lets you give the LLM relevant knowledge <strong>without fine-tuning</strong>. It is the most practical approach for enterprise code assistance and connects directly to the shot-selection problem we studied.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 22 ==================== -->
+<div class="slide" id="slide-22">
+  <div class="slide-label">Module 5 &middot; Slide 22</div>
+  <h2 class="slide-h2">Context Window <em>Management</em></h2>
+  <p class="slide-p">The context window is the maximum number of tokens a model can process at once. Managing it effectively is critical for real-world SE tasks.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val">128K</div><div class="stat-label">GPT-4 Turbo</div></div>
+    <div class="stat-card"><div class="stat-val blue">200K</div><div class="stat-label">Claude 3.5</div></div>
+    <div class="stat-card"><div class="stat-val purple">100K</div><div class="stat-label">Code Llama</div></div>
+    <div class="stat-card"><div class="stat-val amber">1M</div><div class="stat-label">Gemini 1.5</div></div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Why It Matters</h4>
+      <p>You cannot fit an entire codebase into a single prompt. Even 200K tokens is roughly 150K lines &mdash; most projects are larger.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Chunking</h4>
+      <p>Split large files into logical chunks (functions, classes, modules). Process each chunk independently or in sequence.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>RAG / Selective Retrieval</h4>
+      <p>Retrieve only the relevant code snippets instead of including everything. This is the most common production strategy.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Summarization</h4>
+      <p>Compress prior context into summaries. Use the model to summarize earlier parts before feeding new content.</p>
+    </div>
+  </div>
+
+  <div class="cb red" style="margin-top:8px;">
+    <div class="cb-label">Practical Reality</div>
+    <div class="cb-body">Context window management is the <strong>single most important practical skill</strong> for using LLMs on real codebases. Models degrade on very long contexts even when they technically fit &mdash; important information in the middle gets overlooked ("lost in the middle" effect).</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 23 ==================== -->
+<div class="slide" id="slide-23">
+  <div class="slide-label">Module 5 &middot; Slide 23</div>
+  <h2 class="slide-h2">Tool Use &amp; <em>Function Calling</em></h2>
+  <p class="slide-p">Modern LLMs can request to call external tools &mdash; transforming them from text generators into agents that interact with the real world.</p>
+
+  <div class="two-col">
+    <div class="cb blue">
+      <div class="cb-label">What Is Tool Use?</div>
+      <div class="cb-body">
+        The LLM can request to call external functions:<br><br>
+        <strong>&rarr;</strong> Web search<br>
+        <strong>&rarr;</strong> Code execution &amp; testing<br>
+        <strong>&rarr;</strong> Database queries<br>
+        <strong>&rarr;</strong> API calls &amp; CI/CD<br><br>
+        <div class="code-block" style="margin:6px 0 0;font-size:0.72rem;">
+<span class="ck">"tool"</span>: <span class="cs">"run_tests"</span>,<br>
+<span class="ck">"args"</span>: <span class="cs">"test_sort.py"</span>
+        </div>
+      </div>
+    </div>
+    <div class="cb amber">
+      <div class="cb-label">Why It Matters for SE</div>
+      <div class="cb-body">
+        <strong>Iterative development loop:</strong><br><br>
+        1. LLM generates code<br>
+        2. Calls <code>run_tests()</code> tool<br>
+        3. Sees test failures<br>
+        4. Fixes the code<br>
+        5. Calls <code>run_tests()</code> again<br>
+        6. All tests pass<br><br>
+        This is how tools like <strong>Copilot Workspace</strong>, <strong>Cursor</strong>, and <strong>Claude Code</strong> work.
+      </div>
+    </div>
+  </div>
+
+  <div class="cb" style="margin-top:10px;">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body">Tool use transforms LLMs from <strong>text generators</strong> into <strong>agents</strong> that can interact with the real world. Instead of guessing if code works, the model can run it and verify.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 24 ==================== -->
+<div class="slide" id="slide-24">
+  <div class="slide-label">Module 5 &middot; Slide 24</div>
+  <h2 class="slide-h2">Prompt Chaining &amp; <em>Multi-Step Workflows</em></h2>
+  <p class="slide-p">Complex tasks benefit from decomposition. Instead of one massive prompt, chain multiple focused prompts where each step's output feeds the next.</p>
+
+  <div class="flow-row">
+    <div class="flow-box green">Prompt 1<br><span style="font-size:0.68rem;font-weight:400;">Analyze bugs</span></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Output 1</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Prompt 2<br><span style="font-size:0.68rem;font-weight:400;">Suggest fixes</span></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Output 2</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Prompt 3<br><span style="font-size:0.68rem;font-weight:400;">Generate tests</span></div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Final Result</div>
+  </div>
+
+  <div class="two-col" style="margin-top:16px;">
+    <div class="cb red">
+      <div class="cb-label">Single Prompt Approach</div>
+      <div class="cb-body">"Analyze this code for bugs, suggest fixes for each bug, and generate tests for the fixed code."<br><br>Result: <strong>Lower quality.</strong> The model tries to do everything at once, often missing bugs or generating inconsistent fixes and tests.</div>
+    </div>
+    <div class="cb">
+      <div class="cb-label">Chained Approach</div>
+      <div class="cb-body">Each prompt is focused on one task. The output of step 1 becomes input to step 2.<br><br>Result: <strong>Higher quality.</strong> Each step can be optimized independently. Errors are caught earlier in the pipeline.</div>
+    </div>
+  </div>
+
+  <div class="cb purple" style="margin-top:10px;">
+    <div class="cb-label">Design Principle</div>
+    <div class="cb-body">Complex tasks benefit from decomposition. Each prompt in the chain can be <strong>optimized independently</strong>, tested separately, and debugged in isolation. This is the foundation of <strong>agentic workflows</strong>.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 25 ==================== -->
+<div class="slide" id="slide-25">
+  <div class="slide-label">Module 5 &middot; Slide 25</div>
+  <h2 class="slide-h2">Self-Consistency &amp; <em>Majority Voting</em></h2>
+  <p class="slide-p">Generate multiple responses to the same prompt and take the majority vote. Trade compute for accuracy.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Generate N Responses</h4>
+      <p>Send the same prompt N times with temperature &gt; 0 so each response uses a different reasoning path.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Each Response Reasons Differently</h4>
+      <p>With non-zero temperature, the model explores different solution strategies, variable names, and code structures.</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Extract Final Answers</h4>
+      <p>From each response, extract the final answer (the generated code, the bug diagnosis, the classification).</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Majority Vote</h4>
+      <p>Take the answer that appears most frequently, or run tests on all solutions and pick the best performer.</p>
+    </div>
+  </div>
+
+  <div class="flow-row" style="margin-top:12px;">
+    <div class="flow-box blue">Path 1: Yes</div>
+    <div class="flow-box blue">Path 2: Yes</div>
+    <div class="flow-box amber">Path 3: No</div>
+    <div class="flow-box blue">Path 4: Yes</div>
+    <div class="flow-box amber">Path 5: No</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green" style="font-weight:700;">Yes (3/5)</div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:12px;">
+    <div class="cb-label">Connection to Code Evaluation</div>
+    <div class="cb-body">Self-consistency trades compute for accuracy. It is the basis of <strong>pass@k</strong> evaluation from Module 3: generate k solutions, check if <em>any</em> pass all tests. In production, generate 5 code solutions, run tests on all, and pick the one that passes the most.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 26 ==================== -->
+<div class="slide" id="slide-26">
+  <div class="slide-label">Module 5 &middot; Slide 26</div>
+  <h2 class="slide-h2">Evaluating <em>Prompt Effectiveness</em></h2>
+  <p class="slide-p">How do you know if your prompts are working? Systematic evaluation separates prompt engineering from guesswork.</p>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name">Automated Metrics</div>
+      <div class="term-def"><strong>pass@k:</strong> does generated code pass tests? <strong>BLEU:</strong> similarity to reference output. <strong>Test pass rate:</strong> percentage of generated tests that execute correctly.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name">A/B Testing</div>
+      <div class="term-def">Compare two prompt versions on the same set of inputs. Measure which produces better outputs across multiple dimensions (correctness, style, completeness).</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name">Error Analysis</div>
+      <div class="term-def">Categorize failures: wrong logic, wrong syntax, wrong API usage, hallucinated functions. Each category suggests a different prompt improvement.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name">Regression Testing</div>
+      <div class="term-def">Save your best prompts. When the underlying model updates, re-run your test suite to catch regressions. Prompts are fragile across model versions.</div>
+    </div>
+  </div>
+
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-label">Worked Example</div>
+    <div class="cb-body">We tested 3 prompt variants for unit test generation:<br><br>
+      <strong>Variant A</strong> (zero-shot): 45% test pass rate<br>
+      <strong>Variant B</strong> (few-shot, 3 examples): 62% test pass rate<br>
+      <strong>Variant C</strong> (few-shot + CoT + format spec): <strong>78% test pass rate</strong><br><br>
+      Variant C combined examples with chain-of-thought reasoning and explicit output format constraints &mdash; each technique stacked to improve quality.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 27 ==================== -->
+<div class="slide" id="slide-27">
+  <div class="slide-label">Module 5 &middot; Slide 27</div>
   <h2 class="slide-h2">Prompting Patterns for <em>SE Automation</em></h2>
   <p class="slide-p">A summary of the major prompting strategies used in software engineering research and practice.</p>
 
@@ -839,18 +1234,18 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 19 ==================== -->
-<div class="slide" id="slide-19">
-  <div class="slide-label">Module 5 &middot; Slide 19</div>
+<!-- ==================== SLIDE 28 ==================== -->
+<div class="slide" id="slide-28">
+  <div class="slide-label">Module 5 &middot; Slide 28</div>
   <h2 class="slide-h2">Recap &amp; <em>Knowledge Check</em></h2>
 
   <div class="takeaway-grid">
     <div class="takeaway-card"><div class="takeaway-num">01</div><h4>Prompting = Adaptation</h4><p>Prompting adapts a model without updating its parameters. It changes the input, not the model.</p></div>
     <div class="takeaway-card"><div class="takeaway-num">02</div><h4>Few-Shot Embeds Demos</h4><p>Demonstrations are embedded directly in the prompt context. The model infers patterns from them.</p></div>
-    <div class="takeaway-card"><div class="takeaway-num">03</div><h4>Prompting vs Fine-Tuning</h4><p>Different costs, different tradeoffs. Prompting is flexible; fine-tuning is powerful with enough data.</p></div>
-    <div class="takeaway-card"><div class="takeaway-num">04</div><h4>Code Summarization Study</h4><p>10-shot outperforms fine-tuned baselines. Same-project demos further boost performance.</p></div>
-    <div class="takeaway-card"><div class="takeaway-num">05</div><h4>Shot Selection Matters</h4><p>Which examples you choose is as important as how many you use. Relevance is key.</p></div>
-    <div class="takeaway-card"><div class="takeaway-num">06</div><h4>Quality over Quantity</h4><p>A few highly relevant demonstrations outperform many irrelevant ones. This motivates retrieval.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">03</div><h4>CoT &amp; Best Practices</h4><p>Chain-of-Thought forces step-by-step reasoning. Specificity, context, and format specification are essential.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">04</div><h4>Shot Selection Matters</h4><p>Which examples you choose is as important as how many. Relevance is the key signal.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">05</div><h4>RAG &amp; Context Management</h4><p>Retrieve relevant code for prompts. Manage context windows carefully on real projects.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">06</div><h4>Tool Use &amp; Chaining</h4><p>LLMs can call tools and chain prompts. This is the foundation of agentic SE workflows.</p></div>
   </div>
 
   <div style="margin-top:18px;">
@@ -860,21 +1255,66 @@
       <div class="kc-answer"><strong>Prompting changes the input; fine-tuning changes the model.</strong> Prompting does not update model parameters &mdash; it adapts behavior by structuring the context. Fine-tuning performs gradient-based updates to the model weights.</div>
     </div>
     <div class="kc-box">
-      <div class="kc-q">Why did 0-shot and 1-shot fail for code summarization while 10-shot succeeded?</div>
+      <div class="kc-q">Why does Chain-of-Thought prompting improve accuracy on code analysis tasks?</div>
       <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible');this.style.display='none';">Reveal Answer</button>
-      <div class="kc-answer">Code summarization requires understanding <strong>project-specific conventions</strong>, summary style, and level of detail. A single example cannot convey enough variation. 10 demonstrations provide sufficient signal for the model to infer the expected output format.</div>
+      <div class="kc-answer">CoT forces the model to show <strong>intermediate reasoning steps</strong>, making it harder to skip to wrong conclusions. Each step constrains the next, creating a logical chain. This mirrors how humans analyze code: step by step rather than jumping to a verdict.</div>
     </div>
     <div class="kc-box">
-      <div class="kc-q">Why is shot selection framed as a retrieval problem?</div>
+      <div class="kc-q">When would you use RAG instead of including all code in the prompt?</div>
       <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible');this.style.display='none';">Reveal Answer</button>
-      <div class="kc-answer">Because finding the best demonstrations for a target input is essentially a <strong>search problem</strong>: given a query (the target code), retrieve the most relevant documents (demonstration examples) from a corpus. This connects directly to information retrieval techniques and motivates RAG.</div>
+      <div class="kc-answer">When the codebase <strong>exceeds the context window</strong>, when you need <strong>domain-specific knowledge</strong> the model was not trained on, or when information changes frequently. RAG retrieves only the relevant snippets, keeping prompts focused and within token limits.</div>
     </div>
   </div>
 </div>
 
-<!-- ==================== SLIDE 20 ==================== -->
-<div class="slide" id="slide-20">
-  <div class="slide-label">Module 5 &middot; Slide 20</div>
+<!-- ==================== SLIDE 29 ==================== -->
+<div class="slide" id="slide-29">
+  <div class="slide-label">Module 5 &middot; Slide 29</div>
+  <h2 class="slide-h2">Lab Challenge: <em>Prompt Engineering Competition</em></h2>
+  <p class="slide-p">Put your prompt engineering skills to the test. Design the best prompt for a code generation task and analyze the results.</p>
+
+  <div class="cb blue">
+    <div class="cb-label">The Task</div>
+    <div class="cb-body">Given a code generation challenge (implement a sorting algorithm with specific requirements), design the <strong>best possible prompt</strong> to get correct, efficient, and readable code from an LLM.</div>
+  </div>
+
+  <div class="cb amber" style="margin-top:10px;">
+    <div class="cb-label">Requirements</div>
+    <div class="cb-body">
+      <strong>Implement a function</strong> that sorts a list of dictionaries by a specified key, with support for:<br>
+      &bull; Ascending and descending order<br>
+      &bull; Handling missing keys gracefully<br>
+      &bull; Stable sort behavior<br>
+      &bull; Type checking and error handling<br>
+      &bull; Comprehensive docstring and type hints
+    </div>
+  </div>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr;margin-top:14px;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name">Submit</div>
+      <div class="term-def"><strong>1)</strong> Your prompt<br><strong>2)</strong> The generated output<br><strong>3)</strong> Test results (write &amp; run tests)<br><strong>4)</strong> 1-paragraph analysis of your prompt design choices</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name">Bonus</div>
+      <div class="term-def">Try <strong>3 or more</strong> prompting strategies (zero-shot, few-shot, CoT, etc.) and compare results. Which strategy produced the best code? Why?</div>
+    </div>
+  </div>
+
+  <div class="cb purple" style="margin-top:14px;">
+    <div class="cb-label">Grading Criteria</div>
+    <div class="cb-body">
+      <strong>Prompt Quality (30%):</strong> Specificity, structure, use of techniques from this module.<br>
+      <strong>Output Correctness (30%):</strong> Does the generated code actually work?<br>
+      <strong>Test Coverage (20%):</strong> Did you write meaningful tests?<br>
+      <strong>Analysis Depth (20%):</strong> Insightful reflection on what worked and why.
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 30 ==================== -->
+<div class="slide" id="slide-30">
+  <div class="slide-label">Module 5 &middot; Slide 30</div>
   <h2 class="slide-h2">What's <em>Next</em></h2>
   <p class="slide-p">This module covered prompting and in-context learning for SE automation. Here is where the journey continues.</p>
 
@@ -920,7 +1360,7 @@
 
 <script>
 // ── Navigation ────────────────────────────────────────────────────
-const TOTAL = 20;
+const TOTAL = 30;
 let cur = 1;
 
 function buildDots() {
@@ -1140,6 +1580,56 @@ function checkRanking() {
     resultEl.innerHTML = '<div class="cb amber"><div class="cb-label">' + correctSelected + '/3 Correct</div><div class="cb-body">The best demos are the three Spring REST controller methods: <code>handlePostOrder</code>, <code>handleDeleteUser</code>, and <code>handleUpdateUser</code>. They share the same API family, annotations, and naming patterns as the target. Methods like <code>sortArray</code>, <code>readFile</code>, and <code>calculateTax</code> are from different domains and would send noisy signals.</div></div>';
   }
 }
+
+// -- Slide 15: Prompt Playground --
+var PG_SCENARIOS = [
+  {
+    name: "Generate Unit Test",
+    basic: "Write a unit test for this function:\n\ndef add(a, b):\n    return a + b",
+    basicOut: "def test_add():\n    assert add(1, 2) == 3",
+    good: "Write a pytest unit test for the following Python function.\nInclude: edge cases (zero, negative, floats),\ndescriptive test names, and docstrings.\n\ndef add(a, b):\n    return a + b",
+    goodOut: "import pytest\n\ndef test_add_positive_integers():\n    \"\"\"Test addition of two positive integers.\"\"\"\n    assert add(2, 3) == 5\n\ndef test_add_with_zero():\n    \"\"\"Test that adding zero returns the other operand.\"\"\"\n    assert add(0, 5) == 5\n    assert add(5, 0) == 5\n\ndef test_add_negative_numbers():\n    \"\"\"Test addition with negative values.\"\"\"\n    assert add(-1, -1) == -2\n    assert add(-1, 1) == 0\n\ndef test_add_floats():\n    \"\"\"Test addition with floating point numbers.\"\"\"\n    assert add(1.5, 2.5) == pytest.approx(4.0)",
+    insight: "Specificity matters: the optimized prompt requests edge cases, naming conventions, and docstrings. The basic prompt produces a single trivial test."
+  },
+  {
+    name: "Explain This Code",
+    basic: "Explain this code:\n\nx = [i**2 for i in range(10) if i % 2 == 0]",
+    basicOut: "This creates a list of squared even numbers from 0 to 9.",
+    good: "Explain the following Python code line by line.\nTarget audience: a CS student learning list comprehensions.\nInclude: what each part does, the output value, and a simpler equivalent using a for loop.\n\nx = [i**2 for i in range(10) if i % 2 == 0]",
+    goodOut: "This is a list comprehension with a filter:\n\n1. range(10) generates numbers 0-9\n2. if i % 2 == 0 filters to even numbers: 0, 2, 4, 6, 8\n3. i**2 squares each: 0, 4, 16, 36, 64\n\nResult: x = [0, 4, 16, 36, 64]\n\nEquivalent for loop:\n\nx = []\nfor i in range(10):\n    if i % 2 == 0:\n        x.append(i**2)",
+    insight: "Context about the audience and requested format (line-by-line, equivalent loop) produces a much more educational explanation."
+  },
+  {
+    name: "Find the Bug",
+    basic: "Find the bug:\n\ndef avg(nums):\n    return sum(nums) / len(nums)",
+    basicOut: "The bug is division by zero when the list is empty.",
+    good: "Find the bug in this Python function.\nAnalyze step by step:\n1) What inputs could cause failure?\n2) What exception would occur?\n3) Suggest a fix with error handling.\n\ndef avg(nums):\n    return sum(nums) / len(nums)",
+    goodOut: "Step 1: Failure inputs\n- Empty list [] causes len(nums) = 0\n- None input causes TypeError\n\nStep 2: Exception\n- ZeroDivisionError: division by zero\n\nStep 3: Fix:\ndef avg(nums):\n    if not nums:\n        raise ValueError(\"Cannot average empty list\")\n    return sum(nums) / len(nums)",
+    insight: "CoT prompting (step-by-step analysis) produces a more thorough bug analysis. The basic prompt finds the bug but misses the None case and provides no fix."
+  },
+  {
+    name: "Refactor Function",
+    basic: "Refactor this function:\n\ndef process(data):\n    result = []\n    for item in data:\n        if item > 0:\n            result.append(item * 2)\n    return result",
+    basicOut: "def process(data):\n    return [item * 2 for item in data if item > 0]",
+    good: "Refactor the following Python function.\nConstraints:\n- Use functional style (list comprehension or map/filter)\n- Add type hints\n- Add a docstring\n- Keep the same behavior\n- Handle edge case: data is None\n\ndef process(data):\n    result = []\n    for item in data:\n        if item > 0:\n            result.append(item * 2)\n    return result",
+    goodOut: "from typing import List, Optional\n\ndef process(data: Optional[List[float]]) -> List[float]:\n    \"\"\"Double all positive numbers in the input list.\n\n    Args:\n        data: List of numbers to process.\n    Returns:\n        List of doubled positive values.\n    Raises:\n        TypeError: If data is None.\n    \"\"\"\n    if data is None:\n        raise TypeError(\"data cannot be None\")\n    return [item * 2 for item in data if item > 0]",
+    insight: "Providing explicit constraints (type hints, docstring, edge cases) turns a simple one-liner refactor into production-quality code."
+  }
+];
+
+function loadPlayground(idx) {
+  var s = PG_SCENARIOS[idx];
+  document.getElementById('pg-basic').textContent = s.basic;
+  document.getElementById('pg-basic-out').textContent = s.basicOut;
+  document.getElementById('pg-good').textContent = s.good;
+  document.getElementById('pg-good-out').textContent = s.goodOut;
+  document.getElementById('pg-insight').innerHTML = '<div class="cb"><div class="cb-label">Insight</div><div class="cb-body">' + s.insight + '</div></div>';
+  var btns = document.querySelectorAll('#slide-15 .inter-body > div:first-child .sim-btn');
+  btns.forEach(function(b, i) {
+    b.className = 'sim-btn' + (i === idx ? ' primary' : '');
+  });
+}
+
 </script>
 </body>
 </html>

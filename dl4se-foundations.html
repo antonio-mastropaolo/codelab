@@ -211,10 +211,10 @@
     <span class="topbar-sep">|</span>
     <span class="topbar-title">DL for Software Development Foundations</span>
     <span class="topbar-badge">Module 4 &middot; Interactive</span>
-    <span class="slide-counter" id="counter">1 / 26</span>
+    <span class="slide-counter" id="counter">1 / 34</span>
     <a href="index.html" class="topbar-home">Home</a>
   </div>
-  <div class="progress-track"><div class="progress-fill" id="progress" style="width:3.85%"></div></div>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:2.94%"></div></div>
 
   <!-- Slides -->
   <div class="slides-wrapper">
@@ -286,9 +286,132 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 3 ═══ Code Clone Detection: Types I-IV ═══ -->
+    <!-- ═══ SLIDE 3 ═══ Neural Network Fundamentals ═══ -->
     <div class="slide" id="slide-3">
       <div class="slide-label">Module 4 &middot; Slide 03</div>
+      <h2 class="slide-h2"><em>Neural Network</em> Fundamentals</h2>
+      <p class="slide-p">A primer on the building blocks of every deep learning model &mdash; the artificial neuron and how neurons are organized into layers.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb">
+            <div class="cb-label">The Neuron</div>
+            <div class="cb-body">
+              A single neuron computes a <strong>weighted sum</strong> of its inputs, adds a <strong>bias</strong>, and applies a non-linear <strong>activation function</strong>:<br><br>
+              <code style="font-family:var(--font-mono);font-size:0.9rem;color:var(--green);">y = &sigma;(&Sigma; w&#x1D62;x&#x1D62; + b)</code><br><br>
+              <strong>x&#x1D62;</strong> &mdash; input values (e.g., code metrics).<br>
+              <strong>w&#x1D62;</strong> &mdash; learnable weights (importance of each input).<br>
+              <strong>b</strong> &mdash; bias term (shifts the decision boundary).<br>
+              <strong>&sigma;</strong> &mdash; activation (ReLU, sigmoid, tanh).
+            </div>
+          </div>
+          <div class="cb blue" style="margin-top:10px;">
+            <div class="cb-label">Common Activations</div>
+            <div class="cb-body">
+              <strong>ReLU:</strong> max(0, x) &mdash; fast, default for hidden layers.<br>
+              <strong>Sigmoid:</strong> 1/(1+e<sup>-x</sup>) &mdash; output between 0 and 1.<br>
+              <strong>Softmax:</strong> normalizes outputs to probabilities.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">Layers</div>
+            <div class="cb-body">
+              Neurons are stacked into <strong>layers</strong> to form a network:<br><br>
+              <strong>Input Layer</strong> &mdash; receives raw features (e.g., token counts, complexity metrics).<br><br>
+              <strong>Hidden Layers</strong> &mdash; learn intermediate representations. More layers = deeper network = more abstract features.<br><br>
+              <strong>Output Layer</strong> &mdash; produces the final prediction (a class label, a probability, a score).
+            </div>
+          </div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px;">
+            <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">NETWORK STRUCTURE</div>
+            <div class="flow-row">
+              <div class="flow-box green" style="font-size:0.75rem;">Input<br><span style="font-size:0.65rem;color:var(--text-muted);">features</span></div>
+              <div class="flow-arrow">&rarr;</div>
+              <div class="flow-box blue" style="font-size:0.75rem;">Hidden 1<br><span style="font-size:0.65rem;color:var(--text-muted);">learned repr.</span></div>
+              <div class="flow-arrow">&rarr;</div>
+              <div class="flow-box purple" style="font-size:0.75rem;">Hidden 2<br><span style="font-size:0.65rem;color:var(--text-muted);">abstract feat.</span></div>
+              <div class="flow-arrow">&rarr;</div>
+              <div class="flow-box amber" style="font-size:0.75rem;">Output<br><span style="font-size:0.65rem;color:var(--text-muted);">prediction</span></div>
+            </div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Key Insight</div>
+            <div class="cb-body">A neural network is just a function that maps inputs to outputs through layers of simple computations. The &ldquo;learning&rdquo; happens by adjusting the weights.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 4 ═══ How Neural Networks Learn: Backpropagation ═══ -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Module 4 &middot; Slide 04</div>
+      <h2 class="slide-h2">How Neural Networks <em>Learn</em>: Backpropagation</h2>
+      <p class="slide-p">High-level intuition for how a neural network adjusts its weights to improve predictions &mdash; the training loop that drives all deep learning.</p>
+      <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Forward Pass</h4><p>Input flows through the network layer by layer, producing a prediction at the output. Each neuron applies its weights, bias, and activation function.</p></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Loss Computation</h4><p>Compare the prediction to the ground truth using a <strong>loss function</strong> (e.g., cross-entropy for classification, MSE for regression). The loss is a single number measuring how wrong the prediction is.</p></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Backward Pass (Backpropagation)</h4><p>Compute <strong>gradients</strong> &mdash; how much each weight contributed to the error. Uses the chain rule from calculus, applied systematically from output back to input.</p></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Weight Update (Gradient Descent)</h4><p>Adjust each weight in the direction that <strong>reduces the loss</strong>: <code style="font-family:var(--font-mono);">w = w - lr * gradient</code>. The learning rate (<code style="font-family:var(--font-mono);">lr</code>) controls step size.</p></div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-body"><h4>Repeat</h4><p>Iterate over the training data many times (<strong>epochs</strong>). Each pass through the full dataset refines the weights further. Stop when validation performance plateaus.</p></div></div>
+      <div class="two-col" style="margin-top:8px;">
+        <div class="cb">
+          <div class="cb-label">Key Insight</div>
+          <div class="cb-body">Backprop is just the <strong>chain rule</strong> from calculus applied systematically. You don&rsquo;t need to derive it &mdash; frameworks like <strong>PyTorch</strong> do it automatically with <code style="font-family:var(--font-mono);">loss.backward()</code>.</div>
+        </div>
+        <div class="cb cyan">
+          <div class="cb-label">The Training Loop in Code</div>
+          <div class="cb-body">
+            <code style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary);">
+              prediction = model(input) &nbsp;&nbsp;<span style="color:var(--text-muted);"># forward</span><br>
+              loss = criterion(prediction, label)<br>
+              loss.backward() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-muted);"># backprop</span><br>
+              optimizer.step() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-muted);"># update</span>
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 5 ═══ Training in Practice: Hyperparameters ═══ -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Module 4 &middot; Slide 05</div>
+      <h2 class="slide-h2">Training in Practice: <em>Hyperparameters</em></h2>
+      <p class="slide-p">Settings you choose <strong>before</strong> training begins. Unlike weights (which are learned), hyperparameters must be set by the practitioner.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-name">Learning Rate</div>
+          <div class="term-def">How big each weight update step is. Too high: loss diverges. Too low: training is painfully slow. Typical: 1e-3 to 1e-5. The single most important hyperparameter.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Batch Size</div>
+          <div class="term-def">How many examples to process before updating weights. Common values: 32, 64, 128. Larger batches = more stable gradients but more memory.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Epochs</div>
+          <div class="term-def">How many complete passes through the full training dataset. Too few: underfitting. Too many: overfitting. Monitor validation loss to decide.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Dropout</div>
+          <div class="term-def">Randomly disable neurons during training (e.g., 10-50% chance). Forces the network to learn redundant representations, preventing overfitting.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Early Stopping</div>
+          <div class="term-def">Stop training when validation loss starts increasing (the model is memorizing, not generalizing). Saves compute and prevents overfitting.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-name">Optimizer</div>
+          <div class="term-def">The algorithm for gradient descent. Adam is the default choice &mdash; adapts learning rate per-parameter. SGD with momentum is a common alternative.</div>
+        </div>
+      </div>
+      <div class="cb" style="margin-top:12px;">
+        <div class="cb-label">Practical Advice</div>
+        <div class="cb-body">You rarely need to tune these from scratch. Start with published defaults and adjust based on <strong>validation performance</strong>. Learning rate is the first knob to turn; batch size and dropout come second.</div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 6 ═══ Code Clone Detection: Types I-IV ═══ -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Module 4 &middot; Slide 06</div>
       <h2 class="slide-h2">Code Clone Detection: <em>Types I &ndash; IV</em></h2>
       <p class="slide-p">Code clones are pairs of code fragments that are similar. They are classified into four types based on the degree of similarity.</p>
       <div class="two-col">
@@ -327,9 +450,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 4 ═══ Clone Detection Approaches ═══ -->
-    <div class="slide" id="slide-4">
-      <div class="slide-label">Module 4 &middot; Slide 04</div>
+    <!-- ═══ SLIDE 7 ═══ Clone Detection Approaches ═══ -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Module 4 &middot; Slide 07</div>
       <h2 class="slide-h2">Clone Detection <em>Approaches</em></h2>
       <p class="slide-p">Different techniques trade off precision, recall, and the ability to detect higher-type clones.</p>
       <div class="two-col">
@@ -355,9 +478,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 5 ═══ Vulnerability Prediction ═══ -->
-    <div class="slide" id="slide-5">
-      <div class="slide-label">Module 4 &middot; Slide 05</div>
+    <!-- ═══ SLIDE 8 ═══ Vulnerability Prediction ═══ -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Module 4 &middot; Slide 08</div>
       <h2 class="slide-h2"><em>Vulnerability</em> Prediction</h2>
       <p class="slide-p">Automatically predicting whether a code component contains a security vulnerability, using machine learning classifiers trained on historical vulnerability data.</p>
       <div class="two-col">
@@ -404,9 +527,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 6 ═══ Vulnerability Prediction Pipeline Interactive ═══ -->
-    <div class="slide" id="slide-6">
-      <div class="slide-label">Module 4 &middot; Slide 06</div>
+    <!-- ═══ SLIDE 9 ═══ Vulnerability Prediction Pipeline Interactive ═══ -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Module 4 &middot; Slide 09</div>
       <h2 class="slide-h2">Vulnerability Prediction <em>Pipeline</em></h2>
       <p class="slide-p">Walk through how a vulnerability prediction model extracts features and assigns a risk score to a code snippet.</p>
       <div class="inter-panel">
@@ -434,9 +557,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 7 ═══ Code Smell Detection ═══ -->
-    <div class="slide" id="slide-7">
-      <div class="slide-label">Module 4 &middot; Slide 07</div>
+    <!-- ═══ SLIDE 10 ═══ Code Smell Detection ═══ -->
+    <div class="slide" id="slide-10">
+      <div class="slide-label">Module 4 &middot; Slide 10</div>
       <h2 class="slide-h2">Code <em>Smell</em> Detection</h2>
       <p class="slide-p">Code smells are symptoms of poor design choices that increase maintenance cost and defect likelihood. ML models can automatically detect them from software metrics.</p>
       <div class="two-col">
@@ -473,9 +596,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 8 ═══ Interactive Code Smell Detector ═══ -->
-    <div class="slide" id="slide-8">
-      <div class="slide-label">Module 4 &middot; Slide 08</div>
+    <!-- ═══ SLIDE 11 ═══ Interactive Code Smell Detector ═══ -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Module 4 &middot; Slide 11</div>
       <h2 class="slide-h2">Interactive: <em>Code Smell</em> Detector</h2>
       <p class="slide-p">Analyze code metrics to classify the type of code smell present in a given snippet.</p>
       <div class="inter-panel">
@@ -503,9 +626,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 9 ═══ Non-Generative Tasks Recap ═══ -->
-    <div class="slide" id="slide-9">
-      <div class="slide-label">Module 4 &middot; Slide 09</div>
+    <!-- ═══ SLIDE 12 ═══ Non-Generative Tasks Recap ═══ -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Module 4 &middot; Slide 12</div>
       <h2 class="slide-h2">Non-Generative Tasks <em>Recap</em></h2>
       <p class="slide-p">Summary and comparison of the three non-generative tasks we covered.</p>
       <table class="comp-table">
@@ -560,9 +683,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 10 ═══ From Non-Generative to Generative ═══ -->
-    <div class="slide" id="slide-10">
-      <div class="slide-label">Module 4 &middot; Slide 10</div>
+    <!-- ═══ SLIDE 13 ═══ From Non-Generative to Generative ═══ -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Module 4 &middot; Slide 13</div>
       <h2 class="slide-h2">From Non-Generative to <em>Generative</em></h2>
       <p class="slide-p">We now shift from classifying existing code to generating new sequences of code tokens. This requires a fundamentally different class of models.</p>
       <div class="vs-grid">
@@ -598,9 +721,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 11 ═══ Word Embeddings for Code ═══ -->
-    <div class="slide" id="slide-11">
-      <div class="slide-label">Module 4 &middot; Slide 11</div>
+    <!-- ═══ SLIDE 14 ═══ Word Embeddings for Code ═══ -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Module 4 &middot; Slide 14</div>
       <h2 class="slide-h2">Word <em>Embeddings</em> for Code</h2>
       <p class="slide-p">Before feeding code tokens to a neural network, we need to represent them as dense numerical vectors. Embeddings capture semantic relationships between tokens.</p>
       <div class="two-col">
@@ -638,9 +761,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 12 ═══ Byte Pair Encoding ═══ -->
-    <div class="slide" id="slide-12">
-      <div class="slide-label">Module 4 &middot; Slide 12</div>
+    <!-- ═══ SLIDE 15 ═══ Byte Pair Encoding ═══ -->
+    <div class="slide" id="slide-15">
+      <div class="slide-label">Module 4 &middot; Slide 15</div>
       <h2 class="slide-h2">Byte Pair Encoding <em>(BPE)</em></h2>
       <p class="slide-p">Subword tokenization that splits rare identifiers into known subword units. Essential for handling code's open vocabulary (compound names like <code style="font-family:var(--font-mono);">getEmbeddedIPv4ClientAddr</code>).</p>
       <div class="two-col">
@@ -669,9 +792,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 13 ═══ LSTM Architecture ═══ -->
-    <div class="slide" id="slide-13">
-      <div class="slide-label">Module 4 &middot; Slide 13</div>
+    <!-- ═══ SLIDE 16 ═══ LSTM Architecture ═══ -->
+    <div class="slide" id="slide-16">
+      <div class="slide-label">Module 4 &middot; Slide 16</div>
       <h2 class="slide-h2"><em>LSTM</em> Architecture</h2>
       <p class="slide-p">Long Short-Term Memory networks solve the vanishing gradient problem of vanilla RNNs by introducing gated memory cells that selectively remember and forget information.</p>
       <div class="two-col">
@@ -709,9 +832,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 14 ═══ LSTM Gate Explorer ═══ -->
-    <div class="slide" id="slide-14">
-      <div class="slide-label">Module 4 &middot; Slide 14</div>
+    <!-- ═══ SLIDE 17 ═══ LSTM Gate Explorer ═══ -->
+    <div class="slide" id="slide-17">
+      <div class="slide-label">Module 4 &middot; Slide 17</div>
       <h2 class="slide-h2">Interactive: <em>LSTM Gate</em> Explorer</h2>
       <p class="slide-p">Adjust the input values and observe how each gate responds. The bars show gate activations computed with fixed illustrative weights.</p>
       <div class="inter-panel">
@@ -746,9 +869,82 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 15 ═══ Seq2Seq for Code ═══ -->
-    <div class="slide" id="slide-15">
-      <div class="slide-label">Module 4 &middot; Slide 15</div>
+    <!-- ═══ SLIDE 18 ═══ GRU: A Simpler Alternative to LSTM ═══ -->
+    <div class="slide" id="slide-18">
+      <div class="slide-label">Module 4 &middot; Slide 18</div>
+      <h2 class="slide-h2">GRU: A <em>Simpler Alternative</em> to LSTM</h2>
+      <p class="slide-p">Gated Recurrent Units achieve similar performance to LSTMs with a simpler architecture &mdash; fewer gates, fewer parameters, and faster training.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb blue">
+            <div class="cb-label">LSTM Recap</div>
+            <div class="cb-body">
+              <strong>3 Gates:</strong> Input, Forget, Output.<br>
+              <strong>2 States:</strong> Cell state (c_t) + Hidden state (h_t).<br>
+              <strong>Parameters:</strong> 4 weight matrices per layer.<br>
+              Powerful but complex &mdash; more parameters to learn, slower to train.
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-label">GRU Design</div>
+            <div class="cb-body">
+              <strong>2 Gates:</strong> Update gate (z_t) and Reset gate (r_t).<br>
+              <strong>1 State:</strong> Hidden state (h_t) only &mdash; no separate cell state.<br>
+              <strong>Parameters:</strong> 3 weight matrices per layer.<br>
+              The update gate combines the roles of LSTM&rsquo;s forget and input gates.
+            </div>
+          </div>
+        </div>
+        <div>
+          <table class="comp-table">
+            <tr><th>Property</th><th>LSTM</th><th>GRU</th></tr>
+            <tr><td>Gates</td><td><span class="tag-blue">3</span> (input, forget, output)</td><td><span class="tag-green">2</span> (update, reset)</td></tr>
+            <tr><td>States</td><td><span class="tag-blue">2</span> (cell + hidden)</td><td><span class="tag-green">1</span> (hidden only)</td></tr>
+            <tr><td>Parameters/layer</td><td><span class="tag-blue">4n(n+m)</span></td><td><span class="tag-green">3n(n+m)</span></td></tr>
+            <tr><td>Training speed</td><td><span class="tag-amber">Slower</span></td><td><span class="tag-green">Faster</span></td></tr>
+            <tr><td>Long sequences</td><td><span class="tag-green">Better</span></td><td><span class="tag-amber">Good</span></td></tr>
+            <tr><td>Small datasets</td><td><span class="tag-amber">Overfits more</span></td><td><span class="tag-green">Preferred</span></td></tr>
+          </table>
+          <div class="cb amber" style="margin-top:12px;">
+            <div class="cb-label">When to Use GRU</div>
+            <div class="cb-body">GRUs are often preferred when you have <strong>less training data</strong>, since they have fewer parameters to learn. For very long sequences or when maximum performance is critical, LSTM may still have an edge.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 19 ═══ Interactive: RNN vs LSTM vs GRU on Code ═══ -->
+    <div class="slide" id="slide-19">
+      <div class="slide-label">Module 4 &middot; Slide 19</div>
+      <h2 class="slide-h2">Interactive: <em>RNN vs LSTM vs GRU</em> on Code</h2>
+      <p class="slide-p">See how a simple RNN, LSTM, and GRU retain information over a code token sequence. RNNs suffer from vanishing gradients; gated architectures preserve long-range memory.</p>
+      <div class="inter-panel">
+        <div class="inter-header">
+          <span class="inter-title">Memory Retention Comparison <span class="inter-badge">Interactive</span></span>
+        </div>
+        <div class="inter-body">
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Select a code example to see how each architecture retains information across tokens:</div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <button class="sim-btn primary" id="rnn-ex-0" onclick="setRNNExample(0)">Short Dependency</button>
+            <button class="sim-btn" id="rnn-ex-1" onclick="setRNNExample(1)">Medium Dependency</button>
+            <button class="sim-btn" id="rnn-ex-2" onclick="setRNNExample(2)">Long Dependency</button>
+          </div>
+          <div id="rnn-code-display" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);margin-bottom:12px;padding:8px 12px;background:var(--bg-3);border-radius:8px;"></div>
+          <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:6px;">INFORMATION RETAINED vs TOKEN DISTANCE</div>
+          <div style="display:flex;gap:20px;align-items:flex-end;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;"><span style="display:inline-block;width:12px;height:12px;background:var(--red);border-radius:2px;"></span><span style="color:var(--text-muted);">Simple RNN</span></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;"><span style="display:inline-block;width:12px;height:12px;background:var(--blue);border-radius:2px;"></span><span style="color:var(--text-muted);">LSTM</span></div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;"><span style="display:inline-block;width:12px;height:12px;background:var(--green);border-radius:2px;"></span><span style="color:var(--text-muted);">GRU</span></div>
+          </div>
+          <svg id="rnn-chart" width="100%" height="180" viewBox="0 0 560 180" style="display:block;"></svg>
+          <div id="rnn-explanation" style="margin-top:10px;font-size:0.82rem;color:var(--text-secondary);padding:8px 12px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 20 ═══ Seq2Seq for Code ═══ -->
+    <div class="slide" id="slide-20">
+      <div class="slide-label">Module 4 &middot; Slide 20</div>
       <h2 class="slide-h2"><em>Seq2Seq</em> for Code</h2>
       <p class="slide-p">The encoder-decoder (sequence-to-sequence) architecture maps an input sequence to an output sequence of potentially different length &mdash; ideal for code translation and repair.</p>
       <div class="two-col">
@@ -787,9 +983,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 16 ═══ Attention Mechanism ═══ -->
-    <div class="slide" id="slide-16">
-      <div class="slide-label">Module 4 &middot; Slide 16</div>
+    <!-- ═══ SLIDE 21 ═══ Attention Mechanism ═══ -->
+    <div class="slide" id="slide-21">
+      <div class="slide-label">Module 4 &middot; Slide 21</div>
       <h2 class="slide-h2"><em>Attention</em> Mechanism</h2>
       <p class="slide-p">Instead of relying on a single context vector, attention lets the decoder look back at all encoder hidden states and focus on the most relevant parts for each output token.</p>
       <div class="two-col">
@@ -825,9 +1021,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 17 ═══ Beam Search ═══ -->
-    <div class="slide" id="slide-17">
-      <div class="slide-label">Module 4 &middot; Slide 17</div>
+    <!-- ═══ SLIDE 22 ═══ Beam Search ═══ -->
+    <div class="slide" id="slide-22">
+      <div class="slide-label">Module 4 &middot; Slide 22</div>
       <h2 class="slide-h2"><em>Beam Search</em> Decoding</h2>
       <p class="slide-p">At inference time, the decoder must choose tokens one at a time. Beam search keeps multiple candidate sequences (beams) to avoid getting trapped by greedy local choices.</p>
       <div class="two-col">
@@ -867,9 +1063,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 18 ═══ Generative Part 1 Recap ═══ -->
-    <div class="slide" id="slide-18">
-      <div class="slide-label">Module 4 &middot; Slide 18</div>
+    <!-- ═══ SLIDE 23 ═══ Generative Part 1 Recap ═══ -->
+    <div class="slide" id="slide-23">
+      <div class="slide-label">Module 4 &middot; Slide 23</div>
       <h2 class="slide-h2">Generative Part 1 <em>Recap</em></h2>
       <p class="slide-p">Summary of the key building blocks for LSTM-based generative models.</p>
       <div class="takeaway-grid">
@@ -893,9 +1089,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 19 ═══ Self-Attention ═══ -->
-    <div class="slide" id="slide-19">
-      <div class="slide-label">Module 4 &middot; Slide 19</div>
+    <!-- ═══ SLIDE 24 ═══ Self-Attention ═══ -->
+    <div class="slide" id="slide-24">
+      <div class="slide-label">Module 4 &middot; Slide 24</div>
       <h2 class="slide-h2">Self-Attention: <em>The Key Innovation</em></h2>
       <p class="slide-p">Self-attention allows every token in a sequence to attend to every other token simultaneously, replacing the sequential processing of RNNs with parallel computation.</p>
       <div class="two-col">
@@ -940,9 +1136,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 20 ═══ Multi-Head Attention & Positional Encoding ═══ -->
-    <div class="slide" id="slide-20">
-      <div class="slide-label">Module 4 &middot; Slide 20</div>
+    <!-- ═══ SLIDE 25 ═══ Multi-Head Attention & Positional Encoding ═══ -->
+    <div class="slide" id="slide-25">
+      <div class="slide-label">Module 4 &middot; Slide 25</div>
       <h2 class="slide-h2">Multi-Head Attention &amp; <em>Positional Encoding</em></h2>
       <p class="slide-p">Multiple attention heads capture different types of relationships, while positional encodings inject sequence order into the otherwise position-agnostic Transformer.</p>
       <div class="two-col">
@@ -978,9 +1174,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 21 ═══ Transformer Architecture ═══ -->
-    <div class="slide" id="slide-21">
-      <div class="slide-label">Module 4 &middot; Slide 21</div>
+    <!-- ═══ SLIDE 26 ═══ Transformer Architecture ═══ -->
+    <div class="slide" id="slide-26">
+      <div class="slide-label">Module 4 &middot; Slide 26</div>
       <h2 class="slide-h2"><em>Transformer</em> Architecture</h2>
       <p class="slide-p">The Transformer stacks self-attention and feed-forward layers into encoder and decoder blocks, with residual connections and layer normalization for stable deep training.</p>
       <div class="two-col">
@@ -1021,9 +1217,51 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 22 ═══ Pre-training & Fine-tuning ═══ -->
-    <div class="slide" id="slide-22">
-      <div class="slide-label">Module 4 &middot; Slide 22</div>
+    <!-- ═══ SLIDE 27 ═══ Autoregressive Generation: How LLMs Write Code ═══ -->
+    <div class="slide" id="slide-27">
+      <div class="slide-label">Module 4 &middot; Slide 27</div>
+      <h2 class="slide-h2">Autoregressive Generation: <em>How LLMs Write Code</em></h2>
+      <p class="slide-p">Large language models generate code one token at a time, left to right. Each generated token becomes part of the input for the next prediction step.</p>
+      <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Start with Prompt</h4><p>The user provides initial context: <code style="font-family:var(--font-mono);color:var(--green);">def sort_list(</code></p></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Generate Next Token</h4><p>Model predicts the most likely next token: <code style="font-family:var(--font-mono);color:var(--cyan);">arr</code>. Context is now <code style="font-family:var(--font-mono);color:var(--text-secondary);">def sort_list(arr</code></p></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Append and Repeat</h4><p>Each new token extends the context: <code style="font-family:var(--font-mono);color:var(--cyan);">)</code> &rarr; <code style="font-family:var(--font-mono);color:var(--cyan);">:</code> &rarr; <code style="font-family:var(--font-mono);color:var(--cyan);">\n</code> &rarr; <code style="font-family:var(--font-mono);color:var(--cyan);">return</code> &rarr; <code style="font-family:var(--font-mono);color:var(--cyan);">sorted</code> &hellip;</p></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Stop Condition</h4><p>Generation stops when the model produces an end-of-sequence token (<code style="font-family:var(--font-mono);">&lt;EOS&gt;</code>) or reaches the maximum context length.</p></div></div>
+      <div class="two-col" style="margin-top:8px;">
+        <div>
+          <div class="inter-panel">
+            <div class="inter-header">
+              <span class="inter-title">Token-by-Token Generation <span class="inter-badge">Interactive</span></span>
+            </div>
+            <div class="inter-body">
+              <div id="autoreg-display" style="font-family:var(--font-mono);font-size:0.82rem;min-height:50px;padding:8px 12px;background:var(--bg-3);border-radius:8px;margin-bottom:10px;line-height:1.8;"></div>
+              <div style="display:flex;gap:8px;">
+                <button class="sim-btn primary" onclick="autoregStep()">Generate Next Token</button>
+                <button class="sim-btn" onclick="autoregReset()">Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cb">
+            <div class="cb-label">Key Insight</div>
+            <div class="cb-body">Every token an LLM generates was produced <strong>one at a time, left to right</strong>, conditioned on everything that came before. This is why <strong>context window size matters</strong> &mdash; the model can only &ldquo;see&rdquo; a fixed number of preceding tokens.</div>
+          </div>
+          <div class="cb purple" style="margin-top:10px;">
+            <div class="cb-label">Sampling Strategies</div>
+            <div class="cb-body">
+              <strong>Greedy:</strong> always pick the top token.<br>
+              <strong>Temperature:</strong> scale logits to control randomness.<br>
+              <strong>Top-k / Top-p:</strong> restrict to most likely tokens.<br>
+              Higher temperature = more creative but less reliable code.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 28 ═══ Pre-training & Fine-tuning ═══ -->
+    <div class="slide" id="slide-28">
+      <div class="slide-label">Module 4 &middot; Slide 28</div>
       <h2 class="slide-h2"><em>Pre-training</em> &amp; Fine-tuning</h2>
       <p class="slide-p">Modern code models are first pre-trained on massive unlabeled code corpora, then fine-tuned on smaller task-specific datasets. This transfer learning paradigm dramatically reduces labeled data requirements.</p>
       <div class="two-col">
@@ -1068,9 +1306,62 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 23 ═══ Code Models Ecosystem ═══ -->
-    <div class="slide" id="slide-23">
-      <div class="slide-label">Module 4 &middot; Slide 23</div>
+    <!-- ═══ SLIDE 29 ═══ Fine-Tuning vs. Pre-Training ═══ -->
+    <div class="slide" id="slide-29">
+      <div class="slide-label">Module 4 &middot; Slide 29</div>
+      <h2 class="slide-h2"><em>Fine-Tuning</em> vs. Pre-Training</h2>
+      <p class="slide-p">Understanding the economics and workflow of the two-stage training paradigm that powers every modern code model.</p>
+      <div class="two-col">
+        <div>
+          <div class="cb purple">
+            <div class="cb-label">Pre-Training</div>
+            <div class="cb-body">
+              <strong>Goal:</strong> Learn general language / code patterns.<br>
+              <strong>Data:</strong> Massive corpus (e.g., The Stack: 900GB of code).<br>
+              <strong>Cost:</strong> Millions of dollars in GPU compute.<br>
+              <strong>Duration:</strong> Weeks to months on hundreds of GPUs.<br>
+              <strong>Who does it:</strong> Research labs (Meta, Google, BigCode).<br>
+              <strong>Frequency:</strong> Done once, shared publicly.
+            </div>
+          </div>
+          <div class="cb amber" style="margin-top:10px;">
+            <div class="cb-label">Result</div>
+            <div class="cb-body">A <strong>foundation model</strong> that understands code syntax, semantics, and common patterns across many languages &mdash; but is not specialized for any particular task.</div>
+          </div>
+        </div>
+        <div>
+          <div class="cb green">
+            <div class="cb-label">Fine-Tuning</div>
+            <div class="cb-body">
+              <strong>Goal:</strong> Specialize the model for a specific task or domain.<br>
+              <strong>Data:</strong> Small labeled dataset (hundreds to thousands of examples).<br>
+              <strong>Cost:</strong> Cheap &mdash; hours on a single GPU.<br>
+              <strong>Duration:</strong> Minutes to hours.<br>
+              <strong>Who does it:</strong> Practitioners, researchers, teams.<br>
+              <strong>Frequency:</strong> Done for each new task or domain.
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">TYPICAL PIPELINE</div>
+            <div class="flow-row">
+              <div class="flow-box purple" style="font-size:0.72rem;">Pre-train on<br>The Stack</div>
+              <div class="flow-arrow">&rarr;</div>
+              <div class="flow-box amber" style="font-size:0.72rem;">Fine-tune on<br>Java methods</div>
+              <div class="flow-arrow">&rarr;</div>
+              <div class="flow-box green" style="font-size:0.72rem;">Deploy for<br>Java completion</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cb" style="margin-top:12px;">
+        <div class="cb-label">Practical Takeaway</div>
+        <div class="cb-body">You will <strong>almost never pre-train</strong> a model from scratch. Fine-tuning lets you specialize a powerful model for your task with relatively little data and compute. This is the standard workflow for all course projects.</div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 30 ═══ Code Models Ecosystem ═══ -->
+    <div class="slide" id="slide-30">
+      <div class="slide-label">Module 4 &middot; Slide 30</div>
       <h2 class="slide-h2">Code Models <em>Ecosystem</em></h2>
       <p class="slide-p">An overview of the major pre-trained models for code, their architectures, and capabilities.</p>
       <table class="comp-table">
@@ -1112,9 +1403,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 24 ═══ HNN & CC2Vec ═══ -->
-    <div class="slide" id="slide-24">
-      <div class="slide-label">Module 4 &middot; Slide 24</div>
+    <!-- ═══ SLIDE 31 ═══ HNN & CC2Vec ═══ -->
+    <div class="slide" id="slide-31">
+      <div class="slide-label">Module 4 &middot; Slide 31</div>
       <h2 class="slide-h2">HNN &amp; CC2Vec: <em>Learning Code Changes</em></h2>
       <p class="slide-p">Specialized architectures for understanding code changes (diffs) rather than static code snapshots.</p>
       <div class="two-col">
@@ -1142,9 +1433,46 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 25 ═══ Module 4 Recap & Knowledge Check ═══ -->
-    <div class="slide" id="slide-25">
-      <div class="slide-label">Module 4 &middot; Slide 25</div>
+    <!-- ═══ SLIDE 32 ═══ From Theory to Practice: The DL4SE Toolkit ═══ -->
+    <div class="slide" id="slide-32">
+      <div class="slide-label">Module 4 &middot; Slide 32</div>
+      <h2 class="slide-h2">From Theory to Practice: <em>The DL4SE Toolkit</em></h2>
+      <p class="slide-p">The tools that abstract away complexity and let you go from idea to working model in under 50 lines of Python.</p>
+      <div class="term-grid">
+        <div class="term-card" style="border-left:3px solid var(--red);">
+          <div class="term-name" style="color:var(--red);">PyTorch</div>
+          <div class="term-def"><strong>The framework.</strong> Tensors, automatic differentiation (autograd), and nn.Module for building models. The dominant framework in research and increasingly in industry.</div>
+        </div>
+        <div class="term-card" style="border-left:3px solid var(--amber);">
+          <div class="term-name" style="color:var(--amber);">HuggingFace Transformers</div>
+          <div class="term-def"><strong>Pre-trained models on demand.</strong> Load any code model (CodeBERT, CodeT5, StarCoder) with one line. Includes tokenizers, pipelines, and fine-tuning utilities.</div>
+        </div>
+        <div class="term-card" style="border-left:3px solid var(--blue);">
+          <div class="term-name" style="color:var(--blue);">Weights &amp; Biases</div>
+          <div class="term-def"><strong>Experiment tracking.</strong> Log metrics, visualize training curves, compare runs, and run hyperparameter sweeps. Essential for reproducible research.</div>
+        </div>
+        <div class="term-card" style="border-left:3px solid var(--green);">
+          <div class="term-name" style="color:var(--green);">Google Colab / Lightning AI</div>
+          <div class="term-def"><strong>Free GPU compute.</strong> Run Jupyter notebooks with GPU/TPU acceleration in the browser. No local GPU required for course projects.</div>
+        </div>
+        <div class="term-card" style="border-left:3px solid var(--purple);">
+          <div class="term-name" style="color:var(--purple);">HuggingFace Datasets</div>
+          <div class="term-def"><strong>Data loading made easy.</strong> Access standard SE datasets (CodeSearchNet, The Stack) with streaming support for large corpora.</div>
+        </div>
+        <div class="term-card" style="border-left:3px solid var(--cyan);">
+          <div class="term-name" style="color:var(--cyan);">Git &amp; DVC</div>
+          <div class="term-def"><strong>Version control for ML.</strong> Git for code, DVC (Data Version Control) for datasets and model checkpoints that are too large for Git.</div>
+        </div>
+      </div>
+      <div class="cb" style="margin-top:12px;">
+        <div class="cb-label">Key Insight</div>
+        <div class="cb-body">These tools abstract away most of the complexity. You can load a pre-trained code model and fine-tune it in <strong>under 50 lines of Python</strong>. Focus on the research question, not the plumbing.</div>
+      </div>
+    </div>
+
+    <!-- ═══ SLIDE 33 ═══ Module 4 Recap & Knowledge Check ═══ -->
+    <div class="slide" id="slide-33">
+      <div class="slide-label">Module 4 &middot; Slide 33</div>
       <h2 class="slide-h2">Module 4 <em>Recap</em> &amp; Knowledge Check</h2>
       <div class="takeaway-grid">
         <div class="takeaway-card"><div class="takeaway-num">01</div><h4>Non-Generative Tasks</h4><p>Clone detection (Types I-IV), vulnerability prediction, code smell detection &mdash; classification without generating new code.</p></div>
@@ -1189,9 +1517,9 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 26 ═══ What's Next ═══ -->
-    <div class="slide" id="slide-26">
-      <div class="slide-label">Module 4 &middot; Slide 26</div>
+    <!-- ═══ SLIDE 34 ═══ What's Next ═══ -->
+    <div class="slide" id="slide-34">
+      <div class="slide-label">Module 4 &middot; Slide 34</div>
       <h2 class="slide-h2"><em>What's Next?</em></h2>
       <p class="slide-p">You now have a foundation in both non-generative and generative deep learning for software engineering. Here is how this connects to the rest of the course.</p>
       <div class="two-col">
@@ -1234,7 +1562,7 @@
 
 <script>
 // ── Navigation ────────────────────────────────────────────────────
-const TOTAL = 26;
+const TOTAL = 34;
 let cur = 1;
 function buildDots(){const c=document.getElementById('dots');c.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='slide-dot'+(i===cur?' active':'');d.onclick=()=>setSlide(i);c.appendChild(d);}}
 function setSlide(n){document.getElementById('slide-'+cur).classList.remove('active');cur=Math.max(1,Math.min(TOTAL,n));document.getElementById('slide-'+cur).classList.add('active');document.getElementById('counter').textContent=cur+' / '+TOTAL;document.getElementById('progress').style.width=(cur/TOTAL*100).toFixed(2)+'%';document.getElementById('prev-btn').disabled=cur===1;document.getElementById('next-btn').disabled=cur===TOTAL;buildDots();onSlideEnter(cur);}
@@ -1247,15 +1575,17 @@ function revealQuiz(el){el.classList.add('revealed');el.parentElement.querySelec
 function toggleKC(id){const a=document.getElementById(id);a.classList.toggle('visible');}
 
 function onSlideEnter(n){
-  if(n===3) initClonePairs();
-  if(n===6) setVulnExample(0);
-  if(n===8) initSmellDetector();
-  if(n===11) initEncoding();
-  if(n===14) updateGates();
-  if(n===16) buildAttn();
-  if(n===20) drawPE();
-  if(n===22) updateTL();
-  if(n===24) setHNNStep(1);
+  if(n===6) initClonePairs();
+  if(n===9) setVulnExample(0);
+  if(n===11) initSmellDetector();
+  if(n===14) initEncoding();
+  if(n===17) updateGates();
+  if(n===19) initRNNChart();
+  if(n===21) buildAttn();
+  if(n===25) drawPE();
+  if(n===27) initAutoregressive();
+  if(n===28) updateTL();
+  if(n===31) setHNNStep(1);
 }
 
 // ── Clone Classifier (Slide 3) ────────────────────────────────────
@@ -1624,6 +1954,123 @@ function setHNNStep(s){
   document.getElementById('hnn-visual').innerHTML=step.visual;
   document.getElementById('hnn-explanation').innerHTML=step.explain;
 }
+
+// ── RNN vs LSTM vs GRU Interactive (Slide 19) ─────────────────────
+const RNN_EXAMPLES = [
+  { label:'Short Dependency', code:'x = 5; y = x + 1;', tokens:['x','=','5',';','y','=','x','+','1',';'],
+    rnn:[1,.92,.84,.76,.69,.62,.55,.48,.42,.36],
+    lstm:[1,.98,.96,.94,.92,.90,.88,.86,.84,.82],
+    gru:[1,.97,.94,.91,.88,.86,.84,.82,.80,.78],
+    explain:'<strong>Short dependency:</strong> Variable <code style="font-family:var(--font-mono);">x</code> is used just 3 tokens after declaration. Even the simple RNN retains enough information. All architectures handle this well.' },
+  { label:'Medium Dependency', code:'int count = 0; for(i=0; i<n; i++) { count++; }', tokens:['int','count','=','0',';','for','(','i','<','n',')','{','count','++',';','}'],
+    rnn:[1,.90,.80,.71,.63,.55,.48,.42,.36,.31,.26,.22,.18,.15,.12,.10],
+    lstm:[1,.97,.94,.91,.89,.87,.85,.83,.81,.79,.78,.76,.75,.74,.73,.72],
+    gru:[1,.96,.92,.88,.85,.82,.80,.78,.76,.74,.72,.70,.69,.68,.67,.66],
+    explain:'<strong>Medium dependency:</strong> <code style="font-family:var(--font-mono);">count</code> is declared at position 1 and used at position 12. The RNN has lost 82% of the signal. LSTM retains 75%, GRU retains 69%.' },
+  { label:'Long Dependency', code:'def process(data): # ... 20 lines ... return transform(data)', tokens:['def','process','(','data',')',':','#','...','20','lines','...','return','transform','(','data',')'],
+    rnn:[1,.88,.76,.65,.55,.46,.38,.31,.25,.20,.16,.12,.09,.07,.05,.03],
+    lstm:[1,.97,.94,.92,.90,.88,.86,.84,.83,.82,.81,.80,.79,.78,.77,.76],
+    gru:[1,.96,.92,.88,.85,.82,.79,.76,.74,.72,.70,.68,.67,.66,.65,.64],
+    explain:'<strong>Long dependency:</strong> <code style="font-family:var(--font-mono);">data</code> appears at position 3 and again at position 14. The RNN retains only 5% &mdash; <strong>vanishing gradient</strong> in action. LSTM: 77%, GRU: 64%. Gated architectures are essential.' },
+];
+let rnnInited = false;
+
+function initRNNChart(){ if(!rnnInited){rnnInited=true; setRNNExample(0);} }
+
+function setRNNExample(idx){
+  [0,1,2].forEach(i=>{
+    const b=document.getElementById('rnn-ex-'+i);
+    if(b) b.className='sim-btn'+(i===idx?' primary':'');
+  });
+  const ex=RNN_EXAMPLES[idx];
+  document.getElementById('rnn-code-display').innerHTML='<span style="color:var(--text-muted);">Code:</span> <code>'+escHtml(ex.code)+'</code>';
+  document.getElementById('rnn-explanation').innerHTML=ex.explain;
+  drawRNNChart(ex);
+}
+
+function drawRNNChart(ex){
+  const svg=document.getElementById('rnn-chart');
+  if(!svg) return;
+  const n=ex.tokens.length, w=520, h=150, ml=30, mb=20, mt=5;
+  const pw=(w-ml)/n, ph=h-mb-mt;
+  let html='';
+  // Y-axis labels
+  html+='<text x="'+(ml-4)+'" y="'+(mt+4)+'" font-size="8" fill="#484F58" font-family="monospace" text-anchor="end">100%</text>';
+  html+='<text x="'+(ml-4)+'" y="'+(mt+ph/2+2)+'" font-size="8" fill="#484F58" font-family="monospace" text-anchor="end">50%</text>';
+  html+='<text x="'+(ml-4)+'" y="'+(mt+ph+2)+'" font-size="8" fill="#484F58" font-family="monospace" text-anchor="end">0%</text>';
+  // Grid lines
+  [0,0.5,1].forEach(v=>{
+    const y=mt+ph*(1-v);
+    html+='<line x1="'+ml+'" y1="'+y+'" x2="'+(ml+n*pw)+'" y2="'+y+'" stroke="#30363D" stroke-width="0.5" stroke-dasharray="3,3"/>';
+  });
+  // Draw lines for each architecture
+  const colors=['#FF5F57','#58A6FF','#00D97E'];
+  const datasets=[ex.rnn,ex.lstm,ex.gru];
+  datasets.forEach((data,di)=>{
+    let path='M';
+    data.forEach((v,i)=>{
+      const x=ml+i*pw+pw/2;
+      const y=mt+ph*(1-v);
+      path+=(i===0?'':' L')+x.toFixed(1)+','+y.toFixed(1);
+    });
+    html+='<path d="'+path+'" fill="none" stroke="'+colors[di]+'" stroke-width="2" opacity="0.85"/>';
+    data.forEach((v,i)=>{
+      const x=ml+i*pw+pw/2;
+      const y=mt+ph*(1-v);
+      html+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+colors[di]+'" opacity="0.9"/>';
+    });
+  });
+  // X-axis token labels
+  ex.tokens.forEach((t,i)=>{
+    const x=ml+i*pw+pw/2;
+    const label=t.length>4?t.slice(0,4):t;
+    html+='<text x="'+x.toFixed(1)+'" y="'+(h-2)+'" font-size="7" fill="#484F58" font-family="monospace" text-anchor="middle" transform="rotate(-30,'+x.toFixed(1)+','+(h-2)+')">'+escHtml(label)+'</text>';
+  });
+  svg.innerHTML=html;
+}
+
+// ── Autoregressive Generation Interactive (Slide 27) ──────────────
+const AUTOREG_TOKENS = [
+  {text:'def ', cls:'kw'}, {text:'sort_list', cls:'id'}, {text:'(', cls:'sep'},
+  {text:'arr', cls:'id'}, {text:')', cls:'sep'}, {text:':', cls:'op'},
+  {text:'\n    ', cls:''}, {text:'return', cls:'kw'}, {text:' sorted', cls:'id'},
+  {text:'(', cls:'sep'}, {text:'arr', cls:'id'}, {text:')', cls:'sep'}
+];
+let autoregPos = 3; // Start after "def sort_list("
+let autoregInited = false;
+
+function initAutoregressive(){
+  if(!autoregInited){autoregInited=true; autoregReset();}
+}
+
+function autoregReset(){
+  autoregPos=3;
+  renderAutoreg();
+}
+
+function autoregStep(){
+  if(autoregPos<AUTOREG_TOKENS.length) autoregPos++;
+  renderAutoreg();
+}
+
+function renderAutoreg(){
+  const el=document.getElementById('autoreg-display');
+  if(!el) return;
+  let html='';
+  for(let i=0;i<autoregPos;i++){
+    const t=AUTOREG_TOKENS[i];
+    const text=t.text.replace(/\n/g,'<br>').replace(/ /g,'&nbsp;');
+    if(t.cls) html+='<span style="color:var(--'+(t.cls==='kw'?'purple':t.cls==='id'?'blue':t.cls==='sep'?'green':t.cls==='op'?'amber':'text-secondary')+');">'+text+'</span>';
+    else html+=text;
+  }
+  if(autoregPos<AUTOREG_TOKENS.length){
+    html+='<span style="background:rgba(0,217,126,0.2);border:1px solid var(--green-border);border-radius:3px;padding:1px 4px;animation:blink 1s infinite;">&#x2588;</span>';
+  } else {
+    html+='<span style="color:var(--green);font-size:0.75rem;margin-left:8px;">&lt;EOS&gt;</span>';
+  }
+  el.innerHTML=html;
+}
 </script>
+<style>@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}</style>
 </body>
 </html>

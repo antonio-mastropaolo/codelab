@@ -164,7 +164,7 @@
   <span class="topbar-sep">|</span>
   <span class="topbar-title">Genetic Algorithms &amp; LLMs</span>
   <span class="topbar-badge">Extra &middot; Interactive</span>
-  <span class="slide-counter" id="counter">1 / 20</span>
+  <span class="slide-counter" id="counter">1 / 30</span>
   <a href="index.html" class="topbar-home">Home</a>
 </div>
 
@@ -235,7 +235,7 @@
     </div>
     <div class="cb blue" style="margin:0;display:flex;flex-direction:column;">
       <div class="cb-label">Brief History</div>
-      <div class="cb-body" style="flex:1;"><strong>John Holland (1975)</strong> formalized genetic algorithms in "Adaptation in Natural and Artificial Systems" at the University of Michigan. His Schema Theorem provided the first theoretical foundation for why GAs work. Since then, GAs have been applied to scheduling, routing, design optimization, and &mdash; most recently &mdash; software engineering.</div>
+      <div class="cb-body" style="flex:1;"><strong>John Holland (1975)</strong> formalized genetic algorithms in "Adaptation in Natural and Artificial Systems" at the University of Michigan. His <strong>Schema Theorem</strong> showed that GAs implicitly process short, low-order, high-fitness patterns (called <em>schemata</em>) at an exponential rate &mdash; providing the first theoretical explanation for why GAs work. Since then, GAs have been applied to scheduling, routing, design optimization, and &mdash; most recently &mdash; software engineering.</div>
     </div>
     <div class="cb purple" style="margin:0;display:flex;flex-direction:column;">
       <div class="cb-label">Evolutionary Optimization</div>
@@ -280,6 +280,11 @@
       <div class="term-name" style="color:var(--cyan);">Genotype vs Phenotype</div>
       <div class="term-def">The <strong>genotype</strong> is the encoded representation (e.g., bits). The <strong>phenotype</strong> is the decoded solution (e.g., the actual number or structure it represents).</div>
     </div>
+  </div>
+
+  <div class="cb amber" style="margin-top:10px;">
+    <div class="cb-label">GA vs GP &mdash; An Important Distinction</div>
+    <div class="cb-body"><strong>Genetic Algorithms (GA)</strong> optimize <em>parameters</em> &mdash; they evolve fixed-length encodings (bit strings, real vectors) that represent settings, configurations, or inputs. <strong>Genetic Programming (GP)</strong> evolves <em>programs</em> themselves &mdash; tree-structured representations of executable code. When we talk about "evolving code" later in this module, we primarily use GAs to optimize <strong>prompts and parameters</strong> that an LLM uses to generate code, rather than directly evolving code trees (GP). Both are part of the broader family of <strong>Evolutionary Computation</strong>.</div>
   </div>
 </div>
 
@@ -680,6 +685,177 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
 <!-- ==================== SLIDE 13 ==================== -->
 <div class="slide" id="slide-13">
   <div class="slide-label">Extra &middot; Slide 13</div>
+  <h2 class="slide-h2">Why Genetic Algorithms <em>for Code</em>?</h2>
+  <p class="slide-p">Before diving into GA + LLM architectures, let's understand why GAs are uniquely suited to the problem of generating high-quality code.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">The Search Problem</div>
+        <div class="cb-body">
+          Generating optimal code is <strong>searching through an enormous space</strong> of possible programs. Traditional approaches fall short:<br><br>
+          <strong>Manual prompting:</strong> try a few prompts by hand &mdash; inefficient, misses vast regions of the space<br>
+          <strong>Grid search:</strong> systematically vary parameters &mdash; exponential cost as dimensions grow<br>
+          <strong>Random sampling:</strong> generate many candidates blindly &mdash; wasteful, no learning between attempts
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val red">10<sup>50+</sup></div><div class="stat-label">Possible Programs (estimated)</div></div>
+        <div class="stat-card"><div class="stat-val amber">~5</div><div class="stat-label">Manual Attempts (typical)</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Nature's Search Algorithm</div>
+        <div class="cb-body">
+          GAs efficiently explore large spaces using evolution:<br><br>
+          <strong>Maintain a diverse population</strong> &mdash; don't put all eggs in one basket<br>
+          <strong>Keep what works</strong> &mdash; selection preserves fit solutions<br>
+          <strong>Combine good parts</strong> &mdash; crossover merges building blocks<br>
+          <strong>Occasionally try something new</strong> &mdash; mutation explores the unexpected
+        </div>
+      </div>
+      <div class="cb cyan">
+        <div class="cb-label">Key Advantage</div>
+        <div class="cb-body">GAs are interesting because they can optimize objectives that are <strong>difficult to formalize mathematically</strong> &mdash; like "good code quality." You don't need a differentiable loss function. You just need a way to compare: is solution A better than solution B?</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 14 ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Extra &middot; Slide 14</div>
+  <h2 class="slide-h2">The <em>Evaluation Bottleneck</em></h2>
+  <p class="slide-p">The critical challenge in using GAs for code generation: how do you know if generated code is actually good?</p>
+
+  <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>LLM Generates Code Candidate</h4><p>An LLM produces a function, class, or module based on a prompt or specification.</p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>To Know If It's Good, We Need Functional Correctness</h4><p>Does the code actually <strong>work</strong>? Does it handle edge cases? Does it produce correct output for all inputs?</p></div></div>
+  <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Functional Correctness = Run Test Suite</h4><p>The gold standard: compile the code and execute it against a comprehensive test suite. This is the only way to <strong>know</strong> if code works.</p></div></div>
+  <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Industrial Test Suites Can Take HOURS per Candidate</h4><p>Integration tests, system tests, performance benchmarks &mdash; real-world test suites are slow and resource-intensive.</p></div></div>
+  <div class="step-row"><div class="step-num">5</div><div class="step-body"><h4>1000 Candidates &times; Hours = Impossible</h4><p>If we want to evaluate a large population across many generations, exhaustive testing is computationally infeasible.</p></div></div>
+
+  <div class="stat-row">
+    <div class="stat-card" style="border-top:3px solid var(--amber);">
+      <div class="stat-val amber">CodeBLEU</div>
+      <div class="stat-label" style="font-size:0.68rem;line-height:1.4;margin-top:6px;">Measures text similarity<br>~0.1s per eval<br><strong style="color:var(--red);">DOESN'T tell you if code works</strong></div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--red);">
+      <div class="stat-val red">Test Exec</div>
+      <div class="stat-label" style="font-size:0.68rem;line-height:1.4;margin-top:6px;">Measures correctness<br>Minutes to HOURS per eval<br><strong style="color:var(--green);">The gold standard</strong></div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--green);">
+      <div class="stat-val">LLM Predictor</div>
+      <div class="stat-label" style="font-size:0.68rem;line-height:1.4;margin-top:6px;">Predicts pass/fail<br>~0.5s per eval<br><strong style="color:var(--amber);">~95% accurate</strong></div>
+    </div>
+  </div>
+
+  <div class="cb amber">
+    <div class="cb-label">The Core Tension</div>
+    <div class="cb-body">Surface-level metrics like CodeBLEU are <strong>necessary but NOT sufficient</strong>. A function can look perfect and still crash. Functional correctness remains the gold standard for code evaluation &mdash; but it is expensive. This tension is what makes the next insight so powerful.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 15 ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Extra &middot; Slide 15</div>
+  <h2 class="slide-h2">Fitness Approximation: <em>The Key Insight</em></h2>
+  <p class="slide-p">What if we could PREDICT whether code passes tests without actually running them?</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">Traditional GA Fitness</div>
+        <div class="cb-body">
+          Run tests for <strong>every</strong> candidate &rarr; accurate but SLOW.<br><br>
+          <span style="font-family:var(--font-mono);font-size:0.78rem;">
+          500 individuals<br>
+          &times; 100 generations<br>
+          &times; 2 hours/test<br>
+          = <strong style="color:var(--red);">100,000 hours</strong><br>
+          = <strong style="color:var(--red);">11.4 YEARS</strong>
+          </span>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val red">11.4 yr</div><div class="stat-label">Exact Evaluation</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Approximated Fitness</div>
+        <div class="cb-body">
+          Train a model to <strong>PREDICT</strong> test outcomes &rarr; fast but approximate.<br><br>
+          <span style="font-family:var(--font-mono);font-size:0.78rem;">
+          500 individuals<br>
+          &times; 100 generations<br>
+          &times; 0.5 seconds/prediction<br>
+          = <strong style="color:var(--green);">25,000 seconds</strong><br>
+          = <strong style="color:var(--green);">~7 hours</strong>
+          </span>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">~7 hr</div><div class="stat-label">Approx Evaluation</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val purple">5 orders</div><div class="stat-label">Magnitude Speedup</div></div>
+    <div class="stat-card"><div class="stat-val amber">~5%</div><div class="stat-label">Error Rate Tolerated</div></div>
+    <div class="stat-card"><div class="stat-val blue">95%</div><div class="stat-label">Predictor Accuracy</div></div>
+  </div>
+
+  <div class="cb cyan">
+    <div class="cb-label">The Tradeoff</div>
+    <div class="cb-body">If a binary classifier can predict pass/fail with <strong>95% accuracy</strong>, we tolerate the 5% error because the alternative &mdash; running all tests &mdash; is <strong>computationally infeasible at scale</strong>. Accept 5% error to gain 5 orders of magnitude speedup. This is the fundamental insight behind fitness approximation in evolutionary code optimization.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16 ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Extra &middot; Slide 16</div>
+  <h2 class="slide-h2">Interactive: <em>Fitness Approximation Tradeoff</em></h2>
+  <p class="slide-p">Explore the tradeoff between exact and approximate fitness evaluation. Adjust the parameters to see how population size, generations, test time, and predictor accuracy affect total computation time and error rates.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Fitness Approximation Calculator <span class="inter-badge">Interactive</span></div>
+      <button class="sim-btn primary" onclick="calcApprox()">Calculate</button>
+    </div>
+    <div class="inter-body">
+      <div class="two-col" style="gap:18px;">
+        <div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Population Size</span><span id="approx-pop-val">200</span></div>
+            <input type="range" id="approx-pop" min="50" max="1000" value="200" step="50" oninput="document.getElementById('approx-pop-val').textContent=this.value">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Generations</span><span id="approx-gen-val">100</span></div>
+            <input type="range" id="approx-gen" min="10" max="200" value="100" step="10" oninput="document.getElementById('approx-gen-val').textContent=this.value">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Test Execution Time (minutes)</span><span id="approx-test-val">30</span></div>
+            <input type="range" id="approx-test" min="1" max="240" value="30" step="1" oninput="document.getElementById('approx-test-val').textContent=this.value">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label"><span>Predictor Accuracy (%)</span><span id="approx-acc-val">95</span></div>
+            <input type="range" id="approx-acc" min="80" max="99" value="95" step="1" oninput="document.getElementById('approx-acc-val').textContent=this.value">
+          </div>
+        </div>
+        <div id="approx-results">
+          <div style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;margin-bottom:6px;">RESULTS WILL APPEAR HERE</div>
+          <div style="color:var(--text-muted);font-size:0.78rem;">Adjust the sliders and click "Calculate" to compare exact vs. approximate fitness evaluation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17 ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Extra &middot; Slide 17</div>
   <h2 class="slide-h2">From Bit Strings <em>to Code</em></h2>
   <p class="slide-p">Now comes the key transition: applying genetic algorithm principles not to binary optimization problems, but to software engineering artifacts. The challenge is representing SE artifacts as "chromosomes" that can be evolved.</p>
 
@@ -722,9 +898,9 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   </div>
 </div>
 
-<!-- ==================== SLIDE 14 ==================== -->
-<div class="slide" id="slide-14">
-  <div class="slide-label">Extra &middot; Slide 14</div>
+<!-- ==================== SLIDE 18 ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Extra &middot; Slide 18</div>
   <h2 class="slide-h2">GA + LLMs: <em>The Key Insight</em></h2>
   <p class="slide-p">The breakthrough idea: use LLMs as a "development function" and genetic algorithms as the optimizer that searches for the best inputs (prompts, specifications) to that function.</p>
 
@@ -776,9 +952,30 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   </div>
 </div>
 
-<!-- ==================== SLIDE 15 ==================== -->
-<div class="slide" id="slide-15">
-  <div class="slide-label">Extra &middot; Slide 15</div>
+<!-- ==================== SLIDE 19 ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Extra &middot; Slide 19</div>
+  <h2 class="slide-h2">GA + LLM: <em>The Architecture</em></h2>
+  <p class="slide-p">Here is the full pipeline when we combine genetic algorithms with LLM-based fitness approximation. The key: expensive test execution happens only ONCE at the end.</p>
+
+  <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Initialize Population</h4><p>Generate N code solutions using the LLM with different prompts, temperatures, or parameter configurations. Each solution is an "individual."</p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Evaluate Fitness (CHEAP)</h4><p>Call the LLM predictor for each individual &mdash; predict pass@1: 0 or 1. This is just an API call (~0.5s), <strong>NOT</strong> test execution (hours).</p></div></div>
+  <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Selection</h4><p>Tournament selection &mdash; pick the fittest individuals based on predicted fitness scores.</p></div></div>
+  <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Crossover</h4><p>Combine parts of good solutions &mdash; e.g., take function A's algorithm + function B's error handling. For prompt evolution: merge clauses from two high-fitness prompts.</p></div></div>
+  <div class="step-row"><div class="step-num">5</div><div class="step-body"><h4>Mutation</h4><p>Randomly modify candidates: rename variables, restructure logic, change data structures, rephrase prompt clauses, add or remove constraints.</p></div></div>
+  <div class="step-row"><div class="step-num">6</div><div class="step-body"><h4>Re-evaluate New Population (CHEAP)</h4><p>Again, just LLM predictor calls &mdash; <strong>NO test execution</strong>. Each new individual costs seconds, not hours.</p></div></div>
+  <div class="step-row"><div class="step-num">7</div><div class="step-body"><h4>Repeat Until Convergence</h4><p>Continue for N generations or until fitness plateaus. The entire evolutionary loop uses only approximate fitness.</p></div></div>
+  <div class="step-row" style="border-left:3px solid var(--green);padding-left:10px;margin-left:14px;"><div class="step-num" style="background:var(--green);color:var(--bg);border-color:var(--green);">8</div><div class="step-body"><h4>Final Validation: Run ACTUAL Tests</h4><p>Run the <strong>real</strong> test suite only on the top-K best candidates from the final generation. This is the only time we pay the full cost of test execution.</p></div></div>
+
+  <div class="cb" style="margin-top:10px;">
+    <div class="cb-label">The Key Insight</div>
+    <div class="cb-body">The expensive test execution happens <strong>ONCE at the end</strong>, on a handful of candidates, instead of at <strong>EVERY generation for EVERY individual</strong>. For each new individual during evolution, there is only the call to the LLM (seconds) but NOT the execution of test cases (hours).</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20 ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Extra &middot; Slide 20</div>
   <h2 class="slide-h2">Evolving Prompts for <em>Test Generation</em></h2>
   <p class="slide-p">One of the most promising applications of GA + LLM is automated test generation. Instead of manually writing test cases, we evolve natural language descriptions that an LLM converts into executable tests.</p>
 
@@ -813,9 +1010,9 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   </div>
 </div>
 
-<!-- ==================== SLIDE 16 ==================== -->
-<div class="slide" id="slide-16">
-  <div class="slide-label">Extra &middot; Slide 16</div>
+<!-- ==================== SLIDE 21 ==================== -->
+<div class="slide" id="slide-21">
+  <div class="slide-label">Extra &middot; Slide 21</div>
   <h2 class="slide-h2">The <em>EvoPrompt</em> Pipeline</h2>
   <p class="slide-p">The evolutionary prompt optimization pipeline combines genetic algorithms with LLMs in an automated feedback loop. Each generation produces better prompts that lead to better generated code.</p>
 
@@ -841,9 +1038,9 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   <div class="step-row"><div class="step-num">6</div><div class="step-body"><h4>Repeat for N Generations</h4><p>Continue evolving until coverage plateaus or a generation limit is reached. The best descriptions from the final generation produce the final test suite.</p></div></div>
 </div>
 
-<!-- ==================== SLIDE 17 ==================== -->
-<div class="slide" id="slide-17">
-  <div class="slide-label">Extra &middot; Slide 17</div>
+<!-- ==================== SLIDE 22 ==================== -->
+<div class="slide" id="slide-22">
+  <div class="slide-label">Extra &middot; Slide 22</div>
   <h2 class="slide-h2">Interactive: <em>Evolve Test Descriptions</em></h2>
   <p class="slide-p">See how evolutionary optimization improves test descriptions over generations. The method under test is a simple sorting function. Click "Evaluate" to score each description, then "Evolve" to create a new generation.</p>
 
@@ -868,9 +1065,83 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   </div>
 </div>
 
-<!-- ==================== SLIDE 18 ==================== -->
-<div class="slide" id="slide-18">
-  <div class="slide-label">Extra &middot; Slide 18</div>
+<!-- ==================== SLIDE 23 ==================== -->
+<div class="slide" id="slide-23">
+  <div class="slide-label">Extra &middot; Slide 23</div>
+  <h2 class="slide-h2">What Can Go Wrong: <em>Honest Limitations</em></h2>
+  <p class="slide-p">GA + LLM is a promising research direction, but intellectual honesty requires acknowledging significant open challenges.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb red">
+        <div class="cb-label">Fitness Landscape Mismatch</div>
+        <div class="cb-body">The LLM predictor might not capture the <strong>true fitness landscape</strong>. Candidates that "look correct" to the predictor may fail actual tests. The approximate fitness surface may have different peaks and valleys than the real one, leading the GA to converge on solutions that are only <em>apparently</em> good.</div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">Constraint Modeling</div>
+        <div class="cb-body">Real SE problems have <strong>complex constraints</strong>: performance requirements, memory limits, concurrency safety, backward compatibility. Modeling all of these as a single fitness function is extremely difficult. At the current state of practice, <strong>the assumptions needed are often unrealistic</strong>.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Representation Problem</div>
+        <div class="cb-body">How do you represent code as a "chromosome" for crossover? Naive string-level operations (cut at character 50, swap tails) almost always produce <strong>syntactically invalid code</strong>. Meaningful crossover requires understanding code structure &mdash; ASTs, function boundaries, logical blocks.</div>
+      </div>
+      <div class="cb red">
+        <div class="cb-label">Deceptive Fitness</div>
+        <div class="cb-body">If the predictor <strong>consistently gets the same 5% wrong</strong>, the GA will exploit those blind spots. It will evolve solutions that game the predictor rather than solving the actual problem. This is analogous to reward hacking in reinforcement learning.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb amber" style="margin-top:10px;">
+    <div class="cb-label">The Honest Assessment</div>
+    <div class="cb-body">GA + LLM is a <strong>promising research direction</strong>, not a production-ready solution. The gap between proxy fitness and true correctness is real and must be acknowledged. Modeling a real SE problem with all its actual constraints using GAs requires assumptions that are often unrealistic at the current state of practice.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 24 ==================== -->
+<div class="slide" id="slide-24">
+  <div class="slide-label">Extra &middot; Slide 24</div>
+  <h2 class="slide-h2">When GA + LLM <em>Makes Sense</em></h2>
+  <p class="slide-p">A practical decision framework: when should you consider GA + LLM approaches, and when are simpler methods better?</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb" style="border-left-color:var(--green);">
+        <div class="cb-label" style="color:var(--green);">Good Fit</div>
+        <div class="cb-body">
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;">&#10003;</div><div class="step-body"><p><strong>Large search space</strong> &mdash; too many candidates for exhaustive evaluation</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;">&#10003;</div><div class="step-body"><p><strong>Slow test execution</strong> &mdash; minutes to hours per candidate</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;">&#10003;</div><div class="step-body"><p><strong>Reliable pass/fail predictor</strong> exists or can be trained</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;">&#10003;</div><div class="step-body"><p><strong>Error tolerance</strong> &mdash; some false positives are acceptable</p></div></div>
+          <div class="step-row"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;">&#10003;</div><div class="step-body"><p><strong>Clear objectives</strong> &mdash; optimizing a small number of measurable goals</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb" style="border-left-color:var(--red);">
+        <div class="cb-label" style="color:var(--red);">Bad Fit</div>
+        <div class="cb-body">
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;background:rgba(248,81,73,0.1);border-color:rgba(248,81,73,0.3);color:var(--red);">&#10007;</div><div class="step-body"><p><strong>Simple generation tasks</strong> &mdash; just use Chain-of-Thought prompting</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;background:rgba(248,81,73,0.1);border-color:rgba(248,81,73,0.3);color:var(--red);">&#10007;</div><div class="step-body"><p><strong>Fast test execution</strong> &mdash; just run the tests directly!</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;background:rgba(248,81,73,0.1);border-color:rgba(248,81,73,0.3);color:var(--red);">&#10007;</div><div class="step-body"><p><strong>Safety-critical code</strong> &mdash; zero error tolerance required</p></div></div>
+          <div class="step-row" style="margin-bottom:8px;"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;background:rgba(248,81,73,0.1);border-color:rgba(248,81,73,0.3);color:var(--red);">&#10007;</div><div class="step-body"><p><strong>Highly constrained problems</strong> &mdash; too many objectives to model</p></div></div>
+          <div class="step-row"><div class="step-num" style="width:24px;height:24px;font-size:0.68rem;background:rgba(248,81,73,0.1);border-color:rgba(248,81,73,0.3);color:var(--red);">&#10007;</div><div class="step-body"><p><strong>No reliable fitness proxy</strong> &mdash; prediction accuracy too low</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb blue" style="margin-top:10px;">
+    <div class="cb-label">Rule of Thumb</div>
+    <div class="cb-body">Ask yourself: <strong>"Is the cost of evaluating one candidate so high that I can't afford to evaluate many?"</strong> If yes, fitness approximation with GAs may be worth the tradeoff. If each evaluation is fast (under a minute), just run the tests &mdash; the added complexity of GA + LLM is not justified.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 25 ==================== -->
+<div class="slide" id="slide-25">
+  <div class="slide-label">Extra &middot; Slide 25</div>
   <h2 class="slide-h2">Real-World <em>Applications</em></h2>
   <p class="slide-p">The combination of genetic algorithms and LLMs is being applied across software engineering. Here are the key application areas where evolutionary approaches enhance AI-assisted development.</p>
 
@@ -907,9 +1178,102 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   </div>
 </div>
 
-<!-- ==================== SLIDE 19 ==================== -->
-<div class="slide" id="slide-19">
-  <div class="slide-label">Extra &middot; Slide 19</div>
+<!-- ==================== SLIDE 26 ==================== -->
+<div class="slide" id="slide-26">
+  <div class="slide-label">Extra &middot; Slide 26</div>
+  <h2 class="slide-h2">Research Frontiers: <em>What's Next?</em></h2>
+  <p class="slide-p">GA + LLM for code is an active and fast-moving research area. Here are the most promising directions.</p>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name" style="color:var(--green);">Surrogate-Assisted Evolution</div>
+      <div class="term-def">Train increasingly accurate fitness predictors <strong>as the GA runs</strong>. Each generation provides new training data (validated solutions), so the surrogate model improves over time. Early generations use rough approximations; later generations get near-exact predictions.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name" style="color:var(--blue);">LLM-Guided Mutation</div>
+      <div class="term-def">Instead of random string mutations (which usually break code), use LLMs to generate <strong>semantically meaningful mutations</strong>. Ask the LLM: "Modify this function to handle edge cases better" or "Rewrite this using a different algorithm." The LLM ensures mutations are syntactically valid.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name" style="color:var(--purple);">Multi-Objective Optimization</div>
+      <div class="term-def">Simultaneously optimize for <strong>correctness, performance, readability, and maintainability</strong>. Use Pareto-front approaches (NSGA-II) to find solutions that represent the best tradeoffs between competing objectives. No single "best" solution &mdash; a set of optimal tradeoffs.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name" style="color:var(--amber);">Coevolution</div>
+      <div class="term-def">Evolve <strong>test cases alongside code solutions</strong> in parallel populations. Code evolves to pass tests; tests evolve to break code. This arms-race dynamic produces both robust code and comprehensive test suites simultaneously.</div>
+    </div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:12px;">
+    <div class="cb-label">Course Connection</div>
+    <div class="cb-body">This is an active research area. Several of these topics could be the subject of <strong>your course projects or future research</strong>. If you're interested in pursuing any of these directions, talk to the instructor about current open problems and available datasets.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 27 ==================== -->
+<div class="slide" id="slide-27">
+  <div class="slide-label">Extra &middot; Slide 27</div>
+  <h2 class="slide-h2">Interactive: <em>Evolution with Fitness Approximation</em></h2>
+  <p class="slide-p">Compare how a GA converges with exact fitness vs. approximate fitness. Toggle between modes to see the impact of prediction errors on convergence.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <div class="inter-title">Evolution Simulator <span class="inter-badge">Interactive</span></div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <label style="font-size:0.75rem;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="checkbox" id="approx-toggle" onchange="resetEvoSim()" style="accent-color:var(--green);">
+          Approximate Fitness
+        </label>
+        <button class="sim-btn primary" onclick="stepEvoSim()">Step</button>
+        <button class="sim-btn" onclick="runEvoSimFull()">Run All</button>
+        <button class="sim-btn" onclick="resetEvoSim()">Reset</button>
+      </div>
+    </div>
+    <div class="inter-body">
+      <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:8px;" id="evosim-mode">MODE: EXACT FITNESS &mdash; Slow but accurate</div>
+      <div class="stat-row" id="evosim-stats">
+        <div class="stat-card"><div class="stat-val" id="evosim-gen">0</div><div class="stat-label">Generation</div></div>
+        <div class="stat-card"><div class="stat-val blue" id="evosim-best">0</div><div class="stat-label">Best Fitness</div></div>
+        <div class="stat-card"><div class="stat-val amber" id="evosim-avg">0</div><div class="stat-label">Avg Fitness</div></div>
+        <div class="stat-card"><div class="stat-val purple" id="evosim-diversity">0</div><div class="stat-label">Diversity</div></div>
+        <div class="stat-card"><div class="stat-val red" id="evosim-fp">0</div><div class="stat-label">False Positives</div></div>
+      </div>
+      <div id="evosim-log" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-secondary);line-height:1.7;max-height:160px;overflow-y:auto;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 28 ==================== -->
+<div class="slide" id="slide-28">
+  <div class="slide-label">Extra &middot; Slide 28</div>
+  <h2 class="slide-h2">Connecting the Dots: <em>From Evaluation to Optimization</em></h2>
+  <p class="slide-p">This module completes a narrative arc across the course. Here is how the pieces fit together.</p>
+
+  <div class="step-row"><div class="step-num" style="background:rgba(88,166,255,0.12);border-color:rgba(88,166,255,0.3);color:var(--blue);">M3</div><div class="step-body"><h4>Module 3: Evaluation Metrics</h4><p>We learned evaluation metrics &mdash; BLEU, CodeBLEU, pass@k. We discovered that <strong>functional correctness is the gold standard</strong> but text similarity metrics are cheap proxies.</p></div></div>
+  <div class="step-row"><div class="step-num" style="background:rgba(188,140,255,0.12);border-color:rgba(188,140,255,0.3);color:var(--purple);">M5</div><div class="step-body"><h4>Module 5: Prompting Strategies</h4><p>We studied prompting strategies to generate better code &mdash; Chain-of-Thought, few-shot, role prompts. Better prompts &rarr; better code, but which prompt is <em>best</em>?</p></div></div>
+  <div class="step-row"><div class="step-num" style="background:var(--green-dim);border-color:var(--green-border);color:var(--green);">GA</div><div class="step-body"><h4>This Module: Genetic Algorithms</h4><p>GAs can <strong>SEARCH</strong> for the best prompt or solution across an enormous space. Instead of manually trying a few prompts, we evolve thousands.</p></div></div>
+  <div class="step-row"><div class="step-num" style="background:rgba(227,179,65,0.12);border-color:rgba(227,179,65,0.3);color:var(--amber);">Key</div><div class="step-body"><h4>The Fitness Approximation Insight</h4><p>Predict pass@k <strong>without running tests</strong>. Use evaluation metrics as cheap fitness proxies. Accept small error for massive speedup.</p></div></div>
+
+  <div class="flow-row" style="margin-top:16px;">
+    <div class="flow-box blue">Evaluation Metrics</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Prompting Strategies</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">GA Search</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box amber">Fitness Approximation</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box" style="border-color:var(--text-primary);color:var(--text-primary);">Scalable Code Generation</div>
+  </div>
+
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-label">The Big Picture</div>
+    <div class="cb-body">This is why we studied evaluation metrics before optimization &mdash; <strong>you can't optimize what you can't measure</strong> (or at least approximate). The future of AI-assisted software engineering combines all these pieces: LLMs generate code, evaluation metrics assess quality, GAs search for optimal solutions, and fitness approximation makes the search computationally feasible.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 29 ==================== -->
+<div class="slide" id="slide-29">
+  <div class="slide-label">Extra &middot; Slide 29</div>
   <h2 class="slide-h2">Interactive: <em>Knowledge Check</em></h2>
   <p class="slide-p">Test your understanding of the key concepts covered in this module. Click each question to reveal the answer.</p>
 
@@ -942,11 +1306,21 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
     <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">What is a fitness landscape and why does it matter?</div>
     <div class="kc-answer"><strong>A fitness landscape is a conceptual surface mapping every possible solution to its fitness value.</strong> The shape of this landscape determines how difficult the optimization problem is and which GA parameters work best. Smooth landscapes with a single peak (unimodal) are easy. Rugged landscapes with many peaks of different heights (multi-modal) are hard because the GA can get trapped on local optima. Understanding the landscape informs parameter choices: rugged landscapes need higher mutation rates and larger populations to maintain diversity.</div>
   </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">Why is fitness approximation necessary for GA + LLM code optimization?</div>
+    <div class="kc-answer"><strong>Running test suites for every candidate in every generation is computationally infeasible.</strong> If test execution takes hours and we have hundreds of candidates across many generations, the total computation time can reach years. Fitness approximation replaces test execution with a fast predictor (an LLM call taking ~0.5s) that predicts pass/fail with ~95% accuracy. The tradeoff: we accept a small error rate to gain orders of magnitude speedup, then validate only the top candidates with actual tests at the end.</div>
+  </div>
+
+  <div class="kc-box">
+    <div class="kc-q" onclick="this.nextElementSibling.classList.toggle('visible')" style="cursor:pointer;">What is "deceptive fitness" and why is it a concern with approximate fitness functions?</div>
+    <div class="kc-answer"><strong>Deceptive fitness occurs when the fitness approximator consistently misjudges certain types of solutions.</strong> If the predictor always gives high scores to a particular pattern that actually fails real tests, the GA will evolve toward that deceptive pattern &mdash; essentially "gaming" the predictor rather than solving the real problem. This is analogous to reward hacking in reinforcement learning. Mitigation strategies include periodically validating a sample of candidates with real tests and retraining the predictor.</div>
+  </div>
 </div>
 
-<!-- ==================== SLIDE 20 ==================== -->
-<div class="slide" id="slide-20">
-  <div class="slide-label">Extra &middot; Slide 20</div>
+<!-- ==================== SLIDE 30 ==================== -->
+<div class="slide" id="slide-30">
+  <div class="slide-label">Extra &middot; Slide 30</div>
   <h2 class="slide-h2">Summary &amp; <em>Key Takeaways</em></h2>
   <p class="slide-p">Genetic algorithms provide a powerful, gradient-free optimization framework that, when combined with LLMs, opens new possibilities for automated software engineering.</p>
 
@@ -973,13 +1347,28 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">05</div>
+      <h4>Fitness Approximation</h4>
+      <p>When test execution is expensive, approximate fitness with an LLM predictor. Accept small error for orders-of-magnitude speedup. Validate only top candidates with real tests at the end.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">06</div>
       <h4>Automated Test Evolution</h4>
       <p>Evolving test descriptions with coverage-guided fitness produces comprehensive test suites faster than manual writing, systematically exploring edge cases humans miss.</p>
     </div>
     <div class="takeaway-card">
-      <div class="takeaway-num">06</div>
+      <div class="takeaway-num">07</div>
+      <h4>Honest Limitations</h4>
+      <p>GA + LLM is promising but not production-ready. Fitness landscape mismatch, deceptive fitness, constraint modeling, and the representation problem remain open challenges.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">08</div>
       <h4>SBSE Meets AI</h4>
       <p>Search-Based Software Engineering now leverages LLMs as code generators within evolutionary loops, enabling a new generation of automated testing, repair, and optimization tools.</p>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-num">09</div>
+      <h4>Connecting the Dots</h4>
+      <p>Evaluation metrics (Module 3) enable fitness functions. Prompting strategies (Module 5) generate candidates. GAs search the space. Fitness approximation makes it scalable.</p>
     </div>
   </div>
 
@@ -1007,7 +1396,7 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
 
 <script>
 // ── Navigation ────────────────────────────────────────────────────
-const TOTAL = 20;
+const TOTAL = 30;
 let cur = 1;
 
 function buildDots() {
@@ -1380,6 +1769,196 @@ function evoReset() {
 // Initialize evolution
 evoCurrentDescs = evoInitialDescs.map(d => ({ text: d.text, coverage: 0 }));
 evoRenderPop();
+
+// ── Slide 16: Fitness Approximation Calculator ────────────────────
+function calcApprox() {
+  const pop = parseInt(document.getElementById('approx-pop').value);
+  const gens = parseInt(document.getElementById('approx-gen').value);
+  const testMin = parseInt(document.getElementById('approx-test').value);
+  const acc = parseInt(document.getElementById('approx-acc').value);
+
+  const totalEvals = pop * gens;
+  const exactMinutes = totalEvals * testMin;
+  const exactHours = exactMinutes / 60;
+  const exactDays = exactHours / 24;
+  const approxSeconds = totalEvals * 0.5;
+  const approxHours = approxSeconds / 3600;
+  const errorRate = (100 - acc) / 100;
+  const expectedFP = Math.round(totalEvals * errorRate);
+  const speedup = (exactMinutes * 60) / approxSeconds;
+
+  function fmtTime(hours) {
+    if (hours < 1) return (hours * 60).toFixed(0) + ' min';
+    if (hours < 24) return hours.toFixed(1) + ' hr';
+    if (hours < 8760) return (hours / 24).toFixed(1) + ' days';
+    return (hours / 8760).toFixed(1) + ' years';
+  }
+
+  let html = '<div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">CALCULATION RESULTS</div>';
+  html += '<div style="font-size:0.8rem;color:var(--text-secondary);line-height:1.8;">';
+  html += '<strong>Total evaluations:</strong> ' + pop + ' x ' + gens + ' = <span style="color:var(--text-primary);">' + totalEvals.toLocaleString() + '</span><br>';
+  html += '</div>';
+
+  html += '<div class="stat-row" style="margin-top:10px;">';
+  html += '<div class="stat-card" style="border-top:3px solid var(--red);"><div class="stat-val red">' + fmtTime(exactHours) + '</div><div class="stat-label">Exact Evaluation</div></div>';
+  html += '<div class="stat-card" style="border-top:3px solid var(--green);"><div class="stat-val">' + fmtTime(approxHours) + '</div><div class="stat-label">Approx Evaluation</div></div>';
+  html += '<div class="stat-card" style="border-top:3px solid var(--purple);"><div class="stat-val purple">' + speedup.toFixed(0) + 'x</div><div class="stat-label">Speedup</div></div>';
+  html += '</div>';
+
+  html += '<div class="stat-row">';
+  html += '<div class="stat-card"><div class="stat-val amber">' + expectedFP.toLocaleString() + '</div><div class="stat-label">Expected Errors</div></div>';
+  html += '<div class="stat-card"><div class="stat-val blue">' + acc + '%</div><div class="stat-label">Predictor Accuracy</div></div>';
+  html += '</div>';
+
+  // Worthwhile assessment
+  let verdict = '';
+  if (exactHours > 24 && acc >= 90) {
+    verdict = '<div class="cb" style="margin-top:8px;"><div class="cb-label">Verdict</div><div class="cb-body">Fitness approximation is <strong>highly recommended</strong>. Exact evaluation would take ' + fmtTime(exactHours) + ', making iterative search impractical. The ' + (100-acc) + '% error rate is a worthwhile tradeoff.</div></div>';
+  } else if (exactHours < 1) {
+    verdict = '<div class="cb amber" style="margin-top:8px;"><div class="cb-label">Verdict</div><div class="cb-body">Exact evaluation is <strong>fast enough</strong> (' + fmtTime(exactHours) + '). Just run the tests! The added complexity of fitness approximation is not justified here.</div></div>';
+  } else {
+    verdict = '<div class="cb blue" style="margin-top:8px;"><div class="cb-label">Verdict</div><div class="cb-body">Borderline case. Exact evaluation takes ' + fmtTime(exactHours) + '. Consider approximation if iteration speed matters, but exact evaluation is still feasible for a one-time run.</div></div>';
+  }
+  html += verdict;
+
+  document.getElementById('approx-results').innerHTML = html;
+}
+
+// ── Slide 27: Evolution Simulator with Fitness Approximation ──────
+let evoSimPop = [];
+let evoSimGen = 0;
+let evoSimFP = 0;
+let evoSimLog = [];
+const EVOSIM_POP_SIZE = 20;
+const EVOSIM_CHROMO_LEN = 16;
+const EVOSIM_MAX_GEN = 40;
+
+function evoSimFitness(chromo) {
+  // True fitness: count of 1-bits
+  return chromo.reduce((s, b) => s + b, 0);
+}
+
+function evoSimApproxFitness(chromo) {
+  const trueFit = evoSimFitness(chromo);
+  // 5% chance of wrong answer
+  if (Math.random() < 0.05) {
+    evoSimFP++;
+    // Return a wrong fitness (off by 2-4)
+    const err = (Math.random() < 0.5 ? 1 : -1) * (2 + Math.floor(Math.random() * 3));
+    return Math.max(0, Math.min(EVOSIM_CHROMO_LEN, trueFit + err));
+  }
+  return trueFit;
+}
+
+function evoSimDiversity(pop) {
+  // Simple diversity: average hamming distance between pairs (sampled)
+  let total = 0, count = 0;
+  for (let i = 0; i < Math.min(pop.length, 10); i++) {
+    for (let j = i + 1; j < Math.min(pop.length, 10); j++) {
+      let d = 0;
+      for (let k = 0; k < EVOSIM_CHROMO_LEN; k++) {
+        if (pop[i][k] !== pop[j][k]) d++;
+      }
+      total += d; count++;
+    }
+  }
+  return count > 0 ? (total / count).toFixed(1) : '0';
+}
+
+function resetEvoSim() {
+  evoSimPop = [];
+  for (let i = 0; i < EVOSIM_POP_SIZE; i++) {
+    const c = [];
+    for (let j = 0; j < EVOSIM_CHROMO_LEN; j++) c.push(Math.random() < 0.5 ? 1 : 0);
+    evoSimPop.push(c);
+  }
+  evoSimGen = 0;
+  evoSimFP = 0;
+  evoSimLog = [];
+  const isApprox = document.getElementById('approx-toggle').checked;
+  document.getElementById('evosim-mode').textContent = isApprox
+    ? 'MODE: APPROXIMATE FITNESS \u2014 Fast but ~5% error rate'
+    : 'MODE: EXACT FITNESS \u2014 Slow but accurate';
+  updateEvoSimStats();
+  document.getElementById('evosim-log').innerHTML = '<span style="color:var(--text-muted);">Click "Step" to advance one generation, or "Run All" to run to completion.</span>';
+}
+
+function updateEvoSimStats() {
+  const fitnesses = evoSimPop.map(evoSimFitness);
+  const best = Math.max(...fitnesses);
+  const avg = (fitnesses.reduce((s, f) => s + f, 0) / EVOSIM_POP_SIZE).toFixed(1);
+  document.getElementById('evosim-gen').textContent = evoSimGen;
+  document.getElementById('evosim-best').textContent = best + '/' + EVOSIM_CHROMO_LEN;
+  document.getElementById('evosim-avg').textContent = avg;
+  document.getElementById('evosim-diversity').textContent = evoSimDiversity(evoSimPop);
+  document.getElementById('evosim-fp').textContent = evoSimFP;
+}
+
+function stepEvoSim() {
+  if (evoSimGen >= EVOSIM_MAX_GEN) return;
+  const isApprox = document.getElementById('approx-toggle').checked;
+  const fitFunc = isApprox ? evoSimApproxFitness : evoSimFitness;
+
+  const fitnesses = evoSimPop.map(fitFunc);
+  const trueFitnesses = evoSimPop.map(evoSimFitness);
+  const newPop = [];
+
+  // Elitism (based on true fitness for fairness)
+  const bestIdx = trueFitnesses.indexOf(Math.max(...trueFitnesses));
+  newPop.push([...evoSimPop[bestIdx]]);
+
+  while (newPop.length < EVOSIM_POP_SIZE) {
+    // Tournament selection using evaluated fitnesses
+    const i1 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
+    const i2 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
+    const p1 = fitnesses[i1] >= fitnesses[i2] ? evoSimPop[i1] : evoSimPop[i2];
+    const i3 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
+    const i4 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
+    const p2 = fitnesses[i3] >= fitnesses[i4] ? evoSimPop[i3] : evoSimPop[i4];
+
+    // Crossover
+    let child;
+    if (Math.random() < 0.8) {
+      const pt = Math.floor(Math.random() * EVOSIM_CHROMO_LEN);
+      child = p1.slice(0, pt).concat(p2.slice(pt));
+    } else {
+      child = [...p1];
+    }
+
+    // Mutation
+    for (let j = 0; j < EVOSIM_CHROMO_LEN; j++) {
+      if (Math.random() < 1 / EVOSIM_CHROMO_LEN) child[j] = 1 - child[j];
+    }
+    newPop.push(child);
+  }
+
+  evoSimPop = newPop;
+  evoSimGen++;
+
+  const newTrue = evoSimPop.map(evoSimFitness);
+  const bestFit = Math.max(...newTrue);
+  const avgFit = (newTrue.reduce((s, f) => s + f, 0) / EVOSIM_POP_SIZE).toFixed(1);
+
+  const logLine = 'Gen ' + String(evoSimGen).padStart(2, ' ') + ': best=<span style="color:var(--green);">' + bestFit + '</span>/' + EVOSIM_CHROMO_LEN + '  avg=<span style="color:var(--blue);">' + avgFit + '</span>' + (isApprox ? '  FP=<span style="color:var(--red);">' + evoSimFP + '</span>' : '');
+  evoSimLog.push(logLine);
+  document.getElementById('evosim-log').innerHTML = evoSimLog.join('<br>');
+  document.getElementById('evosim-log').scrollTop = document.getElementById('evosim-log').scrollHeight;
+  updateEvoSimStats();
+}
+
+function runEvoSimFull() {
+  if (evoSimGen >= EVOSIM_MAX_GEN) return;
+  const run = () => {
+    if (evoSimGen < EVOSIM_MAX_GEN) {
+      stepEvoSim();
+      requestAnimationFrame(run);
+    }
+  };
+  run();
+}
+
+// Initialize evolution simulator
+resetEvoSim();
 </script>
 </body>
 </html>

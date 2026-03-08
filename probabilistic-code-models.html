@@ -248,10 +248,10 @@
   <span class="topbar-sep">&#8250;</span>
   <span class="topbar-title">Probabilistic Language Modeling for Code</span>
   <span class="topbar-badge">Module 2 &middot; Interactive</span>
-  <span class="slide-counter" id="counter">1 / 18</span>
+  <span class="slide-counter" id="counter">1 / 28</span>
   <a href="teaching.html" class="topbar-home">&larr; Teaching</a>
 </div>
-<div class="progress-track"><div class="progress-fill" id="progress" style="width:5.56%"></div></div>
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:3.57%"></div></div>
 
 <div class="slides-wrapper">
 
@@ -305,10 +305,52 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 2 · Conditional Probabilities & Chain Rule               -->
+<!-- SLIDE 2 · Probability Refresher                                -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <div class="slide" id="slide-2">
   <div class="slide-label">Module 2 &middot; Slide 02</div>
+  <h2 class="slide-h2">Probability <em>Refresher</em></h2>
+  <p class="slide-p">A quick visual recap of the probability concepts you will need throughout this module.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Sample Space &amp; Events</div>
+        <div class="cb-body">
+          <strong>Sample Space (S):</strong> the set of all possible outcomes.<br/>
+          Example &mdash; rolling a die: S = {1, 2, 3, 4, 5, 6}<br/><br/>
+          <strong>Event A</strong> = &ldquo;roll an even number&rdquo; = {2, 4, 6}<br/>
+          <strong>P(A) = |A| / |S| = 3 / 6 = 0.5</strong>
+        </div>
+      </div>
+      <div class="formula left">
+        <strong>Probability of an Event</strong><br/>
+        P(<span class="var">A</span>) <span class="op">=</span> Number of favorable outcomes <span class="op">/</span> Total outcomes
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Conditional Probability</div>
+        <div class="cb-body">
+          <strong>P(A|B) = P(A &cap; B) / P(B)</strong><br/><br/>
+          Example: a bag has <strong>3 red</strong> and <strong>2 blue</strong> marbles. You draw one marble and it is red (event B). What is the probability the next draw is also red (event A)?<br/><br/>
+          P(A|B) = 2/4 = <strong>0.5</strong> (since one red was removed)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb amber">
+    <div class="cb-label">Readiness Check</div>
+    <div class="cb-body">If you are comfortable with <strong>P(A|B)</strong>, you are ready for this module. If not, review your probability notes &mdash; these concepts are the foundation of <strong>ALL</strong> language models.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 · Conditional Probabilities & Chain Rule               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 2 &middot; Slide 03</div>
   <h2 class="slide-h2">Conditional Probabilities &amp; the <em>Chain Rule</em></h2>
   <p class="slide-p">To estimate the probability of an entire sentence, we need two building blocks: <strong style="color:var(--text-primary)">conditional probability</strong> and the <strong style="color:var(--text-primary)">chain rule</strong>.</p>
 
@@ -348,10 +390,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 3 · Computing Sentence Probability                       -->
+<!-- SLIDE 4 · Computing Sentence Probability                       -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-3">
-  <div class="slide-label">Module 2 &middot; Slide 03</div>
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 2 &middot; Slide 04</div>
   <h2 class="slide-h2">Computing Probability of a <em>Sentence</em></h2>
   <p class="slide-p">Let us apply the chain rule step by step to compute the probability of a concrete sentence.</p>
 
@@ -392,10 +434,71 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 4 · Why N-grams: Data Sparsity                           -->
+<!-- SLIDE 5 · Maximum Likelihood Estimation (MLE)                  -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-4">
-  <div class="slide-label">Module 2 &middot; Slide 04</div>
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 2 &middot; Slide 05</div>
+  <h2 class="slide-h2">Maximum Likelihood <em>Estimation (MLE)</em></h2>
+  <p class="slide-p">When we estimate probabilities by counting, we are implicitly using <strong style="color:var(--text-primary)">Maximum Likelihood Estimation</strong> &mdash; the simplest and most intuitive way to learn a language model.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Count occurrences</h4>
+          <p>For each event (e.g., bigram), count how many times it appears in the training data.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Divide by total observations</h4>
+          <p>Normalize by the total count of the context to get a probability.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>That is your probability estimate!</h4>
+          <p>The MLE estimate maximizes the likelihood of the observed training data.</p>
+        </div>
+      </div>
+
+      <div class="formula left">
+        <strong>MLE Formula</strong><br/>
+        P<sub>MLE</sub>(<span class="var">w</span> | <span class="var">context</span>) <span class="op">=</span> Count(<span class="var">context</span>, <span class="var">w</span>) <span class="op">/</span> Count(<span class="var">context</span>)
+      </div>
+    </div>
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Worked Example</div>
+        <div class="cb-body">
+          In a Java corpus, suppose:<br/>
+          <strong>Count(&ldquo;(&rdquo;, &ldquo;for&rdquo;) = 100</strong> &mdash; &ldquo;for&rdquo; appears 100 times after &ldquo;(&rdquo;<br/>
+          <strong>Count(&ldquo;(&rdquo;) = 500</strong> &mdash; &ldquo;(&rdquo; appears 500 times total<br/><br/>
+          P<sub>MLE</sub>(&ldquo;for&rdquo; | &ldquo;(&rdquo;) = 100 / 500 = <strong>0.20</strong>
+        </div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">Key Insight</div>
+        <div class="cb-body">MLE is the <strong>simplest estimator</strong>. It works well with lots of data but fails for rare events &mdash; if an n-gram was never observed, its MLE probability is <strong>zero</strong>. This is called the <strong>zero-count problem</strong>.</div>
+      </div>
+
+      <div class="cb red">
+        <div class="cb-label">Limitation</div>
+        <div class="cb-body">MLE assigns <strong>P = 0</strong> to any event not seen in training. In language modeling, this means a single unseen bigram makes the probability of an entire sentence zero!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6 · Why N-grams: Data Sparsity                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 2 &middot; Slide 06</div>
   <h2 class="slide-h2">The Data Sparsity Problem: <em>Why N-grams?</em></h2>
   <p class="slide-p">To compute exact sequence probabilities, we would need enough data to observe every possible word combination. The number of combinations is astronomical.</p>
 
@@ -463,10 +566,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 5 · Markov Assumption & N-gram Models                    -->
+<!-- SLIDE 7 · Markov Assumption & N-gram Models                    -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-5">
-  <div class="slide-label">Module 2 &middot; Slide 05</div>
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 2 &middot; Slide 07</div>
   <h2 class="slide-h2">The Markov Assumption &amp; <em>N-gram Models</em></h2>
   <p class="slide-p">The key idea: approximate the full conditional probability by looking at only the last <strong style="color:var(--text-primary)">N-1</strong> tokens.</p>
 
@@ -532,10 +635,63 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 6 · Zipf's Law & The Long Tail                           -->
+<!-- SLIDE 8 · Start & End Tokens: Sentence Boundaries              -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-6">
-  <div class="slide-label">Module 2 &middot; Slide 06</div>
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 2 &middot; Slide 08</div>
+  <h2 class="slide-h2">Start &amp; End Tokens: <em>Sentence Boundaries</em></h2>
+  <p class="slide-p">Language models need to know where sequences <strong style="color:var(--text-primary)">begin</strong> and <strong style="color:var(--text-primary)">end</strong>. Special boundary tokens make this possible.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Raw Sequence</div>
+        <div class="cb-body">
+          <code>int x = 5 ;</code>
+        </div>
+      </div>
+      <div class="cb">
+        <div class="cb-label">With Boundary Markers</div>
+        <div class="cb-body">
+          <code><strong>&lt;s&gt;</strong> int x = 5 ; <strong>&lt;/s&gt;</strong></code>
+        </div>
+      </div>
+      <div class="cb amber">
+        <div class="cb-label">Why &lt;s&gt;?</div>
+        <div class="cb-body">Without <strong>&lt;s&gt;</strong>, the model cannot learn which tokens <strong>start</strong> sequences. The bigram P(int | &lt;s&gt;) captures that <code>int</code> is a common way to begin a statement.</div>
+      </div>
+      <div class="cb red">
+        <div class="cb-label">Why &lt;/s&gt;?</div>
+        <div class="cb-body">Without <strong>&lt;/s&gt;</strong>, the model cannot learn when to <strong>stop</strong> generating. P(&lt;/s&gt; | ;) tells the model that a semicolon often ends a statement.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Resulting Bigram Pairs</div>
+        <div class="cb-body">
+          From <code>&lt;s&gt; int x = 5 ; &lt;/s&gt;</code>:<br/><br/>
+          (&lt;s&gt;, int) &rarr; P(int | &lt;s&gt;)<br/>
+          (int, x) &rarr; P(x | int)<br/>
+          (x, =) &rarr; P(= | x)<br/>
+          (=, 5) &rarr; P(5 | =)<br/>
+          (5, ;) &rarr; P(; | 5)<br/>
+          (;, &lt;/s&gt;) &rarr; P(&lt;/s&gt; | ;)
+        </div>
+      </div>
+
+      <div class="cb cyan">
+        <div class="cb-label">Key Takeaway</div>
+        <div class="cb-body">Every modern language model needs to know where sequences begin and end. These <strong>special tokens</strong> make that possible &mdash; from simple n-gram models to large Transformers.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9 · Zipf's Law & The Long Tail                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 2 &middot; Slide 09</div>
   <h2 class="slide-h2">Zipf's Law: <em>The Long Tail</em></h2>
   <p class="slide-p">Word frequencies in natural language (and code) follow a power-law distribution known as <strong style="color:var(--text-primary)">Zipf's Law</strong>: a small number of words occur very frequently, while a large number occur rarely.</p>
 
@@ -589,10 +745,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 7 · The Naturalness of Software                          -->
+<!-- SLIDE 10 · The Naturalness of Software                         -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-7">
-  <div class="slide-label">Module 2 &middot; Slide 07</div>
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 2 &middot; Slide 10</div>
   <h2 class="slide-h2">The <em>Naturalness</em> of Software</h2>
   <p class="slide-p">Hindle et al. (ICSE 2012) made a groundbreaking discovery: programming languages, in theory, are complex and flexible, but real programs are mostly <strong style="color:var(--text-primary)">simple and repetitive</strong>, with predictable statistical properties that can be captured by language models.</p>
 
@@ -636,10 +792,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 8 · Training a Bigram Model for Code                     -->
+<!-- SLIDE 11 · Training a Bigram Model for Code                    -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-8">
-  <div class="slide-label">Module 2 &middot; Slide 08</div>
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 2 &middot; Slide 11</div>
   <h2 class="slide-h2">Training a Bigram Model <em>for Code</em></h2>
   <p class="slide-p">Training an n-gram model is simply <strong style="color:var(--text-primary)">counting</strong>. Split your corpus into training (80%) and test (20%) sets. Count all bigram occurrences, then normalize to get probabilities.</p>
 
@@ -685,10 +841,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 9 · Interactive: Bigram Probability Calculator            -->
+<!-- SLIDE 12 · Interactive: Bigram Probability Calculator           -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-9">
-  <div class="slide-label">Module 2 &middot; Slide 09</div>
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 2 &middot; Slide 12</div>
   <h2 class="slide-h2">Interactive: <em>Bigram Probability Calculator</em></h2>
   <p class="slide-p">Select a code snippet and see how bigram counts and probabilities are computed from the token sequence.</p>
 
@@ -713,10 +869,42 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 10 · Pros & Cons of N-gram LMs                           -->
+<!-- SLIDE 13 · Interactive: Code Completion with N-grams           -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-10">
-  <div class="slide-label">Module 2 &middot; Slide 10</div>
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 2 &middot; Slide 13</div>
+  <h2 class="slide-h2">Interactive: Code Completion <em>with N-grams</em></h2>
+  <p class="slide-p">See how a language model predicts the next token given a partial code snippet. Toggle between unigram, bigram, and trigram to see how more context improves predictions.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Code Completion Simulator <span class="inter-badge">interactive</span></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <select id="cc-context-select" onchange="ccUpdateContext()" style="padding:6px 10px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.78rem;font-family:var(--font-display);cursor:pointer;">
+          <option value="0">for (int i = 0; i &lt;</option>
+          <option value="1">if (x != null &amp;&amp;</option>
+          <option value="2">return new ArrayList&lt;</option>
+        </select>
+      </div>
+    </div>
+    <div class="inter-body">
+      <div id="cc-snippet" class="code-block" style="font-size:0.8rem;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="sim-btn primary" onclick="ccSetModel('unigram')">Unigram</button>
+        <button class="sim-btn" onclick="ccSetModel('bigram')">Bigram</button>
+        <button class="sim-btn" onclick="ccSetModel('trigram')">Trigram</button>
+      </div>
+      <div id="cc-model-label" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;"></div>
+      <div id="cc-predictions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 14 · Pros & Cons of N-gram LMs                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 2 &middot; Slide 14</div>
   <h2 class="slide-h2">Pros &amp; Cons of <em>N-gram Language Models</em></h2>
   <p class="slide-p">N-gram models are a foundational approach with clear strengths and known limitations.</p>
 
@@ -753,10 +941,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 11 · Long-Range Dependencies                             -->
+<!-- SLIDE 15 · Long-Range Dependencies                             -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-11">
-  <div class="slide-label">Module 2 &middot; Slide 11</div>
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 2 &middot; Slide 15</div>
   <h2 class="slide-h2">Long-Range <em>Dependencies</em> in Code</h2>
   <p class="slide-p">Code often has dependencies that span many tokens. A variable declared at the top of a method may be used at the bottom &mdash; far beyond any n-gram window.</p>
 
@@ -801,10 +989,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 12 · Model Evaluation: Extrinsic                         -->
+<!-- SLIDE 16 · Model Evaluation: Extrinsic                         -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-12">
-  <div class="slide-label">Module 2 &middot; Slide 12</div>
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 2 &middot; Slide 16</div>
   <h2 class="slide-h2">Model Evaluation: <em>Extrinsic Evaluation</em></h2>
   <p class="slide-p">How do we know if a language model is good? One approach: test it on an actual <strong style="color:var(--text-primary)">downstream task</strong> and measure its performance.</p>
 
@@ -869,10 +1057,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 13 · Model Evaluation: Perplexity                        -->
+<!-- SLIDE 17 · Model Evaluation: Perplexity                        -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-13">
-  <div class="slide-label">Module 2 &middot; Slide 13</div>
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 2 &middot; Slide 17</div>
   <h2 class="slide-h2">Intrinsic Evaluation: <em>Perplexity</em></h2>
   <p class="slide-p">Perplexity measures model quality <strong style="color:var(--text-primary)">independent of any application</strong>. Lower perplexity = better model (more confident, less &ldquo;surprised&rdquo; by the test data).</p>
 
@@ -912,10 +1100,125 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 14 · Interactive: Perplexity Calculator                  -->
+<!-- SLIDE 18 · Worked Example: Computing Perplexity Step by Step   -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-14">
-  <div class="slide-label">Module 2 &middot; Slide 14</div>
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 2 &middot; Slide 18</div>
+  <h2 class="slide-h2">Worked Example: Computing <em>Perplexity</em></h2>
+  <p class="slide-p">Let us walk through a full numerical example before using the interactive calculator.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Sequence (4 tokens)</div>
+        <div class="cb-body">
+          <code>for ( int i</code><br/><br/>
+          <strong>Bigram probabilities:</strong><br/>
+          P(for | &lt;s&gt;) = 0.15<br/>
+          P( ( | for ) = 0.85<br/>
+          P( int | ( ) = 0.40<br/>
+          P( i | int ) = 0.30
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Multiply probabilities</h4>
+          <p>0.15 &times; 0.85 &times; 0.40 &times; 0.30 = <strong>0.0153</strong></p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Compute log<sub>2</sub> of each</h4>
+          <p>-2.74 + (-0.23) + (-1.32) + (-1.74) = <strong>-6.03</strong></p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Average (negative)</h4>
+          <p>-(-6.03) / 4 = <strong>1.508</strong> (this is cross-entropy H)</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Perplexity = 2<sup>H</sup></h4>
+          <p>2<sup>1.508</sup> = <strong>2.84</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cb-label">Interpretation</div>
+    <div class="cb-body">A perplexity of <strong>2.84</strong> means the model is, on average, as uncertain as choosing between <strong>~3 equally likely</strong> next tokens. Lower is better &mdash; a perfect model would have perplexity 1.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 19 · Cross-Entropy: Information Theory Connection        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Module 2 &middot; Slide 19</div>
+  <h2 class="slide-h2">Cross-Entropy: The <em>Information Theory</em> Connection</h2>
+  <p class="slide-p">Cross-entropy connects language modeling to information theory. It measures how well our model Q approximates the true distribution P.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="formula left">
+        <strong>Cross-Entropy</strong><br/>
+        H(P, Q) <span class="op">=</span> <span class="op">-&Sigma;</span> P(<span class="var">x</span>) log<sub>2</sub> Q(<span class="var">x</span>)
+      </div>
+
+      <div class="cb blue">
+        <div class="cb-label">In Language Modeling</div>
+        <div class="cb-body">
+          <strong>P</strong> = the true distribution (actual next tokens)<br/>
+          <strong>Q</strong> = our model's predicted distribution<br/><br/>
+          In practice, we approximate with the test set:<br/>
+          <strong>H &asymp; -(1/N) &Sigma; log<sub>2</sub> Q(w<sub>i</sub> | context)</strong>
+        </div>
+      </div>
+
+      <div class="formula left">
+        <strong>Key Relationship</strong><br/>
+        Perplexity <span class="op">=</span> 2<sup>H(P,Q)</sup>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Why Log Base 2?</div>
+        <div class="cb-body">We measure information in <strong>bits</strong>. One bit of entropy means one binary choice. Log base 2 gives us units of bits &mdash; the standard in information theory.</div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">Worked Examples</div>
+        <div class="cb-body">
+          <strong>If our model assigns P = 0.5</strong> to every next token:<br/>
+          H = -log<sub>2</sub>(0.5) = 1 bit, Perplexity = 2<sup>1</sup> = <strong>2</strong><br/><br/>
+          <strong>If our model assigns P = 0.25:</strong><br/>
+          H = -log<sub>2</sub>(0.25) = 2 bits, Perplexity = 2<sup>2</sup> = <strong>4</strong><br/><br/>
+          Higher entropy = more uncertainty = higher perplexity.
+        </div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Intuition</div>
+        <div class="cb-body">Cross-entropy measures the average number of <strong>bits needed to encode</strong> the true data using our model. A better model needs fewer bits.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 20 · Interactive: Perplexity Calculator                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Module 2 &middot; Slide 20</div>
   <h2 class="slide-h2">Interactive: <em>Perplexity Calculator</em></h2>
   <p class="slide-p">Adjust the bigram probabilities for each token and see how cross-entropy and perplexity change in real time. Try setting one probability to zero!</p>
 
@@ -932,11 +1235,11 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 15 · Smoothing & Interpolation                           -->
+<!-- SLIDE 21 · Laplace & Add-k Smoothing                           -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-15">
-  <div class="slide-label">Module 2 &middot; Slide 15</div>
-  <h2 class="slide-h2">Smoothing &amp; <em>Interpolation</em></h2>
+<div class="slide" id="slide-21">
+  <div class="slide-label">Module 2 &middot; Slide 21</div>
+  <h2 class="slide-h2">Laplace &amp; <em>Add-k Smoothing</em></h2>
   <p class="slide-p">Zero-count n-grams break the model. Smoothing techniques redistribute probability mass to handle unseen events.</p>
 
   <div class="two-col">
@@ -965,16 +1268,7 @@
       </div>
     </div>
     <div>
-      <div class="cb blue">
-        <div class="cb-label">Interpolation</div>
-        <div class="cb-body">
-          Combine unigram, bigram, and trigram models with weights:<br/><br/>
-          <strong>P(w<sub>i</sub>) = &lambda;<sub>1</sub>P<sub>uni</sub>(w<sub>i</sub>) + &lambda;<sub>2</sub>P<sub>bi</sub>(w<sub>i</sub>|w<sub>i-1</sub>) + &lambda;<sub>3</sub>P<sub>tri</sub>(w<sub>i</sub>|w<sub>i-2</sub>,w<sub>i-1</sub>)</strong><br/><br/>
-          where &lambda;<sub>1</sub> + &lambda;<sub>2</sub> + &lambda;<sub>3</sub> = 1. Choose &lambda; values that <strong>maximize likelihood on held-out corpus</strong>.
-        </div>
-      </div>
-
-      <div class="inter-panel" style="margin-top:8px;">
+      <div class="inter-panel" style="margin-top:0;">
         <div class="inter-header"><span class="inter-title">Laplace Smoothing Example</span></div>
         <div class="inter-body" style="font-size:0.78rem;">
           <table class="comp-table" style="font-size:0.75rem;">
@@ -997,21 +1291,67 @@
           <div style="color:var(--text-muted);margin-top:6px;font-family:var(--font-mono);font-size:0.68rem;">Assume count(for) = 100, V = 10</div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="kc-box">
-    <div class="kc-q">Why is Laplace smoothing considered too crude for large vocabularies?</div>
-    <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
-    <div class="kc-answer"><strong>It adds 1 to every possible bigram count</strong>, and adds V to the denominator. When V is very large (common in code), the total mass redistributed to unseen events becomes enormous, stealing too much probability from actually observed n-grams. Add-k and interpolation are better alternatives.</div>
+      <div class="kc-box" style="margin-top:10px;">
+        <div class="kc-q">Why is Laplace smoothing considered too crude for large vocabularies?</div>
+        <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible')">Reveal Answer</button>
+        <div class="kc-answer"><strong>It adds 1 to every possible bigram count</strong>, and adds V to the denominator. When V is very large (common in code), the total mass redistributed to unseen events becomes enormous, stealing too much probability from actually observed n-grams. Add-k and interpolation are better alternatives.</div>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 16 · Stupid Backoff & Sampling                           -->
+<!-- SLIDE 22 · Interpolation & Backoff                             -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-16">
-  <div class="slide-label">Module 2 &middot; Slide 16</div>
+<div class="slide" id="slide-22">
+  <div class="slide-label">Module 2 &middot; Slide 22</div>
+  <h2 class="slide-h2">Interpolation &amp; <em>Backoff</em></h2>
+  <p class="slide-p">Instead of relying on a single n-gram order, blend multiple models together for more robust probability estimates.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="formula left">
+        <strong>Linear Interpolation</strong><br/>
+        P(<span class="var">w</span> | <span class="var">w<sub>n-1</sub></span>) <span class="op">=</span><br/>
+        &nbsp;&nbsp;&lambda;<sub>1</sub> &middot; P<sub>uni</sub>(<span class="var">w</span>)<br/>
+        <span class="op">+</span> &lambda;<sub>2</sub> &middot; P<sub>bi</sub>(<span class="var">w</span> | <span class="var">w<sub>n-1</sub></span>)<br/>
+        <span class="op">+</span> &lambda;<sub>3</sub> &middot; P<sub>tri</sub>(<span class="var">w</span> | <span class="var">w<sub>n-2</sub></span>, <span class="var">w<sub>n-1</sub></span>)<br/><br/>
+        where &lambda;<sub>1</sub> + &lambda;<sub>2</sub> + &lambda;<sub>3</sub> = 1
+      </div>
+
+      <div class="cb blue">
+        <div class="cb-label">Choosing &lambda; Weights</div>
+        <div class="cb-body">Use a <strong>held-out validation set</strong> (separate from train and test). Try different &lambda; combinations and pick those that maximize the likelihood of the held-out data.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cb purple">
+        <div class="cb-label">Worked Example</div>
+        <div class="cb-body">
+          Predict next token after <code>for (</code>:<br/><br/>
+          P<sub>uni</sub>(int) = 0.05<br/>
+          P<sub>bi</sub>(int | () = 0.40<br/>
+          P<sub>tri</sub>(int | for, () = 0.65<br/><br/>
+          With &lambda;<sub>1</sub>=0.1, &lambda;<sub>2</sub>=0.3, &lambda;<sub>3</sub>=0.6:<br/>
+          P(int) = 0.1(0.05) + 0.3(0.40) + 0.6(0.65)<br/>
+          = 0.005 + 0.12 + 0.39 = <strong>0.515</strong>
+        </div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Key Insight</div>
+        <div class="cb-body">Interpolation blends multiple models. When the <strong>trigram has data, trust it</strong>; when it does not, the unigram and bigram components provide a <strong>safety net</strong> that prevents zero probabilities.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 23 · Stupid Backoff & Sampling                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-23">
+  <div class="slide-label">Module 2 &middot; Slide 23</div>
   <h2 class="slide-h2">Stupid Backoff &amp; <em>Sampling</em></h2>
   <p class="slide-p">Two more practical techniques for handling unseen n-grams and generating text from language models.</p>
 
@@ -1059,10 +1399,124 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 17 · LLMs vs N-grams                                     -->
+<!-- SLIDE 24 · Temperature & Sampling Strategies                   -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-17">
-  <div class="slide-label">Module 2 &middot; Slide 17</div>
+<div class="slide" id="slide-24">
+  <div class="slide-label">Module 2 &middot; Slide 24</div>
+  <h2 class="slide-h2">Temperature &amp; <em>Sampling Strategies</em></h2>
+  <p class="slide-p">Temperature controls the &ldquo;sharpness&rdquo; of the probability distribution when sampling from a language model. Combined with top-k and top-p, it gives fine-grained control over generation.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="cb blue">
+        <div class="cb-label">Temperature (T)</div>
+        <div class="cb-body">
+          <strong>T = 0 (greedy):</strong> always pick the highest-probability token<br/>
+          <strong>T = 1:</strong> sample from the actual learned distribution<br/>
+          <strong>T &gt; 1:</strong> flatten the distribution &mdash; more random/creative<br/>
+          <strong>T &lt; 1:</strong> sharpen the distribution &mdash; more focused/deterministic
+        </div>
+      </div>
+
+      <div class="cb purple">
+        <div class="cb-label">Top-k Sampling</div>
+        <div class="cb-body">Only consider the <strong>k most probable</strong> tokens. Discard the rest and renormalize. Example: top-5 keeps only the 5 best candidates.</div>
+      </div>
+
+      <div class="cb amber">
+        <div class="cb-label">Top-p / Nucleus Sampling</div>
+        <div class="cb-body">Choose the <strong>smallest set of tokens</strong> whose cumulative probability exceeds <strong>p</strong> (e.g., p=0.9). Adapts to the shape of the distribution &mdash; keeps fewer tokens when the model is confident.</div>
+      </div>
+    </div>
+    <div>
+      <div class="inter-panel" style="margin-top:0;">
+        <div class="inter-header">
+          <span class="inter-title">Temperature Visualizer <span class="inter-badge">interactive</span></span>
+        </div>
+        <div class="inter-body">
+          <div class="slider-row">
+            <label>Temperature</label>
+            <input type="range" min="10" max="200" value="100" id="temp-slider" oninput="updateTempViz()" />
+            <span class="sl-val" id="temp-val">1.00</span>
+          </div>
+          <div id="temp-bars" style="margin-top:12px;"></div>
+          <div id="temp-label" style="margin-top:8px;font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 25 · Out-of-Vocabulary & the UNK Token                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-25">
+  <div class="slide-label">Module 2 &middot; Slide 25</div>
+  <h2 class="slide-h2">Out-of-Vocabulary &amp; the <em>&lt;UNK&gt; Token</em></h2>
+  <p class="slide-p">How do n-gram models handle tokens that were never seen during training? The open vocabulary problem is a fundamental challenge.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>The Problem</h4>
+          <p>New code uses identifiers not in training data: <code>myCustomHandler</code>, <code>calcNetRevenue</code>. These have zero probability.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Solution: &lt;UNK&gt; Token</h4>
+          <p>Replace rare tokens (count &lt; threshold) with a special <code>&lt;UNK&gt;</code> token before training.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Train with &lt;UNK&gt;</h4>
+          <p>The model learns &ldquo;rare token behavior&rdquo; &mdash; what typically follows or precedes an uncommon identifier.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Map Unseen to &lt;UNK&gt;</h4>
+          <p>At test time, any token not in the vocabulary is replaced with <code>&lt;UNK&gt;</code> and gets a nonzero probability.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb amber">
+        <div class="cb-label">The Tradeoff</div>
+        <div class="cb-body">
+          <strong>Too aggressive</strong> (high threshold): many tokens become &lt;UNK&gt;, losing valuable information.<br/><br/>
+          <strong>Too lenient</strong> (low threshold): vocabulary stays large, probabilities remain sparse. Finding the right threshold requires experimentation.
+        </div>
+      </div>
+
+      <div class="cb cyan">
+        <div class="cb-label">Modern Solution</div>
+        <div class="cb-body">The open vocabulary problem is why modern LLMs use <strong>Byte-Pair Encoding (BPE)</strong> instead of word-level tokenization. BPE breaks words into subword units, so even unseen identifiers can be represented as sequences of known subwords.</div>
+      </div>
+
+      <div class="cb">
+        <div class="cb-label">Example</div>
+        <div class="cb-body">
+          Vocabulary = {for, int, if, return, ;, (, ), ...}<br/>
+          Input: <code>calcNetRevenue</code> &rarr; not in vocab &rarr; mapped to <strong>&lt;UNK&gt;</strong><br/>
+          P(&lt;UNK&gt; | return) is now a valid, nonzero probability.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 26 · LLMs vs N-grams                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-26">
+  <div class="slide-label">Module 2 &middot; Slide 26</div>
   <h2 class="slide-h2">Large Language Models vs <em>N-grams</em></h2>
   <p class="slide-p">LLMs use neural networks rather than explicit n-gram counts. They address two fundamental problems that limit n-gram models.</p>
 
@@ -1119,42 +1573,119 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<!-- SLIDE 18 · Recap & Knowledge Check                             -->
+<!-- SLIDE 27 · Lab Challenge: Build Your Own Bigram Model          -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
-<div class="slide" id="slide-18">
-  <div class="slide-label">Module 2 &middot; Slide 18</div>
+<div class="slide" id="slide-27">
+  <div class="slide-label">Module 2 &middot; Slide 27</div>
+  <h2 class="slide-h2">Lab Challenge: Build Your Own <em>Bigram Model</em></h2>
+  <p class="slide-p">Put it all together! Using the Java dataset from Module 1, build a bigram language model in Python.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Load &amp; Tokenize</h4>
+          <p>Load Java methods from the corpus and tokenize them into sequences of tokens.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Build Bigram Count Matrix</h4>
+          <p>Count all consecutive token pairs across the training set.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Implement Add-k Smoothing</h4>
+          <p>Add k to all counts to handle unseen bigrams. Experiment with k values.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Compute Perplexity</h4>
+          <p>Evaluate your model on a held-out test set using the perplexity metric.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Generate Code</h4>
+          <p>Use sampling to generate a simple code sequence from your trained model.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cb">
+        <div class="cb-label">Starter Code Skeleton</div>
+        <div class="cb-body">
+          <div class="code-block" style="font-size:0.68rem;line-height:1.6;">
+<span class="ck">import</span> <span class="cf">collections</span>, <span class="cf">math</span>, <span class="cf">random</span>
+
+<span class="ck">def</span> <span class="cf">build_bigram_counts</span>(<span class="ca">corpus</span>):
+    <span class="cc">"""Count all bigrams in tokenized corpus."""</span>
+    <span class="ca">counts</span> = <span class="cf">collections</span>.<span class="cf">defaultdict</span>(<span class="cf">Counter</span>)
+    <span class="ck">for</span> <span class="ca">seq</span> <span class="ck">in</span> <span class="ca">corpus</span>:
+        <span class="ck">for</span> <span class="ca">i</span> <span class="ck">in</span> <span class="cf">range</span>(<span class="cf">len</span>(<span class="ca">seq</span>)-<span class="cl">1</span>):
+            <span class="ca">counts</span>[<span class="ca">seq</span>[<span class="ca">i</span>]][<span class="ca">seq</span>[<span class="ca">i</span>+<span class="cl">1</span>]] += <span class="cl">1</span>
+    <span class="ck">return</span> <span class="ca">counts</span>
+
+<span class="ck">def</span> <span class="cf">bigram_prob</span>(<span class="ca">w1</span>, <span class="ca">w2</span>, <span class="ca">counts</span>, <span class="ca">k</span>=<span class="cl">1</span>):
+    <span class="cc">"""P(w2|w1) with add-k smoothing."""</span>
+    <span class="ca">num</span> = <span class="ca">counts</span>[<span class="ca">w1</span>][<span class="ca">w2</span>] + <span class="ca">k</span>
+    <span class="ca">den</span> = <span class="cf">sum</span>(<span class="ca">counts</span>[<span class="ca">w1</span>].<span class="cf">values</span>()) + <span class="ca">k</span>*<span class="ca">V</span>
+    <span class="ck">return</span> <span class="ca">num</span>/<span class="ca">den</span>
+
+<span class="ck">def</span> <span class="cf">perplexity</span>(<span class="ca">test</span>, <span class="ca">counts</span>, <span class="ca">k</span>=<span class="cl">1</span>):
+    <span class="cc">"""Compute perplexity on test set."""</span>
+    <span class="cc"># Your implementation here</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 28 · Recap & Knowledge Check                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-28">
+  <div class="slide-label">Module 2 &middot; Slide 28</div>
   <h2 class="slide-h2">Recap &amp; <em>Knowledge Check</em></h2>
 
   <div class="takeaway-grid">
     <div class="takeaway-card">
       <div class="takeaway-num">01</div>
-      <h4>PLMs &amp; Chain Rule</h4>
-      <p>PLMs assign probabilities to words and sequences using corpus statistics. The chain rule decomposes joint probability into conditionals.</p>
+      <h4>PLMs, MLE &amp; Chain Rule</h4>
+      <p>PLMs assign probabilities via MLE counting. The chain rule decomposes joint probability into conditionals.</p>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">02</div>
       <h4>N-gram Models</h4>
-      <p>Use the Markov property to estimate probabilities from a fixed window. Simple, interpretable, and effective for local patterns.</p>
+      <p>Use the Markov property with boundary tokens (&lt;s&gt;, &lt;/s&gt;) to estimate probabilities from a fixed window.</p>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">03</div>
       <h4>Evaluation</h4>
-      <p>Extrinsic: measure on downstream tasks (gold standard but slow). Intrinsic: perplexity (fast but approximate).</p>
+      <p>Extrinsic: downstream tasks. Intrinsic: cross-entropy and perplexity (2<sup>H</sup>). Lower perplexity = better model.</p>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">04</div>
-      <h4>Smoothing &amp; Backoff</h4>
-      <p>Zero-count n-grams are addressed with Laplace smoothing, add-k, interpolation, and stupid backoff.</p>
+      <h4>Smoothing &amp; Interpolation</h4>
+      <p>Laplace, add-k, linear interpolation, and stupid backoff address the zero-count problem.</p>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">05</div>
-      <h4>Naturalness of Code</h4>
-      <p>Code is &ldquo;natural&rdquo; (Hindle et al.) &mdash; repetitive and predictable. PLMs work well for software engineering tasks.</p>
+      <h4>Sampling &amp; Temperature</h4>
+      <p>Temperature, top-k, and top-p control generation diversity. OOV tokens are handled via &lt;UNK&gt; or BPE.</p>
     </div>
     <div class="takeaway-card">
       <div class="takeaway-num">06</div>
-      <h4>LLMs &amp; Beyond</h4>
-      <p>LLMs overcome n-gram limitations (fixed window, no generalization) using deep learning and learned embeddings.</p>
+      <h4>Naturalness &amp; Beyond</h4>
+      <p>Code is &ldquo;natural&rdquo; (Hindle et al.). LLMs overcome n-gram limitations using deep learning and embeddings.</p>
     </div>
   </div>
 
@@ -1234,7 +1765,7 @@
 
 <script>
 // ── Navigation ────────────────────────────────────────────────────
-const TOTAL = 18;
+const TOTAL = 28;
 let cur = 1;
 
 function buildDots() {
@@ -1258,9 +1789,11 @@ function setSlide(n) {
   document.getElementById('next-btn').disabled = cur === TOTAL;
   buildDots();
   // Initialize interactive elements when their slides are shown
-  if (cur === 6) initZipf();
-  if (cur === 9) bigramCalc(0);
-  if (cur === 14) initPerpCalc();
+  if (cur === 9) initZipf();
+  if (cur === 12) bigramCalc(0);
+  if (cur === 13) initCodeCompletion();
+  if (cur === 20) initPerpCalc();
+  if (cur === 24) initTempViz();
 }
 
 function goSlide(d) { setSlide(cur + d); }
@@ -1272,7 +1805,7 @@ buildDots();
 
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ── Sentence Probability Step-Through (Slide 3) ──────────────────
+// ── Sentence Probability Step-Through (Slide 4) ──────────────────
 let sentCur = 0;
 function sentStep() {
   if (sentCur >= 5) return;
@@ -1288,7 +1821,7 @@ function sentReset() {
   document.getElementById('sent-step-btn').disabled = false;
 }
 
-// ── Bigram Count Matrix Click (Slide 8) ──────────────────────────
+// ── Bigram Count Matrix Click (Slide 11) ─────────────────────────
 function highlightCell(el, count, rowTotal) {
   document.querySelectorAll('.count-matrix td.highlight').forEach(td => td.classList.remove('highlight'));
   el.classList.add('highlight');
@@ -1303,7 +1836,7 @@ function highlightCell(el, count, rowTotal) {
     count + ' / ' + rowTotal + ' = <strong style="color:var(--text-primary);">' + prob + '</strong>';
 }
 
-// ── Bigram Calculator (Slide 9) ──────────────────────────────────
+// ── Bigram Calculator (Slide 12) ─────────────────────────────────
 const BIGRAM_EXAMPLES = [
   { label: 'For loop', code: 'for ( int i = 0 ; i < n ; i ++ )' },
   { label: 'If check', code: 'if ( x == null ) { return false ; }' },
@@ -1370,12 +1903,12 @@ function bigramCalc(idx) {
   document.getElementById('bigram-prob-area').innerHTML = probHtml;
 
   // Update buttons
-  document.querySelectorAll('#slide-9 .inter-header .sim-btn').forEach((btn, i) => {
+  document.querySelectorAll('#slide-12 .inter-header .sim-btn').forEach((btn, i) => {
     btn.className = i === idx ? 'sim-btn primary' : 'sim-btn';
   });
 }
 
-// ── Zipf's Law Chart (Slide 6) ───────────────────────────────────
+// ── Zipf's Law Chart (Slide 9) ───────────────────────────────────
 let zipfInit = false;
 function initZipf() {
   if (zipfInit) return;
@@ -1393,7 +1926,7 @@ function initZipf() {
   chart.innerHTML = html;
 }
 
-// ── Perplexity Calculator (Slide 14) ─────────────────────────────
+// ── Perplexity Calculator (Slide 20) ─────────────────────────────
 const PERP_TOKENS = [
   { tok: 'for', label: 'P(for)' },
   { tok: '(', label: 'P( ( | for )' },
@@ -1455,7 +1988,107 @@ function updatePerp() {
     '<div class="cb" style="margin-top:8px;"><div class="cb-label">Interpretation</div><div class="cb-body">With perplexity <strong>' + PP.toFixed(1) + '</strong>, the model is on average as uncertain as if choosing uniformly among <strong>~' + Math.round(PP) + '</strong> equally likely options at each step.</div></div>';
 }
 
-// ── Quiz (Slide 18) ──────────────────────────────────────────────
+// ── Code Completion Simulator (Slide 13) ─────────────────────────
+const CC_CONTEXTS = [
+  {
+    snippet: 'for (int i = 0; i <',
+    unigram: [{tok:'=',p:0.18},{tok:';',p:0.15},{tok:'(',p:0.12},{tok:'i',p:0.10},{tok:'other',p:0.45}],
+    bigram:  [{tok:'array',p:0.22},{tok:'n',p:0.20},{tok:'list',p:0.15},{tok:'size',p:0.12},{tok:'other',p:0.31}],
+    trigram: [{tok:'n',p:0.30},{tok:'array',p:0.25},{tok:'list',p:0.18},{tok:'size',p:0.12},{tok:'other',p:0.15}]
+  },
+  {
+    snippet: 'if (x != null &&',
+    unigram: [{tok:'x',p:0.08},{tok:'(',p:0.12},{tok:';',p:0.15},{tok:'=',p:0.18},{tok:'other',p:0.47}],
+    bigram:  [{tok:'x',p:0.30},{tok:'!',p:0.18},{tok:'y',p:0.14},{tok:'this',p:0.10},{tok:'other',p:0.28}],
+    trigram: [{tok:'x',p:0.40},{tok:'!x',p:0.20},{tok:'y',p:0.15},{tok:'this',p:0.10},{tok:'other',p:0.15}]
+  },
+  {
+    snippet: 'return new ArrayList<',
+    unigram: [{tok:'(',p:0.12},{tok:';',p:0.15},{tok:'=',p:0.18},{tok:'int',p:0.06},{tok:'other',p:0.49}],
+    bigram:  [{tok:'String',p:0.25},{tok:'Integer',p:0.20},{tok:'Object',p:0.12},{tok:'>',p:0.18},{tok:'other',p:0.25}],
+    trigram: [{tok:'String',p:0.35},{tok:'Integer',p:0.25},{tok:'Object',p:0.15},{tok:'>',p:0.10},{tok:'other',p:0.15}]
+  }
+];
+let ccModel = 'unigram';
+let ccCtx = 0;
+let ccInited = false;
+
+function initCodeCompletion() {
+  if (ccInited) return;
+  ccInited = true;
+  ccUpdateContext();
+}
+
+function ccUpdateContext() {
+  ccCtx = parseInt(document.getElementById('cc-context-select').value);
+  ccRender();
+}
+
+function ccSetModel(m) {
+  ccModel = m;
+  document.querySelectorAll('#slide-13 .inter-body .sim-btn').forEach(b => {
+    b.className = b.textContent.toLowerCase().trim() === m ? 'sim-btn primary' : 'sim-btn';
+  });
+  ccRender();
+}
+
+function ccRender() {
+  const ctx = CC_CONTEXTS[ccCtx];
+  document.getElementById('cc-snippet').innerHTML = escHtml(ctx.snippet) + '<span style="color:var(--green);font-weight:700;"> _</span>';
+  const preds = ctx[ccModel];
+  const colors = ['var(--green)','var(--blue)','var(--purple)','var(--amber)','var(--text-muted)'];
+  document.getElementById('cc-model-label').textContent = ccModel.charAt(0).toUpperCase()+ccModel.slice(1)+' predictions:';
+  let html = '';
+  preds.forEach((pr,i) => {
+    const pct = (pr.p*100).toFixed(1);
+    html += '<div class="pred-bar"><span class="pred-token">'+escHtml(pr.tok)+'</span>'+
+      '<div class="pred-fill-track"><div class="pred-fill-bar" style="width:'+pct+'%;background:'+colors[i]+';"></div></div>'+
+      '<span class="pred-prob">'+pr.p.toFixed(2)+'</span></div>';
+  });
+  document.getElementById('cc-predictions').innerHTML = html;
+}
+
+// ── Temperature Visualizer (Slide 24) ────────────────────────────
+const TEMP_TOKENS = ['for','int','if','return','while'];
+const TEMP_LOGITS = [2.0, 1.5, 0.8, 0.3, -0.5];
+let tempInited = false;
+
+function initTempViz() {
+  if (tempInited) return;
+  tempInited = true;
+  updateTempViz();
+}
+
+function updateTempViz() {
+  const sl = document.getElementById('temp-slider');
+  if (!sl) return;
+  const T = sl.value / 100;
+  document.getElementById('temp-val').textContent = T.toFixed(2);
+  const scaled = TEMP_LOGITS.map(l => l / Math.max(T, 0.01));
+  const maxS = Math.max(...scaled);
+  const exps = scaled.map(s => Math.exp(s - maxS));
+  const sumE = exps.reduce((a,b) => a+b, 0);
+  const probs = exps.map(e => e / sumE);
+  const maxP = Math.max(...probs);
+  const colors = ['var(--green)','var(--blue)','var(--purple)','var(--amber)','var(--text-muted)'];
+  let html = '';
+  probs.forEach((p, i) => {
+    const pct = (p / maxP * 100).toFixed(1);
+    html += '<div class="pred-bar"><span class="pred-token">'+escHtml(TEMP_TOKENS[i])+'</span>'+
+      '<div class="pred-fill-track"><div class="pred-fill-bar" style="width:'+pct+'%;background:'+colors[i]+';"></div></div>'+
+      '<span class="pred-prob">'+p.toFixed(3)+'</span></div>';
+  });
+  document.getElementById('temp-bars').innerHTML = html;
+  let label = '';
+  if (T <= 0.3) label = 'Very low temperature: nearly greedy, one token dominates.';
+  else if (T <= 0.8) label = 'Low temperature: focused distribution, less randomness.';
+  else if (T <= 1.2) label = 'Normal temperature: balanced sampling from learned distribution.';
+  else if (T <= 1.6) label = 'High temperature: flatter distribution, more creative/random.';
+  else label = 'Very high temperature: near-uniform distribution, very random output.';
+  document.getElementById('temp-label').textContent = label;
+}
+
+// ── Quiz (Slide 28) ──────────────────────────────────────────────
 function revealQuiz(el) {
   el.classList.add('revealed');
   // Reveal all siblings too
