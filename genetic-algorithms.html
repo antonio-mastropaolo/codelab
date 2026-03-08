@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genetic Algorithms via Prompt Evolution — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0D1117; --bg-2: #161B22; --bg-3: #21262D;
+      --border: #30363D;
+      --green: #00D97E; --green-dim: rgba(0,217,126,0.08); --green-border: rgba(0,217,126,0.2);
+      --blue: #58A6FF; --purple: #BC8CFF; --amber: #E3B341; --red: #FF5F57;
+      --text-primary: #E6EDF3; --text-secondary: #8B949E; --text-muted: #484F58;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ──────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+      flex-shrink: 0;
+      gap: 16px;
+      z-index: 100;
+    }
+    .topbar-logo { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .logo-mark { color: var(--green); }
+    .topbar-sep { color: var(--text-muted); opacity: 0.4; }
+    .topbar-title { font-size: 0.85rem; color: var(--text-secondary); flex: 1; }
+    .topbar-badge { font-size: 0.72rem; font-family: var(--font-mono); background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); padding: 3px 8px; border-radius: 4px; }
+    .slide-counter { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+    .topbar-home { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .topbar-home:hover { color: var(--green); }
+
+    /* ── Progress bar ────────────────────────────────────── */
+    .progress-track {
+      height: 3px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      transition: width 0.3s ease;
+    }
+
+    /* ── Slide Container ─────────────────────────────────── */
+    .slides-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 40px 60px;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; }
+    @media (max-width: 800px) {
+      .slide { padding: 24px 20px; }
+    }
+
+    /* ── Navigation ──────────────────────────────────────── */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-2);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) { border-color: var(--green-border); color: var(--green); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn.primary { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 600; }
+    .nav-btn.primary:hover { background: #00F58C; border-color: #00F58C; color: var(--bg); }
+    .slide-dots { display: flex; gap: 5px; }
+    .slide-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); cursor: pointer; transition: background 0.2s; }
+    .slide-dot.active { background: var(--green); }
+
+    /* ── Slide content components ────────────────────────── */
+    .slide-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .slide-label::before { content: '//'; color: var(--green); }
+    .slide-h1 { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 20px; font-family: var(--font-display); }
+    .slide-h1 em { font-style: normal; background: linear-gradient(135deg, var(--green), #00B8D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .slide-h2 { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 700; margin-bottom: 16px; font-family: var(--font-display); letter-spacing: -0.02em; }
+    .slide-p { color: var(--text-secondary); line-height: 1.7; font-size: 0.97rem; margin-bottom: 16px; max-width: 680px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-top: 8px; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; gap: 20px; } }
+
+    /* Key concept box */
+    .concept-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .concept-box.blue  { border-left-color: var(--blue); }
+    .concept-box.amber { border-left-color: var(--amber); }
+    .concept-box.purple { border-left-color: var(--purple); }
+    .concept-box-label { font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 6px; }
+    .concept-box.blue  .concept-box-label { color: var(--blue); }
+    .concept-box.amber .concept-box-label { color: var(--amber); }
+    .concept-box.purple .concept-box-label { color: var(--purple); }
+    .concept-box-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+    .concept-box-body strong { color: var(--text-primary); }
+
+    /* Term definitions */
+    .term-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    @media (max-width: 600px) { .term-grid { grid-template-columns: 1fr; } }
+    .term-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .term-emoji { font-size: 1.4rem; margin-bottom: 7px; }
+    .term-name { font-size: 0.78rem; font-family: var(--font-mono); color: var(--green); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .term-def  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+    .term-analogy { font-size: 0.78rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
+
+    /* Prompt individual card */
+    .pop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 700px) { .pop-grid { grid-template-columns: repeat(2, 1fr); } }
+    .individual-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .individual-card:hover { border-color: var(--green-border); transform: translateY(-2px); }
+    .ic-id { font-size: 0.65rem; font-family: var(--font-mono); color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+    .ic-prompt { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; font-family: var(--font-mono); min-height: 60px; }
+    .ic-fitness { margin-top: 8px; }
+    .ic-fitness-label { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ic-fitness-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 3px; }
+    .ic-fitness-fill { height: 100%; border-radius: 2px; background: var(--green); }
+    .ic-fitness-val { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--green); }
+    .individual-card.selected { border-color: var(--green-border); background: rgba(0,217,126,0.05); }
+    .individual-card.eliminated { opacity: 0.3; }
+    .individual-card.highlight-cross { border-color: var(--blue); background: rgba(88,166,255,0.06); }
+    .individual-card.mutated { border-color: var(--amber); background: rgba(227,179,65,0.06); }
+
+    /* Step visualization */
+    .step-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 10px 0;
+    }
+    .step-arrow { text-align: center; font-size: 1.4rem; margin: 4px 0; color: var(--green); }
+
+    /* Fitness chart */
+    #fitness-chart-svg { width: 100%; }
+
+    /* ── Simulation Slide ────────────────────────────────── */
+    .sim-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; flex: 1; }
+    @media (max-width: 900px) { .sim-layout { grid-template-columns: 1fr; } }
+    .sim-main { display: flex; flex-direction: column; gap: 12px; }
+    .sim-panel {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .sim-panel-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-3);
+    }
+    .sim-panel-title { font-size: 0.82rem; font-weight: 600; }
+    .sim-panel-body { padding: 14px 16px; }
+    .sim-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sim-btn {
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sim-btn:hover { border-color: var(--green-border); color: var(--green); }
+    .sim-btn.primary { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 600; }
+    .sim-btn.primary:hover { background: #00F58C; }
+    .sim-btn.secondary { border-color: rgba(88,166,255,0.3); color: var(--blue); }
+    .sim-btn.secondary:hover { background: rgba(88,166,255,0.08); }
+    .sim-gen-badge {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+      padding: 4px 10px;
+      border-radius: 5px;
+    }
+    .sim-pop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    @media (max-width: 700px) { .sim-pop-grid { grid-template-columns: repeat(2, 1fr); } }
+    .sim-ind {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      transition: all 0.3s ease;
+    }
+    .sim-ind.selected { border-color: var(--green-border); background: rgba(0,217,126,0.07); }
+    .sim-ind.cross { border-color: rgba(88,166,255,0.4); background: rgba(88,166,255,0.06); }
+    .sim-ind.mut { border-color: rgba(227,179,65,0.4); background: rgba(227,179,65,0.06); }
+    .sim-ind.new { border-color: rgba(188,140,255,0.4); background: rgba(188,140,255,0.06); }
+    .sim-ind-id { font-size:0.6rem; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:4px; }
+    .sim-ind-prompt { font-size:0.68rem; color:var(--text-secondary); font-family:var(--font-mono); line-height:1.45; min-height:48px; }
+    .sim-ind-bar-wrap { margin-top:6px; }
+    .sim-ind-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .sim-ind-fill { height:100%; border-radius:2px; background:var(--green); transition: width 0.5s ease; }
+    .sim-ind-val { font-size:0.68rem; font-family:var(--font-mono); font-weight:600; color:var(--green); margin-top:2px; }
+    .sim-log {
+      background: var(--bg-3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-height: 70px;
+      line-height: 1.6;
+    }
+    .log-green  { color: var(--green); }
+    .log-blue   { color: var(--blue); }
+    .log-amber  { color: var(--amber); }
+    .log-purple { color: var(--purple); }
+
+    /* Chart sidebar */
+    .chart-panel {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-panel-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-3);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .chart-panel-body { padding: 14px 16px; flex: 1; }
+    #live-chart { width: 100%; }
+
+    /* Step explanation */
+    .step-explain {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      min-height: 56px;
+    }
+    .step-explain strong { color: var(--green); }
+
+    /* ── Slide 14: Takeaways ─────────────────────────────── */
+    .takeaway-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
+    @media (max-width: 700px) { .takeaway-grid { grid-template-columns: 1fr; } }
+    .takeaway-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .takeaway-num { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; }
+    .takeaway-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+    .takeaway-card p  { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+    /* Step row */
+    .step-row { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+    .step-num-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-row-body h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 3px; }
+    .step-row-body p  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+    /* benchmark table */
+    .bench-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 10px; }
+    .bench-table th { text-align: left; padding: 8px 12px; background: var(--bg-3); border-bottom: 1px solid var(--border); font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .bench-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .bench-table tr:hover td { background: var(--bg-2); }
+    .bench-cov { font-family: var(--font-mono); font-weight: 600; }
+    .bench-cov.high { color: var(--green); }
+    .bench-cov.mid  { color: var(--amber); }
+    .bench-cov.low  { color: var(--red); }
+    .inline-bar { display: inline-flex; align-items: center; gap: 6px; }
+    .ibar-track { width: 60px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; display: inline-block; }
+    .ibar-fill  { height: 100%; border-radius: 3px; }
+    .ibar-fill.high { background: var(--green); }
+    .ibar-fill.mid  { background: var(--amber); }
+    .ibar-fill.low  { background: var(--red); }
+
+    /* Scroll for slides that need it */
+    .slide { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+    <span class="topbar-sep">›</span>
+    <span class="topbar-title">Genetic Algorithms via Prompt Evolution</span>
+    <span class="topbar-badge">Interactive · 14 Slides</span>
+    <span class="slide-counter" id="counter">1 / 14</span>
+    <a href="teaching.html" class="topbar-home">← Teaching</a>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress" style="width:7.14%"></div>
+  </div>
+
+  <!-- Slides -->
+  <div class="slides-wrapper">
+
+    <!-- ── Slide 1: Hook ──────────────────────────────────── -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-label">Genetic Algorithms · Slide 01</div>
+      <h1 class="slide-h1">What if we could<br/><em>evolve</em> the perfect prompt?</h1>
+      <p class="slide-p">Nature spent 3.8 billion years optimizing life. Computer scientists borrowed the same recipe — <strong style="color:var(--text-primary)">selection, crossover, mutation, repeat</strong> — to solve hard optimization problems without ever knowing the answer in advance.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">The Core Idea</div>
+            <div class="concept-box-body">A <strong>Genetic Algorithm</strong> maintains a <em>population</em> of candidate solutions. Each generation, the better ones are selected to reproduce and mix their traits — gradually converging toward an optimal answer.</div>
+          </div>
+          <p class="slide-p" style="margin-top:12px;">In this module, we'll make this concrete. Instead of abstract bit-strings, our "individuals" are <strong style="color:var(--text-primary)">prompts for code generation</strong>. Our fitness measure: <strong style="color:var(--green)">code coverage</strong>.</p>
+        </div>
+        <div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+            <div style="font-size:3rem;margin-bottom:12px;">🧬</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:0.8rem;">
+                <span style="color:var(--text-muted);">Gen 0 · Best coverage:</span><br/>
+                <span style="font-family:var(--font-mono);color:var(--red);font-size:1rem;font-weight:700;">31%</span>
+              </div>
+              <div style="color:var(--green);font-size:1.2rem;">↓ evolve ↓</div>
+              <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;font-size:0.8rem;">
+                <span style="color:var(--text-muted);">Gen 12 · Best coverage:</span><br/>
+                <span style="font-family:var(--font-mono);color:var(--green);font-size:1rem;font-weight:700;">89%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 2: GA Biology Analogy ───────────────────── -->
+    <div class="slide" id="slide-2">
+      <div class="slide-label">Genetic Algorithms · Slide 02</div>
+      <h2 class="slide-h2">Evolution as Optimization</h2>
+      <p class="slide-p">Biology and computer science use the same vocabulary. Before we write code, let's map the concepts.</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-emoji">🧫</div>
+          <div class="term-name">Individual / Chromosome</div>
+          <div class="term-def">One candidate solution. In biology: one organism. In our case: <strong style="color:var(--text-primary)">one AI prompt</strong>.</div>
+          <div class="term-analogy">→ Each prompt is a potential "recipe" for making the AI generate good code.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">👥</div>
+          <div class="term-name">Population</div>
+          <div class="term-def">A set of candidate solutions evaluated simultaneously. We run <strong style="color:var(--text-primary)">8 prompts per generation</strong>.</div>
+          <div class="term-analogy">→ Like a generation of animals competing in an environment.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">💪</div>
+          <div class="term-name">Fitness Function</div>
+          <div class="term-def">A score measuring how "good" each individual is. Our fitness: <strong style="color:var(--green)">code coverage %</strong> from a test suite.</div>
+          <div class="term-analogy">→ Survival of the fittest: high coverage = fit to survive.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🔀</div>
+          <div class="term-name">Crossover</div>
+          <div class="term-def">Two parent solutions combine to create offspring. We split two prompts and <strong style="color:var(--blue)">swap their halves</strong>.</div>
+          <div class="term-analogy">→ Like inheriting traits from both parents.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🎲</div>
+          <div class="term-name">Mutation</div>
+          <div class="term-def">Small random changes to an individual. We randomly substitute a word or phrase in a prompt.</div>
+          <div class="term-analogy">→ Like a copying error in DNA that occasionally creates something better.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🏆</div>
+          <div class="term-name">Selection</div>
+          <div class="term-def">Which individuals get to reproduce? We use <strong style="color:var(--text-primary)">tournament selection</strong>: pick 2 at random, keep the fitter one.</div>
+          <div class="term-analogy">→ The strong survive; the weak don't pass on their genes.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 3: Our Concrete Example ─────────────────── -->
+    <div class="slide" id="slide-3">
+      <div class="slide-label">Genetic Algorithms · Slide 03</div>
+      <h2 class="slide-h2">Our Concrete Example:<br/>Evolving Prompts for Code Generation</h2>
+      <p class="slide-p">We want to automatically discover which AI prompts produce the highest-quality code — without manually testing every possibility. That's a search problem. GAs are great at search.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box blue">
+            <div class="concept-box-label">The Setup</div>
+            <div class="concept-box-body">
+              <strong>Task:</strong> Generate a Python function that sorts a list.<br/><br/>
+              <strong>Benchmark:</strong> A test suite with 12 test cases checks edge cases — empty list, single element, negative numbers, duplicates…<br/><br/>
+              <strong>Goal:</strong> Find a prompt that makes an LLM generate code that <em>passes all 12 tests</em>.
+            </div>
+          </div>
+          <div class="concept-box amber" style="margin-top:10px;">
+            <div class="concept-box-label">Why GA instead of just trying prompts manually?</div>
+            <div class="concept-box-body">The prompt space is <strong>combinatorially huge</strong>. Even with just 20-word prompts from a vocabulary of 5,000 words, there are more combinations than atoms in the universe. We need smart search — not brute force.</div>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;color:var(--text-primary);">System Overview</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;">
+              <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="color:var(--text-muted);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">STEP 1 · Input</div>
+                <div style="color:var(--text-secondary);">Population of 8 prompts (random initially)</div>
+              </div>
+              <div style="text-align:center;color:var(--green);">↓</div>
+              <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="color:var(--text-muted);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">STEP 2 · Evaluate</div>
+                <div style="color:var(--text-secondary);">Run each prompt through LLM → collect generated code → measure test coverage</div>
+              </div>
+              <div style="text-align:center;color:var(--green);">↓</div>
+              <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="color:var(--text-muted);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">STEP 3 · Evolve</div>
+                <div style="color:var(--text-secondary);">Select, crossover, mutate → new generation</div>
+              </div>
+              <div style="text-align:center;color:var(--green);">↓ repeat until satisfied ↓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 4: Fitness Function ─────────────────────── -->
+    <div class="slide" id="slide-4">
+      <div class="slide-label">Genetic Algorithms · Slide 04</div>
+      <h2 class="slide-h2">The Fitness Function:<br/>Code Coverage</h2>
+      <p class="slide-p">Fitness is everything. A GA is only as good as its ability to measure "how close" a solution is to the goal. We use <strong style="color:var(--green)">test suite coverage</strong> as our proxy for code quality.</p>
+      <div class="two-col">
+        <div>
+          <div class="step-box">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:8px;">How Coverage Works as Fitness</div>
+            <div class="step-row">
+              <div class="step-num-circle">1</div>
+              <div class="step-row-body">
+                <h4>Generate code</h4>
+                <p>Send the prompt to an LLM (or our simulator). Receive a Python function.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-num-circle">2</div>
+              <div class="step-row-body">
+                <h4>Run the test suite</h4>
+                <p>Execute all 12 test cases against the generated function using pytest.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-num-circle">3</div>
+              <div class="step-row-body">
+                <h4>Measure coverage</h4>
+                <p>Count which lines / branches in the function were exercised by passing tests.</p>
+              </div>
+            </div>
+            <div class="step-row" style="margin-bottom:0;">
+              <div class="step-num-circle">4</div>
+              <div class="step-row-body">
+                <h4>Assign fitness score</h4>
+                <p>Coverage % = fitness. 0% = dies. 100% = champion.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Coverage Fitness Examples</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="background:var(--bg-3);border-radius:8px;padding:10px;">
+                <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:5px;">"Write a sort function."</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:31%;height:100%;background:var(--red);border-radius:3px;"></div></div>
+                  <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--red);font-weight:700;">31%</span>
+                </div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">Misses empty list, negative nums</div>
+              </div>
+              <div style="background:var(--bg-3);border-radius:8px;padding:10px;">
+                <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:5px;">"Write a Python sort function. Handle edge cases."</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:62%;height:100%;background:var(--amber);border-radius:3px;"></div></div>
+                  <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--amber);font-weight:700;">62%</span>
+                </div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">Better but still missing duplicates branch</div>
+              </div>
+              <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;">
+                <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:5px;">"Python sort list in-place. Return sorted copy. Handle: empty, single, negatives, duplicates, already sorted."</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:89%;height:100%;background:var(--green);border-radius:3px;"></div></div>
+                  <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--green);font-weight:700;">89%</span>
+                </div>
+                <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">Detailed specification → high coverage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 5: The Population ────────────────────────── -->
+    <div class="slide" id="slide-5">
+      <div class="slide-label">Genetic Algorithms · Slide 05</div>
+      <h2 class="slide-h2">The Population: Generation 0</h2>
+      <p class="slide-p">We start with <strong style="color:var(--text-primary)">8 prompts</strong> generated randomly (or by a small set of templates). Each gets evaluated immediately. Most are bad — that's fine. The GA will fix it.</p>
+      <div class="pop-grid">
+        <div class="individual-card">
+          <div class="ic-id">Individual #1</div>
+          <div class="ic-prompt">"Write a function that sorts a list."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:31%;background:var(--red)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--red)">31%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #2</div>
+          <div class="ic-prompt">"Python sort algorithm implementation."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:44%;background:var(--amber)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--amber)">44%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #3</div>
+          <div class="ic-prompt">"Sort a list in Python, handle edge cases."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:56%;background:var(--amber)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--amber)">56%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #4</div>
+          <div class="ic-prompt">"Implement list sorting with type hints."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:38%;background:var(--red)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--red)">38%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #5</div>
+          <div class="ic-prompt">"Python function: sort integers ascending, return new list."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:62%;background:var(--amber)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--amber)">62%</div>
+          </div>
+        </div>
+        <div class="individual-card selected">
+          <div class="ic-id">Individual #6 ⭐ Best</div>
+          <div class="ic-prompt">"Sort list in-place. Handle empty, single, and negative numbers."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:71%"></div></div>
+            <div class="ic-fitness-val">71%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #7</div>
+          <div class="ic-prompt">"Write sorting code."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:22%;background:var(--red)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--red)">22%</div>
+          </div>
+        </div>
+        <div class="individual-card">
+          <div class="ic-id">Individual #8</div>
+          <div class="ic-prompt">"Create a stable sort for Python lists."</div>
+          <div class="ic-fitness">
+            <div class="ic-fitness-label">Coverage</div>
+            <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:49%;background:var(--amber)"></div></div>
+            <div class="ic-fitness-val" style="color:var(--amber)">49%</div>
+          </div>
+        </div>
+      </div>
+      <p class="slide-p" style="margin-top:14px;font-size:0.85rem;color:var(--text-muted);">🏆 Best of generation 0: <strong style="color:var(--green)">Individual #6 at 71%</strong>. Average: 47%. The GA will work from here.</p>
+    </div>
+
+    <!-- ── Slide 6: Selection ─────────────────────────────── -->
+    <div class="slide" id="slide-6">
+      <div class="slide-label">Genetic Algorithms · Slide 06</div>
+      <h2 class="slide-h2">Selection: Survival of the Fittest</h2>
+      <p class="slide-p">Not all prompts get to reproduce. <strong style="color:var(--text-primary)">Tournament Selection</strong>: randomly pick 2 individuals, keep whichever has higher fitness. Repeat until you have a pool of parents.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Tournament Selection — Step by Step</div>
+            <div class="concept-box-body">
+              <strong>Round 1:</strong> #1 (31%) vs #8 (49%) → <span style="color:var(--green)">#8 wins</span><br/><br/>
+              <strong>Round 2:</strong> #3 (56%) vs #7 (22%) → <span style="color:var(--green)">#3 wins</span><br/><br/>
+              <strong>Round 3:</strong> #6 (71%) vs #2 (44%) → <span style="color:var(--green)">#6 wins</span><br/><br/>
+              <strong>Round 4:</strong> #5 (62%) vs #4 (38%) → <span style="color:var(--green)">#5 wins</span>
+            </div>
+          </div>
+          <div class="concept-box blue" style="margin-top:10px;">
+            <div class="concept-box-label">Why Tournament and not just Top-K?</div>
+            <div class="concept-box-body">Taking only the top 2 leads to <strong>premature convergence</strong> — everyone becomes a clone. Tournament keeps diversity: weaker individuals occasionally make it through, which helps <strong>exploration</strong>.</div>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Selected Parents for Next Generation</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;color:var(--green);font-family:var(--font-mono);margin-bottom:4px;">PARENT A · #6</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);font-family:var(--font-mono);line-height:1.4;">"Sort list in-place. Handle empty, single, and negative numbers."</div>
+                <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--green);margin-top:5px;">Fitness: 71%</div>
+              </div>
+              <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.25);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:4px;">PARENT B · #5</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);font-family:var(--font-mono);line-height:1.4;">"Python function: sort integers ascending, return new list."</div>
+                <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--blue);margin-top:5px;">Fitness: 62%</div>
+              </div>
+            </div>
+            <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);">These two will produce offspring via crossover on the next slide.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 7: Crossover ─────────────────────────────── -->
+    <div class="slide" id="slide-7">
+      <div class="slide-label">Genetic Algorithms · Slide 07</div>
+      <h2 class="slide-h2">Crossover: Mixing Parental Traits</h2>
+      <p class="slide-p">Two parent prompts are combined to create two offspring. We split each parent at a random point and <strong style="color:var(--blue)">swap the halves</strong> — like gene mixing in biology.</p>
+      <div class="step-box">
+        <div style="font-size:0.82rem;font-weight:600;margin-bottom:14px;">Single-Point Crossover Example</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;">
+          <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:12px;">
+            <div style="font-size:0.7rem;color:var(--green);font-family:var(--font-mono);margin-bottom:6px;">PARENT A</div>
+            <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Sort list in-place. Handle empty, single,"</span>
+              <span style="color:var(--text-muted);"> | </span>
+              <span style="color:var(--text-muted);">"and negative numbers."</span>
+            </div>
+          </div>
+          <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.25);border-radius:8px;padding:12px;">
+            <div style="font-size:0.7rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:6px;">PARENT B</div>
+            <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
+              <span style="color:var(--text-muted);">"Python function: sort integers ascending,"</span>
+              <span style="color:var(--text-muted);"> | </span>
+              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;">"return new list."</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-arrow">⬇ Swap after the cut point ⬇</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;">
+          <div style="background:var(--bg-3);border:1px solid rgba(188,140,255,0.3);border-radius:8px;padding:12px;">
+            <div style="font-size:0.7rem;color:var(--purple);font-family:var(--font-mono);margin-bottom:6px;">CHILD A</div>
+            <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Sort list in-place. Handle empty, single,"</span>
+              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;"> "return new list."</span>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--purple);margin-top:6px;">Estimated fitness: ~75%</div>
+          </div>
+          <div style="background:var(--bg-3);border:1px solid rgba(188,140,255,0.3);border-radius:8px;padding:12px;">
+            <div style="font-size:0.7rem;color:var(--purple);font-family:var(--font-mono);margin-bottom:6px;">CHILD B</div>
+            <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
+              <span style="color:var(--text-muted);">"Python function: sort integers ascending,"</span>
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;"> "and negative numbers."</span>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--purple);margin-top:6px;">Estimated fitness: ~66%</div>
+          </div>
+        </div>
+      </div>
+      <div class="concept-box blue" style="margin-top:14px;">
+        <div class="concept-box-label">Key Insight</div>
+        <div class="concept-box-body">Child A inherited the <strong>"Handle empty, single"</strong> spec from Parent A AND the <strong>"return new list"</strong> behavior from Parent B — combining useful traits from both parents. This is how GAs "build on success."</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 8: Mutation ──────────────────────────────── -->
+    <div class="slide" id="slide-8">
+      <div class="slide-label">Genetic Algorithms · Slide 08</div>
+      <h2 class="slide-h2">Mutation: Exploring New Territory</h2>
+      <p class="slide-p">After crossover, each offspring has a small chance (typically 1–5%) of being <strong style="color:var(--amber)">mutated</strong>. Without mutation, the GA can only recombine what it already has — it can never discover truly new solutions.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box amber">
+            <div class="concept-box-label">Why Mutation Matters</div>
+            <div class="concept-box-body">Imagine all 8 prompts in the population say "sort integers" — crossover can only produce more "sort integers" variations. Mutation can insert a completely new concept like <strong>"handle duplicates"</strong> that wasn't in any parent.</div>
+          </div>
+          <div class="concept-box" style="margin-top:10px;">
+            <div class="concept-box-label">Mutation Operators for Prompts</div>
+            <div class="concept-box-body">
+              <strong>Word substitution:</strong> "ascending" → "in ascending order"<br/><br/>
+              <strong>Insertion:</strong> Add "also handle duplicate values"<br/><br/>
+              <strong>Deletion:</strong> Remove a less informative clause<br/><br/>
+              <strong>Swap:</strong> Reorder two sentences
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Mutation Example</div>
+            <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.25);border-radius:8px;padding:12px;margin-bottom:8px;">
+              <div style="font-size:0.7rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:4px;">BEFORE MUTATION (Child A)</div>
+              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Sort list in-place. Handle empty, single, return new list."</div>
+              <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--amber);margin-top:5px;">Fitness: 75%</div>
+            </div>
+            <div style="text-align:center;color:var(--amber);margin:4px 0;">↓ mutation: insert clause ↓</div>
+            <div style="background:var(--bg-3);border:1px solid rgba(227,179,65,0.3);border-radius:8px;padding:12px;">
+              <div style="font-size:0.7rem;color:var(--amber);font-family:var(--font-mono);margin-bottom:4px;">AFTER MUTATION</div>
+              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Sort list in-place. Handle empty, single, <span style="background:rgba(227,179,65,0.2);color:var(--amber);">duplicates,</span> return new list."</div>
+              <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green);margin-top:5px;">Fitness: 83% 🎉 (+8%)</div>
+            </div>
+            <div style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">This mutation discovered a new edge case specification that Parent A and B never had — boosting coverage significantly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 9: One Full Generation ──────────────────── -->
+    <div class="slide" id="slide-9">
+      <div class="slide-label">Genetic Algorithms · Slide 09</div>
+      <h2 class="slide-h2">One Complete Generation Cycle</h2>
+      <p class="slide-p">Putting it all together: what happens in a single generation of our Prompt-GA.</p>
+      <div class="step-box">
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle">1</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
+            <div style="padding-top:4px;">
+              <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Evaluate Population</h4>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">Send all 8 prompts to the LLM, collect code, run test suite, assign coverage fitness. <span style="color:var(--text-muted);">[~3 min in real system]</span></p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle" style="background:rgba(88,166,255,0.1);border-color:rgba(88,166,255,0.25);color:var(--blue);">2</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
+            <div style="padding-top:4px;">
+              <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Select Parents</h4>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">Run 4 tournament rounds. Each selects 1 parent. We get 4 parents total (pairs reproduce). Elitism: always keep the best individual unchanged.</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle" style="background:rgba(188,140,255,0.1);border-color:rgba(188,140,255,0.25);color:var(--purple);">3</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
+            <div style="padding-top:4px;">
+              <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Crossover (probability 0.8)</h4>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">Pair parents, apply single-point crossover at a random position. 2 pairs → 4 children. 80% chance of crossing; otherwise children = copies of parents.</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle" style="background:rgba(227,179,65,0.1);border-color:rgba(227,179,65,0.25);color:var(--amber);">4</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
+            <div style="padding-top:4px;">
+              <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Mutation (probability 0.05 per word)</h4>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">For each word in each child: 5% chance to substitute, insert, or delete. Keeps diversity alive and explores new prompt structures.</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;">
+            <div style="flex-shrink:0;"><div class="step-num-circle" style="background:var(--green-dim);border-color:var(--green-border);color:var(--green);">5</div></div>
+            <div style="padding-top:4px;">
+              <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Form New Generation</h4>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">4 children + 1 elite + 3 selected survivors = new population of 8. Repeat from step 1.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 10: LIVE SIMULATION ──────────────────────── -->
+    <div class="slide" id="slide-10" style="padding:16px 24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="slide-label" style="margin-bottom:0;">Genetic Algorithms · Slide 10</div>
+        <span style="font-size:0.75rem;background:rgba(0,217,126,0.1);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;font-family:var(--font-mono);">⚡ Interactive</span>
+      </div>
+      <h2 class="slide-h2" style="margin-bottom:10px;">Live GA Simulation</h2>
+      <div class="sim-layout">
+        <div class="sim-main">
+          <!-- Controls -->
+          <div class="sim-panel">
+            <div class="sim-panel-header">
+              <span class="sim-panel-title">Controls</span>
+              <span class="sim-gen-badge" id="gen-label">Generation 0</span>
+            </div>
+            <div class="sim-panel-body">
+              <div class="sim-controls">
+                <button class="sim-btn primary" onclick="simStep()">▶ Step One Generation</button>
+                <button class="sim-btn secondary" onclick="simRun()">⏩ Run 5 Generations</button>
+                <button class="sim-btn" onclick="simReset()">↺ Reset</button>
+              </div>
+            </div>
+          </div>
+          <!-- Population -->
+          <div class="sim-panel" style="flex:1;">
+            <div class="sim-panel-header">
+              <span class="sim-panel-title">Population</span>
+              <span style="font-size:0.72rem;color:var(--text-muted);">Best: <span id="best-fitness" style="color:var(--green);font-family:var(--font-mono);">—</span></span>
+            </div>
+            <div class="sim-panel-body">
+              <div class="sim-pop-grid" id="pop-grid"></div>
+            </div>
+          </div>
+          <!-- Log -->
+          <div class="sim-panel">
+            <div class="sim-panel-header"><span class="sim-panel-title">Event Log</span></div>
+            <div class="sim-panel-body" style="padding:10px 12px;">
+              <div class="sim-log" id="sim-log">Press "Step One Generation" to begin...</div>
+            </div>
+          </div>
+          <!-- Step explanation -->
+          <div class="step-explain" id="step-explain">
+            The population is initialized. Each individual is a candidate prompt with a random initial fitness. Use the controls above to evolve the population.
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-panel">
+          <div class="chart-panel-header">Fitness Over Generations</div>
+          <div class="chart-panel-body">
+            <svg id="live-chart" viewBox="0 0 280 200" style="width:100%;overflow:visible;">
+              <!-- Grid -->
+              <line x1="40" y1="10" x2="40" y2="170" stroke="var(--border)" stroke-width="1"/>
+              <line x1="40" y1="170" x2="275" y2="170" stroke="var(--border)" stroke-width="1"/>
+              <line x1="40" y1="10" x2="275" y2="10" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.5"/>
+              <line x1="40" y1="90" x2="275" y2="90" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.5"/>
+              <!-- Y labels -->
+              <text x="34" y="14"  text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">100%</text>
+              <text x="34" y="94"  text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">50%</text>
+              <text x="34" y="174" text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">0%</text>
+              <text x="157" y="190" text-anchor="middle" font-size="8" fill="var(--text-muted)" font-family="monospace">Generation</text>
+              <!-- Lines will be drawn by JS -->
+              <g id="chart-lines"></g>
+            </svg>
+            <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;font-size:0.72rem;">
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:16px;height:2px;background:var(--green);"></div><span style="color:var(--text-muted);">Best fitness</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:16px;height:2px;background:var(--amber);stroke-dasharray:3,2;opacity:0.7;"></div><span style="color:var(--text-muted);">Avg fitness</span></div>
+            </div>
+            <!-- Stats -->
+            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                <span style="color:var(--text-muted);">Generations run</span>
+                <span style="font-family:var(--font-mono);color:var(--text-primary);" id="stat-gens">0</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                <span style="color:var(--text-muted);">Best ever</span>
+                <span style="font-family:var(--font-mono);color:var(--green);" id="stat-best">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                <span style="color:var(--text-muted);">Avg fitness</span>
+                <span style="font-family:var(--font-mono);color:var(--amber);" id="stat-avg">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                <span style="color:var(--text-muted);">Improvement</span>
+                <span style="font-family:var(--font-mono);color:var(--blue);" id="stat-delta">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 11: Reading the Fitness Chart ────────────── -->
+    <div class="slide" id="slide-11">
+      <div class="slide-label">Genetic Algorithms · Slide 11</div>
+      <h2 class="slide-h2">Reading the Fitness Chart</h2>
+      <p class="slide-p">The fitness chart tells the story of the search. Knowing how to interpret it is key to understanding when a GA is working — and when it's stuck.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">What to Look For</div>
+            <div class="concept-box-body">
+              <strong>Rapid early gains:</strong> Best fitness often jumps fast in the first few generations as obvious improvements are found quickly.<br/><br/>
+              <strong>Plateau:</strong> After ~gen 8–10, gains slow down. The "easy wins" are taken; harder optimizations require more generations or specific mutations.<br/><br/>
+              <strong>Best vs Average gap:</strong> A wide gap means high diversity — good for exploration. A narrow gap means the population is converging.
+            </div>
+          </div>
+          <div class="concept-box amber" style="margin-top:10px;">
+            <div class="concept-box-label">Warning Signs</div>
+            <div class="concept-box-body">
+              <strong>Premature convergence:</strong> Average and best lines merge early, then plateau below 100%. GA got "stuck" — all individuals too similar.<br/><br/>
+              <strong>Fix:</strong> Increase mutation rate, increase population size, or use multi-restart.
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- Static chart showing a typical GA run -->
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:10px;">Typical GA Fitness Trajectory</div>
+            <svg width="100%" viewBox="0 0 260 160">
+              <!-- Grid -->
+              <line x1="30" y1="10" x2="30" y2="140" stroke="var(--border)" stroke-width="1"/>
+              <line x1="30" y1="140" x2="256" y2="140" stroke="var(--border)" stroke-width="1"/>
+              <line x1="30" y1="10" x2="256" y2="10" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+              <line x1="30" y1="75" x2="256" y2="75" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.4"/>
+              <!-- Y labels -->
+              <text x="24" y="14" text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">100%</text>
+              <text x="24" y="79" text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">50%</text>
+              <text x="24" y="144" text-anchor="end" font-size="8" fill="var(--text-muted)" font-family="monospace">0%</text>
+              <!-- Best fitness line -->
+              <polyline points="30,118 52,98 73,78 94,62 115,50 136,42 157,38 178,36 199,34 220,33 241,32 256,31"
+                fill="none" stroke="var(--green)" stroke-width="2" stroke-linejoin="round"/>
+              <!-- Avg fitness line -->
+              <polyline points="30,128 52,112 73,96 94,82 115,72 136,65 157,60 178,57 199,55 220,54 241,54 256,53"
+                fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4,2" stroke-linejoin="round" opacity="0.8"/>
+              <!-- Annotations -->
+              <text x="70" y="58" font-size="8" fill="var(--green)" font-family="monospace">Rapid gain</text>
+              <text x="160" y="26" font-size="8" fill="var(--text-muted)" font-family="monospace">Plateau</text>
+              <line x1="175" y1="30" x2="200" y2="34" stroke="var(--text-muted)" stroke-width="0.5"/>
+              <!-- Gen labels -->
+              <text x="30" y="155" text-anchor="middle" font-size="7" fill="var(--text-muted)" font-family="monospace">0</text>
+              <text x="115" y="155" text-anchor="middle" font-size="7" fill="var(--text-muted)" font-family="monospace">5</text>
+              <text x="199" y="155" text-anchor="middle" font-size="7" fill="var(--text-muted)" font-family="monospace">10</text>
+              <text x="256" y="155" text-anchor="middle" font-size="7" fill="var(--text-muted)" font-family="monospace">13</text>
+            </svg>
+            <div style="display:flex;gap:16px;margin-top:6px;font-size:0.72rem;">
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:14px;height:2px;background:var(--green);"></div><span style="color:var(--text-muted);">Best</span></div>
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:14px;height:2px;background:var(--amber);opacity:0.8;"></div><span style="color:var(--text-muted);">Average</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 12: Benchmark Tasks ─────────────────────── -->
+    <div class="slide" id="slide-12">
+      <div class="slide-label">Genetic Algorithms · Slide 12</div>
+      <h2 class="slide-h2">Multi-Benchmark Evaluation</h2>
+      <p class="slide-p">A single task (sorting) is too narrow. Real research evaluates prompts across many coding tasks. Here's how GA-evolved prompts perform vs. human-written baselines.</p>
+      <table class="bench-table">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Human Prompt</th>
+            <th>Gen-0 Avg</th>
+            <th>GA Best (Gen 12)</th>
+            <th>Δ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>List Sorting</td>
+            <td><span class="bench-cov mid">62%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill mid" style="width:62%"></span></span></span></td>
+            <td><span class="bench-cov low">47%</span></td>
+            <td><span class="bench-cov high">89%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill high" style="width:89%"></span></span></span></td>
+            <td style="color:var(--green);font-family:var(--font-mono);font-weight:600;">+27pp</td>
+          </tr>
+          <tr>
+            <td>Binary Search</td>
+            <td><span class="bench-cov mid">71%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill mid" style="width:71%"></span></span></span></td>
+            <td><span class="bench-cov low">52%</span></td>
+            <td><span class="bench-cov high">94%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill high" style="width:94%"></span></span></span></td>
+            <td style="color:var(--green);font-family:var(--font-mono);font-weight:600;">+23pp</td>
+          </tr>
+          <tr>
+            <td>Linked List Reverse</td>
+            <td><span class="bench-cov mid">58%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill mid" style="width:58%"></span></span></span></td>
+            <td><span class="bench-cov low">41%</span></td>
+            <td><span class="bench-cov high">82%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill high" style="width:82%"></span></span></span></td>
+            <td style="color:var(--green);font-family:var(--font-mono);font-weight:600;">+24pp</td>
+          </tr>
+          <tr>
+            <td>Graph BFS</td>
+            <td><span class="bench-cov low">44%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill low" style="width:44%"></span></span></span></td>
+            <td><span class="bench-cov low">35%</span></td>
+            <td><span class="bench-cov mid">73%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill mid" style="width:73%"></span></span></span></td>
+            <td style="color:var(--green);font-family:var(--font-mono);font-weight:600;">+29pp</td>
+          </tr>
+          <tr>
+            <td>String Parsing</td>
+            <td><span class="bench-cov high">79%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill high" style="width:79%"></span></span></span></td>
+            <td><span class="bench-cov low">61%</span></td>
+            <td><span class="bench-cov high">91%</span> <span class="inline-bar"><span class="ibar-track"><span class="ibar-fill high" style="width:91%"></span></span></span></td>
+            <td style="color:var(--green);font-family:var(--font-mono);font-weight:600;">+12pp</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="concept-box" style="margin-top:16px;">
+        <div class="concept-box-label">Key Finding</div>
+        <div class="concept-box-body">GA-evolved prompts <strong>consistently outperform</strong> both random generation-0 prompts and human-written baselines. The algorithm discovers prompt structures that humans don't naturally write — like systematically enumerating every edge case by name.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 13: GA vs Other Approaches ──────────────── -->
+    <div class="slide" id="slide-13">
+      <div class="slide-label">Genetic Algorithms · Slide 13</div>
+      <h2 class="slide-h2">GA vs Other Optimization Methods</h2>
+      <p class="slide-p">GAs aren't magic. When should you use one versus a different approach?</p>
+      <div class="term-grid">
+        <div class="term-card">
+          <div class="term-emoji">🔀</div>
+          <div class="term-name">Genetic Algorithm (our approach)</div>
+          <div class="term-def">Good when: search space is huge, fitness landscape is rugged (many local optima), parallel evaluation is cheap.</div>
+          <div class="term-analogy">✅ Prompt search: huge space, rugged landscape, easy to parallelize.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🏔️</div>
+          <div class="term-name">Hill Climbing / Gradient Descent</div>
+          <div class="term-def">Good when: the fitness function is smooth and differentiable. Gets stuck in local optima easily.</div>
+          <div class="term-analogy">⚠️ Prompt search: not differentiable — can't take gradient of text.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🔭</div>
+          <div class="term-name">Exhaustive / Brute Force</div>
+          <div class="term-def">Good when: search space is small. Guarantees finding the optimum — but only feasible at tiny scale.</div>
+          <div class="term-analogy">❌ Prompt search: space is astronomically large. Completely infeasible.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🎲</div>
+          <div class="term-name">Random Search</div>
+          <div class="term-def">Good when: you have no structure to exploit and need a quick baseline. Surprisingly competitive in high dimensions.</div>
+          <div class="term-analogy">⚠️ Prompt search: okay baseline but GA consistently beats it given enough generations.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🌡️</div>
+          <div class="term-name">Simulated Annealing</div>
+          <div class="term-def">Good when: single-individual search with temperature-controlled acceptance of worse solutions to escape local optima.</div>
+          <div class="term-analogy">✅ Prompt search: works well but slower than GA — no parallel population.</div>
+        </div>
+        <div class="term-card">
+          <div class="term-emoji">🤖</div>
+          <div class="term-name">Reinforcement Learning</div>
+          <div class="term-def">Good when: you can define a reward signal and need sequential decision-making. Needs lots of samples.</div>
+          <div class="term-analogy">✅ Prompt search: RLHF (Reinforcement Learning from Human Feedback) is exactly this — but needs more data.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 14: Key Takeaways ────────────────────────── -->
+    <div class="slide" id="slide-14">
+      <div class="slide-label">Genetic Algorithms · Slide 14 · Final</div>
+      <h2 class="slide-h2">Key Takeaways</h2>
+      <div class="takeaway-grid">
+        <div class="takeaway-card">
+          <div class="takeaway-num">01 · Population Thinking</div>
+          <h4>Maintain Diversity</h4>
+          <p>GAs work because they search many regions simultaneously. A single best solution is not enough — diversity in the population enables exploration.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">02 · Fitness is Everything</div>
+          <h4>Define Success Precisely</h4>
+          <p>The GA is only as good as its fitness function. Vague fitness → vague convergence. Code coverage is a precise, measurable proxy for prompt quality.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">03 · Exploration vs. Exploitation</div>
+          <h4>Balance is Key</h4>
+          <p>Selection and crossover exploit known good solutions. Mutation explores unknown territory. Too much of either breaks the algorithm.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">04 · Emergent Solutions</div>
+          <h4>Discovering the Unexpected</h4>
+          <p>GA-evolved prompts often look different from human-written ones — they discover unintuitive structures that happen to maximize coverage.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">05 · GA in Software Engineering</div>
+          <h4>Beyond Prompt Evolution</h4>
+          <p>GAs are used for test case generation, code optimization, hyperparameter tuning, scheduling problems, and architectural search.</p>
+        </div>
+        <div class="takeaway-card">
+          <div class="takeaway-num">06 · The Vibe Coding Connection</div>
+          <h4>Systematic Prompt Engineering</h4>
+          <p>Vibe coding + GAs = systematic vibe coding. Instead of guessing prompts, we evolve them automatically — turning intuition into optimization.</p>
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:20px;">
+        <div class="concept-box-label">Next Steps</div>
+        <div class="concept-box-body">
+          Try implementing your own Prompt-GA using the Python <code style="font-family:var(--font-mono);color:var(--green);">deap</code> library. Use an LLM API for evaluation. Experiment with: population size, mutation rate, selection pressure. Report your best-evolved prompt!
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+        <a href="teaching.html" style="padding:8px 18px;border-radius:8px;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-size:0.85rem;text-decoration:none;font-weight:600;">← Back to Teaching</a>
+        <a href="projects.html" style="padding:8px 18px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);color:var(--text-secondary);font-size:0.85rem;text-decoration:none;">View Projects →</a>
+      </div>
+    </div>
+
+  </div><!-- end slides-wrapper -->
+
+  <!-- Navigation bar -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>← Prev</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next →</button>
+  </div>
+
+  <script>
+    const TOTAL = 14;
+    let current = 1;
+
+    // ── Navigation ──────────────────────────────────────────
+    function goSlide(delta) {
+      const next = current + delta;
+      if (next < 1 || next > TOTAL) return;
+      document.getElementById('slide-' + current).classList.remove('active');
+      current = next;
+      document.getElementById('slide-' + current).classList.add('active');
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+      document.getElementById('progress').style.width = (current / TOTAL * 100).toFixed(2) + '%';
+      document.getElementById('prev-btn').disabled = current === 1;
+      document.getElementById('next-btn').disabled = current === TOTAL;
+      document.getElementById('next-btn').textContent = current === TOTAL ? 'Finish' : 'Next →';
+      // dots
+      const dots = document.getElementById('dots');
+      dots.innerHTML = '';
+      for (let i = 1; i <= TOTAL; i++) {
+        const d = document.createElement('div');
+        d.className = 'slide-dot' + (i === current ? ' active' : '');
+        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); };
+        dots.appendChild(d);
+      }
+    }
+
+    // ── GA Simulation ───────────────────────────────────────
+    const PROMPT_FRAGMENTS = [
+      ["Write a sort function", "in Python", "that handles edge cases", "return a new list", "handle empty list", "handle duplicates", "handle negatives", "in-place sort", "with type hints", "stable sort", "ascending order", "using built-in methods", "handle single element", "return sorted copy"],
+    ];
+
+    const TEMPLATE_PROMPTS = [
+      "Write a sort function.",
+      "Python sort algorithm implementation.",
+      "Sort a list in Python, handle edge cases.",
+      "Implement list sorting with type hints.",
+      "Python function: sort integers ascending, return new list.",
+      "Sort list in-place. Handle empty, single, and negative numbers.",
+      "Write sorting code.",
+      "Create a stable sort for Python lists."
+    ];
+
+    // Simulated fitness based on prompt complexity/specificity
+    function estimateFitness(prompt) {
+      let score = 20;
+      const p = prompt.toLowerCase();
+      if (p.includes('handle') || p.includes('edge')) score += 15;
+      if (p.includes('empty')) score += 10;
+      if (p.includes('negative') || p.includes('negatives')) score += 10;
+      if (p.includes('duplicate') || p.includes('duplicates')) score += 10;
+      if (p.includes('single')) score += 8;
+      if (p.includes('return') && p.includes('list')) score += 7;
+      if (p.includes('type hint') || p.includes('type hints')) score += 5;
+      if (p.includes('in-place') || p.includes('in place')) score += 6;
+      if (p.includes('stable')) score += 5;
+      if (p.includes('ascending') || p.includes('descending')) score += 4;
+      if (p.includes('python')) score += 3;
+      // add some noise
+      score += Math.floor(Math.random() * 8) - 3;
+      return Math.min(98, Math.max(10, score));
+    }
+
+    let population = [];
+    let generationNum = 0;
+    let bestHistory = [];
+    let avgHistory = [];
+    let initialBest = null;
+
+    const MUTATIONS = [
+      " Handle empty list.",
+      " Handle duplicates.",
+      " Handle negative numbers.",
+      " Return a sorted copy.",
+      " Handle single element.",
+      " Use type hints.",
+      " Stable sort required.",
+      " Handle already-sorted input."
+    ];
+
+    function crossover(a, b) {
+      const wordsA = a.split(' ');
+      const wordsB = b.split(' ');
+      const pt = Math.floor(Math.random() * Math.min(wordsA.length, wordsB.length));
+      const childA = wordsA.slice(0, pt).join(' ') + ' ' + wordsB.slice(pt).join(' ');
+      const childB = wordsB.slice(0, pt).join(' ') + ' ' + wordsA.slice(pt).join(' ');
+      return [childA.trim(), childB.trim()];
+    }
+
+    function mutate(prompt) {
+      if (Math.random() < 0.4) {
+        const mut = MUTATIONS[Math.floor(Math.random() * MUTATIONS.length)];
+        if (!prompt.includes(mut.trim())) return prompt + mut;
+      }
+      return prompt;
+    }
+
+    function tournamentSelect(pop) {
+      const i1 = Math.floor(Math.random() * pop.length);
+      const i2 = Math.floor(Math.random() * pop.length);
+      return pop[i1].fitness >= pop[i2].fitness ? pop[i1] : pop[i2];
+    }
+
+    function initSim() {
+      population = TEMPLATE_PROMPTS.map((p, i) => ({
+        id: i + 1,
+        prompt: p,
+        fitness: estimateFitness(p),
+        state: ''
+      }));
+      generationNum = 0;
+      bestHistory = [];
+      avgHistory = [];
+      initialBest = null;
+      renderPop();
+      renderChart();
+      document.getElementById('gen-label').textContent = 'Generation 0';
+      document.getElementById('best-fitness').textContent = '—';
+      document.getElementById('sim-log').innerHTML = 'Press <span class="log-green">Step One Generation</span> to begin...';
+      document.getElementById('step-explain').innerHTML = 'The population is initialized with 8 template prompts. Each has been evaluated for code coverage fitness. Use the controls to evolve the population.';
+      document.getElementById('stat-gens').textContent = '0';
+      document.getElementById('stat-best').textContent = '—';
+      document.getElementById('stat-avg').textContent = '—';
+      document.getElementById('stat-delta').textContent = '—';
+    }
+
+    function simStep() {
+      // Sort population
+      population.sort((a, b) => b.fitness - a.fitness);
+      const elite = { ...population[0], state: 'selected' };
+
+      const best = population[0].fitness;
+      const avg = Math.round(population.reduce((s, p) => s + p.fitness, 0) / population.length);
+      if (initialBest === null) initialBest = best;
+      bestHistory.push(best);
+      avgHistory.push(avg);
+
+      // Select parents
+      const parents = [];
+      for (let i = 0; i < 4; i++) parents.push(tournamentSelect(population));
+
+      // Crossover + mutate to get 6 new children
+      const children = [];
+      for (let i = 0; i < 3; i++) {
+        const pa = parents[i % parents.length];
+        const pb = parents[(i + 1) % parents.length];
+        let [ca, cb] = crossover(pa.prompt, pb.prompt);
+        ca = mutate(ca);
+        cb = mutate(cb);
+        children.push({ id: population.length + i*2 + 1, prompt: ca, fitness: estimateFitness(ca), state: 'new' });
+        children.push({ id: population.length + i*2 + 2, prompt: cb, fitness: estimateFitness(cb), state: 'new' });
+      }
+
+      // New population: elite + top 1 + 6 children
+      const topTwo = population.slice(0, 2).map(p => ({ ...p, state: 'selected' }));
+      const newPop = [
+        { ...elite, state: 'selected' },
+        { ...topTwo[1], state: 'selected' },
+        ...children.slice(0, 6)
+      ];
+
+      // Renumber
+      newPop.forEach((ind, i) => ind.id = i + 1);
+
+      generationNum++;
+      population = newPop;
+
+      // Mark mutated individuals
+      population.forEach(ind => {
+        if (ind.state === 'new' && ind.prompt.includes('Handle') && Math.random() < 0.4) {
+          ind.state = 'mut';
+        }
+      });
+
+      const newBest = Math.max(...population.map(p => p.fitness));
+      const newAvg = Math.round(population.reduce((s, p) => s + p.fitness, 0) / population.length);
+      const delta = newBest - (bestHistory[bestHistory.length - 2] || initialBest);
+
+      document.getElementById('gen-label').textContent = 'Generation ' + generationNum;
+      document.getElementById('best-fitness').textContent = newBest + '%';
+      document.getElementById('stat-gens').textContent = generationNum;
+      document.getElementById('stat-best').textContent = newBest + '%';
+      document.getElementById('stat-avg').textContent = newAvg + '%';
+      document.getElementById('stat-delta').textContent = (delta >= 0 ? '+' : '') + delta + 'pp';
+
+      // Log
+      const log = document.getElementById('sim-log');
+      const topInd = population.sort((a,b)=>b.fitness-a.fitness)[0];
+      log.innerHTML = `<span class="log-green">Gen ${generationNum}</span> complete · ` +
+        `<span class="log-amber">Best: ${newBest}%</span> · ` +
+        `<span class="log-blue">Avg: ${newAvg}%</span><br/>` +
+        `<span class="log-green">🏆</span> Top prompt: <span style="color:var(--text-muted);font-style:italic;">"${topInd.prompt.substring(0, 60)}..."</span><br/>` +
+        (delta > 0 ? `<span class="log-green">▲ +${delta}pp improvement from last generation</span>` :
+                     `<span style="color:var(--text-muted);">→ Population stabilizing — mutation will explore further</span>`);
+
+      document.getElementById('step-explain').innerHTML =
+        `<strong>Generation ${generationNum} complete.</strong> ` +
+        `The elite individual (#1, ${elite.fitness}%) was preserved unchanged. ` +
+        `${children.length} new offspring were created via crossover and mutation. ` +
+        `Cards outlined in <span style="color:var(--green);">green</span> = selected parents · ` +
+        `<span style="color:var(--purple);">purple</span> = new children · ` +
+        `<span style="color:var(--amber);">amber</span> = mutated.`;
+
+      renderPop();
+      renderChart();
+    }
+
+    function simRun() {
+      let steps = 0;
+      const interval = setInterval(() => {
+        simStep();
+        steps++;
+        if (steps >= 5) clearInterval(interval);
+      }, 600);
+    }
+
+    function simReset() {
+      initSim();
+    }
+
+    function renderPop() {
+      const grid = document.getElementById('pop-grid');
+      // sort for display
+      const sorted = [...population].sort((a, b) => b.fitness - a.fitness);
+      grid.innerHTML = sorted.map((ind, i) => {
+        const stateClass = ind.state === 'selected' ? 'selected' :
+                           ind.state === 'cross' ? 'cross' :
+                           ind.state === 'mut' ? 'mut' :
+                           ind.state === 'new' ? 'new' : '';
+        const pct = ind.fitness;
+        const color = pct >= 75 ? 'var(--green)' : pct >= 55 ? 'var(--amber)' : 'var(--red)';
+        const label = i === 0 ? ' ⭐' : '';
+        return `<div class="sim-ind ${stateClass}">
+          <div class="sim-ind-id">#${i+1}${label}</div>
+          <div class="sim-ind-prompt">${ind.prompt.substring(0, 55)}${ind.prompt.length > 55 ? '…' : ''}</div>
+          <div class="sim-ind-bar-wrap">
+            <div class="sim-ind-bar"><div class="sim-ind-fill" style="width:${pct}%;background:${color};"></div></div>
+            <div class="sim-ind-val" style="color:${color};">${pct}%</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderChart() {
+      const g = document.getElementById('chart-lines');
+      if (bestHistory.length < 1) { g.innerHTML = ''; return; }
+
+      const W = 235, H = 160, OX = 40, OY = 10;
+      const maxGen = Math.max(12, bestHistory.length + 1);
+      const xScale = W / maxGen;
+      const yScale = H / 100;
+
+      const bestPts = bestHistory.map((v, i) => `${OX + i * xScale},${OY + H - v * yScale}`).join(' ');
+      const avgPts  = avgHistory.map((v, i) => `${OX + i * xScale},${OY + H - v * yScale}`).join(' ');
+
+      let html = '';
+      if (bestHistory.length > 1) {
+        html += `<polyline points="${bestPts}" fill="none" stroke="var(--green)" stroke-width="2" stroke-linejoin="round"/>`;
+        html += `<polyline points="${avgPts}" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4,2" stroke-linejoin="round" opacity="0.8"/>`;
+      }
+      // dots
+      bestHistory.forEach((v, i) => {
+        html += `<circle cx="${OX + i * xScale}" cy="${OY + H - v * yScale}" r="3" fill="var(--green)"/>`;
+      });
+      // x labels
+      for (let i = 0; i <= Math.min(generationNum, maxGen); i += 2) {
+        html += `<text x="${OX + i * xScale}" y="${OY + H + 14}" text-anchor="middle" font-size="8" fill="var(--text-muted)" font-family="monospace">${i}</text>`;
+      }
+
+      g.innerHTML = html;
+
+      // Update current best dot
+      if (bestHistory.length > 0) {
+        const last = bestHistory[bestHistory.length - 1];
+        const lx = OX + (bestHistory.length - 1) * xScale;
+        const ly = OY + H - last * yScale;
+        g.innerHTML += `<circle cx="${lx}" cy="${ly}" r="4" fill="var(--green)" stroke="var(--bg-2)" stroke-width="2"/>`;
+      }
+    }
+
+    // Init everything
+    updateUI();
+    initSim();
+  </script>
+
+</body>
+</html>
