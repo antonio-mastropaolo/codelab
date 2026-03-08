@@ -1075,17 +1075,57 @@ public void logMensaje(String café) {
     }
 
     function highlightJava(code) {
-      const keywords = ['public','private','protected','static','final','void','return','int','String','boolean','new','if','else','for','while','class','package','import','this','throw','throws','try','catch','finally'];
-      const types = ['int','String','boolean','double','float','long','char','byte','short','void'];
-      let html = code
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="cmt">$1</span>')
-        .replace(/(\/\/.*$)/gm, '<span class="cmt">$1</span>')
-        .replace(/("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
-      keywords.forEach(kw => {
-        html = html.replace(new RegExp('\\b(' + kw + ')\\b', 'g'), '<span class="kw">$1</span>');
-      });
-      return html;
+      const KW = new Set(['public','private','protected','static','final','void','return','boolean','new','if','else','for','while','class','package','import','this','throw','throws','try','catch','finally']);
+      const TY = new Set(['int','String','boolean','double','float','long','char','byte','short','void']);
+      // Escape HTML
+      let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Single-pass tokenizer avoids keyword-in-attribute corruption
+      let out = '';
+      let i = 0;
+      while (i < html.length) {
+        // Block comment
+        if (html[i] === '/' && html[i+1] === '*') {
+          let end = html.indexOf('*/', i + 2);
+          if (end === -1) end = html.length - 2;
+          out += '<span class="cmt">' + html.substring(i, end + 2) + '</span>';
+          i = end + 2; continue;
+        }
+        // Line comment
+        if (html[i] === '/' && html[i+1] === '/') {
+          let end = html.indexOf('\n', i);
+          if (end === -1) end = html.length;
+          out += '<span class="cmt">' + html.substring(i, end) + '</span>';
+          i = end; continue;
+        }
+        // String literal (already escaped so quotes are literal)
+        if (html[i] === '&' && html.substring(i, i+6) === '&quot;') {
+          let s = '&quot;'; let j = i + 6;
+          while (j < html.length) {
+            if (html.substring(j, j+6) === '&quot;') { s += '&quot;'; j += 6; break; }
+            s += html[j++];
+          }
+          out += '<span class="str">' + s + '</span>';
+          i = j; continue;
+        }
+        if (html[i] === '"') {
+          let s = '"'; let j = i + 1;
+          while (j < html.length && html[j] !== '"') { if (html[j] === '\\') { s += html[j++]; } s += html[j++]; }
+          if (j < html.length) s += html[j++];
+          out += '<span class="str">' + s + '</span>';
+          i = j; continue;
+        }
+        // Identifier / keyword
+        if (/[a-zA-Z_$]/.test(html[i])) {
+          let w = ''; let j = i;
+          while (j < html.length && /[a-zA-Z0-9_$]/.test(html[j])) w += html[j++];
+          if (KW.has(w)) out += '<span class="kw">' + w + '</span>';
+          else if (TY.has(w)) out += '<span class="type">' + w + '</span>';
+          else out += w;
+          i = j; continue;
+        }
+        out += html[i++];
+      }
+      return out;
     }
 
     // ── Interactive 3: Code Tokenizer ───────────────────────
