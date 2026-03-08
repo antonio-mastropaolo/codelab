@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompting LLMs for Software Development Automation — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;
+      --border:#30363D;
+      --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
+      --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
+      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --font-display:'Space Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+    .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100;}
+    .topbar-logo{font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);text-decoration:none;display:flex;align-items:center;gap:6px;}
+    .logo-mark{color:var(--green);}
+    .topbar-sep{color:var(--text-muted);opacity:0.4;}
+    .topbar-title{font-size:0.85rem;color:var(--text-secondary);flex:1;}
+    .topbar-badge{font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);padding:3px 8px;border-radius:4px;}
+    .slide-counter{font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);}
+    .topbar-home{font-size:0.8rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
+    .topbar-home:hover{color:var(--green);}
+    .progress-track{height:3px;background:var(--border);flex-shrink:0;}
+    .progress-fill{height:100%;background:var(--green);transition:width 0.3s ease;}
+    .slides-wrapper{flex:1;overflow:hidden;position:relative;}
+    .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .slide.active{display:flex;}
+    @media(max-width:800px){.slide{padding:20px 18px 16px;}}
+    .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
+    .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .nav-btn:hover:not(:disabled){border-color:var(--green-border);color:var(--green);}
+    .nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    .nav-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .nav-btn.primary:hover{background:#00F58C;border-color:#00F58C;color:var(--bg);}
+    .slide-dots{display:flex;gap:5px;}
+    .slide-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:background 0.2s;}
+    .slide-dot.active{background:var(--green);}
+    .slide-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .slide-label::before{content:'//';color:var(--green);}
+    .slide-h1{font-size:clamp(1.7rem,3.2vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.025em;margin-bottom:16px;font-family:var(--font-display);}
+    .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
+    .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
+    .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
+    .cb.blue{border-left-color:var(--blue);}
+    .cb.amber{border-left-color:var(--amber);}
+    .cb.purple{border-left-color:var(--purple);}
+    .cb.red{border-left-color:var(--red);}
+    .cb.cyan{border-left-color:var(--cyan);}
+    .cb-label{font-size:0.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:5px;}
+    .cb.blue .cb-label{color:var(--blue);}
+    .cb.amber .cb-label{color:var(--amber);}
+    .cb.purple .cb-label{color:var(--purple);}
+    .cb.red .cb-label{color:var(--red);}
+    .cb.cyan .cb-label{color:var(--cyan);}
+    .cb-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.6;}
+    .cb-body strong{color:var(--text-primary);}
+    .term-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:600px){.term-grid{grid-template-columns:1fr;}}
+    .term-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:border-color 0.2s;}
+    .term-card:hover{border-color:var(--green-border);}
+    .term-name{font-size:0.75rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+    .term-def{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;}
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:13px;}
+    .step-num{width:30px;height:30px;border-radius:50%;background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);font-family:var(--font-mono);font-size:0.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .step-body h4{font-size:0.88rem;font-weight:600;margin-bottom:3px;}
+    .step-body p{font-size:0.81rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .code-block{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:0.78rem;line-height:1.7;overflow-x:auto;margin:10px 0;}
+    .ck{color:var(--purple);}
+    .cs{color:var(--green);}
+    .cc{color:var(--text-muted);font-style:italic;}
+    .cf{color:var(--blue);}
+    .cl{color:var(--amber);}
+    .ca{color:var(--cyan);}
+    .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
+    .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+    .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
+    .inter-body{padding:14px 16px;}
+    .sim-btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}
+    .sim-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .sim-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .sim-btn.primary:hover{background:#00F58C;}
+    .stat-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:110px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .stat-val{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--green);}
+    .stat-val.blue{color:var(--blue);}
+    .stat-val.amber{color:var(--amber);}
+    .stat-val.purple{color:var(--purple);}
+    .stat-label{font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.04em;}
+    .takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:12px;}
+    @media(max-width:700px){.takeaway-grid{grid-template-columns:1fr;}}
+    .takeaway-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:15px;}
+    .takeaway-num{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);margin-bottom:7px;}
+    .takeaway-card h4{font-size:0.88rem;font-weight:600;margin-bottom:5px;}
+    .takeaway-card p{font-size:0.79rem;color:var(--text-secondary);line-height:1.5;margin:0;}
+    .quiz-option{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .quiz-option:hover{border-color:var(--green-border);}
+    .quiz-option .q-label{font-size:0.82rem;color:var(--text-secondary);flex:1;}
+    .quiz-option .q-tag{font-family:var(--font-mono);font-size:0.7rem;padding:3px 10px;border-radius:12px;display:none;}
+    .quiz-option.revealed .q-tag{display:inline-block;}
+    .quiz-option.correct .q-tag{background:rgba(0,217,126,0.1);color:var(--green);}
+    .quiz-option.wrong .q-tag{background:rgba(255,95,87,0.1);color:var(--red);}
+    .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
+    .quiz-option.revealed.wrong{border-color:rgba(255,95,87,0.2);background:rgba(255,95,87,0.04);}
+    .kc-box{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0;}
+    .kc-q{font-size:0.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+    .kc-q::before{content:'?';display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.12);color:var(--blue);font-family:var(--font-mono);font-size:0.72rem;font-weight:700;flex-shrink:0;}
+    .kc-answer{display:none;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:10px 14px;background:var(--bg-3);border-radius:8px;border-left:3px solid var(--green);margin-top:8px;}
+    .kc-answer.visible{display:block;}
+    .kc-answer strong{color:var(--text-primary);}
+    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:14px 0;}
+    @media(max-width:700px){.vs-grid{grid-template-columns:1fr;}}
+    .vs-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .vs-card h4{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px;}
+    .vs-card ul{list-style:none;padding:0;}
+    .vs-card li{font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding:3px 0;}
+    .vs-card li::before{content:'\2192 ';color:var(--green);font-family:var(--font-mono);}
+    .vs-card.warn li::before{color:var(--amber);}
+    .vs-divider{display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--text-muted);}
+    @media(max-width:700px){.vs-divider{display:none;}}
+    .comp-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;}
+    .comp-table th{text-align:left;padding:8px 12px;background:var(--bg-3);border-bottom:1px solid var(--border);font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .comp-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;}
+    .comp-table tr:hover td{background:var(--bg-2);}
+    .tag-green{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .tag-amber{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(227,179,65,0.08);color:var(--amber);border:1px solid rgba(227,179,65,0.2);}
+    .tag-blue{display:inline-block;padding:2px 7px;border-radius:4px;font-size:0.72rem;font-family:var(--font-mono);background:rgba(88,166,255,0.08);color:var(--blue);border:1px solid rgba(88,166,255,0.2);}
+    .flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;justify-content:center;}
+    .flow-box{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:var(--font-display);font-size:0.82rem;font-weight:600;text-align:center;min-width:90px;}
+    .flow-box.green{border-color:var(--green-border);color:var(--green);}
+    .flow-box.blue{border-color:rgba(88,166,255,0.3);color:var(--blue);}
+    .flow-box.amber{border-color:rgba(227,179,65,0.3);color:var(--amber);}
+    .flow-box.purple{border-color:rgba(188,140,255,0.3);color:var(--purple);}
+    .flow-arrow{color:var(--text-muted);font-size:1.2rem;}
+    .classify-item{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:6px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);}
+    .classify-item .ci-text{flex:1;font-size:0.82rem;color:var(--text-secondary);}
+    .classify-item .ci-btns{display:flex;gap:6px;}
+    .classify-item .ci-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);cursor:pointer;transition:all 0.15s;}
+    .classify-item .ci-btn:hover{border-color:var(--green-border);color:var(--green);}
+    .classify-item .ci-btn.selected{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:600;}
+    .classify-item .ci-btn.wrong-sel{background:rgba(255,95,87,0.15);color:var(--red);border-color:rgba(255,95,87,0.3);}
+    .classify-item .ci-btn.right-ans{background:var(--green-dim);color:var(--green);border-color:var(--green-border);}
+    .prompt-block{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:5px 0;font-size:0.8rem;color:var(--text-secondary);cursor:pointer;transition:all 0.2s;user-select:none;}
+    .prompt-block:hover{border-color:var(--green-border);}
+    .prompt-block.placed{opacity:0.4;cursor:default;}
+    .prompt-block.in-slot{background:var(--bg-2);border-color:var(--green-border);cursor:pointer;}
+    .prompt-slot{min-height:42px;border:2px dashed var(--border);border-radius:8px;margin:5px 0;display:flex;align-items:center;padding:6px 10px;font-size:0.78rem;color:var(--text-muted);transition:all 0.2s;}
+    .prompt-slot.filled{border-style:solid;border-color:var(--green-border);background:var(--green-dim);}
+    .scenario-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:16px;margin:10px 0;}
+    .scenario-card h4{font-size:0.88rem;font-weight:600;margin-bottom:8px;}
+    .scenario-card p{font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin-bottom:10px;}
+    .scenario-btns{display:flex;gap:8px;flex-wrap:wrap;}
+    .scenario-result{display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:0.82rem;line-height:1.5;}
+    .scenario-result.correct{display:block;background:var(--green-dim);border:1px solid var(--green-border);color:var(--text-secondary);}
+    .scenario-result.wrong{display:block;background:rgba(255,95,87,0.06);border:1px solid rgba(255,95,87,0.2);color:var(--text-secondary);}
+    .rank-candidate{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:5px 0;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;transition:all 0.2s;}
+    .rank-candidate:hover{border-color:var(--green-border);}
+    .rank-candidate.selected{border-color:var(--green);background:var(--green-dim);}
+    .rank-candidate.locked{cursor:default;opacity:0.7;}
+    .rank-candidate .rc-num{width:24px;height:24px;border-radius:50%;background:var(--bg-3);border:1px solid var(--border);font-family:var(--font-mono);font-size:0.7rem;display:flex;align-items:center;justify-content:center;color:var(--text-muted);flex-shrink:0;}
+    .rank-candidate.selected .rc-num{background:var(--green);color:var(--bg);border-color:var(--green);}
+    .rank-candidate .rc-text{flex:1;font-size:0.82rem;color:var(--text-secondary);}
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
+  <span class="topbar-sep">|</span>
+  <span class="topbar-title">Prompting LLMs for Software Development Automation</span>
+  <span class="topbar-badge">Module 5 &middot; Interactive</span>
+  <span class="slide-counter" id="counter">1 / 20</span>
+  <a href="index.html" class="topbar-home">Home</a>
+</div>
+
+<!-- Progress -->
+<div class="progress-track"><div class="progress-fill" id="progress" style="width:5%"></div></div>
+
+<!-- Slides -->
+<div class="slides-wrapper">
+
+<!-- ==================== SLIDE 1 ==================== -->
+<div class="slide active" id="slide-1">
+  <div class="slide-label">Module 5 &middot; Slide 01</div>
+  <h1 class="slide-h1">Prompting LLMs for<br><em>Software Development Automation</em></h1>
+  <p class="slide-p">Focus on In-Context Learning (ICL), few-shot prompting, and example selection for SE tasks. Learn how to adapt large language models without retraining them.</p>
+
+  <div class="slide-h2" style="font-size:1rem;margin-top:10px;margin-bottom:12px;">Learning Objectives</div>
+  <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="term-card">
+      <div class="term-name">Objective 1</div>
+      <div class="term-def">Understand prompting as adaptation without parameter updates</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">Objective 2</div>
+      <div class="term-def">Apply few-shot prompting to software engineering tasks</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">Objective 3</div>
+      <div class="term-def">Explain why example selection matters for prompt quality</div>
+    </div>
+  </div>
+
+  <div class="slide-h2" style="font-size:1rem;margin-top:18px;margin-bottom:8px;">Key Terms</div>
+  <div class="term-grid">
+    <div class="term-card"><div class="term-name">PLM</div><div class="term-def">Pre-trained Language Model: a model trained on large corpora before task-specific use</div></div>
+    <div class="term-card"><div class="term-name">ICL</div><div class="term-def">In-Context Learning: the model learns from examples provided directly in the prompt</div></div>
+    <div class="term-card"><div class="term-name">Few-Shot</div><div class="term-def">Providing a small number of input-output demonstrations in the prompt</div></div>
+    <div class="term-card"><div class="term-name">Zero-Shot</div><div class="term-def">Prompting with no demonstrations, only a task description</div></div>
+    <div class="term-card" style="grid-column:span 2;"><div class="term-name">Demonstration</div><div class="term-def">An input-output pair included in the prompt to illustrate the task pattern for the model</div></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2 ==================== -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">Module 5 &middot; Slide 02</div>
+  <h2 class="slide-h2">What is <em>Prompting</em>?</h2>
+  <p class="slide-p">Prompting guides a deep learning model to perform a task by embedding input-output examples directly in the prompt. Instead of retraining, the user structures input so the model infers the task pattern from context.</p>
+
+  <div class="cb blue">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body">Instead of fine-tuning a pre-trained model, we provide: <strong>a task description</strong>, <strong>a few demonstrations</strong> of input-output behavior, and <strong>a target input</strong> for which the model generates the output.</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:18px;">
+    <div class="flow-box green">Task Description</div>
+    <div class="flow-arrow">&plus;</div>
+    <div class="flow-box blue">Demonstrations</div>
+    <div class="flow-arrow">&plus;</div>
+    <div class="flow-box amber">Target Input</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Model Output</div>
+  </div>
+
+  <div class="two-col" style="margin-top:18px;">
+    <div class="cb amber">
+      <div class="cb-label">Training / Fine-Tuning</div>
+      <div class="cb-body"><strong>Changes the model.</strong> Parameter updates via backpropagation over labeled data. The model itself is modified.</div>
+    </div>
+    <div class="cb">
+      <div class="cb-label">Prompting / ICL</div>
+      <div class="cb-body"><strong>Changes the situation.</strong> The model stays frozen. We change what the model sees at inference time. Both are forms of adaptation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3 ==================== -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Module 5 &middot; Slide 03</div>
+  <h2 class="slide-h2">Prompting in Action: <em>Bug Fixing</em></h2>
+  <p class="slide-p">A concrete SE automation task: given a buggy method, generate the fixed version. We show the model how via demonstrations.</p>
+
+  <div class="cb blue" style="margin-bottom:6px;">
+    <div class="cb-label">Demo 1 &mdash; Buggy</div>
+    <div class="code-block"><span class="ck">public int</span> <span class="cf">divide</span>(<span class="ck">int</span> a, <span class="ck">int</span> b) {<br>&nbsp;&nbsp;<span class="ck">return</span> a / b;<br>}</div>
+  </div>
+  <div class="cb" style="margin-bottom:14px;">
+    <div class="cb-label">Demo 1 &mdash; Fixed</div>
+    <div class="code-block"><span class="ck">public int</span> <span class="cf">divide</span>(<span class="ck">int</span> a, <span class="ck">int</span> b) {<br>&nbsp;&nbsp;<span class="ck">if</span> (b == <span class="cl">0</span>) <span class="ck">throw new</span> <span class="cf">IllegalArgumentException</span>(<span class="cs">"divisor is zero"</span>);<br>&nbsp;&nbsp;<span class="ck">return</span> a / b;<br>}</div>
+  </div>
+
+  <div class="cb blue" style="margin-bottom:6px;">
+    <div class="cb-label">Demo 2 &mdash; Buggy</div>
+    <div class="code-block"><span class="ck">public void</span> <span class="cf">setUsername</span>(<span class="ck">String</span> name) {<br>&nbsp;&nbsp;<span class="ck">this</span>.username = name;<br>}</div>
+  </div>
+  <div class="cb" style="margin-bottom:14px;">
+    <div class="cb-label">Demo 2 &mdash; Fixed</div>
+    <div class="code-block"><span class="ck">public void</span> <span class="cf">setUsername</span>(<span class="ck">String</span> name) {<br>&nbsp;&nbsp;<span class="ck">if</span> (name == <span class="ck">null</span> || name.<span class="cf">isEmpty</span>()) <span class="ck">throw new</span> <span class="cf">IllegalArgumentException</span>(<span class="cs">"invalid name"</span>);<br>&nbsp;&nbsp;<span class="ck">this</span>.username = name;<br>}</div>
+  </div>
+
+  <div class="cb purple">
+    <div class="cb-label">Pattern</div>
+    <div class="cb-body">Both demonstrations show the same pattern: <strong>add a guard clause</strong> that validates input before proceeding. The model should learn to apply this pattern to new buggy methods.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4 ==================== -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">Module 5 &middot; Slide 04</div>
+  <h2 class="slide-h2">Interactive: <em>Predict the Model Output</em></h2>
+  <p class="slide-p">Given the demonstrations from the previous slide, what would the model generate for this new buggy method?</p>
+
+  <div class="cb blue">
+    <div class="cb-label">New Buggy Method</div>
+    <div class="code-block"><span class="ck">public</span> <span class="ck">String</span> <span class="cf">getElement</span>(<span class="ck">String</span>[] arr, <span class="ck">int</span> idx) {<br>&nbsp;&nbsp;<span class="ck">return</span> arr[idx];<br>}</div>
+  </div>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Select the most likely fix <span class="inter-badge">Interactive</span></span>
+    </div>
+    <div class="inter-body" id="s4-quiz">
+      <div class="quiz-option" onclick="checkS4(this,false)">
+        <span class="q-label">A) Add <code>synchronized</code> keyword to the method</span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option correct" onclick="checkS4(this,true)">
+        <span class="q-label">B) Add bounds check: <code>if (arr == null || idx &lt; 0 || idx &gt;= arr.length) throw new IllegalArgumentException(...)</code></span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option" onclick="checkS4(this,false)">
+        <span class="q-label">C) Change return type from <code>String</code> to <code>Optional&lt;String&gt;</code></span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div class="quiz-option" onclick="checkS4(this,false)">
+        <span class="q-label">D) Wrap the body in a <code>try-catch</code> block and return <code>null</code></span>
+        <span class="q-tag">Incorrect</span>
+      </div>
+      <div id="s4-explain" style="display:none;" class="cb" style="margin-top:10px;">
+        <div class="cb-label">Explanation</div>
+        <div class="cb-body">The model extracts the pattern: <strong>add input validation before the operation</strong>. Both demos added guard clauses with <code>IllegalArgumentException</code>. The model applies this same pattern &mdash; checking the array and index bounds before accessing the element.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5 ==================== -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">Module 5 &middot; Slide 05</div>
+  <h2 class="slide-h2">Prompting vs <em>Fine-Tuning</em></h2>
+  <p class="slide-p">Two different strategies for adapting a pre-trained model to a downstream task. Understanding when to use each is critical.</p>
+
+  <div class="vs-grid">
+    <div class="vs-card">
+      <h4 style="color:var(--green);">Prompting / ICL</h4>
+      <ul>
+        <li>No parameter updates</li>
+        <li>No backpropagation</li>
+        <li>Adapts on the fly at inference</li>
+        <li>Works with just a few examples</li>
+        <li>Same model for multiple tasks</li>
+        <li>No training infrastructure needed</li>
+      </ul>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div class="vs-card warn">
+      <h4 style="color:var(--amber);">Fine-Tuning</h4>
+      <ul>
+        <li>Updates model parameters</li>
+        <li>Requires backpropagation</li>
+        <li>Needs a training phase with epochs</li>
+        <li>Requires labeled training data</li>
+        <li>Produces a task-specific model</li>
+        <li>Needs GPUs and training pipeline</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cb cyan">
+    <div class="cb-label">Key Distinction</div>
+    <div class="cb-body">Prompting adapts the <strong>input</strong>. Fine-tuning adapts the <strong>model</strong>. Both are valid forms of adaptation, but they have very different costs, requirements, and tradeoffs.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6 ==================== -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Module 5 &middot; Slide 06</div>
+  <h2 class="slide-h2">Interactive: <em>Classify the Approach</em></h2>
+  <p class="slide-p">For each statement, decide whether it describes Prompting/ICL or Fine-Tuning.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Match each statement <span class="inter-badge">Interactive</span></span>
+      <button class="sim-btn" onclick="checkClassify()">Check Answers</button>
+    </div>
+    <div class="inter-body" id="s6-classify">
+      <div class="classify-item" data-answer="ft"><span class="ci-text">Requires gradient updates</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="icl"><span class="ci-text">Adapts at inference time</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="ft"><span class="ci-text">Needs a training phase</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="icl"><span class="ci-text">Can work with just a few demonstrations</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="ft"><span class="ci-text">Updates model weights</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="icl"><span class="ci-text">Uses the same model for multiple tasks</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="ft"><span class="ci-text">Requires a labeled dataset</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+      <div class="classify-item" data-answer="icl"><span class="ci-text">No backpropagation at inference</span><div class="ci-btns"><button class="ci-btn" onclick="pickClassify(this,'icl')">Prompting</button><button class="ci-btn" onclick="pickClassify(this,'ft')">Fine-Tuning</button></div></div>
+    </div>
+    <div id="s6-score" style="padding:10px 16px;display:none;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7 ==================== -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Module 5 &middot; Slide 07</div>
+  <h2 class="slide-h2">Pros of <em>Prompting</em></h2>
+  <p class="slide-p">Why has prompting become so popular for SE automation? Three key advantages.</p>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name">Data Scarcity</div>
+      <div class="term-def">Works with just a few demonstrations. No labeled dataset required. Critical for niche SE tasks where data is scarce.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--blue);">
+      <div class="term-name">AI Democratization</div>
+      <div class="term-def">Leverage large pre-trained models without building or maintaining custom training pipelines. Lower barrier to entry.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name">Strong Performance</div>
+      <div class="term-def">State-of-the-art across many SE tasks without task-specific training. Often competitive with fine-tuned models.</div>
+    </div>
+  </div>
+
+  <div class="cb amber" style="margin-top:18px;">
+    <div class="cb-label">Important Nuance</div>
+    <div class="cb-body">This does <strong>NOT</strong> mean prompting always beats fine-tuning. It is a flexible, low-friction, often high-performing strategy &mdash; but the best approach depends on the task, data availability, and deployment context.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8 ==================== -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Module 5 &middot; Slide 08</div>
+  <h2 class="slide-h2">Cons of <em>Prompting</em></h2>
+  <p class="slide-p">Prompting is not without significant limitations. The primary tradeoff involves computational cost and model dependency.</p>
+
+  <div class="cb red">
+    <div class="cb-label">Primary Con: Computational Cost</div>
+    <div class="cb-body">Prompting requires <strong>very large models</strong> (billions of parameters) to work effectively. These models are expensive to host, serve, and query. Smaller models often fail at in-context learning.</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:16px;">
+    <div class="flow-box green">Less Adaptation Overhead</div>
+    <div class="flow-arrow">&harr;</div>
+    <div class="flow-box amber">More Dependence on Large Models</div>
+  </div>
+
+  <div class="two-col" style="margin-top:16px;">
+    <div class="stat-card" style="text-align:center;">
+      <div class="stat-val amber">B+</div>
+      <div class="stat-label">Billions of parameters required</div>
+    </div>
+    <div class="stat-card" style="text-align:center;">
+      <div class="stat-val purple">$$</div>
+      <div class="stat-label">API costs per query</div>
+    </div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:16px;">
+    <div class="cb-label">Reflection</div>
+    <div class="cb-body">Is prompting cheaper than fine-tuning? <strong>Sometimes yes, sometimes no</strong> &mdash; it depends on usage frequency, API vs. self-hosted deployment, and model size. For infrequent use, prompting is often cheaper. For high-volume production, fine-tuning a smaller model may be more cost-effective.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9 ==================== -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Module 5 &middot; Slide 09</div>
+  <h2 class="slide-h2">Interactive: <em>Decision Scenario</em></h2>
+  <p class="slide-p">For each scenario, decide the best initial strategy. Click your choice to see the reasoning.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Choose the strategy <span class="inter-badge">Interactive</span></span>
+    </div>
+    <div class="inter-body">
+      <div class="scenario-card" id="sc-1">
+        <h4>Scenario 1</h4>
+        <p>You have <strong>12 examples</strong> of a niche SE task (e.g., translating domain-specific DSL to Java). No large training set exists.</p>
+        <div class="scenario-btns">
+          <button class="sim-btn" onclick="checkScenario(1,'prompt')">Prompt First</button>
+          <button class="sim-btn" onclick="checkScenario(1,'finetune')">Fine-Tune First</button>
+          <button class="sim-btn" onclick="checkScenario(1,'hybrid')">Hybrid</button>
+        </div>
+        <div class="scenario-result" id="sc-1-result"></div>
+      </div>
+
+      <div class="scenario-card" id="sc-2">
+        <h4>Scenario 2</h4>
+        <p>You have <strong>50,000 labeled code-summary pairs</strong> and a dedicated GPU cluster for training.</p>
+        <div class="scenario-btns">
+          <button class="sim-btn" onclick="checkScenario(2,'prompt')">Prompt First</button>
+          <button class="sim-btn" onclick="checkScenario(2,'finetune')">Fine-Tune First</button>
+          <button class="sim-btn" onclick="checkScenario(2,'hybrid')">Hybrid</button>
+        </div>
+        <div class="scenario-result" id="sc-2-result"></div>
+      </div>
+
+      <div class="scenario-card" id="sc-3">
+        <h4>Scenario 3</h4>
+        <p>You need to support <strong>5 different SE tasks</strong> (bug fix, summarization, code review, test generation, documentation) with <strong>one model deployment</strong>.</p>
+        <div class="scenario-btns">
+          <button class="sim-btn" onclick="checkScenario(3,'prompt')">Prompt First</button>
+          <button class="sim-btn" onclick="checkScenario(3,'finetune')">Fine-Tune First</button>
+          <button class="sim-btn" onclick="checkScenario(3,'hybrid')">Hybrid</button>
+        </div>
+        <div class="scenario-result" id="sc-3-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10 ==================== -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Module 5 &middot; Slide 10</div>
+  <h2 class="slide-h2">Case Study: <em>Code Summarization</em></h2>
+  <p class="slide-p">A research study on using few-shot prompting for automatic code summarization. Can we generate natural-language summaries of code methods using only a few demonstrations?</p>
+
+  <div class="cb blue">
+    <div class="cb-label">Motivation</div>
+    <div class="cb-body">Software projects exhibit <strong>project-specific linguistic phenomena</strong>: unique identifier naming conventions, domain-specific APIs, and coding patterns. A model trained on general code may miss these nuances.</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:14px;">
+    <div class="flow-box green">Project A<br><span style="font-size:0.7rem;font-weight:400;">Spring Boot APIs</span></div>
+    <div class="flow-box blue">Project B<br><span style="font-size:0.7rem;font-weight:400;">Android UI code</span></div>
+    <div class="flow-box amber">Project C<br><span style="font-size:0.7rem;font-weight:400;">Data pipelines</span></div>
+  </div>
+  <p class="slide-p" style="text-align:center;margin-top:6px;font-size:0.82rem;">Different projects produce different vocabulary, APIs, and code patterns.</p>
+
+  <div class="cb purple" style="margin-top:10px;">
+    <div class="cb-label">Research Questions</div>
+    <div class="cb-body">
+      <strong>RQ1:</strong> Can few-shot learning effectively extend to code summarization?<br>
+      <strong>RQ2:</strong> Does selecting demonstrations from the <strong>same project</strong> improve performance?
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11 ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-label">Module 5 &middot; Slide 11</div>
+  <h2 class="slide-h2">Few-Shot <em>Prompt Structure</em></h2>
+  <p class="slide-p">The anatomy of a few-shot prompt for code summarization. Each demonstration pairs a code method with its summary.</p>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Demo 1</h4>
+      <div class="code-block" style="margin:4px 0;"><span class="cc">// Code:</span><br><span class="ck">public void</span> <span class="cf">setUsername</span>(<span class="ck">String</span> name) { <span class="ck">if</span> (isValid(name)) <span class="ck">this</span>.user = name; }<br><span class="cc">// Summary: Set the user to username if the provided name is valid</span></div>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Demo 2</h4>
+      <div class="code-block" style="margin:4px 0;"><span class="cc">// Code:</span><br><span class="ck">public</span> <span class="ck">String</span> <span class="cf">getUsername</span>(<span class="ck">int</span> id) { <span class="ck">if</span> (id &gt;= <span class="cl">0</span> &amp;&amp; id &lt; users.size()) <span class="ck">return</span> users.get(id); <span class="ck">return null</span>; }<br><span class="cc">// Summary: Get user if it is in range</span></div>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num" style="background:rgba(188,140,255,0.08);border-color:rgba(188,140,255,0.2);color:var(--purple);">...</div>
+    <div class="step-body">
+      <h4>Demos 3 through k</h4>
+      <p>Additional code-summary pairs. The study scales up to <strong>10-shot</strong> (10 demonstrations per prompt).</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num" style="background:rgba(227,179,65,0.08);border-color:rgba(227,179,65,0.2);color:var(--amber);">T</div>
+    <div class="step-body">
+      <h4>Target Code</h4>
+      <div class="code-block" style="margin:4px 0;"><span class="cc">// Code:</span><br><span class="ck">public</span> <span class="ck">List</span>&lt;<span class="ck">String</span>&gt; <span class="cf">getActiveUsers</span>() { <span class="ck">return</span> users.stream().filter(User::isActive).collect(Collectors.toList()); }<br><span class="cc">// Summary: ???  &larr; model generates this</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12 ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-label">Module 5 &middot; Slide 12</div>
+  <h2 class="slide-h2">Interactive: <em>Build a Prompt</em></h2>
+  <p class="slide-p">Assemble a valid few-shot prompt by clicking the blocks in the correct order. One block is a distractor that should not be included.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Click blocks in order <span class="inter-badge">Interactive</span></span>
+      <button class="sim-btn" onclick="resetPromptBuilder()">Reset</button>
+    </div>
+    <div class="inter-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">AVAILABLE BLOCKS</div>
+          <div id="pb-source">
+            <div class="prompt-block" data-idx="0" onclick="placeBlock(this)"><strong>Task:</strong> Given a Java method, generate a one-line summary.</div>
+            <div class="prompt-block" data-idx="1" onclick="placeBlock(this)"><strong>Demo 1:</strong> <code>setUsername(...)</code> &rarr; "Set the user to username if valid"</div>
+            <div class="prompt-block" data-idx="2" onclick="placeBlock(this)"><strong>Demo 2:</strong> <code>getUsername(...)</code> &rarr; "Get user if it is in range"</div>
+            <div class="prompt-block" data-idx="3" onclick="placeBlock(this)"><strong>Target:</strong> <code>getActiveUsers()</code> &rarr; ???</div>
+            <div class="prompt-block" data-idx="4" onclick="placeBlock(this)" style="border-left:2px solid var(--red);"><strong>System:</strong> Always respond in JSON format with error codes.</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:8px;">YOUR PROMPT (click to place)</div>
+          <div id="pb-target">
+            <div class="prompt-slot" id="pb-slot-0">Slot 1 &mdash; click a block</div>
+            <div class="prompt-slot" id="pb-slot-1">Slot 2</div>
+            <div class="prompt-slot" id="pb-slot-2">Slot 3</div>
+            <div class="prompt-slot" id="pb-slot-3">Slot 4</div>
+          </div>
+          <button class="sim-btn primary" style="margin-top:10px;" onclick="checkPromptOrder()">Check Order</button>
+          <div id="pb-result" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 13 ==================== -->
+<div class="slide" id="slide-13">
+  <div class="slide-label">Module 5 &middot; Slide 13</div>
+  <h2 class="slide-h2">Results: <em>What the Research Found</em></h2>
+  <p class="slide-p">Four key observations from studying few-shot code summarization with large language models.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val">A</div><div class="stat-label">10-shot Codex outperforms all fine-tuned models</div></div>
+    <div class="stat-card"><div class="stat-val amber">B</div><div class="stat-label">Zero-shot &amp; one-shot do NOT work well</div></div>
+    <div class="stat-card"><div class="stat-val blue">C</div><div class="stat-label">Same-project demos improve performance</div></div>
+    <div class="stat-card"><div class="stat-val purple">D</div><div class="stat-label">Larger models benefit more from few-shot</div></div>
+  </div>
+
+  <div class="two-col" style="margin-top:12px;">
+    <div class="cb">
+      <div class="cb-label">Observation A &amp; B</div>
+      <div class="cb-body">With <strong>10 demonstrations</strong>, Codex surpasses fine-tuned baselines. But with 0 or 1 demo, performance drops significantly. Code summarization requires enough examples to convey the expected style and level of detail.</div>
+    </div>
+    <div class="cb blue">
+      <div class="cb-label">Observation C &amp; D</div>
+      <div class="cb-body"><strong>Same-project</strong> demonstrations consistently outperform cross-project ones, because they share naming conventions and API patterns. <strong>Larger models</strong> (e.g., Codex vs. CodeGen) leverage demonstrations more effectively.</div>
+    </div>
+  </div>
+
+  <div class="cb amber" style="margin-top:10px;">
+    <div class="cb-label">Takeaway</div>
+    <div class="cb-body">Few-shot is not magic. It depends on <strong>model scale</strong>, <strong>prompt quality</strong>, and <strong>demonstration relevance</strong>. Getting all three right is what produces strong results.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 14 ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-label">Module 5 &middot; Slide 14</div>
+  <h2 class="slide-h2">Interactive: <em>Interpret the Results</em></h2>
+  <p class="slide-p">Why does 10-shot help while 0-shot and 1-shot fail for code summarization? Select all correct explanations.</p>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Multi-select quiz <span class="inter-badge">Interactive</span></span>
+      <button class="sim-btn" onclick="checkS14()">Submit</button>
+    </div>
+    <div class="inter-body" id="s14-quiz">
+      <div class="quiz-option correct" onclick="toggleS14(this)">
+        <span class="q-label">The task requires project-specific conventions that a single example cannot convey</span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option correct" onclick="toggleS14(this)">
+        <span class="q-label">A single example does not expose enough variation in summary style and length</span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option correct" onclick="toggleS14(this)">
+        <span class="q-label">Multiple demos help the model infer the expected phrasing style and level of detail</span>
+        <span class="q-tag">Correct</span>
+      </div>
+      <div class="quiz-option wrong" onclick="toggleS14(this)">
+        <span class="q-label">10 examples are enough to fine-tune the model internally</span>
+        <span class="q-tag">Incorrect &mdash; ICL does not fine-tune</span>
+      </div>
+    </div>
+    <div id="s14-explain" style="padding:10px 16px;display:none;">
+      <div class="cb">
+        <div class="cb-label">Explanation</div>
+        <div class="cb-body">The first three are correct: code summarization needs sufficient demonstrations to convey project-specific naming, summary style, and detail level. The last option is wrong because <strong>ICL never updates model weights</strong> &mdash; the model is not fine-tuned by the examples in the prompt.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 15 ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-label">Module 5 &middot; Slide 15</div>
+  <h2 class="slide-h2">Shot Selection <em>Matters</em></h2>
+  <p class="slide-p">It is not just about how many examples you provide &mdash; it is about which ones. This is a major transition in understanding few-shot prompting.</p>
+
+  <div class="cb red">
+    <div class="cb-label">Key Insight</div>
+    <div class="cb-body"><strong>Bad examples waste prompt budget.</strong> Relevant examples substantially improve performance. The quality of your demonstrations often matters more than the quantity.</div>
+  </div>
+
+  <div class="two-col" style="margin-top:16px;">
+    <div class="cb amber">
+      <div class="cb-label">Random / Cross-Project Selection</div>
+      <div class="cb-body">Demonstrations pulled from unrelated projects. Different naming conventions, APIs, and coding styles. The model receives <strong>noisy signals</strong> about expected output.</div>
+    </div>
+    <div class="cb">
+      <div class="cb-label">Careful / Same-Project Selection</div>
+      <div class="cb-body">Demonstrations from the same project or similar codebases. Shared vocabulary, consistent style. The model receives <strong>clear, aligned signals</strong>.</div>
+    </div>
+  </div>
+
+  <div class="cb cyan" style="margin-top:16px;">
+    <div class="cb-label">What This Motivates</div>
+    <div class="cb-body">If the right examples matter so much, how do we <strong>automatically find them</strong>? This motivates the idea of <strong>retrieval</strong> &mdash; searching a corpus for the most relevant demonstrations given a target input.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16 ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-label">Module 5 &middot; Slide 16</div>
+  <h2 class="slide-h2">Interactive: <em>Rank the Shots</em></h2>
+  <p class="slide-p">You need 3 demonstrations for a code summarization prompt. The target method processes HTTP requests using Spring Boot. Select the 3 best candidates from the 6 below.</p>
+
+  <div class="cb blue" style="margin-bottom:10px;">
+    <div class="cb-label">Target Method</div>
+    <div class="code-block" style="margin:4px 0;"><span class="ck">public</span> ResponseEntity&lt;User&gt; <span class="cf">handleGetUser</span>(<span class="ca">@PathVariable</span> <span class="ck">Long</span> id) {<br>&nbsp;&nbsp;<span class="ck">return</span> userService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());<br>}</div>
+  </div>
+
+  <div class="inter-panel">
+    <div class="inter-header">
+      <span class="inter-title">Select the 3 best demos <span class="inter-badge">Interactive</span></span>
+      <button class="sim-btn" onclick="checkRanking()">Check Selection</button>
+    </div>
+    <div class="inter-body" id="s16-ranking">
+      <div class="rank-candidate" data-good="1" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>handlePostOrder(@RequestBody Order o)</code> &mdash; Spring REST controller, same project</span>
+      </div>
+      <div class="rank-candidate" data-good="0" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>sortArray(int[] arr)</code> &mdash; Utility method from an algorithms library</span>
+      </div>
+      <div class="rank-candidate" data-good="1" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>handleDeleteUser(@PathVariable Long id)</code> &mdash; Same REST controller class</span>
+      </div>
+      <div class="rank-candidate" data-good="0" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>readFile(String path)</code> &mdash; File I/O utility, different project</span>
+      </div>
+      <div class="rank-candidate" data-good="1" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>handleUpdateUser(@PathVariable Long id, @RequestBody User u)</code> &mdash; Same REST controller</span>
+      </div>
+      <div class="rank-candidate" data-good="0" onclick="toggleRank(this)">
+        <div class="rc-num"></div>
+        <span class="rc-text"><code>calculateTax(double amount)</code> &mdash; Business logic helper, unrelated domain</span>
+      </div>
+    </div>
+    <div id="s16-result" style="padding:10px 16px;display:none;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17 ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-label">Module 5 &middot; Slide 17</div>
+  <h2 class="slide-h2">Why Selection is a <em>Retrieval Problem</em></h2>
+  <p class="slide-p">Connecting shot selection to information retrieval. Finding the best demonstrations is essentially a search problem.</p>
+
+  <div class="flow-row">
+    <div class="flow-box amber">Target Task</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">Search Corpus</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box green">Best Demos</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Few-Shot Prompt</div>
+  </div>
+
+  <div class="cb blue" style="margin-top:16px;">
+    <div class="cb-label">The Retrieval Framing</div>
+    <div class="cb-body">Given a target input, find the most <strong>relevant demonstrations</strong> from a corpus of examples. This is the same fundamental problem as document retrieval in search engines, but applied to prompt construction.</div>
+  </div>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:14px;">
+    <div class="term-card">
+      <div class="term-name">Textual Overlap</div>
+      <div class="term-def">Token-level similarity (e.g., BM25, Jaccard) between target code and candidate demos</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">AST Similarity</div>
+      <div class="term-def">Structural similarity of abstract syntax trees, capturing code structure beyond surface text</div>
+    </div>
+    <div class="term-card">
+      <div class="term-name">Embedding Cosine</div>
+      <div class="term-def">Semantic similarity using neural embeddings, capturing meaning even with different tokens</div>
+    </div>
+  </div>
+
+  <div class="cb purple" style="margin-top:16px;">
+    <div class="cb-label">Transition</div>
+    <div class="cb-body">We now understand that example quality matters as much as quantity. How do we retrieve the most relevant examples automatically? This leads to <strong>Retrieval-Augmented Generation (RAG)</strong> &mdash; the topic of the next module.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 18 ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-label">Module 5 &middot; Slide 18</div>
+  <h2 class="slide-h2">Prompting Patterns for <em>SE Automation</em></h2>
+  <p class="slide-p">A summary of the major prompting strategies used in software engineering research and practice.</p>
+
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th>Pattern</th>
+        <th>Description</th>
+        <th>When to Use</th>
+        <th>Performance</th>
+        <th>Prompt Length</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Zero-Shot</strong></td>
+        <td>Task description only, no demos</td>
+        <td>Simple, well-known tasks</td>
+        <td><span class="tag-amber">Variable</span></td>
+        <td><span class="tag-green">Short</span></td>
+      </tr>
+      <tr>
+        <td><strong>One-Shot</strong></td>
+        <td>Single demonstration</td>
+        <td>Tasks with clear patterns</td>
+        <td><span class="tag-amber">Moderate</span></td>
+        <td><span class="tag-green">Short</span></td>
+      </tr>
+      <tr>
+        <td><strong>Few-Shot</strong></td>
+        <td>3&ndash;10 demonstrations</td>
+        <td>Complex SE tasks, code summarization</td>
+        <td><span class="tag-green">Strong</span></td>
+        <td><span class="tag-amber">Medium</span></td>
+      </tr>
+      <tr>
+        <td><strong>Chain-of-Thought</strong></td>
+        <td>Step-by-step reasoning in demos</td>
+        <td>Debugging, code review, analysis</td>
+        <td><span class="tag-green">Strong</span></td>
+        <td><span class="tag-amber">Long</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cb cyan" style="margin-top:14px;">
+    <div class="cb-label">Choosing a Pattern</div>
+    <div class="cb-body">Start with <strong>zero-shot</strong> to gauge baseline. If performance is insufficient, add demonstrations (<strong>few-shot</strong>). For tasks requiring logical reasoning, use <strong>chain-of-thought</strong>. Always consider the context window limit of your target model.</div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19 ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-label">Module 5 &middot; Slide 19</div>
+  <h2 class="slide-h2">Recap &amp; <em>Knowledge Check</em></h2>
+
+  <div class="takeaway-grid">
+    <div class="takeaway-card"><div class="takeaway-num">01</div><h4>Prompting = Adaptation</h4><p>Prompting adapts a model without updating its parameters. It changes the input, not the model.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">02</div><h4>Few-Shot Embeds Demos</h4><p>Demonstrations are embedded directly in the prompt context. The model infers patterns from them.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">03</div><h4>Prompting vs Fine-Tuning</h4><p>Different costs, different tradeoffs. Prompting is flexible; fine-tuning is powerful with enough data.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">04</div><h4>Code Summarization Study</h4><p>10-shot outperforms fine-tuned baselines. Same-project demos further boost performance.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">05</div><h4>Shot Selection Matters</h4><p>Which examples you choose is as important as how many you use. Relevance is key.</p></div>
+    <div class="takeaway-card"><div class="takeaway-num">06</div><h4>Quality over Quantity</h4><p>A few highly relevant demonstrations outperform many irrelevant ones. This motivates retrieval.</p></div>
+  </div>
+
+  <div style="margin-top:18px;">
+    <div class="kc-box">
+      <div class="kc-q">What distinguishes prompting from fine-tuning at a fundamental level?</div>
+      <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible');this.style.display='none';">Reveal Answer</button>
+      <div class="kc-answer"><strong>Prompting changes the input; fine-tuning changes the model.</strong> Prompting does not update model parameters &mdash; it adapts behavior by structuring the context. Fine-tuning performs gradient-based updates to the model weights.</div>
+    </div>
+    <div class="kc-box">
+      <div class="kc-q">Why did 0-shot and 1-shot fail for code summarization while 10-shot succeeded?</div>
+      <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible');this.style.display='none';">Reveal Answer</button>
+      <div class="kc-answer">Code summarization requires understanding <strong>project-specific conventions</strong>, summary style, and level of detail. A single example cannot convey enough variation. 10 demonstrations provide sufficient signal for the model to infer the expected output format.</div>
+    </div>
+    <div class="kc-box">
+      <div class="kc-q">Why is shot selection framed as a retrieval problem?</div>
+      <button class="sim-btn" onclick="this.nextElementSibling.classList.toggle('visible');this.style.display='none';">Reveal Answer</button>
+      <div class="kc-answer">Because finding the best demonstrations for a target input is essentially a <strong>search problem</strong>: given a query (the target code), retrieve the most relevant documents (demonstration examples) from a corpus. This connects directly to information retrieval techniques and motivates RAG.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20 ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-label">Module 5 &middot; Slide 20</div>
+  <h2 class="slide-h2">What's <em>Next</em></h2>
+  <p class="slide-p">This module covered prompting and in-context learning for SE automation. Here is where the journey continues.</p>
+
+  <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
+    <div class="term-card" style="border-left:3px solid var(--green);">
+      <div class="term-name">Next: RAG</div>
+      <div class="term-def">Retrieval-Augmented Generation: automatically selecting the most relevant demonstrations from a corpus to build optimal prompts.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--amber);">
+      <div class="term-name">Later: Hallucinations</div>
+      <div class="term-def">When models confidently generate wrong code. Understanding, detecting, and mitigating hallucinated outputs.</div>
+    </div>
+    <div class="term-card" style="border-left:3px solid var(--purple);">
+      <div class="term-name">Later: Agents</div>
+      <div class="term-def">Multi-step LLM workflows for SE tasks. Combining prompting with tool use, planning, and iterative refinement.</div>
+    </div>
+  </div>
+
+  <div class="cb" style="margin-top:24px;">
+    <div class="cb-label">Final Reflection</div>
+    <div class="cb-body" style="font-size:0.95rem;"><strong>Prompting is not just asking a model a question.</strong> It is a systematic technique for lightweight adaptation &mdash; a way to steer powerful pre-trained models toward specific tasks using carefully structured context, without ever changing a single weight.</div>
+  </div>
+
+  <div class="flow-row" style="margin-top:20px;">
+    <div class="flow-box green">Prompting</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box blue">RAG</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box amber">Hallucinations</div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box purple">Agents</div>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Nav Bar -->
+<div class="nav-bar" id="nav-bar">
+  <button class="nav-btn" id="prev-btn" onclick="goSlide(-1)" disabled>&larr; Prev</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="goSlide(1)">Next &rarr;</button>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+const TOTAL = 20;
+let cur = 1;
+
+function buildDots() {
+  const c = document.getElementById('dots');
+  c.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === cur ? ' active' : '');
+    d.onclick = () => setSlide(i);
+    c.appendChild(d);
+  }
+}
+
+function setSlide(n) {
+  document.getElementById('slide-' + cur).classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('slide-' + cur).classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  document.getElementById('progress').style.width = (cur / TOTAL * 100).toFixed(2) + '%';
+  document.getElementById('prev-btn').disabled = cur === 1;
+  document.getElementById('next-btn').disabled = cur === TOTAL;
+  buildDots();
+}
+
+function goSlide(d) { setSlide(cur + d); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
+});
+buildDots();
+
+// ── Slide 4: Predict Model Output ────────────────────────────────
+function checkS4(el, correct) {
+  const container = document.getElementById('s4-quiz');
+  container.querySelectorAll('.quiz-option').forEach(opt => opt.classList.add('revealed'));
+  document.getElementById('s4-explain').style.display = 'block';
+}
+
+// ── Slide 6: Classify Approach ───────────────────────────────────
+function pickClassify(btn, choice) {
+  const item = btn.closest('.classify-item');
+  item.querySelectorAll('.ci-btn').forEach(b => {
+    b.classList.remove('selected');
+  });
+  btn.classList.add('selected');
+  btn.dataset.choice = choice;
+}
+
+function checkClassify() {
+  const items = document.querySelectorAll('#s6-classify .classify-item');
+  let correct = 0;
+  items.forEach(item => {
+    const answer = item.dataset.answer;
+    const btns = item.querySelectorAll('.ci-btn');
+    let userChoice = null;
+    btns.forEach(b => {
+      if (b.classList.contains('selected')) {
+        userChoice = b.textContent.trim() === 'Prompting' ? 'icl' : 'ft';
+      }
+    });
+    btns.forEach(b => {
+      b.classList.remove('selected', 'wrong-sel', 'right-ans');
+      const btnVal = b.textContent.trim() === 'Prompting' ? 'icl' : 'ft';
+      if (btnVal === answer) {
+        b.classList.add('right-ans');
+      }
+      if (userChoice === btnVal && userChoice !== answer) {
+        b.classList.add('wrong-sel');
+      }
+    });
+    if (userChoice === answer) correct++;
+  });
+  const scoreEl = document.getElementById('s6-score');
+  scoreEl.style.display = 'block';
+  const pct = Math.round(correct / items.length * 100);
+  const color = pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  scoreEl.innerHTML = '<div class="stat-row"><div class="stat-card"><div class="stat-val" style="color:' + color + ';">' + correct + '/' + items.length + '</div><div class="stat-label">Score (' + pct + '%)</div></div></div>';
+}
+
+// ── Slide 9: Decision Scenarios ──────────────────────────────────
+const SCENARIO_ANSWERS = {
+  1: { correct: 'prompt', explain: 'With only 12 examples and no large dataset, few-shot prompting is the natural starting point. Fine-tuning requires much more data to be effective.' },
+  2: { correct: 'finetune', explain: 'With 50,000 labeled pairs and dedicated GPUs, fine-tuning can produce a highly specialized model. This volume of data makes fine-tuning the stronger choice.' },
+  3: { correct: 'prompt', explain: 'Prompting lets you use one model for all 5 tasks by simply changing the prompt. Fine-tuning would require training 5 separate models or complex multi-task setups.' }
+};
+
+function checkScenario(id, choice) {
+  const info = SCENARIO_ANSWERS[id];
+  const resultEl = document.getElementById('sc-' + id + '-result');
+  const isCorrect = choice === info.correct;
+  resultEl.className = 'scenario-result ' + (isCorrect ? 'correct' : 'wrong');
+  resultEl.innerHTML = '<strong>' + (isCorrect ? 'Correct!' : 'Not quite.') + '</strong> ' + info.explain;
+  resultEl.style.display = 'block';
+  // Disable buttons
+  const card = document.getElementById('sc-' + id);
+  card.querySelectorAll('.sim-btn').forEach(b => {
+    b.disabled = true;
+    b.style.opacity = '0.5';
+    if (b.textContent.trim().toLowerCase().replace(/\s+/g, '').includes(info.correct)) {
+      b.classList.add('primary');
+    }
+  });
+}
+
+// ── Slide 12: Build a Prompt ─────────────────────────────────────
+let pbSlots = [null, null, null, null];
+let pbNextSlot = 0;
+
+function placeBlock(el) {
+  if (el.classList.contains('placed') || pbNextSlot >= 4) return;
+  const idx = parseInt(el.dataset.idx);
+  pbSlots[pbNextSlot] = idx;
+  el.classList.add('placed');
+  const slot = document.getElementById('pb-slot-' + pbNextSlot);
+  slot.innerHTML = el.innerHTML;
+  slot.classList.add('filled');
+  slot.dataset.blockIdx = idx;
+  pbNextSlot++;
+}
+
+function resetPromptBuilder() {
+  pbSlots = [null, null, null, null];
+  pbNextSlot = 0;
+  document.querySelectorAll('#pb-source .prompt-block').forEach(b => b.classList.remove('placed'));
+  for (let i = 0; i < 4; i++) {
+    const slot = document.getElementById('pb-slot-' + i);
+    slot.innerHTML = 'Slot ' + (i + 1) + (i === 0 ? ' — click a block' : '');
+    slot.classList.remove('filled');
+    delete slot.dataset.blockIdx;
+  }
+  document.getElementById('pb-result').innerHTML = '';
+}
+
+function checkPromptOrder() {
+  const correctOrder = [0, 1, 2, 3]; // task, demo1, demo2, target
+  const resultEl = document.getElementById('pb-result');
+  if (pbNextSlot < 4) {
+    resultEl.innerHTML = '<div class="cb amber"><div class="cb-label">Incomplete</div><div class="cb-body">Place all 4 blocks first. Remember: one block is a distractor!</div></div>';
+    return;
+  }
+  const isCorrect = pbSlots.every((s, i) => s === correctOrder[i]);
+  if (isCorrect) {
+    resultEl.innerHTML = '<div class="cb"><div class="cb-label">Correct!</div><div class="cb-body">The correct order is: <strong>Task instruction</strong>, then <strong>demonstrations</strong> (1, 2), then the <strong>target code</strong>. The JSON system instruction was the distractor &mdash; it is irrelevant to code summarization.</div></div>';
+  } else {
+    // Check if they included the distractor
+    const hasDistractor = pbSlots.includes(4);
+    let msg = 'Not quite. ';
+    if (hasDistractor) {
+      msg += 'The JSON system instruction (block with red border) is a <strong>distractor</strong> and should not be included. ';
+    }
+    msg += 'The correct order is: Task instruction &rarr; Demo 1 &rarr; Demo 2 &rarr; Target code.';
+    resultEl.innerHTML = '<div class="cb red"><div class="cb-label">Try Again</div><div class="cb-body">' + msg + '</div></div>';
+  }
+}
+
+// ── Slide 14: Interpret Results ──────────────────────────────────
+function toggleS14(el) {
+  if (el.classList.contains('revealed')) return;
+  el.classList.toggle('s14-selected');
+  el.style.borderColor = el.classList.contains('s14-selected') ? 'var(--blue)' : '';
+  el.style.background = el.classList.contains('s14-selected') ? 'rgba(88,166,255,0.06)' : '';
+}
+
+function checkS14() {
+  const opts = document.querySelectorAll('#s14-quiz .quiz-option');
+  opts.forEach(opt => opt.classList.add('revealed'));
+  document.getElementById('s14-explain').style.display = 'block';
+}
+
+// ── Slide 16: Rank the Shots ─────────────────────────────────────
+let rankCount = 0;
+let rankOrder = 0;
+
+function toggleRank(el) {
+  if (el.classList.contains('locked')) return;
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    el.querySelector('.rc-num').textContent = '';
+    rankCount--;
+    // Renumber remaining
+    let num = 1;
+    document.querySelectorAll('#s16-ranking .rank-candidate.selected').forEach(c => {
+      c.querySelector('.rc-num').textContent = num++;
+    });
+    rankOrder = num - 1;
+  } else if (rankCount < 3) {
+    el.classList.add('selected');
+    rankCount++;
+    rankOrder++;
+    el.querySelector('.rc-num').textContent = rankCount;
+  }
+}
+
+function checkRanking() {
+  const candidates = document.querySelectorAll('#s16-ranking .rank-candidate');
+  let correctSelected = 0;
+  let totalSelected = 0;
+  candidates.forEach(c => {
+    c.classList.add('locked');
+    const isGood = c.dataset.good === '1';
+    const isSelected = c.classList.contains('selected');
+    if (isSelected) totalSelected++;
+    if (isSelected && isGood) correctSelected++;
+    if (isGood) {
+      c.style.borderColor = 'var(--green)';
+      if (!isSelected) c.style.background = 'rgba(0,217,126,0.04)';
+    } else if (isSelected && !isGood) {
+      c.style.borderColor = 'var(--red)';
+      c.style.background = 'rgba(255,95,87,0.04)';
+    }
+  });
+  const resultEl = document.getElementById('s16-result');
+  resultEl.style.display = 'block';
+  if (correctSelected === 3) {
+    resultEl.innerHTML = '<div class="cb"><div class="cb-label">Excellent!</div><div class="cb-body">You selected all 3 correct demonstrations. They all come from the <strong>same REST controller</strong>, share the same API patterns (<code>@PathVariable</code>, <code>@RequestBody</code>, <code>ResponseEntity</code>), and follow the same coding conventions. These will give the model the best signal for how to summarize the target method.</div></div>';
+  } else {
+    resultEl.innerHTML = '<div class="cb amber"><div class="cb-label">' + correctSelected + '/3 Correct</div><div class="cb-body">The best demos are the three Spring REST controller methods: <code>handlePostOrder</code>, <code>handleDeleteUser</code>, and <code>handleUpdateUser</code>. They share the same API family, annotations, and naming patterns as the target. Methods like <code>sortArray</code>, <code>readFile</code>, and <code>calculateTax</code> are from different domains and would send noisy signals.</div></div>';
+  }
+}
+</script>
+</body>
+</html>
