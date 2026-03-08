@@ -395,6 +395,91 @@
     .flow-box.amber { border-color: rgba(227,179,65,0.3); color: var(--amber); }
     .flow-box.purple { border-color: rgba(188,140,255,0.3); color: var(--purple); }
     .flow-arrow { color: var(--text-muted); font-size: 1.2rem; }
+
+    /* Dataset comparison table */
+    .dataset-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.78rem; }
+    .dataset-table th { text-align: left; padding: 10px 10px; border-bottom: 2px solid var(--border); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+    .dataset-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .dataset-table tr:hover td { background: var(--bg-2); }
+    .dataset-table .ds-name { font-family: var(--font-mono); color: var(--green); font-weight: 600; }
+
+    /* Filter simulator */
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+    @media (max-width: 700px) { .filter-grid { grid-template-columns: 1fr; } }
+    .filter-control { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .filter-label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; }
+    .filter-value { font-family: var(--font-mono); font-size: 0.82rem; color: var(--green); font-weight: 600; margin-bottom: 8px; }
+    .filter-range { width: 100%; accent-color: var(--green); cursor: pointer; }
+    .filter-btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--green-border); color: var(--green); }
+    .filter-btn.active { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 600; }
+    .filter-result-bar { display: flex; align-items: center; gap: 16px; margin: 16px 0; }
+    .filter-funnel { flex: 1; height: 28px; background: var(--bg-3); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .filter-funnel-fill { height: 100%; background: linear-gradient(90deg, var(--green), #00B8D4); transition: width 0.4s ease; border-radius: 8px 0 0 8px; }
+    .filter-count { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--green); min-width: 100px; text-align: right; }
+    .filter-insight { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-top: 8px; padding: 12px 16px; background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid var(--amber); border-radius: 0 10px 10px 0; }
+
+    /* Near-duplicate code comparison */
+    .dedup-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 700px) { .dedup-compare { grid-template-columns: 1fr; } }
+    .dedup-panel { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .dedup-panel-label { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; }
+    .dedup-panel code { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; }
+    .dedup-highlight { background: rgba(227,179,65,0.15); border-radius: 3px; padding: 0 2px; }
+
+    /* Splitting diagram */
+    .split-diagram { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+    .split-row { display: flex; align-items: center; gap: 10px; }
+    .split-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); min-width: 110px; text-align: right; }
+    .split-bar-container { flex: 1; display: flex; height: 28px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .split-seg { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; color: var(--bg); transition: all 0.3s; }
+    .split-seg.train { background: var(--green); }
+    .split-seg.val { background: var(--blue); }
+    .split-seg.test { background: var(--purple); }
+    .split-seg.leak { background: var(--red); }
+    .split-legend { display: flex; gap: 16px; margin-top: 6px; margin-left: 120px; }
+    .split-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--text-muted); }
+    .split-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* Funnel diagram for worked example */
+    .funnel-steps { display: flex; flex-direction: column; gap: 2px; margin: 16px 0; }
+    .funnel-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; }
+    .funnel-step-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--bg); background: var(--green); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+    .funnel-step-text { flex: 1; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+    .funnel-step-text strong { color: var(--text-primary); }
+    .funnel-step-count { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--green); min-width: 80px; text-align: right; }
+    .funnel-connector { width: 2px; height: 12px; background: var(--border); margin-left: 27px; }
+
+    /* Quiz */
+    .quiz-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+    .quiz-q { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); }
+    .quiz-q::before { content: 'Q'; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: var(--bg); font-size: 0.72rem; font-weight: 700; margin-right: 8px; }
+    .quiz-reveal-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--green-border);
+      background: var(--green-dim);
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .quiz-reveal-btn:hover { background: var(--green); color: var(--bg); }
+    .quiz-answer { margin-top: 10px; padding: 12px 16px; background: var(--bg-3); border-radius: 8px; border: 1px solid var(--green-border); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; display: none; }
+    .quiz-answer.visible { display: block; }
+    .quiz-answer strong { color: var(--green); }
   </style>
 </head>
 <body>
@@ -405,12 +490,12 @@
     <span class="topbar-sep">/</span>
     <span class="topbar-title">Mining Software Repositories</span>
     <span class="topbar-badge">Module 1 · Interactive</span>
-    <span class="slide-counter" id="counter">1 / 14</span>
+    <span class="slide-counter" id="counter">1 / 20</span>
     <a href="teaching.html" class="topbar-home">← modules</a>
   </header>
 
   <!-- ── Progress ────────────────────────────────────────── -->
-  <div class="progress-track"><div class="progress-fill" id="progress" style="width:7.14%"></div></div>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:5%"></div></div>
 
   <!-- ── Slides ──────────────────────────────────────────── -->
   <div class="slides-wrapper">
@@ -820,6 +905,270 @@
       </div>
     </div>
 
+    <!-- ── Slide 15: Real-World MSR Datasets ────────────── -->
+    <div class="slide" id="slide-15">
+      <div class="slide-label">Module 1 · Slide15</div>
+      <h2 class="slide-h2">Real-World MSR Datasets</h2>
+      <p class="slide-p">Researchers have curated benchmark datasets from mined repositories. These standardized datasets enable reproducible experiments and fair comparisons across techniques.</p>
+      <div style="overflow-x:auto;">
+        <table class="dataset-table">
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Language(s)</th>
+              <th>Size</th>
+              <th>Primary Task</th>
+              <th>Key Paper</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="ds-name">CodeSearchNet</td><td>6 languages</td><td>2M code-NL pairs</td><td>Code search &amp; retrieval</td><td>Husain et al., 2019</td></tr>
+            <tr><td class="ds-name">Defects4J</td><td>Java</td><td>835 real bugs</td><td>APR &amp; testing</td><td>Just et al., 2014</td></tr>
+            <tr><td class="ds-name">BigCloneBench</td><td>Java</td><td>8M clone pairs</td><td>Clone detection</td><td>Svajlenko et al., 2014</td></tr>
+            <tr><td class="ds-name">The Stack</td><td>300+ languages</td><td>6 TB</td><td>Pre-training code LLMs</td><td>Kocetkov et al., 2022</td></tr>
+            <tr><td class="ds-name">Methods2Test</td><td>Java</td><td>780K focal-test pairs</td><td>Test generation</td><td>Tufano et al., 2022</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="concept-box" style="margin-top:16px;">
+        <div class="concept-box-label">Key Insight</div>
+        <div class="concept-box-body">These curated datasets are the <strong>bridge between raw repositories and reproducible research</strong>. Without standardized benchmarks, it would be impossible to compare different approaches fairly.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 16: Interactive Repository Filter Simulator ── -->
+    <div class="slide" id="slide-16">
+      <div class="slide-label">Module 1 · Slide16</div>
+      <h2 class="slide-h2">Interactive: Repository Filter Simulator</h2>
+      <p class="slide-p">Configure repository selection criteria and watch how quickly the pool of usable repositories shrinks. Every filter trades quantity for quality.</p>
+      <div class="filter-grid" id="filter-grid">
+        <div class="filter-control">
+          <div class="filter-label">Minimum Stars</div>
+          <div class="filter-value" id="fv-stars">0</div>
+          <input type="range" class="filter-range" id="fr-stars" min="0" max="4" value="0" oninput="updateFilters()">
+          <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:4px;"><span>0</span><span>10</span><span>50</span><span>100</span><span>500</span></div>
+        </div>
+        <div class="filter-control">
+          <div class="filter-label">Minimum Commits</div>
+          <div class="filter-value" id="fv-commits">1</div>
+          <input type="range" class="filter-range" id="fr-commits" min="0" max="3" value="0" oninput="updateFilters()">
+          <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:4px;"><span>1</span><span>10</span><span>50</span><span>100</span></div>
+        </div>
+        <div class="filter-control">
+          <div class="filter-label">Language Filter</div>
+          <div class="filter-btn-group" id="fb-lang">
+            <button class="filter-btn active" onclick="setLang(0)">Any</button>
+            <button class="filter-btn" onclick="setLang(1)">Java</button>
+            <button class="filter-btn" onclick="setLang(2)">Python</button>
+            <button class="filter-btn" onclick="setLang(3)">JavaScript</button>
+          </div>
+        </div>
+        <div class="filter-control">
+          <div class="filter-label">Additional Filters</div>
+          <div class="filter-btn-group">
+            <button class="filter-btn" id="fb-forks" onclick="toggleFilterBtn('fb-forks')">Exclude Forks</button>
+            <button class="filter-btn" id="fb-license" onclick="toggleFilterBtn('fb-license')">Has License</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-result-bar">
+        <div class="filter-funnel"><div class="filter-funnel-fill" id="filter-fill" style="width:100%"></div></div>
+        <div class="filter-count" id="filter-count">~400M</div>
+      </div>
+      <div class="stat-row" id="filter-stats"></div>
+      <div class="filter-insight" id="filter-insight">All 400M+ public GitHub repositories are included. Start adjusting filters to see the funnel effect.</div>
+    </div>
+
+    <!-- ── Slide 17: Deduplication ──────────────────────── -->
+    <div class="slide" id="slide-17">
+      <div class="slide-label">Module 1 · Slide17</div>
+      <h2 class="slide-h2">Deduplication: Why &amp; How</h2>
+      <p class="slide-p">Duplicate code inflates datasets and causes data leakage. Removing duplicates is essential for training models that generalize rather than memorize.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box">
+            <div class="concept-box-label">Exact Duplicates</div>
+            <div class="concept-box-body"><strong>Hash-based detection</strong> (MD5 or SHA-256): compute a hash for each file or method. Identical hashes mean identical content. Fast and simple &mdash; catches the same file copied across multiple repos.</div>
+          </div>
+          <div class="concept-box blue" style="margin-top:12px;">
+            <div class="concept-box-label">Near-Duplicates</div>
+            <div class="concept-box-body"><strong>Jaccard similarity</strong> on token sets measures overlap. For scalability, use <strong>MinHash + Locality-Sensitive Hashing (LSH)</strong> to find near-duplicates across millions of files without pairwise comparison.</div>
+          </div>
+          <div class="concept-box amber" style="margin-top:12px;">
+            <div class="concept-box-label">Cross-Split Leakage</div>
+            <div class="concept-box-body">The <strong>same function</strong> appearing in both training and test sets invalidates evaluation. The model appears to generalize but is actually recalling memorized examples.</div>
+          </div>
+        </div>
+        <div>
+          <p class="slide-p" style="font-size:0.85rem;margin-bottom:10px;">These two snippets are <strong>near-duplicates</strong> &mdash; same logic, renamed variables:</p>
+          <div class="dedup-compare">
+            <div class="dedup-panel">
+              <div class="dedup-panel-label">Version A</div>
+              <code><span class="kw">public</span> <span class="type">int</span> <span class="dedup-highlight">calculateSum</span>(<span class="type">int</span> <span class="dedup-highlight">x</span>, <span class="type">int</span> <span class="dedup-highlight">y</span>) {
+    <span class="type">int</span> <span class="dedup-highlight">result</span> = <span class="dedup-highlight">x</span> + <span class="dedup-highlight">y</span>;
+    <span class="kw">return</span> <span class="dedup-highlight">result</span>;
+}</code>
+            </div>
+            <div class="dedup-panel">
+              <div class="dedup-panel-label">Version B</div>
+              <code><span class="kw">public</span> <span class="type">int</span> <span class="dedup-highlight">addNumbers</span>(<span class="type">int</span> <span class="dedup-highlight">a</span>, <span class="type">int</span> <span class="dedup-highlight">b</span>) {
+    <span class="type">int</span> <span class="dedup-highlight">sum</span> = <span class="dedup-highlight">a</span> + <span class="dedup-highlight">b</span>;
+    <span class="kw">return</span> <span class="dedup-highlight">sum</span>;
+}</code>
+            </div>
+          </div>
+          <div class="concept-box purple" style="margin-top:12px;">
+            <div class="concept-box-label">Research Finding</div>
+            <div class="concept-box-body">Studies show <strong>10&ndash;30% of GitHub code is duplicated</strong>. Without deduplication, models memorize rather than generalize &mdash; leading to inflated performance metrics.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 18: Data Splitting Strategies ──────────── -->
+    <div class="slide" id="slide-18">
+      <div class="slide-label">Module 1 · Slide18</div>
+      <h2 class="slide-h2">Data Splitting Strategies</h2>
+      <p class="slide-p">How you split data into train, validation, and test sets matters as much as the data itself. The wrong strategy can silently invalidate your results.</p>
+      <div class="two-col">
+        <div>
+          <div class="concept-box amber">
+            <div class="concept-box-label">Random Split</div>
+            <div class="concept-box-body"><strong>Simplest approach:</strong> shuffle all methods and split. Fast but risky &mdash; methods from the same project can appear in both train and test sets, causing <strong>data leakage</strong>.</div>
+          </div>
+          <div class="concept-box" style="margin-top:12px;">
+            <div class="concept-box-label">Project-Based Split</div>
+            <div class="concept-box-body"><strong>All methods from one project</strong> go into the same split. Prevents cross-project leakage since methods in the same project share style, APIs, and patterns.</div>
+          </div>
+          <div class="concept-box blue" style="margin-top:12px;">
+            <div class="concept-box-label">Temporal Split</div>
+            <div class="concept-box-body"><strong>Train on older commits, test on newer ones.</strong> Simulates real-world deployment where the model must predict code it has never seen from the future.</div>
+          </div>
+          <div class="concept-box purple" style="margin-top:12px;">
+            <div class="concept-box-label">Typical Ratios</div>
+            <div class="concept-box-body">Common splits: <strong>80/10/10</strong> or <strong>70/15/15</strong> (train / validation / test). Larger test sets give more reliable evaluation estimates.</div>
+          </div>
+        </div>
+        <div>
+          <p class="slide-p" style="font-size:0.85rem;margin-bottom:10px;">10 projects split into Train / Val / Test under each strategy:</p>
+          <div class="split-diagram" id="split-diagram">
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">RANDOM SPLIT <span style="color:var(--red);margin-left:8px;">(leakage risk)</span></div>
+            <div class="split-row">
+              <div class="split-bar-container">
+                <div class="split-seg train" style="width:80%;">P1 P2 P3* P5 P6 P7 P8 P9*</div>
+                <div class="split-seg val" style="width:10%;">P3* P4</div>
+                <div class="split-seg test" style="width:10%;">P9* P10</div>
+              </div>
+            </div>
+            <div style="font-size:0.7rem;color:var(--red);margin:4px 0 12px 0;font-family:var(--font-mono);">* P3 and P9 appear in multiple splits = leakage</div>
+
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">PROJECT-BASED SPLIT <span style="color:var(--green);margin-left:8px;">(recommended)</span></div>
+            <div class="split-row">
+              <div class="split-bar-container">
+                <div class="split-seg train" style="width:80%;">P1 P2 P3 P4 P5 P6 P7 P8</div>
+                <div class="split-seg val" style="width:10%;">P9</div>
+                <div class="split-seg test" style="width:10%;">P10</div>
+              </div>
+            </div>
+            <div style="font-size:0.7rem;color:var(--green);margin:4px 0 12px 0;font-family:var(--font-mono);">Each project appears in exactly one split</div>
+
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">TEMPORAL SPLIT <span style="color:var(--blue);margin-left:8px;">(real-world simulation)</span></div>
+            <div class="split-row">
+              <div class="split-bar-container">
+                <div class="split-seg train" style="width:70%;">commits before 2022</div>
+                <div class="split-seg val" style="width:15%;">2022&ndash;2023</div>
+                <div class="split-seg test" style="width:15%;">2024+</div>
+              </div>
+            </div>
+            <div style="font-size:0.7rem;color:var(--blue);margin:4px 0 0 0;font-family:var(--font-mono);">Model never sees future code during training</div>
+          </div>
+          <div class="split-legend">
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--green);"></div> Train</div>
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--blue);"></div> Validation</div>
+            <div class="split-legend-item"><div class="split-legend-dot" style="background:var(--purple);"></div> Test</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slide 19: Worked Example ────────────────────── -->
+    <div class="slide" id="slide-19">
+      <div class="slide-label">Module 1 · Slide19</div>
+      <h2 class="slide-h2">Worked Example: From Repo to Dataset</h2>
+      <p class="slide-p">Let us walk through a concrete example of building a dataset for <strong>Java code summarization</strong> &mdash; generating a natural-language description for a given method.</p>
+      <div class="funnel-steps">
+        <div class="funnel-step">
+          <div class="funnel-step-num">1</div>
+          <div class="funnel-step-text"><strong>Define the task:</strong> Build a dataset of Java method &ndash; Javadoc comment pairs for code summarization.</div>
+          <div class="funnel-step-count">&mdash;</div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-step-num">2</div>
+          <div class="funnel-step-text"><strong>Query SEART-GHS:</strong> Java repos with &ge;100 stars and &ge;50 commits.</div>
+          <div class="funnel-step-count" style="color:var(--blue);">3,847 repos</div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-step-num">3</div>
+          <div class="funnel-step-text"><strong>Clone &amp; extract:</strong> Parse each repo with JavaParser, extract methods that have Javadoc comments.</div>
+          <div class="funnel-step-count" style="color:var(--blue);">2.1M pairs</div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-step-num">4</div>
+          <div class="funnel-step-text"><strong>Preprocess:</strong> Remove duplicates (&rarr;1.4M), remove trivial methods (&rarr;980K), filter by length 3&ndash;100 tokens (&rarr;820K), ASCII-only (&rarr;810K).</div>
+          <div class="funnel-step-count" style="color:var(--amber);">810K pairs</div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-step-num">5</div>
+          <div class="funnel-step-text"><strong>Tokenize:</strong> Use javalang to convert each method into a token sequence.</div>
+          <div class="funnel-step-count" style="color:var(--amber);">810K sequences</div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-step-num">6</div>
+          <div class="funnel-step-text"><strong>Project-based split:</strong> Ensure no project appears in multiple splits.</div>
+          <div class="funnel-step-count" style="color:var(--green);">648K / 81K / 81K</div>
+        </div>
+      </div>
+      <div class="concept-box" style="margin-top:12px;">
+        <div class="concept-box-label">The Funnel Effect</div>
+        <div class="concept-box-body">Starting from <strong>3,847 repositories</strong> and <strong>2.1 million</strong> raw pairs, preprocessing removes nearly <strong>62%</strong> of the data. This is normal &mdash; quality always trumps quantity.</div>
+      </div>
+    </div>
+
+    <!-- ── Slide 20: Knowledge Check ────────────────────── -->
+    <div class="slide" id="slide-20">
+      <div class="slide-label">Module 1 · Slide20</div>
+      <h2 class="slide-h2">Knowledge Check</h2>
+      <p class="slide-p">Test your understanding of the MSR pipeline. Click "Reveal Answer" to check your reasoning.</p>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Which repository type would you mine to collect bug-fix pairs for training an automated program repair model?</div>
+        <button class="quiz-reveal-btn" onclick="toggleQuiz('qa-1')">Reveal Answer</button>
+        <div class="quiz-answer" id="qa-1"><strong>Bug repositories</strong> (issue trackers linked to commits). You need bug reports linked to the commits that fix them &mdash; giving you a <strong>buggy &rarr; fixed</strong> code pair. Source repositories alone lack the structured bug metadata.</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">Why is project-based splitting preferred over random splitting?</div>
+        <button class="quiz-reveal-btn" onclick="toggleQuiz('qa-2')">Reveal Answer</button>
+        <div class="quiz-answer" id="qa-2"><strong>Prevents data leakage.</strong> Methods from the same project share coding style, API usage patterns, and variable naming conventions. If they appear in both train and test, the model may appear to generalize when it is actually relying on project-specific patterns it memorized.</div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-q">A dataset has 2M Java methods. After deduplication, 600K are removed. What does this suggest?</div>
+        <button class="quiz-reveal-btn" onclick="toggleQuiz('qa-3')">Reveal Answer</button>
+        <div class="quiz-answer" id="qa-3"><strong>High code duplication on GitHub (~30% duplicates).</strong> This is consistent with research findings. Without removal, the model would memorize these repeated patterns rather than learning to generalize, and evaluation metrics would be inflated by test examples the model has already seen during training.</div>
+      </div>
+
+      <div class="concept-box" style="margin-top:8px;">
+        <div class="concept-box-label">Module Complete</div>
+        <div class="concept-box-body">You have covered the full MSR pipeline: from <strong>repository selection</strong> to <strong>data extraction</strong>, <strong>deduplication</strong>, <strong>preprocessing</strong>, <strong>tokenization</strong>, and <strong>splitting</strong>. Next up: <strong>Probabilistic Language Models</strong> &mdash; how to model the statistical properties of code using n-grams.</div>
+      </div>
+    </div>
+
   </div><!-- /slides-wrapper -->
 
   <!-- ── Navigation Bar ──────────────────────────────────── -->
@@ -831,7 +1180,7 @@
 
   <!-- ── JavaScript ──────────────────────────────────────── -->
   <script>
-    const TOTAL = 14;
+    const TOTAL = 20;
     let current = 1;
 
     // ── Navigation ──────────────────────────────────────────
@@ -846,6 +1195,7 @@
       if (current === 3) setTimeout(initRepoExplorer, 50);
       if (current === 8) setTimeout(initPipeline, 50);
       if (current === 11) setTimeout(initTokenizer, 50);
+      if (current === 16) setTimeout(initFilterSim, 50);
     }
 
     function updateUI() {
@@ -859,7 +1209,7 @@
       for (let i = 1; i <= TOTAL; i++) {
         const d = document.createElement('div');
         d.className = 'slide-dot' + (i === current ? ' active' : '');
-        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); if(i===3) setTimeout(initRepoExplorer,50); if(i===8) setTimeout(initPipeline,50); if(i===11) setTimeout(initTokenizer,50); };
+        d.onclick = () => { document.getElementById('slide-'+current).classList.remove('active'); current=i; document.getElementById('slide-'+i).classList.add('active'); updateUI(); if(i===3) setTimeout(initRepoExplorer,50); if(i===8) setTimeout(initPipeline,50); if(i===11) setTimeout(initTokenizer,50); if(i===16) setTimeout(initFilterSim,50); };
         dots.appendChild(d);
       }
     }
@@ -1222,6 +1572,116 @@ public void logMensaje(String café) {
     }
 
     function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── Interactive 4: Repository Filter Simulator ──────────
+    const STAR_VALS = [0, 10, 50, 100, 500];
+    const COMMIT_VALS = [1, 10, 50, 100];
+    let filterLang = 0; // 0=Any, 1=Java, 2=Python, 3=JS
+
+    function initFilterSim() { updateFilters(); }
+
+    function setLang(idx) {
+      filterLang = idx;
+      const btns = document.querySelectorAll('#fb-lang .filter-btn');
+      btns.forEach((b, i) => b.classList.toggle('active', i === idx));
+      updateFilters();
+    }
+
+    function toggleFilterBtn(id) {
+      document.getElementById(id).classList.toggle('active');
+      updateFilters();
+    }
+
+    function updateFilters() {
+      const starIdx = parseInt(document.getElementById('fr-stars').value);
+      const commitIdx = parseInt(document.getElementById('fr-commits').value);
+      const starVal = STAR_VALS[starIdx];
+      const commitVal = COMMIT_VALS[commitIdx];
+      const excludeForks = document.getElementById('fb-forks').classList.contains('active');
+      const hasLicense = document.getElementById('fb-license').classList.contains('active');
+
+      document.getElementById('fv-stars').textContent = starVal === 0 ? '0 (no filter)' : '>= ' + starVal;
+      document.getElementById('fv-commits').textContent = commitVal === 1 ? '1 (no filter)' : '>= ' + commitVal;
+
+      // Simulated funnel with pre-computed approximate counts
+      let count = 400000000; // 400M
+      const steps = [];
+      steps.push({ label: 'All public repos', count: count });
+
+      // Stars filter
+      const starMultipliers = [1, 0.0125, 0.005, 0.002, 0.0005]; // 400M -> 5M -> 2M -> 800K -> 200K
+      count = Math.round(400000000 * starMultipliers[starIdx]);
+      if (starIdx > 0) steps.push({ label: 'Stars >= ' + starVal, count: count });
+
+      // Commits filter
+      const commitMultipliers = [1, 0.7, 0.4, 0.25];
+      count = Math.round(count * commitMultipliers[commitIdx]);
+      if (commitIdx > 0) steps.push({ label: 'Commits >= ' + commitVal, count: count });
+
+      // Language filter
+      const langNames = ['Any', 'Java', 'Python', 'JavaScript'];
+      const langMultipliers = [1, 0.2, 0.25, 0.22];
+      count = Math.round(count * langMultipliers[filterLang]);
+      if (filterLang > 0) steps.push({ label: langNames[filterLang] + ' only', count: count });
+
+      // Exclude forks
+      if (excludeForks) {
+        count = Math.round(count * 0.65);
+        steps.push({ label: 'Exclude forks', count: count });
+      }
+
+      // Has license
+      if (hasLicense) {
+        count = Math.round(count * 0.72);
+        steps.push({ label: 'Has license', count: count });
+      }
+
+      // Update the bar
+      const pct = Math.max(0.5, (count / 400000000) * 100);
+      document.getElementById('filter-fill').style.width = pct + '%';
+
+      // Format the count
+      let formatted;
+      if (count >= 1000000000) formatted = '~' + (count / 1000000000).toFixed(1) + 'B';
+      else if (count >= 1000000) formatted = '~' + (count / 1000000).toFixed(1) + 'M';
+      else if (count >= 1000) formatted = '~' + (count / 1000).toFixed(0) + 'K';
+      else formatted = '~' + count;
+      document.getElementById('filter-count').textContent = formatted;
+
+      // Stat cards
+      const statsEl = document.getElementById('filter-stats');
+      statsEl.innerHTML = steps.map((s, i) => {
+        const color = i === 0 ? 'blue' : (i === steps.length - 1 ? '' : 'amber');
+        let fc;
+        if (s.count >= 1000000) fc = (s.count / 1000000).toFixed(1) + 'M';
+        else if (s.count >= 1000) fc = (s.count / 1000).toFixed(0) + 'K';
+        else fc = String(s.count);
+        return '<div class="stat-card"><div class="stat-val ' + color + '">' + fc + '</div><div class="stat-label">' + s.label + '</div></div>';
+      }).join('');
+
+      // Insight text
+      const insightEl = document.getElementById('filter-insight');
+      const reduction = ((1 - count / 400000000) * 100).toFixed(2);
+      if (count >= 400000000) {
+        insightEl.textContent = 'All 400M+ public GitHub repositories are included. Start adjusting filters to see the funnel effect.';
+      } else if (count >= 1000000) {
+        insightEl.textContent = 'After filtering, ' + formatted + ' repositories remain (' + reduction + '% removed). The pool is still large enough for most research tasks.';
+      } else if (count >= 100000) {
+        insightEl.textContent = 'Down to ' + formatted + ' repositories (' + reduction + '% removed). This is a solid size for a focused dataset on a single language.';
+      } else if (count >= 10000) {
+        insightEl.textContent = 'Only ' + formatted + ' repositories remain (' + reduction + '% removed). The strict filters ensure high-quality projects, but the dataset will be smaller.';
+      } else {
+        insightEl.textContent = 'Just ' + formatted + ' repositories left (' + reduction + '% removed). Very strict filtering — suitable for curated benchmarks, but may be too small for pre-training.';
+      }
+    }
+
+    // ── Interactive 5: Quiz Toggle ──────────────────────────
+    function toggleQuiz(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('visible');
+      const btn = el.previousElementSibling;
+      btn.textContent = el.classList.contains('visible') ? 'Hide Answer' : 'Reveal Answer';
+    }
 
     // ── Init ────────────────────────────────────────────────
     updateUI();
