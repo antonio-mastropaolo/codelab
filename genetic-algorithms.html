@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Genetic Algorithms via Prompt Evolution — CodeLab</title>
+  <title>Genetic Evolution for Evolving Code Descriptions — CodeLab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -349,7 +349,7 @@
   <div class="topbar">
     <a href="index.html" class="topbar-logo"><span class="logo-mark">&lt;/&gt;</span> CodeLab</a>
     <span class="topbar-sep">›</span>
-    <span class="topbar-title">Genetic Algorithms via Prompt Evolution</span>
+    <span class="topbar-title">Genetic Evolution for Evolving Code Descriptions</span>
     <span class="topbar-badge">Interactive · 14 Slides</span>
     <span class="slide-counter" id="counter">1 / 14</span>
     <a href="teaching.html" class="topbar-home">← Teaching</a>
@@ -364,7 +364,7 @@
     <!-- ── Slide 1: Hook ──────────────────────────────────── -->
     <div class="slide active" id="slide-1">
       <div class="slide-label">Genetic Algorithms · Slide 01</div>
-      <h1 class="slide-h1">What if we could<br/><em>evolve</em> the perfect prompt?</h1>
+      <h1 class="slide-h1">What if we could<br/><em>evolve</em> the perfect code description?</h1>
       <p class="slide-p">Nature spent 3.8 billion years optimizing life. Computer scientists borrowed the same recipe — <strong style="color:var(--text-primary)">selection, crossover, mutation, repeat</strong> — to solve hard optimization problems without ever knowing the answer in advance.</p>
       <div class="two-col">
         <div>
@@ -372,7 +372,7 @@
             <div class="concept-box-label">The Core Idea</div>
             <div class="concept-box-body">A <strong>Genetic Algorithm</strong> maintains a <em>population</em> of candidate solutions. Each generation, the better ones are selected to reproduce and mix their traits — gradually converging toward an optimal answer.</div>
           </div>
-          <p class="slide-p" style="margin-top:12px;">In this module, we'll make this concrete. Instead of abstract bit-strings, our "individuals" are <strong style="color:var(--text-primary)">prompts for code generation</strong>. Our fitness measure: <strong style="color:var(--green)">code coverage</strong>.</p>
+          <p class="slide-p" style="margin-top:12px;">In this module, we'll make this concrete. Instead of abstract bit-strings, our "individuals" are <strong style="color:var(--text-primary)">natural language code descriptions</strong>. Our fitness measure: <strong style="color:var(--green)">code coverage</strong>.</p>
         </div>
         <div>
           <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
@@ -402,14 +402,14 @@
         <div class="term-card">
           <div class="term-emoji">🧫</div>
           <div class="term-name">Individual / Chromosome</div>
-          <div class="term-def">One candidate solution. In biology: one organism. In our case: <strong style="color:var(--text-primary)">one AI prompt</strong>.</div>
-          <div class="term-analogy">→ Each prompt is a potential "recipe" for making the AI generate good code.</div>
+          <div class="term-def">One candidate solution. In biology: one organism. In our case: <strong style="color:var(--text-primary)">one code description</strong>.</div>
+          <div class="term-analogy">→ Each description is a natural-language specification that guides the LLM to generate code.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">👥</div>
           <div class="term-name">Population</div>
-          <div class="term-def">A set of candidate solutions evaluated simultaneously. We run <strong style="color:var(--text-primary)">8 prompts per generation</strong>.</div>
-          <div class="term-analogy">→ Like a generation of animals competing in an environment.</div>
+          <div class="term-def">A set of candidate solutions evaluated simultaneously. We run <strong style="color:var(--text-primary)">8 code descriptions per generation</strong>.</div>
+          <div class="term-analogy">→ Each generation contains 8 candidate descriptions with different levels of specificity.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">💪</div>
@@ -420,13 +420,13 @@
         <div class="term-card">
           <div class="term-emoji">🔀</div>
           <div class="term-name">Crossover</div>
-          <div class="term-def">Two parent solutions combine to create offspring. We split two prompts and <strong style="color:var(--blue)">swap their halves</strong>.</div>
+          <div class="term-def">Two parent solutions combine to create offspring. We split two descriptions at a random word boundary and <strong style="color:var(--blue)">swap the halves</strong>.</div>
           <div class="term-analogy">→ Like inheriting traits from both parents.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🎲</div>
           <div class="term-name">Mutation</div>
-          <div class="term-def">Small random changes to an individual. We randomly substitute a word or phrase in a prompt.</div>
+          <div class="term-def">Small random changes to an individual. We append a missing clause (e.g. &ldquo;Handle duplicates.&rdquo;) to a code description.</div>
           <div class="term-analogy">→ Like a copying error in DNA that occasionally creates something better.</div>
         </div>
         <div class="term-card">
@@ -441,8 +441,8 @@
     <!-- ── Slide 3: Our Concrete Example ─────────────────── -->
     <div class="slide" id="slide-3">
       <div class="slide-label">Genetic Algorithms · Slide 03</div>
-      <h2 class="slide-h2">Our Concrete Example:<br/>Evolving Prompts for Code Generation</h2>
-      <p class="slide-p">We want to automatically discover which AI prompts produce the highest-quality code — without manually testing every possibility. That's a search problem. GAs are great at search.</p>
+      <h2 class="slide-h2">Our Concrete Example:<br/>Evolving Code Descriptions for Code Generation</h2>
+      <p class="slide-p">We want to automatically discover which code descriptions produce the highest-quality code — without manually testing every possibility. That's a search problem. GAs are great at search.</p>
       <div class="two-col">
         <div>
           <div class="concept-box blue">
@@ -450,12 +450,12 @@
             <div class="concept-box-body">
               <strong>Task:</strong> Generate a Python function that sorts a list.<br/><br/>
               <strong>Benchmark:</strong> A test suite with 12 test cases checks edge cases — empty list, single element, negative numbers, duplicates…<br/><br/>
-              <strong>Goal:</strong> Find a prompt that makes an LLM generate code that <em>passes all 12 tests</em>.
+              <strong>Goal:</strong> Find a code description that makes an LLM generate code that <em>passes all 12 tests</em>.
             </div>
           </div>
           <div class="concept-box amber" style="margin-top:10px;">
-            <div class="concept-box-label">Why GA instead of just trying prompts manually?</div>
-            <div class="concept-box-body">The prompt space is <strong>combinatorially huge</strong>. Even with just 20-word prompts from a vocabulary of 5,000 words, there are more combinations than atoms in the universe. We need smart search — not brute force.</div>
+            <div class="concept-box-label">Why GA instead of writing code descriptions manually?</div>
+            <div class="concept-box-body">The code description space is <strong>combinatorially huge</strong>. Even with just 20-word descriptions from a vocabulary of 5,000 words, there are more combinations than atoms in the universe. We need smart search — not brute force.</div>
           </div>
         </div>
         <div>
@@ -464,12 +464,12 @@
             <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;">
               <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
                 <div style="color:var(--text-muted);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">STEP 1 · Input</div>
-                <div style="color:var(--text-secondary);">Population of 8 prompts (random initially)</div>
+                <div style="color:var(--text-secondary);">Population of 8 code descriptions (random initially)</div>
               </div>
               <div style="text-align:center;color:var(--green);">↓</div>
               <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
                 <div style="color:var(--text-muted);font-size:0.68rem;font-family:var(--font-mono);margin-bottom:4px;">STEP 2 · Evaluate</div>
-                <div style="color:var(--text-secondary);">Run each prompt through LLM → collect generated code → measure test coverage</div>
+                <div style="color:var(--text-secondary);">Send each description to an LLM → collect generated code → measure test coverage</div>
               </div>
               <div style="text-align:center;color:var(--green);">↓</div>
               <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px;">
@@ -496,7 +496,7 @@
               <div class="step-num-circle">1</div>
               <div class="step-row-body">
                 <h4>Generate code</h4>
-                <p>Send the prompt to an LLM (or our simulator). Receive a Python function.</p>
+                <p>Send the code description to an LLM (or our simulator). Receive a Python function.</p>
               </div>
             </div>
             <div class="step-row">
@@ -560,7 +560,7 @@
     <div class="slide" id="slide-5">
       <div class="slide-label">Genetic Algorithms · Slide 05</div>
       <h2 class="slide-h2">The Population: Generation 0</h2>
-      <p class="slide-p">We start with <strong style="color:var(--text-primary)">8 prompts</strong> generated randomly (or by a small set of templates). Each gets evaluated immediately. Most are bad — that's fine. The GA will fix it.</p>
+      <p class="slide-p">We start with <strong style="color:var(--text-primary)">8 code descriptions</strong> generated randomly (or by a small set of templates). Each gets evaluated immediately. Most are bad — that's fine. The GA will fix it.</p>
       <div class="pop-grid">
         <div class="individual-card">
           <div class="ic-id">Individual #1</div>
@@ -573,7 +573,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #2</div>
-          <div class="ic-prompt">"Python sort algorithm implementation."</div>
+          <div class="ic-prompt">"Write a Python function that returns a new sorted list."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:44%;background:var(--amber)"></div></div>
@@ -582,7 +582,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #3</div>
-          <div class="ic-prompt">"Sort a list in Python, handle edge cases."</div>
+          <div class="ic-prompt">"Python function sort_list(arr): sort integers ascending, return a new list."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:56%;background:var(--amber)"></div></div>
@@ -591,7 +591,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #4</div>
-          <div class="ic-prompt">"Implement list sorting with type hints."</div>
+          <div class="ic-prompt">"Implement sort_list(arr: list[int]) -> list[int] using type hints."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:38%;background:var(--red)"></div></div>
@@ -600,7 +600,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #5</div>
-          <div class="ic-prompt">"Python function: sort integers ascending, return new list."</div>
+          <div class="ic-prompt">"Python function: takes a list of integers, returns sorted copy. Handle empty list."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:62%;background:var(--amber)"></div></div>
@@ -609,7 +609,7 @@
         </div>
         <div class="individual-card selected">
           <div class="ic-id">Individual #6 ⭐ Best</div>
-          <div class="ic-prompt">"Sort list in-place. Handle empty, single, and negative numbers."</div>
+          <div class="ic-prompt">"Write sort_list(arr). Handle: empty list → [], single element, negative numbers."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:71%"></div></div>
@@ -618,7 +618,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #7</div>
-          <div class="ic-prompt">"Write sorting code."</div>
+          <div class="ic-prompt">"Sort a list."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:22%;background:var(--red)"></div></div>
@@ -627,7 +627,7 @@
         </div>
         <div class="individual-card">
           <div class="ic-id">Individual #8</div>
-          <div class="ic-prompt">"Create a stable sort for Python lists."</div>
+          <div class="ic-prompt">"Create sort_list() returning a new stable-sorted list of integers."</div>
           <div class="ic-fitness">
             <div class="ic-fitness-label">Coverage</div>
             <div class="ic-fitness-bar"><div class="ic-fitness-fill" style="width:49%;background:var(--amber)"></div></div>
@@ -642,7 +642,7 @@
     <div class="slide" id="slide-6">
       <div class="slide-label">Genetic Algorithms · Slide 06</div>
       <h2 class="slide-h2">Selection: Survival of the Fittest</h2>
-      <p class="slide-p">Not all prompts get to reproduce. <strong style="color:var(--text-primary)">Tournament Selection</strong>: randomly pick 2 individuals, keep whichever has higher fitness. Repeat until you have a pool of parents.</p>
+      <p class="slide-p">Not all code descriptions get to reproduce. <strong style="color:var(--text-primary)">Tournament Selection</strong>: randomly pick 2 individuals, keep whichever has higher fitness. Repeat until you have a pool of parents.</p>
       <div class="two-col">
         <div>
           <div class="concept-box">
@@ -684,24 +684,24 @@
     <div class="slide" id="slide-7">
       <div class="slide-label">Genetic Algorithms · Slide 07</div>
       <h2 class="slide-h2">Crossover: Mixing Parental Traits</h2>
-      <p class="slide-p">Two parent prompts are combined to create two offspring. We split each parent at a random point and <strong style="color:var(--blue)">swap the halves</strong> — like gene mixing in biology.</p>
+      <p class="slide-p">Two parent code descriptions are combined to create two offspring. We split each description at a random word boundary and <strong style="color:var(--blue)">swap the halves</strong> — like gene mixing in biology.</p>
       <div class="step-box">
         <div style="font-size:0.82rem;font-weight:600;margin-bottom:14px;">Single-Point Crossover Example</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;">
           <div style="background:var(--bg-3);border:1px solid var(--green-border);border-radius:8px;padding:12px;">
             <div style="font-size:0.7rem;color:var(--green);font-family:var(--font-mono);margin-bottom:6px;">PARENT A</div>
             <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
-              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Sort list in-place. Handle empty, single,"</span>
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Write sort_list(arr). Handle: empty list → [],"</span>
               <span style="color:var(--text-muted);"> | </span>
-              <span style="color:var(--text-muted);">"and negative numbers."</span>
+              <span style="color:var(--text-muted);">"single element, negative numbers."</span>
             </div>
           </div>
           <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.25);border-radius:8px;padding:12px;">
             <div style="font-size:0.7rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:6px;">PARENT B</div>
             <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
-              <span style="color:var(--text-muted);">"Python function: sort integers ascending,"</span>
+              <span style="color:var(--text-muted);">"Python function: takes a list of integers,"</span>
               <span style="color:var(--text-muted);"> | </span>
-              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;">"return new list."</span>
+              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;">"returns sorted copy. Handle empty list."</span>
             </div>
           </div>
         </div>
@@ -710,16 +710,16 @@
           <div style="background:var(--bg-3);border:1px solid rgba(188,140,255,0.3);border-radius:8px;padding:12px;">
             <div style="font-size:0.7rem;color:var(--purple);font-family:var(--font-mono);margin-bottom:6px;">CHILD A</div>
             <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
-              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Sort list in-place. Handle empty, single,"</span>
-              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;"> "return new list."</span>
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;">"Write sort_list(arr). Handle: empty list → [],"</span>
+              <span style="background:rgba(88,166,255,0.15);padding:1px 3px;border-radius:2px;"> "returns sorted copy. Handle empty list."</span>
             </div>
             <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--purple);margin-top:6px;">Estimated fitness: ~75%</div>
           </div>
           <div style="background:var(--bg-3);border:1px solid rgba(188,140,255,0.3);border-radius:8px;padding:12px;">
             <div style="font-size:0.7rem;color:var(--purple);font-family:var(--font-mono);margin-bottom:6px;">CHILD B</div>
             <div style="font-family:var(--font-mono);font-size:0.78rem;line-height:1.6;">
-              <span style="color:var(--text-muted);">"Python function: sort integers ascending,"</span>
-              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;"> "and negative numbers."</span>
+              <span style="color:var(--text-muted);">"Python function: takes a list of integers,"</span>
+              <span style="background:rgba(0,217,126,0.15);padding:1px 3px;border-radius:2px;"> "single element, negative numbers."</span>
             </div>
             <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--purple);margin-top:6px;">Estimated fitness: ~66%</div>
           </div>
@@ -727,7 +727,7 @@
       </div>
       <div class="concept-box blue" style="margin-top:14px;">
         <div class="concept-box-label">Key Insight</div>
-        <div class="concept-box-body">Child A inherited the <strong>"Handle empty, single"</strong> spec from Parent A AND the <strong>"return new list"</strong> behavior from Parent B — combining useful traits from both parents. This is how GAs "build on success."</div>
+        <div class="concept-box-body">Child A inherited the <strong>"Handle empty list → []"</strong> specification clause from Parent A AND the <strong>"returns sorted copy"</strong> return-type constraint from Parent B — combining useful specification traits from both parents. This is how GAs "build on success."</div>
       </div>
     </div>
 
@@ -740,10 +740,10 @@
         <div>
           <div class="concept-box amber">
             <div class="concept-box-label">Why Mutation Matters</div>
-            <div class="concept-box-body">Imagine all 8 prompts in the population say "sort integers" — crossover can only produce more "sort integers" variations. Mutation can insert a completely new concept like <strong>"handle duplicates"</strong> that wasn't in any parent.</div>
+            <div class="concept-box-body">Imagine all 8 code descriptions say "sort integers" — crossover can only produce more "sort integers" variations. Mutation can insert a completely new concept like <strong>"handle duplicates"</strong> that wasn't in any parent.</div>
           </div>
           <div class="concept-box" style="margin-top:10px;">
-            <div class="concept-box-label">Mutation Operators for Prompts</div>
+            <div class="concept-box-label">Mutation Operators for Code Descriptions</div>
             <div class="concept-box-body">
               <strong>Word substitution:</strong> "ascending" → "in ascending order"<br/><br/>
               <strong>Insertion:</strong> Add "also handle duplicate values"<br/><br/>
@@ -757,13 +757,13 @@
             <div style="font-size:0.78rem;font-weight:600;margin-bottom:12px;">Mutation Example</div>
             <div style="background:var(--bg-3);border:1px solid rgba(88,166,255,0.25);border-radius:8px;padding:12px;margin-bottom:8px;">
               <div style="font-size:0.7rem;color:var(--blue);font-family:var(--font-mono);margin-bottom:4px;">BEFORE MUTATION (Child A)</div>
-              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Sort list in-place. Handle empty, single, return new list."</div>
+              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Write sort_list(arr). Handle: empty list → [], single element, returns sorted copy."</div>
               <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--amber);margin-top:5px;">Fitness: 75%</div>
             </div>
             <div style="text-align:center;color:var(--amber);margin:4px 0;">↓ mutation: insert clause ↓</div>
             <div style="background:var(--bg-3);border:1px solid rgba(227,179,65,0.3);border-radius:8px;padding:12px;">
               <div style="font-size:0.7rem;color:var(--amber);font-family:var(--font-mono);margin-bottom:4px;">AFTER MUTATION</div>
-              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Sort list in-place. Handle empty, single, <span style="background:rgba(227,179,65,0.2);color:var(--amber);">duplicates,</span> return new list."</div>
+              <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);line-height:1.5;">"Write sort_list(arr). Handle: empty list → [], single element, <span style="background:rgba(227,179,65,0.2);color:var(--amber);">duplicates,</span> returns sorted copy."</div>
               <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--green);margin-top:5px;">Fitness: 83% 🎉 (+8%)</div>
             </div>
             <div style="margin-top:10px;font-size:0.78rem;color:var(--text-muted);">This mutation discovered a new edge case specification that Parent A and B never had — boosting coverage significantly.</div>
@@ -776,14 +776,14 @@
     <div class="slide" id="slide-9">
       <div class="slide-label">Genetic Algorithms · Slide 09</div>
       <h2 class="slide-h2">One Complete Generation Cycle</h2>
-      <p class="slide-p">Putting it all together: what happens in a single generation of our Prompt-GA.</p>
+      <p class="slide-p">Putting it all together: what happens in a single generation of our Description-GA.</p>
       <div class="step-box">
         <div style="display:flex;flex-direction:column;gap:0;">
           <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
             <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle">1</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
             <div style="padding-top:4px;">
               <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Evaluate Population</h4>
-              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">Send all 8 prompts to the LLM, collect code, run test suite, assign coverage fitness. <span style="color:var(--text-muted);">[~3 min in real system]</span></p>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">Send all 8 code descriptions to the LLM, collect code, run test suite, assign coverage fitness. <span style="color:var(--text-muted);">[~3 min in real system]</span></p>
             </div>
           </div>
           <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);">
@@ -804,7 +804,7 @@
             <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;"><div class="step-num-circle" style="background:rgba(227,179,65,0.1);border-color:rgba(227,179,65,0.25);color:var(--amber);">4</div><div style="width:2px;flex:1;background:var(--border);margin-top:4px;"></div></div>
             <div style="padding-top:4px;">
               <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:4px;color:var(--text-primary);">Mutation (probability 0.05 per word)</h4>
-              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">For each word in each child: 5% chance to substitute, insert, or delete. Keeps diversity alive and explores new prompt structures.</p>
+              <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">For each word in each child: 5% chance to substitute, insert, or delete. Keeps diversity alive and explores new description structures.</p>
             </div>
           </div>
           <div style="display:flex;align-items:stretch;gap:16px;padding:12px 0;">
@@ -860,7 +860,7 @@
           </div>
           <!-- Step explanation -->
           <div class="step-explain" id="step-explain">
-            The population is initialized. Each individual is a candidate prompt with a random initial fitness. Use the controls above to evolve the population.
+            The population is initialized. Each individual is a candidate code description with a random initial fitness. Use the controls above to evolve the population.
           </div>
         </div>
 
@@ -976,12 +976,12 @@
     <div class="slide" id="slide-12">
       <div class="slide-label">Genetic Algorithms · Slide 12</div>
       <h2 class="slide-h2">Multi-Benchmark Evaluation</h2>
-      <p class="slide-p">A single task (sorting) is too narrow. Real research evaluates prompts across many coding tasks. Here's how GA-evolved prompts perform vs. human-written baselines.</p>
+      <p class="slide-p">A single task (sorting) is too narrow. Real research evaluates code descriptions across many coding tasks. Here's how GA-evolved code descriptions perform vs. human-written baselines.</p>
       <table class="bench-table">
         <thead>
           <tr>
             <th>Task</th>
-            <th>Human Prompt</th>
+            <th>Human Description</th>
             <th>Gen-0 Avg</th>
             <th>GA Best (Gen 12)</th>
             <th>Δ</th>
@@ -1027,7 +1027,7 @@
       </table>
       <div class="concept-box" style="margin-top:16px;">
         <div class="concept-box-label">Key Finding</div>
-        <div class="concept-box-body">GA-evolved prompts <strong>consistently outperform</strong> both random generation-0 prompts and human-written baselines. The algorithm discovers prompt structures that humans don't naturally write — like systematically enumerating every edge case by name.</div>
+        <div class="concept-box-body">GA-evolved descriptions <strong>consistently outperform</strong> both random generation-0 descriptions and human-written baselines. The algorithm discovers description structures that humans don't naturally write — like systematically enumerating every edge case by name.</div>
       </div>
     </div>
 
@@ -1041,37 +1041,37 @@
           <div class="term-emoji">🔀</div>
           <div class="term-name">Genetic Algorithm (our approach)</div>
           <div class="term-def">Good when: search space is huge, fitness landscape is rugged (many local optima), parallel evaluation is cheap.</div>
-          <div class="term-analogy">✅ Prompt search: huge space, rugged landscape, easy to parallelize.</div>
+          <div class="term-analogy">✅ Description search: huge space, rugged landscape, easy to parallelize.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🏔️</div>
           <div class="term-name">Hill Climbing / Gradient Descent</div>
           <div class="term-def">Good when: the fitness function is smooth and differentiable. Gets stuck in local optima easily.</div>
-          <div class="term-analogy">⚠️ Prompt search: not differentiable — can't take gradient of text.</div>
+          <div class="term-analogy">⚠️ Description search: not differentiable — can't take gradient of text.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🔭</div>
           <div class="term-name">Exhaustive / Brute Force</div>
           <div class="term-def">Good when: search space is small. Guarantees finding the optimum — but only feasible at tiny scale.</div>
-          <div class="term-analogy">❌ Prompt search: space is astronomically large. Completely infeasible.</div>
+          <div class="term-analogy">❌ Description search: space is astronomically large. Completely infeasible.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🎲</div>
           <div class="term-name">Random Search</div>
           <div class="term-def">Good when: you have no structure to exploit and need a quick baseline. Surprisingly competitive in high dimensions.</div>
-          <div class="term-analogy">⚠️ Prompt search: okay baseline but GA consistently beats it given enough generations.</div>
+          <div class="term-analogy">⚠️ Description search: okay baseline but GA consistently beats it given enough generations.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🌡️</div>
           <div class="term-name">Simulated Annealing</div>
           <div class="term-def">Good when: single-individual search with temperature-controlled acceptance of worse solutions to escape local optima.</div>
-          <div class="term-analogy">✅ Prompt search: works well but slower than GA — no parallel population.</div>
+          <div class="term-analogy">✅ Description search: works well but slower than GA — no parallel population.</div>
         </div>
         <div class="term-card">
           <div class="term-emoji">🤖</div>
           <div class="term-name">Reinforcement Learning</div>
           <div class="term-def">Good when: you can define a reward signal and need sequential decision-making. Needs lots of samples.</div>
-          <div class="term-analogy">✅ Prompt search: RLHF (Reinforcement Learning from Human Feedback) is exactly this — but needs more data.</div>
+          <div class="term-analogy">✅ Description search: RLHF (Reinforcement Learning from Human Feedback) is exactly this — but needs more data.</div>
         </div>
       </div>
     </div>
@@ -1089,7 +1089,7 @@
         <div class="takeaway-card">
           <div class="takeaway-num">02 · Fitness is Everything</div>
           <h4>Define Success Precisely</h4>
-          <p>The GA is only as good as its fitness function. Vague fitness → vague convergence. Code coverage is a precise, measurable proxy for prompt quality.</p>
+          <p>The GA is only as good as its fitness function. Vague fitness → vague convergence. Code coverage is a precise, measurable proxy for description quality.</p>
         </div>
         <div class="takeaway-card">
           <div class="takeaway-num">03 · Exploration vs. Exploitation</div>
@@ -1099,23 +1099,23 @@
         <div class="takeaway-card">
           <div class="takeaway-num">04 · Emergent Solutions</div>
           <h4>Discovering the Unexpected</h4>
-          <p>GA-evolved prompts often look different from human-written ones — they discover unintuitive structures that happen to maximize coverage.</p>
+          <p>GA-evolved code descriptions often look different from human-written ones — they discover unintuitive structures that happen to maximize coverage.</p>
         </div>
         <div class="takeaway-card">
           <div class="takeaway-num">05 · GA in Software Engineering</div>
-          <h4>Beyond Prompt Evolution</h4>
+          <h4>Beyond Description Evolution</h4>
           <p>GAs are used for test case generation, code optimization, hyperparameter tuning, scheduling problems, and architectural search.</p>
         </div>
         <div class="takeaway-card">
           <div class="takeaway-num">06 · The Vibe Coding Connection</div>
-          <h4>Systematic Prompt Engineering</h4>
-          <p>Vibe coding + GAs = systematic vibe coding. Instead of guessing prompts, we evolve them automatically — turning intuition into optimization.</p>
+          <h4>Systematic Description Engineering</h4>
+          <p>Vibe coding + GAs = systematic description engineering. Instead of guessing code descriptions, we evolve them automatically — turning intuition into optimization.</p>
         </div>
       </div>
       <div class="concept-box" style="margin-top:20px;">
         <div class="concept-box-label">Next Steps</div>
         <div class="concept-box-body">
-          Try implementing your own Prompt-GA using the Python <code style="font-family:var(--font-mono);color:var(--green);">deap</code> library. Use an LLM API for evaluation. Experiment with: population size, mutation rate, selection pressure. Report your best-evolved prompt!
+          Try implementing your own Description-GA using the Python <code style="font-family:var(--font-mono);color:var(--green);">deap</code> library. Use an LLM API for evaluation. Experiment with: population size, mutation rate, selection pressure. Report your best-evolved code description!
         </div>
       </div>
       <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
@@ -1170,17 +1170,17 @@
     ];
 
     const TEMPLATE_PROMPTS = [
-      "Write a sort function.",
-      "Python sort algorithm implementation.",
-      "Sort a list in Python, handle edge cases.",
-      "Implement list sorting with type hints.",
-      "Python function: sort integers ascending, return new list.",
-      "Sort list in-place. Handle empty, single, and negative numbers.",
-      "Write sorting code.",
-      "Create a stable sort for Python lists."
+      "Write a function that sorts a list.",
+      "Write a Python function that returns a new sorted list.",
+      "Python function sort_list(arr): sort integers ascending, return a new list.",
+      "Implement sort_list(arr: list[int]) -> list[int] using type hints.",
+      "Python function: takes a list of integers, returns sorted copy. Handle empty list.",
+      "Write sort_list(arr). Handle: empty list → [], single element, negative numbers.",
+      "Sort a list.",
+      "Create sort_list() returning a new stable-sorted list of integers."
     ];
 
-    // Simulated fitness based on prompt complexity/specificity
+    // Simulated fitness based on description specificity/completeness
     function estimateFitness(prompt) {
       let score = 20;
       const p = prompt.toLowerCase();
@@ -1256,7 +1256,7 @@
       document.getElementById('gen-label').textContent = 'Generation 0';
       document.getElementById('best-fitness').textContent = '—';
       document.getElementById('sim-log').innerHTML = 'Press <span class="log-green">Step One Generation</span> to begin...';
-      document.getElementById('step-explain').innerHTML = 'The population is initialized with 8 template prompts. Each has been evaluated for code coverage fitness. Use the controls to evolve the population.';
+      document.getElementById('step-explain').innerHTML = 'The population is initialized with 8 template code descriptions. Each has been evaluated for code coverage fitness. Use the controls to evolve the population.';
       document.getElementById('stat-gens').textContent = '0';
       document.getElementById('stat-best').textContent = '—';
       document.getElementById('stat-avg').textContent = '—';
@@ -1328,7 +1328,7 @@
       log.innerHTML = `<span class="log-green">Gen ${generationNum}</span> complete · ` +
         `<span class="log-amber">Best: ${newBest}%</span> · ` +
         `<span class="log-blue">Avg: ${newAvg}%</span><br/>` +
-        `<span class="log-green">🏆</span> Top prompt: <span style="color:var(--text-muted);font-style:italic;">"${topInd.prompt.substring(0, 60)}..."</span><br/>` +
+        `<span class="log-green">🏆</span> Top description: <span style="color:var(--text-muted);font-style:italic;">"${topInd.prompt.substring(0, 60)}..."</span><br/>` +
         (delta > 0 ? `<span class="log-green">▲ +${delta}pp improvement from last generation</span>` :
                      `<span style="color:var(--text-muted);">→ Population stabilizing — mutation will explore further</span>`);
 
