@@ -4,717 +4,684 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CodeLab — Generative AI for Software Development</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Interactive teaching modules and student projects for Generative AI for Software Development (CSCI 455/555) at William & Mary." />
+  <link rel="stylesheet" href="platform.css" />
   <style>
-    /* ── Hero ──────────────────────────────────────────────────── */
-    .hero {
-      position: relative;
-      min-height: 88vh;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      padding: 120px 0 80px;
+    /* ── Homepage-specific styles ─────────────────────────────── */
+
+    /* Hero */
+    .home-hero {
+      padding: calc(var(--nav-h) + 72px) 0 80px;
+      background: var(--wm-green-dark);
+      border-bottom: 4px solid var(--wm-gold);
+      position: relative; overflow: hidden;
     }
-    .hero-grid {
-      position: absolute;
-      inset: 0;
+    .home-hero::before {
+      content: '';
+      position: absolute; inset: 0;
       background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.35;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
-    }
-    .hero-glow {
-      position: absolute;
-      top: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 900px;
-      height: 600px;
-      background: radial-gradient(ellipse, rgba(0,217,126,0.12) 0%, transparent 70%);
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
       pointer-events: none;
     }
-    .hero-content {
-      position: relative;
-      text-align: center;
-      max-width: 820px;
-      margin: 0 auto;
-    }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--green-dim);
-      border: 1px solid var(--green-border);
-      color: var(--green);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      padding: 6px 14px;
-      border-radius: 20px;
+    .home-hero .hero-inner { position: relative; z-index: 1; max-width: 680px; }
+    .home-hero h1 { color: #FFFFFF; margin-bottom: 20px; }
+    .home-hero h1 .italic { font-style: italic; color: var(--wm-gold-light); }
+    .home-hero .lead { color: rgba(255,255,255,0.65); margin-bottom: 36px; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-meta-bar {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
       margin-bottom: 28px;
-      letter-spacing: 0.04em;
+      font-size: 0.82rem; color: rgba(255,255,255,0.5);
     }
-    .hero-badge::before {
-      content: '';
-      width: 7px;
-      height: 7px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
+    .hero-meta-bar .pill {
+      background: rgba(185,151,91,0.18); border: 1px solid rgba(185,151,91,0.3);
+      color: var(--wm-gold-light); padding: 5px 14px; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
+    .hero-meta-bar .sep { color: rgba(255,255,255,0.2); }
+
+    /* Quick stats row under hero */
+    .stats-strip {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
     }
-    .hero h1 {
-      font-size: clamp(2.6rem, 6vw, 4.8rem);
-      font-weight: 700;
-      line-height: 1.08;
-      margin-bottom: 24px;
-      letter-spacing: -0.03em;
-    }
-    .hero h1 em {
-      font-style: normal;
-      background: linear-gradient(135deg, var(--green) 0%, #00B8D4 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero-sub {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 44px;
-      max-width: 580px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .hero-ctas {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .hero-meta {
-      margin-top: 64px;
-      display: flex;
-      gap: 40px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .hero-stat {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
       text-align: center;
     }
-    .hero-stat-num {
-      display: block;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      font-family: var(--font-mono);
+    .stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700; color: var(--wm-green);
+      line-height: 1;
     }
-    .hero-stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .hero-stat-divider {
-      width: 1px;
-      height: 40px;
-      background: var(--border);
-      align-self: center;
+    .stat-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-3);
     }
 
-    /* ── Section: Projects Preview ────────────────────────────── */
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 16px;
-    }
-    .section-label::before {
-      content: '//';
-      color: var(--green);
-    }
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+    /* Sections */
+    .home-section { padding: 80px 0; }
+    .home-section.alt { background: var(--surface); }
+    .section-head { margin-bottom: 40px; }
+    .section-head .eyebrow { margin-bottom: 12px; }
+    .section-head h2 { margin-bottom: 12px; }
+    .section-head .lead { max-width: 620px; }
+
+    /* Course info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
-      margin-bottom: 48px;
     }
-    .section-header h2 {
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
+    }
+    .info-card h3 {
+      font-size: 1.15rem; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--wm-gold);
+    }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--text-3); }
+    .info-val { color: var(--text); font-weight: 500; text-align: right; }
+
+    /* What you'll learn — 3 equal cards */
+    .learn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .learn-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .learn-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--wm-green);
+    }
+    .learn-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.15);
+    }
+    .learn-card h4 { margin-bottom: 8px; }
+    .learn-card p { font-size: 0.88rem; line-height: 1.6; flex: 1; }
+
+    /* Topic pills */
+    .topic-pills {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
+    }
+    .topic-pill {
+      font-size: 0.72rem; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.15);
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* ── Project Cards Preview ────────────────────────────────── */
-    .projects-grid-home {
+    /* Modules preview */
+    .modules-preview-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
     }
-    .pcard {
-      background: var(--bg-2);
+    .mod-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: var(--radius);
       overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      text-decoration: none;
-      display: block;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      text-decoration: none; display: flex; flex-direction: column;
     }
-    .pcard:hover { transform: translateY(-4px); }
-    .pcard-top {
-      height: 160px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+    .mod-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--wm-green);
     }
-    .pcard.green .pcard-top { background: linear-gradient(135deg, rgba(0,217,126,0.15) 0%, rgba(0,217,126,0.04) 100%); border-bottom: 1px solid var(--green-border); }
-    .pcard.blue  .pcard-top { background: linear-gradient(135deg, rgba(88,166,255,0.15) 0%, rgba(88,166,255,0.04) 100%); border-bottom: 1px solid rgba(88,166,255,0.2); }
-    .pcard.purple .pcard-top { background: linear-gradient(135deg, rgba(188,140,255,0.15) 0%, rgba(188,140,255,0.04) 100%); border-bottom: 1px solid rgba(188,140,255,0.2); }
-    .pcard.amber .pcard-top  { background: linear-gradient(135deg, rgba(227,179,65,0.15) 0%, rgba(227,179,65,0.04) 100%); border-bottom: 1px solid rgba(227,179,65,0.2); }
-    .pcard:hover.green { border-color: var(--green-border); box-shadow: 0 8px 32px rgba(0,217,126,0.1); }
-    .pcard:hover.blue  { border-color: rgba(88,166,255,0.3); box-shadow: 0 8px 32px rgba(88,166,255,0.1); }
-    .pcard:hover.purple { border-color: rgba(188,140,255,0.3); box-shadow: 0 8px 32px rgba(188,140,255,0.1); }
-    .pcard:hover.amber { border-color: rgba(227,179,65,0.3); box-shadow: 0 8px 32px rgba(227,179,65,0.1); }
-    .pcard-icon {
-      font-size: 3rem;
-      line-height: 1;
+    .mod-card-bar { height: 5px; background: var(--wm-green); }
+    .mod-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .mod-card-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 700; color: var(--border-md);
+      line-height: 1; margin-bottom: 12px;
     }
-    .pcard-mini-chart {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      opacity: 0.5;
+    .mod-card:hover .mod-card-num { color: var(--wm-green); transition: color 0.25s; }
+    .mod-card h4 {
+      font-family: 'Playfair Display', serif; font-weight: 700;
+      font-size: 1.05rem; margin-bottom: 8px; color: var(--text);
     }
-    .pcard-body { padding: 20px 22px 22px; }
-    .pcard-tag {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-family: var(--font-mono);
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      font-weight: 500;
+    .mod-card p { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; flex: 1; }
+    .mod-card-footer {
+      padding: 12px 24px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.75rem; color: var(--text-3);
     }
-    .pcard.green .pcard-tag  { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
-    .pcard.blue  .pcard-tag  { background: rgba(88,166,255,0.1); color: var(--blue); border: 1px solid rgba(88,166,255,0.2); }
-    .pcard.purple .pcard-tag { background: rgba(188,140,255,0.1); color: var(--purple); border: 1px solid rgba(188,140,255,0.2); }
-    .pcard.amber .pcard-tag  { background: rgba(227,179,65,0.1); color: var(--amber); border: 1px solid rgba(227,179,65,0.2); }
-    .pcard-body h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .pcard-body p  { font-size: 0.87rem; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+    .mod-card-cta {
+      font-size: 0.78rem; font-weight: 600; color: var(--wm-green);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .mod-card:hover .arrow { transform: translateX(4px); transition: transform 0.2s; }
 
-    /* ── Teaching Section ─────────────────────────────────────── */
-    .teaching-section { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .teaching-inner {
+    /* Projects preview */
+    .projects-preview-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .proj-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-decoration: none; display: flex; flex-direction: column;
+      transition: transform 0.25s, background 0.25s, border-color 0.25s;
+    }
+    .proj-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(185,151,91,0.35);
+    }
+    .proj-tag {
+      display: inline-block;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--wm-gold-light);
+      margin-bottom: 10px;
+    }
+    .proj-card h4 {
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      color: #FFFFFF; margin-bottom: 8px; font-size: 1rem;
+    }
+    .proj-card p { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.55; flex: 1; }
+    .proj-stack {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px;
+    }
+    .proj-stack-tag {
+      font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* About section */
+    .about-grid {
+      display: grid; grid-template-columns: auto 1fr; gap: 48px; align-items: start;
+    }
+    .about-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .about-avatar {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: var(--wm-green-dark); border: 3px solid var(--wm-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 700;
+      color: var(--wm-gold-light); flex-shrink: 0;
+    }
+    .about-affiliation {
+      text-align: center; font-size: 0.78rem; color: var(--text-3); line-height: 1.5;
+    }
+    .about-affiliation strong { color: var(--text); display: block; font-size: 0.92rem; font-family: 'Inter'; }
+    .about-content h2 { margin-bottom: 16px; }
+    .about-content p { margin-bottom: 14px; }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .learn-grid { grid-template-columns: 1fr 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-avatar-wrap { flex-direction: row; gap: 20px; }
     }
     @media (max-width: 768px) {
-      .teaching-inner { grid-template-columns: 1fr; gap: 40px; }
-    }
-    .teaching-text h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em; }
-    .teaching-text p  { color: var(--text-secondary); line-height: 1.7; margin-bottom: 28px; }
-    .module-card-preview {
-      background: var(--bg-3);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .mcp-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .mcp-title { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-    .mcp-badge {
-      font-size: 0.7rem;
-      font-family: var(--font-mono);
-      padding: 3px 8px;
-      background: var(--green-dim);
-      color: var(--green);
-      border: 1px solid var(--green-border);
-      border-radius: 4px;
-    }
-    .mcp-slides {
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .mcp-slide {
-      aspect-ratio: 16/10;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--bg-2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .mcp-slide:first-child { background: linear-gradient(135deg, rgba(0,217,126,0.15), rgba(0,217,126,0.02)); border-color: var(--green-border); }
-    .mcp-slide-num {
-      position: absolute;
-      top: 5px;
-      right: 7px;
-      font-size: 0.6rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-    }
-    .mcp-footer {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-    .mcp-progress {
-      display: flex;
-      gap: 4px;
-    }
-    .mcp-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-    .mcp-dot.active { background: var(--green); }
-
-    /* ── About Strip ──────────────────────────────────────────── */
-    .about-strip {
-      border-top: 1px solid var(--border);
-    }
-    .about-inner {
-      display: flex;
-      align-items: center;
-      gap: 40px;
+      .home-hero { padding: calc(var(--nav-h) + 48px) 0 56px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .learn-grid { grid-template-columns: 1fr; }
+      .home-section { padding: 56px 0; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { justify-content: center; }
     }
     @media (max-width: 640px) {
-      .about-inner { flex-direction: column; align-items: flex-start; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .stat-num { font-size: 1.6rem; }
+      .about-avatar-wrap { flex-direction: column; }
+      .about-avatar { width: 100px; height: 100px; font-size: 2rem; }
+      .hero-meta-bar { gap: 8px; }
     }
-    .about-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--green), #00B8D4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--bg);
-      flex-shrink: 0;
-      font-family: var(--font-display);
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      .home-hero { padding: calc(var(--nav-h) + 32px) 0 40px; }
+      .home-section { padding: 40px 0; }
+      .modules-preview-grid,
+      .projects-preview-grid { grid-template-columns: 1fr; }
     }
-    .about-text h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
-    .about-text p  { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; max-width: 580px; }
-    .about-links { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
-    .about-link {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: color 0.2s;
-    }
-    .about-link:hover { color: var(--green); }
-
-    /* ── Course Info Section ─────────────────────────────────── */
-    .course-section { background: var(--bg); }
-    .course-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      align-items: start;
-    }
-    @media (max-width: 768px) { .course-grid { grid-template-columns: 1fr; } }
-    .course-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px;
-    }
-    .course-card h3 { font-size: 1.1rem; margin-bottom: 16px; }
-    .course-detail {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.88rem;
-    }
-    .course-detail:last-child { border-bottom: none; }
-    .course-detail-label { color: var(--text-muted); font-size: 0.82rem; }
-    .course-detail-value { color: var(--text-primary); font-weight: 500; }
-    .course-topics {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
-    }
-    .course-topic {
-      font-size: 0.76rem;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: var(--bg-3);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-family: var(--font-mono);
-    }
-
-    /* ── What You'll Learn Section ───────────────────────────── */
-    .learn-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 40px;
-    }
-    @media (max-width: 768px) { .learn-grid { grid-template-columns: 1fr; } }
-    .learn-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .learn-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
-    .learn-card-icon { font-size: 1.6rem; margin-bottom: 12px; display: block; }
-    .learn-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .learn-card p  { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.55; }
   </style>
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="container nav-inner">
-      <a href="index.html" class="nav-logo">
-        <span class="logo-mark">&lt;/&gt;</span>
-        CodeLab
+<!-- NAV -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark">CL</div>
+      CODELAB<span style="color:var(--wm-gold);">.</span>SH
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="teaching.html" class="nav-link">Teaching</a>
+      <a href="projects.html" class="nav-link">Projects</a>
+      <a href="#about" class="nav-link">About</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-instructor">Antonio Mastropaolo · W&amp;M</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="home-hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-meta-bar">
+        <span class="pill">CSCI 455 / 555</span>
+        <span class="sep">·</span>
+        <span>Spring 2026</span>
+        <span class="sep">·</span>
+        <span>William &amp; Mary</span>
+      </div>
+      <h1 class="animate-up">Generative AI for<br><span class="italic">Software Development</span></h1>
+      <p class="lead animate-up animate-up-1">
+        The companion platform for CSCI 455/555 at William &amp; Mary. Interactive teaching modules, student-built projects, and open resources — designed for students to learn, experiment, and showcase their work with modern AI tools.
+      </p>
+      <div class="hero-actions animate-up animate-up-2">
+        <a href="teaching.html" class="btn btn-primary">Browse Modules →</a>
+        <a href="projects.html" class="btn btn-outline-white">Student Projects</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-num">7</span>
+        <span class="stat-label">Teaching Modules</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">6</span>
+        <span class="stat-label">Student Projects</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">100+</span>
+        <span class="stat-label">Interactive Slides</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">30+</span>
+        <span class="stat-label">Hands-on Demos</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURSE OVERVIEW -->
+<section class="home-section">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Course Overview</div>
+      <h2>CSCI 455 / 555 — Spring 2026</h2>
+      <p class="lead">
+        Students develop foundational skills in deep learning and generative AI applied to software engineering — from mining repositories and training language models to prompting LLMs and detecting hallucinations in generated code.
+      </p>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Course Information</h3>
+        <div class="info-row">
+          <span class="info-key">Course</span>
+          <span class="info-val">CSCI 455 / 555</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Schedule</span>
+          <span class="info-val">MWF 1:00 – 1:50 PM</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Location</span>
+          <span class="info-val">Blow Hall 333</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Credits</span>
+          <span class="info-val">3</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Instructor</span>
+          <span class="info-val">Prof. Antonio Mastropaolo</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Department</span>
+          <span class="info-val">Computer Science, W&amp;M</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Class Size</span>
+          <span class="info-val">~36 students</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>Topics Covered</h3>
+        <p style="font-size:0.88rem;line-height:1.65;margin-bottom:16px;">
+          This course covers the full pipeline of AI-enabled software development: collecting and processing source-code data, building probabilistic and neural language models, evaluating generated outputs, and applying LLMs to real-world coding tasks.
+        </p>
+        <div class="topic-pills">
+          <span class="topic-pill">mining repositories</span>
+          <span class="topic-pill">language models</span>
+          <span class="topic-pill">evaluation metrics</span>
+          <span class="topic-pill">deep learning</span>
+          <span class="topic-pill">prompting</span>
+          <span class="topic-pill">code hallucinations</span>
+          <span class="topic-pill">code generation</span>
+          <span class="topic-pill">vibe coding</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU'LL LEARN -->
+<section class="home-section alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Learning Outcomes</div>
+      <h2>What Students Will Learn</h2>
+    </div>
+    <div class="learn-grid">
+      <div class="learn-card">
+        <div class="learn-icon">01</div>
+        <h4>Build with AI</h4>
+        <p>Go from zero to shipping real applications using LLMs as a coding partner. Learn what works, what doesn't, and why — through hands-on vibe coding projects.</p>
+      </div>
+      <div class="learn-card">
+        <div class="learn-icon">02</div>
+        <h4>Understand the Science</h4>
+        <p>Explore how language models learn from code: tokenization, probability, attention, and the training pipeline behind tools like GitHub Copilot and ChatGPT.</p>
+      </div>
+      <div class="learn-card">
+        <div class="learn-icon">03</div>
+        <h4>Think Critically</h4>
+        <p>Evaluate AI-generated code rigorously. Measure quality with established metrics, detect hallucinations, and understand when to trust model outputs — and when not to.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEACHING MODULES PREVIEW -->
+<section class="home-section">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Teaching Resources</div>
+      <h2>Interactive Learning Modules</h2>
+      <p class="lead">
+        Seven self-paced, browser-based modules covering the full pipeline — from mining repositories to detecting hallucinations. Each module includes interactive demos and hands-on exercises. No install required.
+      </p>
+    </div>
+    <div class="modules-preview-grid">
+      <a href="course-intro.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">00</div>
+          <h4>Course Introduction</h4>
+          <p>Welcome to CSCI 455/555. Course overview, learning objectives, structure, and tools of the trade.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>12 slides · 2 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
       </a>
-      <ul class="nav-links">
-        <li><a href="projects.html" class="nav-link">Projects</a></li>
-        <li><a href="teaching.html" class="nav-link">Teaching</a></li>
-        <li><a href="#about" class="nav-link">About</a></li>
-      </ul>
-      <a href="teaching.html" class="btn btn-primary">Start Learning</a>
+      <a href="msr.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">01</div>
+          <h4>Mining Software Repositories</h4>
+          <p>Collecting, cleaning, and preparing source-code data from public repositories — the first step before any model can learn.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>20 slides · 4 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="probabilistic-code-models.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">02</div>
+          <h4>Probabilistic Language Models</h4>
+          <p>Conditional probabilities, n-gram models, the naturalness hypothesis, perplexity, and the path from n-grams to LLMs.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>18 slides · 4 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="evaluation-metrics.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">03</div>
+          <h4>Evaluation Metrics</h4>
+          <p>Precision, recall, F1, BLEU, CodeBLEU, embedding-based metrics, and the SIDE framework for semantic alignment.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>17 slides · 5 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="dl4se-foundations.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">04</div>
+          <h4>DL for Software Engineering</h4>
+          <p>From clone detection and vulnerability prediction to embeddings, seq2seq, transformers, and pre-trained code models.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>26 slides · 6 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="prompting-llms.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">05</div>
+          <h4>Prompting LLMs</h4>
+          <p>In-Context Learning, few-shot prompting, prompting vs fine-tuning tradeoffs, and why example selection matters.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>20 slides · 7 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="hallucinations.html" class="mod-card">
+        <div class="mod-card-bar"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">06</div>
+          <h4>Hallucinations in Coding Tasks</h4>
+          <p>When LLMs generate plausible but incorrect code. The CodeHalu taxonomy, detection strategies, and mitigation.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>20 slides · 5 demos</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a href="genetic-algorithms.html" class="mod-card">
+        <div class="mod-card-bar" style="background: var(--wm-gold);"></div>
+        <div class="mod-card-body">
+          <div class="mod-card-num">GA</div>
+          <h4>Genetic Algorithms &amp; LLMs</h4>
+          <p>GA fundamentals from scratch — populations, selection, crossover, mutation — then connecting to LLM-driven test generation.</p>
+        </div>
+        <div class="mod-card-footer">
+          <span>14 slides · 1 simulation</span>
+          <span class="mod-card-cta">Open <span class="arrow">→</span></span>
+        </div>
+      </a>
     </div>
-  </nav>
+    <div style="text-align:center;margin-top:36px;">
+      <a href="teaching.html" class="btn btn-outline-green">View All Modules →</a>
+    </div>
+  </div>
+</section>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-glow"></div>
-    <div class="container hero-content">
-      <div class="hero-badge">CSCI 455 / 555 · Spring 2026 · William &amp; Mary</div>
-      <h1>Where AI Meets<br /><em>Real Software</em></h1>
-      <p class="hero-sub">
-        The companion platform for <strong>Generative AI for Software Development</strong> at W&amp;M. Interactive teaching modules, student-built projects, and open resources — a window for students to learn, experiment, and showcase their work with modern AI tools.
+<!-- PROJECTS PREVIEW -->
+<section class="projects-section">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="section-head">
+      <div class="eyebrow">Student Showcase</div>
+      <h2>Vibe Coding Projects</h2>
+      <p class="lead" style="max-width:620px;">
+        Students use generative AI tools to build real, functional applications from scratch — a practice called vibe coding. Each project is prototyped through natural language prompts and AI pair-programming.
       </p>
-      <div class="hero-ctas">
-        <a href="teaching.html" class="btn btn-primary btn-lg">Start Learning →</a>
-        <a href="projects.html" class="btn btn-outline btn-lg">Student Projects</a>
-      </div>
-      <div class="hero-meta">
-        <div class="hero-stat">
-          <span class="hero-stat-num">07</span>
-          <span class="hero-stat-label">Teaching Modules</span>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">06</span>
-          <span class="hero-stat-label">Vibe Coding Projects</span>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">100+</span>
-          <span class="hero-stat-label">Interactive Demos</span>
-        </div>
-      </div>
     </div>
-  </section>
-
-  <!-- Course Info -->
-  <section class="section course-section">
-    <div class="container">
-      <div class="section-header">
-        <div>
-          <div class="section-label">Course Details</div>
-          <h2>CSCI 455 / 555<br />Spring 2026</h2>
+    <div class="projects-preview-grid">
+      <a href="project-stock-trading.html" class="proj-card">
+        <span class="proj-tag">Fintech</span>
+        <h4>Stock Trading Signal Platform</h4>
+        <p>AI-powered signals, real-time charts, and portfolio analytics. Full-stack fintech meets vibe coding.</p>
+        <div class="proj-stack">
+          <span class="proj-stack-tag">React</span>
+          <span class="proj-stack-tag">Python</span>
+          <span class="proj-stack-tag">APIs</span>
         </div>
-      </div>
-      <div class="course-grid">
-        <div class="course-card">
-          <h3>Course Information</h3>
-          <div class="course-detail">
-            <span class="course-detail-label">Course</span>
-            <span class="course-detail-value">CSCI 455 (UG) / CSCI 555 (Grad)</span>
-          </div>
-          <div class="course-detail">
-            <span class="course-detail-label">Semester</span>
-            <span class="course-detail-value">Spring 2026</span>
-          </div>
-          <div class="course-detail">
-            <span class="course-detail-label">Credits</span>
-            <span class="course-detail-value">3</span>
-          </div>
-          <div class="course-detail">
-            <span class="course-detail-label">Instructor</span>
-            <span class="course-detail-value">Prof. Antonio Mastropaolo</span>
-          </div>
-          <div class="course-detail">
-            <span class="course-detail-label">Department</span>
-            <span class="course-detail-value">Computer Science, W&amp;M</span>
-          </div>
-          <div class="course-detail">
-            <span class="course-detail-label">Class Size</span>
-            <span class="course-detail-value">~36 students</span>
-          </div>
+      </a>
+      <a href="project-prompt-engineering.html" class="proj-card">
+        <span class="proj-tag">Education</span>
+        <h4>AI Prompt Engineering Platform</h4>
+        <p>Interactive playground for COLL 100 students to learn prompt design through A/B evaluation and live feedback.</p>
+        <div class="proj-stack">
+          <span class="proj-stack-tag">LLM APIs</span>
+          <span class="proj-stack-tag">A/B testing</span>
         </div>
-        <div class="course-card">
-          <h3>What This Course Covers</h3>
-          <p style="font-size:0.88rem;color:var(--text-secondary);line-height:1.65;margin-bottom:16px">
-            Students develop foundational skills in deep learning and generative AI applied to software engineering, from mining software repositories and training language models to prompting LLMs and detecting hallucinations in generated code.
-          </p>
-          <div class="course-topics">
-            <span class="course-topic">mining repositories</span>
-            <span class="course-topic">language models</span>
-            <span class="course-topic">evaluation metrics</span>
-            <span class="course-topic">deep learning</span>
-            <span class="course-topic">prompting</span>
-            <span class="course-topic">code hallucinations</span>
-            <span class="course-topic">code generation</span>
-            <span class="course-topic">vibe coding</span>
-          </div>
+      </a>
+      <a href="project-code-review.html" class="proj-card">
+        <span class="proj-tag">DevTools</span>
+        <h4>CodeLens — AI Code Review</h4>
+        <p>Paste code, get structured AI review: bugs, style, complexity, security. Built with pure prompt engineering.</p>
+        <div class="proj-stack">
+          <span class="proj-stack-tag">Prompting</span>
+          <span class="proj-stack-tag">AST analysis</span>
         </div>
-      </div>
-
-      <!-- What You'll Learn -->
-      <div class="learn-grid">
-        <div class="learn-card">
-          <span class="learn-card-icon">&#x26A1;</span>
-          <h4>Build with AI</h4>
-          <p>Go from zero to shipping real applications using LLMs as your coding partner. Learn what works, what doesn't, and why.</p>
+      </a>
+      <a href="project-interview-prep.html" class="proj-card">
+        <span class="proj-tag">Careers</span>
+        <h4>AI Interview Coach</h4>
+        <p>Simulate technical interviews with adaptive AI, get instant feedback, and track improvement over time.</p>
+        <div class="proj-stack">
+          <span class="proj-stack-tag">Adaptive AI</span>
+          <span class="proj-stack-tag">Feedback</span>
         </div>
-        <div class="learn-card">
-          <span class="learn-card-icon">&#x1F9EA;</span>
-          <h4>Understand the Science</h4>
-          <p>Explore how language models learn from code: tokenization, probability, attention, and the training pipeline behind tools like Copilot.</p>
-        </div>
-        <div class="learn-card">
-          <span class="learn-card-icon">&#x1F50D;</span>
-          <h4>Think Critically</h4>
-          <p>Evaluate AI-generated code rigorously. Measure quality, detect hallucinations, and understand when to trust — and when not to.</p>
-        </div>
-      </div>
+      </a>
     </div>
-  </section>
-
-  <!-- Projects Preview -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div>
-          <div class="section-label">Student Showcase</div>
-          <h2>Vibe Coding<br />Project Ideas</h2>
-        </div>
-        <a href="projects.html" class="btn btn-ghost">View All →</a>
-      </div>
-      <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;max-width:640px;margin-bottom:40px">
-        In this course, students use generative AI tools to build real, functional applications from scratch — a practice we call <em>vibe coding</em>. Each project below was prototyped primarily through natural language prompts and AI pair-programming.
-      </p>
-      <div class="projects-grid-home">
-
-        <a href="project-stock-trading.html" class="pcard green">
-          <div class="pcard-top">
-            <span class="pcard-icon">📈</span>
-            <svg class="pcard-mini-chart" width="80" height="32" viewBox="0 0 80 32">
-              <polyline points="0,28 14,22 28,24 38,10 50,14 62,6 80,4"
-                fill="none" stroke="rgba(0,217,126,0.6)" stroke-width="2" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">fintech</span>
-            <h3>Stock Trading Signal Platform</h3>
-            <p>AI-powered signals, real-time charts, and portfolio analytics. Full-stack fintech meets vibe coding.</p>
-          </div>
-        </a>
-
-        <a href="project-prompt-engineering.html" class="pcard blue">
-          <div class="pcard-top">
-            <span class="pcard-icon">🧠</span>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">education</span>
-            <h3>AI Prompt Engineering Platform</h3>
-            <p>Interactive playground for COLL 100 students to learn prompt design through A/B evaluation and live feedback.</p>
-          </div>
-        </a>
-
-        <a href="project-code-review.html" class="pcard purple">
-          <div class="pcard-top">
-            <span class="pcard-icon">🔍</span>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">devtools</span>
-            <h3>CodeLens — AI Code Review</h3>
-            <p>Paste code, get structured AI review: bugs, style, complexity, security. Built with pure prompt engineering.</p>
-          </div>
-        </a>
-
-        <a href="project-interview-prep.html" class="pcard amber">
-          <div class="pcard-top">
-            <span class="pcard-icon">💼</span>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">careers</span>
-            <h3>AI Interview Coach</h3>
-            <p>Simulate technical interviews with adaptive AI, get instant feedback, and track improvement over time.</p>
-          </div>
-        </a>
-
-        <!-- NEW: Two additional project ideas -->
-        <a href="#" class="pcard blue">
-          <div class="pcard-top">
-            <span class="pcard-icon">&#x1F4DD;</span>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">documentation</span>
-            <h3>DocBot — AI Documentation Generator</h3>
-            <p>Point at any codebase and auto-generate API docs, README files, and architecture diagrams using LLM-powered analysis.</p>
-          </div>
-        </a>
-
-        <a href="#" class="pcard purple">
-          <div class="pcard-top">
-            <span class="pcard-icon">&#x1F6E1;&#xFE0F;</span>
-          </div>
-          <div class="pcard-body">
-            <span class="pcard-tag">security</span>
-            <h3>VulnScout — AI Vulnerability Detector</h3>
-            <p>Upload code snippets and get instant security analysis: injection risks, dependency vulnerabilities, and remediation suggestions.</p>
-          </div>
-        </a>
-
-      </div>
+    <div style="text-align:center;margin-top:36px;">
+      <a href="projects.html" class="btn btn-outline-white">View All Projects →</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Teaching Modules -->
-  <section class="section teaching-section">
-    <div class="container">
-      <div class="teaching-inner">
-        <div class="teaching-text">
-          <div class="section-label">Teaching Resources</div>
-          <h2>Interactive<br />Learning Modules</h2>
-          <p>
-            Seven self-paced, browser-based modules covering the full pipeline of AI-enabled software development — from mining repositories and training language models to prompting LLMs and detecting hallucinations. Each module features interactive demos, quizzes, and hands-on exercises.
-          </p>
-          <a href="teaching.html" class="btn btn-primary">Browse All Modules →</a>
-        </div>
-        <div class="module-card-preview">
-          <div class="mcp-header">
-            <span class="mcp-title">7 Modules · 100+ Slides · 30+ Demos</span>
-            <span class="mcp-badge">self-paced</span>
-          </div>
-          <div class="mcp-slides">
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x26A1;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">0. Intro</span></div>
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x26CF;&#xFE0F;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">1. MSR</span></div>
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F4CA;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">2. PLMs</span></div>
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F3AF;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">3. Eval</span></div>
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F9E0;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">4. DL4SE</span></div>
-            <div class="mcp-slide" style="font-size:0.9rem;flex-direction:column;gap:2px"><span style="font-size:1.2rem">&#x1F4AC;</span><span style="font-size:0.55rem;font-family:var(--font-mono);color:var(--text-muted)">5. Prompt</span></div>
-          </div>
-          <div class="mcp-footer">
-            <span>Interactive · Self-paced · No install</span>
-            <div class="mcp-progress">
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot active"></div>
-              <div class="mcp-dot"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section class="section about-strip" id="about">
-    <div class="container">
-      <div class="about-inner">
+<!-- ABOUT -->
+<section class="home-section alt" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-avatar-wrap">
         <div class="about-avatar">AM</div>
-        <div class="about-text">
-          <h3>Prof. Antonio Mastropaolo · William &amp; Mary</h3>
-          <p>
-            CodeLab is the open companion to <em>Generative AI for Software Development</em> (CSCI 455/555), an undergraduate and graduate course at William &amp; Mary exploring how LLMs reshape programming practice. Students learn to mine repositories, train language models, evaluate AI-generated code, and build real applications through vibe coding and systematic prompt engineering.
-          </p>
-          <div class="about-links">
-            <a href="https://github.com/antonio-mastropaolo" class="about-link" target="_blank">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4 11.5 11.5 0 0 1 3 .4c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.24 2.86.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-              @antonio-mastropaolo
-            </a>
-            <a href="https://www.wm.edu/as/computerscience/" class="about-link" target="_blank">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              W&amp;M Computer Science
-            </a>
-            <a href="https://codelab.sh" class="about-link" target="_blank">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              codelab.sh
-            </a>
-          </div>
+        <div class="about-affiliation">
+          <strong>Prof. Antonio Mastropaolo</strong>
+          William &amp; Mary<br>Department of Computer Science
+        </div>
+      </div>
+      <div class="about-content">
+        <h2>About This Platform</h2>
+        <p>
+          CodeLab is the open companion to <em>Generative AI for Software Development</em> (CSCI 455/555) at William &amp; Mary. The course explores how large language models reshape programming practice — from data collection and model training to prompt engineering and output evaluation.
+        </p>
+        <p>
+          All teaching modules are self-paced, browser-based, and free to use. Student projects demonstrate real-world applications built through AI-assisted development. The platform serves as both a learning resource and a showcase of student work.
+        </p>
+        <div class="about-links">
+          <a href="https://antoniomastropaolo.com/teaching/" class="about-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Course Website
+          </a>
+          <a href="https://github.com/antonio-mastropaolo/codelab" class="about-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4 11.5 11.5 0 0 1 3 .4c2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.24 2.86.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub Repository
+          </a>
+          <a href="https://www.wm.edu/as/computerscience/" class="about-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            W&amp;M Computer Science
+          </a>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="footer-left">
-        <a href="index.html" class="nav-logo">
-          <span class="logo-mark">&lt;/&gt;</span>
-          CodeLab
-        </a>
-        <p class="footer-tagline">Generative AI for Software Development · William &amp; Mary</p>
+<!-- FOOTER -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">CODELAB<span class="dot">.</span>SH</div>
+        <p>Interactive teaching modules and student projects for Generative AI for Software Development at William &amp; Mary.</p>
       </div>
-      <div class="footer-links">
-        <a href="projects.html" class="footer-link">Projects</a>
-        <a href="teaching.html" class="footer-link">Teaching</a>
-        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
-        <a href="https://github.com/antonio-mastropaolo/codelab" class="footer-link" target="_blank">GitHub</a>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="teaching.html">Teaching</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="https://antoniomastropaolo.com/teaching/" target="_blank">Instructor</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Modules</h5>
+        <ul>
+          <li><a href="course-intro.html">0. Course Intro</a></li>
+          <li><a href="msr.html">1. MSR</a></li>
+          <li><a href="probabilistic-code-models.html">2. Probabilistic Models</a></li>
+          <li><a href="evaluation-metrics.html">3. Evaluation</a></li>
+          <li><a href="dl4se-foundations.html">4. DL4SE Foundations</a></li>
+          <li><a href="prompting-llms.html">5. Prompting LLMs</a></li>
+          <li><a href="hallucinations.html">6. Hallucinations</a></li>
+          <li><a href="genetic-algorithms.html">GA. Genetic Algorithms &amp; LLMs</a></li>
+        </ul>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
-      <span>Built with vibe coding ✨</span>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
+      <span class="footer-wm">W&amp;M Computer Science</span>
     </div>
-  </footer>
+  </div>
+</footer>
 
 </body>
 </html>
