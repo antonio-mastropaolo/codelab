@@ -147,12 +147,13 @@
     /* Modules compact grid */
     .mod-compact-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 10px;
     }
     .mod-row {
       display: flex; align-items: center; gap: 16px;
       padding: 16px 20px;
+      min-width: 0; overflow: hidden;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -276,7 +277,7 @@
       .home-hero { padding: calc(var(--nav-h) + 32px) 0 40px; }
       .home-section { padding: 40px 0; }
       .mod-compact-grid,
-      .projects-preview-grid { grid-template-columns: 1fr; }
+      .projects-preview-grid { grid-template-columns: minmax(0, 1fr); }
     }
   </style>
 </head>

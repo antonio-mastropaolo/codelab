@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="platform.css" />
   <style>
     /* ── Project Card (light-theme version) ─────────────────── */
-    .projects-layout { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: start; }
-    .projects-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); }
+    .projects-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; align-items: start; }
+    .projects-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); min-width: 0; overflow: hidden; }
 
     .sidebar-section { margin-bottom: 28px; }
     .sidebar-title {
@@ -62,7 +62,7 @@
     /* ── Project Cards Grid ────────────────────────────────── */
     .projects-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 24px;
     }
 
@@ -70,7 +70,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      overflow: hidden;
+      overflow: hidden; min-width: 0;
       box-shadow: var(--shadow-sm);
       transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
       text-decoration: none; display: block;
@@ -141,9 +141,9 @@
     .pfc-stat .lbl { font-size: 0.72rem; color: var(--text-3); }
 
     @media (max-width: 900px) {
-      .projects-layout { grid-template-columns: 1fr; gap: 24px; }
+      .projects-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
       .projects-sidebar { position: static; }
-      .pfc-grid { grid-template-columns: 1fr; }
+      .pfc-grid { grid-template-columns: minmax(0, 1fr); }
       .pfc-visual { height: 160px; border-right: none; border-bottom: 1px solid var(--border); }
       .pfc-action { padding: 0 32px 20px; }
       .pfc-stats { flex-wrap: wrap; gap: 16px; }

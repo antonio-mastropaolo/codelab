@@ -520,7 +520,7 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
 .semester-divider h3 {
   font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3);
-  white-space: nowrap;
+  white-space: nowrap; min-width: 0;
 }
 .semester-divider::before, .semester-divider::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
@@ -578,9 +578,9 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
 
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
-  .feature-card { grid-template-columns: 1fr; }
+  .feature-card { grid-template-columns: minmax(0, 1fr); }
   .feature-card-visual { min-height: 240px; }
-  .about-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: minmax(0, 1fr); }
   .about-avatar-wrap { flex-direction: row; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -588,7 +588,7 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   h1 { font-size: 2.4rem; }
   .nav-links { display: none; }
   .nav-instructor { display: none; }
-  .footer-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: minmax(0, 1fr); }
   .hero-actions { flex-direction: column; }
   .hero-actions .btn { justify-content: center; }
   .feature-card-body { padding: 28px; }
@@ -622,4 +622,7 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   .module-grid { gap: 16px; }
   .project-grid { gap: 16px; }
   .eyebrow { font-size: 0.65rem; margin-bottom: 10px; }
+  .semester-divider { gap: 10px; }
+  .semester-divider::before, .semester-divider::after { display: none; }
+  .semester-divider h3 { white-space: normal; text-align: center; font-size: 0.72rem; }
 }
