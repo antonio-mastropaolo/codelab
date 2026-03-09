@@ -34,6 +34,7 @@
     .slides-wrapper{flex:1;overflow:hidden;position:relative;}
     .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
     .slide.active{display:flex;}
+    .slide > *{flex-shrink:0;}
     @media(max-width:800px){.slide{padding:20px 18px 16px;}}
     .nav-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-top:1px solid var(--border);background:var(--bg-2);flex-shrink:0;}
     .nav-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--bg-3);color:var(--text-secondary);font-size:0.85rem;font-family:var(--font-display);cursor:pointer;transition:all 0.15s;}

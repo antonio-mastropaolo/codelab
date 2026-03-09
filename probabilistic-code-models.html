@@ -40,6 +40,7 @@
     .slides-wrapper{flex:1;overflow:hidden;position:relative;}
     .slide{position:absolute;inset:0;padding:36px 60px 20px;display:none;flex-direction:column;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
     .slide.active{display:flex;}
+    .slide > *{flex-shrink:0;}
     @media(max-width:800px){.slide{padding:20px 18px 16px;}}
 
     /* Nav bar */
