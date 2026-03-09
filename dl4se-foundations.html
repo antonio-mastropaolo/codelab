@@ -13,7 +13,7 @@
       --border:#30363D;
       --green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);
       --blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--cyan:#39D5FF;
-      --text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;
+      --text-primary:#E6EDF3;--text-secondary:#A2ABB5;--text-muted:#7D8590;
       --font-display:'Space Grotesk',sans-serif;
       --font-body:'Inter',sans-serif;
       --font-mono:'JetBrains Mono',monospace;
@@ -209,6 +209,20 @@
     .acr:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
     .acr.first-use { animation: acr-glow 2s ease-out; }
     @keyframes acr-glow { 0%,15% { background: rgba(0,217,126,0.25); border-radius: 3px; } 100% { background: transparent; } }
+
+    /* Finish overlay */
+    .finish-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;}
+    .finish-overlay.visible{display:flex;}
+    .finish-card{background:var(--bg-2);border:1px solid rgba(0,217,126,0.2);border-radius:16px;padding:40px 48px;text-align:center;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);}
+    .finish-icon{font-size:3rem;margin-bottom:16px;}
+    .finish-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin-bottom:8px;}
+    .finish-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.6;margin-bottom:28px;}
+    .finish-actions{display:flex;flex-direction:column;gap:10px;}
+    .finish-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-family:var(--font-display);font-weight:600;font-size:0.9rem;text-decoration:none;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);}
+    .finish-btn.outline{background:var(--bg-3);color:var(--text-secondary);}
+    .finish-btn.outline:hover{border-color:rgba(0,217,126,0.2);color:var(--green);}
+    .finish-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);}
+    .finish-btn.primary:hover{background:#00F58C;border-color:#00F58C;}
   </style>
 </head>
 <body>
@@ -1572,8 +1586,8 @@
 const TOTAL = 34;
 let cur = 1;
 function buildDots(){const c=document.getElementById('dots');c.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='slide-dot'+(i===cur?' active':'');d.onclick=()=>setSlide(i);c.appendChild(d);}}
-function setSlide(n){document.getElementById('slide-'+cur).classList.remove('active');cur=Math.max(1,Math.min(TOTAL,n));document.getElementById('slide-'+cur).classList.add('active');document.getElementById('counter').textContent=cur+' / '+TOTAL;document.getElementById('progress').style.width=(cur/TOTAL*100).toFixed(2)+'%';document.getElementById('prev-btn').disabled=cur===1;document.getElementById('next-btn').disabled=cur===TOTAL;buildDots();onSlideEnter(cur);processAcronyms();}
-function goSlide(d){setSlide(cur+d);}
+function setSlide(n){document.getElementById('slide-'+cur).classList.remove('active');cur=Math.max(1,Math.min(TOTAL,n));document.getElementById('slide-'+cur).classList.add('active');document.getElementById('counter').textContent=cur+' / '+TOTAL;document.getElementById('progress').style.width=(cur/TOTAL*100).toFixed(2)+'%';document.getElementById('prev-btn').disabled=cur===1;document.getElementById('next-btn').disabled=false;document.getElementById('next-btn').textContent=cur===TOTAL?'\u2713 Finish':'Next \u2192';buildDots();onSlideEnter(cur);processAcronyms();}
+function goSlide(d){if(d===1&&cur===TOTAL){showFinish();return;}setSlide(cur+d);}
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')goSlide(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goSlide(-1);});
 
     // ── Acronym tooltip system ──────────────────────────────
@@ -2091,7 +2105,25 @@ function renderAutoreg(){
   }
   el.innerHTML=html;
 }
+
+function showFinish(){document.getElementById('finish-overlay').classList.add('visible');}
+function hideFinish(){document.getElementById('finish-overlay').classList.remove('visible');}
+function restartModule(){hideFinish();document.getElementById('slide-'+cur).classList.remove('active');cur=1;document.getElementById('slide-1').classList.add('active');setSlide(1);window.scrollTo(0,0);}
 </script>
 <style>@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}</style>
+
+  <div class="finish-overlay" id="finish-overlay" onclick="if(event.target===this)hideFinish()">
+    <div class="finish-card">
+      <div class="finish-icon">&#127881;</div>
+      <h2 class="finish-title">Module Complete!</h2>
+      <p class="finish-desc">You've finished <strong>DL4SE Foundations</strong>. Great work!</p>
+      <div class="finish-actions">
+        <a href="prompting-llms.html" class="finish-btn primary">Next Module: Prompting LLMs &rarr;</a>
+        <button class="finish-btn outline" onclick="restartModule()">&#8634; Restart Module</button>
+        <a href="teaching.html" class="finish-btn outline">&larr; Back to Modules</a>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

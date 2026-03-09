@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root{--bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;--border:#30363D;--green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);--blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--text-primary:#E6EDF3;--text-secondary:#8B949E;--text-muted:#484F58;--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace}
+    :root{--bg:#0D1117;--bg-2:#161B22;--bg-3:#21262D;--border:#30363D;--green:#00D97E;--green-dim:rgba(0,217,126,0.08);--green-border:rgba(0,217,126,0.2);--blue:#58A6FF;--purple:#BC8CFF;--amber:#E3B341;--red:#FF5F57;--text-primary:#E6EDF3;--text-secondary:#A2ABB5;--text-muted:#7D8590;--font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace}
     *{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;display:flex;flex-direction:column}
     .topbar{display:flex;align-items:center;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0;gap:16px;z-index:100}
@@ -152,6 +152,20 @@
     .acr:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
     .acr.first-use { animation: acr-glow 2s ease-out; }
     @keyframes acr-glow { 0%,15% { background: rgba(0,217,126,0.25); border-radius: 3px; } 100% { background: transparent; } }
+
+    /* Finish overlay */
+    .finish-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;}
+    .finish-overlay.visible{display:flex;}
+    .finish-card{background:var(--bg-2);border:1px solid rgba(0,217,126,0.2);border-radius:16px;padding:40px 48px;text-align:center;max-width:480px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);}
+    .finish-icon{font-size:3rem;margin-bottom:16px;}
+    .finish-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin-bottom:8px;}
+    .finish-desc{color:var(--text-secondary);font-size:0.9rem;line-height:1.6;margin-bottom:28px;}
+    .finish-actions{display:flex;flex-direction:column;gap:10px;}
+    .finish-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-family:var(--font-display);font-weight:600;font-size:0.9rem;text-decoration:none;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);}
+    .finish-btn.outline{background:var(--bg-3);color:var(--text-secondary);}
+    .finish-btn.outline:hover{border-color:rgba(0,217,126,0.2);color:var(--green);}
+    .finish-btn.primary{background:var(--green);color:var(--bg);border-color:var(--green);}
+    .finish-btn.primary:hover{background:#00F58C;border-color:#00F58C;}
   </style>
 </head>
 <body>
@@ -761,14 +775,14 @@
     let current = 1;
 
     // ── Navigation ──────────────────────────────────────────
-    function goSlide(d){const n=current+d;if(n<1||n>TOTAL)return;document.getElementById('slide-'+current).classList.remove('active');current=n;document.getElementById('slide-'+current).classList.add('active');updateUI();initSlide(current);}
+    function goSlide(d){if(d===1&&current===TOTAL){showFinish();return;}const n=current+d;if(n<1||n>TOTAL)return;document.getElementById('slide-'+current).classList.remove('active');current=n;document.getElementById('slide-'+current).classList.add('active');updateUI();initSlide(current);}
     function setSlide(n){document.getElementById('slide-'+current).classList.remove('active');current=n;document.getElementById('slide-'+current).classList.add('active');updateUI();initSlide(current);}
     function updateUI(){
       document.getElementById('counter').textContent=current+' / '+TOTAL;
       document.getElementById('progress').style.width=(current/TOTAL*100).toFixed(2)+'%';
       document.getElementById('prev-btn').disabled=current===1;
-      document.getElementById('next-btn').disabled=current===TOTAL;
-      document.getElementById('next-btn').textContent=current===TOTAL?'Finish':'Next →';
+      document.getElementById('next-btn').disabled=false;
+      document.getElementById('next-btn').textContent=current===TOTAL?'\u2713 Finish':'Next \u2192';
       const dots=document.getElementById('dots');dots.innerHTML='';
       for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='slide-dot'+(i===current?' active':'');d.onclick=()=>setSlide(i);dots.appendChild(d);}
       processAcronyms();
@@ -1030,9 +1044,27 @@
       const grid=document.getElementById('dash-scores');grid.innerHTML=Object.entries(d.scores).map(([k,v])=>{let color=v>=0.7?'var(--green)':v>=0.3?'var(--amber)':'var(--red)';return'<div class="score-box"><div class="sb-name">'+k+'</div><div class="sb-val" style="color:'+color+';">'+v.toFixed(2)+'</div></div>';}).join('');
     }
 
+    function showFinish(){document.getElementById('finish-overlay').classList.add('visible');}
+    function hideFinish(){document.getElementById('finish-overlay').classList.remove('visible');}
+    function restartModule(){hideFinish();document.getElementById('slide-'+current).classList.remove('active');current=1;document.getElementById('slide-1').classList.add('active');setSlide(1);window.scrollTo(0,0);}
+
     // ── Init ────────────────────────────────────────
     updateUI();
     setTimeout(()=>initSlide(1),100);
   </script>
+
+  <div class="finish-overlay" id="finish-overlay" onclick="if(event.target===this)hideFinish()">
+    <div class="finish-card">
+      <div class="finish-icon">&#127881;</div>
+      <h2 class="finish-title">Module Complete!</h2>
+      <p class="finish-desc">You've finished <strong>Evaluation Metrics</strong>. Great work!</p>
+      <div class="finish-actions">
+        <a href="dl4se-foundations.html" class="finish-btn primary">Next Module: DL4SE Foundations &rarr;</a>
+        <button class="finish-btn outline" onclick="restartModule()">&#8634; Restart Module</button>
+        <a href="teaching.html" class="finish-btn outline">&larr; Back to Modules</a>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
