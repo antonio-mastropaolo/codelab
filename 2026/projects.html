@@ -46,8 +46,8 @@
     /* ── Project Cards Grid ────────────────────────────────── */
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
     }
 
     .project-full-card {
@@ -57,7 +57,7 @@
       overflow: hidden; min-width: 0;
       box-shadow: var(--shadow-sm);
       transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
-      text-decoration: none; display: block;
+      text-decoration: none; display: flex; flex-direction: column;
     }
     .project-full-card:hover {
       transform: translateY(-3px);
@@ -65,25 +65,20 @@
       border-color: var(--wm-green);
     }
 
-    .pfc-grid {
-      display: grid; grid-template-columns: 200px 1fr auto;
-      align-items: center; gap: 0;
-    }
-
     .pfc-visual {
-      height: 100%;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
     }
-    .pfc-visual.green  { background: linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04)); border-right: 1px solid rgba(5,150,105,0.15); }
-    .pfc-visual.blue   { background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04)); border-right: 1px solid rgba(59,130,246,0.15); }
-    .pfc-visual.purple { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04)); border-right: 1px solid rgba(139,92,246,0.15); }
-    .pfc-visual.amber  { background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(217,119,6,0.04)); border-right: 1px solid rgba(217,119,6,0.15); }
-    .pfc-visual.rose   { background: linear-gradient(135deg, rgba(244,63,94,0.12), rgba(244,63,94,0.04)); border-right: 1px solid rgba(244,63,94,0.15); }
-    .pfc-icon { font-size: 3.2rem; line-height: 1; position: relative; z-index: 1; }
+    .pfc-visual.green  { background: linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04)); border-bottom: 1px solid rgba(5,150,105,0.15); }
+    .pfc-visual.blue   { background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04)); border-bottom: 1px solid rgba(59,130,246,0.15); }
+    .pfc-visual.purple { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04)); border-bottom: 1px solid rgba(139,92,246,0.15); }
+    .pfc-visual.amber  { background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(217,119,6,0.04)); border-bottom: 1px solid rgba(217,119,6,0.15); }
+    .pfc-visual.rose   { background: linear-gradient(135deg, rgba(244,63,94,0.12), rgba(244,63,94,0.04)); border-bottom: 1px solid rgba(244,63,94,0.15); }
+    .pfc-icon { font-size: 3rem; line-height: 1; position: relative; z-index: 1; }
     .pfc-accent-ring {
       position: absolute;
       width: 100px; height: 100px;
@@ -96,62 +91,62 @@
     .pfc-visual.amber  .pfc-accent-ring { background: #D97706; }
     .pfc-visual.rose   .pfc-accent-ring { background: #F43F5E; }
 
-    .pfc-body { padding: 28px 32px; }
+    .pfc-body { padding: 24px 24px 16px; flex: 1; }
     .pfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-    .pfc-body h2 { font-size: 1.3rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
-    .pfc-body > p { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; max-width: 680px; }
+    .pfc-body h2 { font-size: 1.15rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
+    .pfc-body > p { font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
 
-    .pfc-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; }
+    .pfc-meta { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
     .pfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
     .pfc-meta-item .icon { font-size: 0.85rem; }
 
-    .pfc-action { flex-shrink: 0; padding-right: 32px; }
+    .pfc-action { padding: 0 24px 20px; }
+    .pfc-action .btn { width: 100%; justify-content: center; }
 
     .pfc-skills {
       border-top: 1px solid var(--border);
-      padding: 14px 32px;
+      padding: 12px 24px;
       display: flex; gap: 6px; flex-wrap: wrap;
     }
     .pfc-skill {
-      font-size: 0.72rem; padding: 3px 10px;
+      font-size: 0.7rem; padding: 3px 9px;
       background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
       color: var(--text-3); font-family: 'JetBrains Mono', monospace;
     }
 
     .pfc-stats {
-      display: flex; gap: 32px; padding: 14px 32px;
+      display: flex; gap: 24px; padding: 12px 24px;
       border-top: 1px solid var(--border); background: var(--wm-green-mist);
+      margin-top: auto;
     }
     .pfc-stat { display: flex; align-items: center; gap: 6px; }
-    .pfc-stat .val { font-size: 1rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
-    .pfc-stat .lbl { font-size: 0.72rem; color: var(--text-3); }
+    .pfc-stat .val { font-size: 0.95rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
+    .pfc-stat .lbl { font-size: 0.7rem; color: var(--text-3); }
 
     @media (max-width: 900px) {
       .vibe-intro { grid-template-columns: 1fr; }
       .vibe-icon { display: none; }
-      .pfc-grid { grid-template-columns: minmax(0, 1fr); }
-      .pfc-visual { height: 160px; border-right: none; border-bottom: 1px solid var(--border); }
-      .pfc-action { padding: 0 32px 20px; }
+      .projects-grid { grid-template-columns: 1fr; max-width: 640px; }
       .pfc-stats { flex-wrap: wrap; gap: 16px; }
     }
     @media (max-width: 640px) {
       .vibe-intro { padding: 20px; margin-bottom: 32px; }
-      .pfc-body { padding: 20px; }
-      .pfc-body h2 { font-size: 1.1rem; }
+      .pfc-body { padding: 20px 20px 14px; }
+      .pfc-body h2 { font-size: 1.05rem; }
       .pfc-body > p { font-size: 0.82rem; }
       .pfc-action { padding: 0 20px 16px; }
       .pfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
       .pfc-stats { padding: 12px 20px; gap: 12px; }
-      .pfc-skills { padding: 12px 20px; }
-      .pfc-visual { height: 120px; }
+      .pfc-skills { padding: 10px 20px; }
+      .pfc-visual { height: 100px; }
       .pfc-icon { font-size: 2.4rem; }
     }
     @media (max-width: 480px) {
-      .pfc-body { padding: 16px; }
+      .pfc-body { padding: 16px 16px 12px; }
       .pfc-stats { padding: 10px 16px; }
       .pfc-skills { padding: 10px 16px; }
       .pfc-action { padding: 0 16px 14px; }
-      .pfc-visual { height: 100px; }
+      .pfc-visual { height: 80px; }
       .pfc-icon { font-size: 2rem; }
     }
   </style>
@@ -213,35 +208,28 @@
         <div class="vibe-icon">&#9889;</div>
       </div>
 
-      <!-- Full-Stack Applications -->
-      <div class="semester-divider" style="margin-top:0;">
-        <h3>Full-Stack Applications</h3>
-      </div>
-
       <div class="projects-grid">
 
         <!-- Stock Trading -->
         <a href="project-stock-trading.html" class="project-full-card" id="project-fintech">
-          <div class="pfc-grid">
-            <div class="pfc-visual green">
-              <div class="pfc-accent-ring"></div>
-              <span class="pfc-icon">&#128200;</span>
+          <div class="pfc-visual green">
+            <div class="pfc-accent-ring"></div>
+            <span class="pfc-icon">&#128200;</span>
+          </div>
+          <div class="pfc-body">
+            <div class="pfc-tags">
+              <span class="section-tag tag-green">Fintech</span>
+              <span class="section-tag tag-teal">Full-stack</span>
             </div>
-            <div class="pfc-body">
-              <div class="pfc-tags">
-                <span class="section-tag tag-green">Fintech</span>
-                <span class="section-tag tag-teal">Full-stack</span>
-              </div>
-              <h2>Stock Trading Signal Platform</h2>
-              <p>A full-featured trading platform with AI-generated buy/sell signals, real-time candlestick charts, portfolio analytics, and a customizable watchlist. Built entirely through prompt-driven development.</p>
-              <div class="pfc-meta">
-                <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
-                <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
-              </div>
+            <h2>Stock Trading Signal Platform</h2>
+            <p>A full-featured trading platform with AI-generated buy/sell signals, real-time candlestick charts, portfolio analytics, and a customizable watchlist.</p>
+            <div class="pfc-meta">
+              <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+              <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
             </div>
-            <div class="pfc-action">
-              <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
-            </div>
+          </div>
+          <div class="pfc-action">
+            <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
           </div>
           <div class="pfc-stats">
             <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
@@ -256,73 +244,26 @@
           </div>
         </a>
 
-        <!-- RouteLLM -->
-        <a href="project-print-manager.html" class="project-full-card" id="project-infra">
-          <div class="pfc-grid">
-            <div class="pfc-visual rose">
-              <div class="pfc-accent-ring"></div>
-              <span class="pfc-icon">&#9889;</span>
-            </div>
-            <div class="pfc-body">
-              <div class="pfc-tags">
-                <span class="section-tag" style="background:rgba(244,63,94,0.1);color:#F43F5E;border:1px solid rgba(244,63,94,0.2);">Infrastructure</span>
-                <span class="section-tag tag-green">AI-Powered</span>
-              </div>
-              <h2>RouteLLM &mdash; AI Inference Optimizer</h2>
-              <p>Submit any AI task and the platform selects the optimal model, compresses prompts, minimizes tokens, and routes to the cheapest provider that meets quality thresholds. An intelligent efficiency layer for LLM APIs.</p>
-              <div class="pfc-meta">
-                <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
-                <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
-              </div>
-            </div>
-            <div class="pfc-action">
-              <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
-            </div>
-          </div>
-          <div class="pfc-stats">
-            <div class="pfc-stat"><span class="val">Smart</span><span class="lbl">Routing</span></div>
-            <div class="pfc-stat"><span class="val">64%</span><span class="lbl">Avg Savings</span></div>
-            <div class="pfc-stat"><span class="val">Multi</span><span class="lbl">Provider</span></div>
-          </div>
-          <div class="pfc-skills">
-            <span class="pfc-skill">model routing</span>
-            <span class="pfc-skill">prompt compression</span>
-            <span class="pfc-skill">cost optimization</span>
-            <span class="pfc-skill">token efficiency</span>
-          </div>
-        </a>
-
-      </div>
-
-      <!-- Education & Learning Tools -->
-      <div class="semester-divider">
-        <h3>Education &amp; Learning Tools</h3>
-      </div>
-
-      <div class="projects-grid">
-
         <!-- Prompt Engineering -->
         <a href="project-prompt-engineering.html" class="project-full-card" id="project-edtech">
-          <div class="pfc-grid">
-            <div class="pfc-visual blue">
-              <div class="pfc-accent-ring"></div>
-              <span class="pfc-icon">&#129504;</span>
+          <div class="pfc-visual blue">
+            <div class="pfc-accent-ring"></div>
+            <span class="pfc-icon">&#129504;</span>
+          </div>
+          <div class="pfc-body">
+            <div class="pfc-tags">
+              <span class="section-tag tag-blue">Education</span>
+              <span class="section-tag tag-gold">COLL 100</span>
             </div>
-            <div class="pfc-body">
-              <div class="pfc-tags">
-                <span class="section-tag tag-blue">Education</span>
-                <span class="section-tag tag-gold">COLL 100</span>
-              </div>
-              <h2>AI Prompt Engineering Platform</h2>
-              <p>An interactive teaching tool designed for COLL 100 students. Side-by-side prompt comparison, structured evaluation rubrics, and a prompt improvement feedback loop powered by AI.</p>
-              <div class="pfc-meta">
-                <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
-                <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
-              </div>
+            <h2>AI Prompt Engineering Platform</h2>
+            <p>An interactive teaching tool for COLL 100 students. Side-by-side prompt comparison, evaluation rubrics, and a prompt improvement feedback loop powered by AI.</p>
+            <div class="pfc-meta">
+              <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+              <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
             </div>
-            <div class="pfc-action">
-              <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
-            </div>
+          </div>
+          <div class="pfc-action">
+            <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
           </div>
           <div class="pfc-stats">
             <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
@@ -337,37 +278,26 @@
           </div>
         </a>
 
-      </div>
-
-      <!-- Developer Tools -->
-      <div class="semester-divider">
-        <h3>Developer Tools</h3>
-      </div>
-
-      <div class="projects-grid">
-
         <!-- CodeLens -->
         <a href="project-code-review.html" class="project-full-card" id="project-devtools">
-          <div class="pfc-grid">
-            <div class="pfc-visual purple">
-              <div class="pfc-accent-ring"></div>
-              <span class="pfc-icon">&#128269;</span>
+          <div class="pfc-visual purple">
+            <div class="pfc-accent-ring"></div>
+            <span class="pfc-icon">&#128269;</span>
+          </div>
+          <div class="pfc-body">
+            <div class="pfc-tags">
+              <span class="section-tag tag-purple">DevTools</span>
+              <span class="section-tag tag-green">AI-Powered</span>
             </div>
-            <div class="pfc-body">
-              <div class="pfc-tags">
-                <span class="section-tag tag-purple">DevTools</span>
-                <span class="section-tag tag-green">AI-Powered</span>
-              </div>
-              <h2>CodeLens — AI Code Review</h2>
-              <p>Paste any code snippet and receive a structured, multi-dimensional AI review covering bugs, code style, algorithmic complexity, and security vulnerabilities. A developer's second pair of eyes.</p>
-              <div class="pfc-meta">
-                <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
-                <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
-              </div>
+            <h2>CodeLens &mdash; AI Code Review</h2>
+            <p>Paste any code snippet and receive a structured, multi-dimensional AI review covering bugs, code style, algorithmic complexity, and security vulnerabilities.</p>
+            <div class="pfc-meta">
+              <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+              <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
             </div>
-            <div class="pfc-action">
-              <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
-            </div>
+          </div>
+          <div class="pfc-action">
+            <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
           </div>
           <div class="pfc-stats">
             <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
@@ -382,37 +312,26 @@
           </div>
         </a>
 
-      </div>
-
-      <!-- Career & Professional -->
-      <div class="semester-divider">
-        <h3>Career &amp; Professional</h3>
-      </div>
-
-      <div class="projects-grid">
-
         <!-- Interview Coach -->
         <a href="project-interview-prep.html" class="project-full-card" id="project-careers">
-          <div class="pfc-grid">
-            <div class="pfc-visual amber">
-              <div class="pfc-accent-ring"></div>
-              <span class="pfc-icon">&#128188;</span>
+          <div class="pfc-visual amber">
+            <div class="pfc-accent-ring"></div>
+            <span class="pfc-icon">&#128188;</span>
+          </div>
+          <div class="pfc-body">
+            <div class="pfc-tags">
+              <span class="section-tag tag-gold">Careers</span>
+              <span class="section-tag tag-blue">Adaptive AI</span>
             </div>
-            <div class="pfc-body">
-              <div class="pfc-tags">
-                <span class="section-tag tag-gold">Careers</span>
-                <span class="section-tag tag-blue">Adaptive AI</span>
-              </div>
-              <h2>AI Interview Coach</h2>
-              <p>Simulate real technical and behavioral interviews with an adaptive AI interviewer. Get instant, structured feedback on clarity, accuracy, and communication — then track your improvement over sessions.</p>
-              <div class="pfc-meta">
-                <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
-                <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
-              </div>
+            <h2>AI Interview Coach</h2>
+            <p>Simulate real technical and behavioral interviews with an adaptive AI interviewer. Get instant, structured feedback on clarity, accuracy, and communication.</p>
+            <div class="pfc-meta">
+              <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+              <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
             </div>
-            <div class="pfc-action">
-              <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
-            </div>
+          </div>
+          <div class="pfc-action">
+            <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
           </div>
           <div class="pfc-stats">
             <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
@@ -424,6 +343,40 @@
             <span class="pfc-skill">instant feedback</span>
             <span class="pfc-skill">progress tracking</span>
             <span class="pfc-skill">question bank</span>
+          </div>
+        </a>
+
+        <!-- RouteLLM -->
+        <a href="project-print-manager.html" class="project-full-card" id="project-infra">
+          <div class="pfc-visual rose">
+            <div class="pfc-accent-ring"></div>
+            <span class="pfc-icon">&#9889;</span>
+          </div>
+          <div class="pfc-body">
+            <div class="pfc-tags">
+              <span class="section-tag" style="background:rgba(244,63,94,0.1);color:#F43F5E;border:1px solid rgba(244,63,94,0.2);">Infrastructure</span>
+              <span class="section-tag tag-green">AI-Powered</span>
+            </div>
+            <h2>RouteLLM &mdash; Inference Optimizer</h2>
+            <p>Submit any AI task and the platform selects the optimal model, compresses prompts, minimizes tokens, and routes to the cheapest provider that meets quality thresholds.</p>
+            <div class="pfc-meta">
+              <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+              <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+            </div>
+          </div>
+          <div class="pfc-action">
+            <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+          </div>
+          <div class="pfc-stats">
+            <div class="pfc-stat"><span class="val">Smart</span><span class="lbl">Routing</span></div>
+            <div class="pfc-stat"><span class="val">64%</span><span class="lbl">Avg Savings</span></div>
+            <div class="pfc-stat"><span class="val">Multi</span><span class="lbl">Provider</span></div>
+          </div>
+          <div class="pfc-skills">
+            <span class="pfc-skill">model routing</span>
+            <span class="pfc-skill">prompt compression</span>
+            <span class="pfc-skill">cost optimization</span>
+            <span class="pfc-skill">token efficiency</span>
           </div>
         </a>
 

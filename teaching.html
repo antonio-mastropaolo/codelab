@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teaching — CodeLab</title>
+  <title>Learning Material — CodeLab</title>
   <meta name="description" content="Interactive teaching modules for Generative AI for Software Development (CSCI 455/555) at William & Mary." />
   <link rel="stylesheet" href="platform.css" />
   <style>
@@ -40,7 +40,7 @@
     .module-full-card:hover .mfc-num { color: var(--wm-green); transition: color 0.25s; }
     .mfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
     .mfc-title { font-size: 1.3rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
-    .mfc-desc { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; max-width: 680px; }
+    .mfc-desc { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; max-width: 800px; }
     .mfc-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; }
     .mfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
     .mfc-meta-item .icon { font-size: 0.85rem; }
@@ -65,80 +65,7 @@
       color: var(--text-3); font-family: 'JetBrains Mono', monospace;
     }
 
-    .teaching-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 40px; align-items: start; }
-    .teaching-sidebar {
-      position: sticky; top: calc(var(--nav-h) + 24px);
-      max-height: calc(100vh - var(--nav-h) - 48px);
-      overflow-y: auto; scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-      padding-top: 44px;
-      margin-left: -24px;
-    }
-
-    /* ── Sticker card ─────────────────────────────── */
-    .course-card {
-      background: #FFFEF9;
-      border: none;
-      border-radius: 4px;
-      padding: 0;
-      overflow: visible;
-      position: relative;
-      transform: rotate(-1.5deg);
-      box-shadow:
-        0 1px 2px rgba(0,0,0,0.06),
-        0 4px 12px rgba(0,0,0,0.05),
-        0 12px 32px rgba(0,0,0,0.04),
-        2px 3px 0 -1px #FFFEF9,
-        2px 3px 1px rgba(0,0,0,0.04),
-        4px 6px 0 -1px #FDFCF5,
-        4px 6px 1px rgba(0,0,0,0.03);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .course-card::before {
-      content: '';
-      position: absolute;
-      top: -8px; left: 50%; transform: translateX(-50%);
-      width: 48px; height: 16px;
-      background: rgba(185,151,91,0.35);
-      border-radius: 2px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      z-index: 1;
-    }
-    .course-card:hover {
-      transform: rotate(-0.5deg) translateY(-2px);
-      box-shadow:
-        0 2px 4px rgba(0,0,0,0.08),
-        0 8px 24px rgba(0,0,0,0.08),
-        0 16px 48px rgba(0,0,0,0.06),
-        2px 3px 0 -1px #FFFEF9,
-        2px 3px 1px rgba(0,0,0,0.04),
-        4px 6px 0 -1px #FDFCF5,
-        4px 6px 1px rgba(0,0,0,0.03);
-    }
-    .course-card-header {
-      padding: 24px 24px 16px;
-      border-bottom: 1px dashed rgba(185,151,91,0.3);
-    }
-    .course-card-header h4 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.58rem; font-weight: 700;
-      color: var(--wm-gold); margin: 0 0 8px;
-      text-transform: uppercase; letter-spacing: 0.14em;
-    }
-    .course-card-header .course-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; font-weight: 700;
-      color: var(--text); line-height: 1.3; margin: 0;
-    }
-    .course-card-body { padding: 16px 24px 22px; }
-    .course-row {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
-      font-size: 0.74rem;
-    }
-    .course-row:last-child { border-bottom: none; }
-    .course-key { color: var(--text-3); min-width: 64px; }
-    .course-val { color: var(--text); font-weight: 600; text-align: right; }
+    .teaching-layout { width: 100%; }
 
     .tag-green { background: rgba(17,87,64,0.08); color: var(--wm-green); border: 1px solid rgba(17,87,64,0.2); }
     .tag-gold { background: var(--wm-gold-pale); color: #8B6914; border: 1px solid rgba(185,151,91,0.3); }
@@ -148,9 +75,7 @@
     .tag-teal { background: #F0FDFA; color: #0D9488; border: 1px solid #99F6E4; }
 
     @media (max-width: 900px) {
-      .teaching-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-      .teaching-sidebar { position: static; min-width: 0; padding-top: 0; margin-left: 0; }
-      .course-card { transform: rotate(-1deg); max-width: 320px; }
+      .teaching-layout { max-width: 100%; }
       .mfc-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
       .mfc-num { display: none; }
       .module-stats { flex-wrap: wrap; gap: 16px; }
@@ -164,7 +89,6 @@
       .mfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
     }
     @media (max-width: 480px) {
-      .teaching-layout { gap: 16px; }
       .mfc-grid { padding: 16px; }
       .module-stats { padding: 10px 16px; }
       .mfc-skills { padding: 10px 16px; }
@@ -265,7 +189,7 @@
     </a>
     <div class="nav-links">
       <a href="index.html" class="nav-link">Home</a>
-      <a href="teaching.html" class="nav-link active">Teaching</a>
+      <a href="teaching.html" class="nav-link active">Learning Material</a>
       <a href="projects.html" class="nav-link">Projects</a>
       <a href="contact.html" class="nav-link">Reach Out</a>
     </div>
@@ -285,8 +209,8 @@
       <span class="sep">·</span>
       <span>William &amp; Mary</span>
     </div>
-    <h1 class="animate-up">Teaching Modules</h1>
-    <p class="lead animate-up animate-up-1" style="max-width:620px;margin-top:12px;">
+    <h1 class="animate-up">Learning Material</h1>
+    <p class="lead animate-up animate-up-1" style="margin-top:12px;">
       Interactive course content for <strong style="color:var(--wm-gold-light);">Generative AI for Software Development</strong>. Each module includes hands-on examples, live demos, and interactive exercises. Open directly in your browser — no install required.
     </p>
   </div>
@@ -296,42 +220,6 @@
 <section style="padding: 64px 0 96px; background: var(--bg);">
   <div class="container">
     <div class="teaching-layout">
-
-      <!-- Sidebar -->
-      <aside class="teaching-sidebar">
-        <div class="course-card">
-          <div class="course-card-header">
-            <h4>CSCI 455 / 555</h4>
-            <p class="course-title">Generative AI for<br>Software Development</p>
-          </div>
-          <div class="course-card-body">
-            <div class="course-row">
-              <span class="course-key">Semester</span>
-              <span class="course-val">Spring 2026</span>
-            </div>
-            <div class="course-row">
-              <span class="course-key">Schedule</span>
-              <span class="course-val">MWF 1:00 &ndash; 1:50 PM</span>
-            </div>
-            <div class="course-row">
-              <span class="course-key">Location</span>
-              <span class="course-val">Blow Hall 333</span>
-            </div>
-            <div class="course-row">
-              <span class="course-key">Credits</span>
-              <span class="course-val">3</span>
-            </div>
-            <div class="course-row">
-              <span class="course-key">Instructor</span>
-              <span class="course-val">Prof. A. Mastropaolo</span>
-            </div>
-            <div class="course-row">
-              <span class="course-key">Institution</span>
-              <span class="course-val">William &amp; Mary</span>
-            </div>
-          </div>
-        </div>
-      </aside>
 
       <!-- Module list -->
       <main class="module-list">
@@ -671,7 +559,7 @@
       </div>
       <nav class="footer-nav">
         <a href="index.html">Home</a>
-        <a href="teaching.html">Teaching</a>
+        <a href="teaching.html">Learning Material</a>
         <a href="projects.html">Projects</a>
         <a href="contact.html">Reach Out</a>
       </nav>

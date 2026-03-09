@@ -11,7 +11,7 @@
 
     /* Hero */
     .home-hero {
-      padding: calc(var(--nav-h) + 72px) 0 80px;
+      padding: calc(var(--nav-h) + 96px) 0 100px;
       background: var(--wm-green-dark);
       border-bottom: 4px solid var(--wm-gold);
       position: relative; overflow: hidden;
@@ -25,7 +25,7 @@
       background-size: 48px 48px;
       pointer-events: none;
     }
-    .home-hero .hero-inner { position: relative; z-index: 1; max-width: 680px; }
+    .home-hero .hero-inner { position: relative; z-index: 1; max-width: 720px; }
     .home-hero h1 { color: #FFFFFF; margin-bottom: 20px; }
     .home-hero h1 .italic { font-style: italic; color: var(--wm-gold-light); }
     .home-hero .lead { color: rgba(255,255,255,0.65); margin-bottom: 36px; }
@@ -46,7 +46,7 @@
     .stats-strip {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 28px 0;
+      padding: 36px 0;
     }
     .stats-grid {
       display: grid;
@@ -71,7 +71,7 @@
     .section-head { margin-bottom: 40px; }
     .section-head .eyebrow { margin-bottom: 12px; }
     .section-head h2 { margin-bottom: 12px; }
-    .section-head .lead { max-width: 620px; }
+    .section-head .lead { max-width: 720px; }
 
     /* Course info grid */
     .info-grid {
@@ -248,6 +248,40 @@
     .about-content h2 { margin-bottom: 16px; }
     .about-content p { margin-bottom: 14px; }
 
+    /* What is CodeLab section */
+    .codelab-intro-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(32px, 5vw, 64px);
+      align-items: start;
+    }
+    .codelab-intro-text .lead {
+      font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .codelab-intro-text p { margin-bottom: 16px; }
+    .codelab-intro-highlights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .intro-highlight {
+      background: var(--wm-green-mist);
+      border: 1px solid rgba(17,87,64,0.12);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .intro-highlight .hl-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 12px;
+      background: rgba(17,87,64,0.08);
+    }
+    .intro-highlight h4 { font-size: 0.95rem; margin-bottom: 6px; }
+    .intro-highlight p { font-size: 0.82rem; line-height: 1.55; margin-bottom: 0; }
+
     /* ── Responsive ─────────────────────────────────────────── */
     @media (max-width: 1024px) {
       .info-grid { grid-template-columns: 1fr; }
@@ -256,6 +290,7 @@
       .learn-grid { grid-template-columns: 1fr 1fr; }
       .about-grid { grid-template-columns: 1fr; }
       .about-avatar-wrap { flex-direction: row; gap: 20px; }
+      .codelab-intro-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
       .home-hero { padding: calc(var(--nav-h) + 48px) 0 56px; }
@@ -271,6 +306,7 @@
       .about-avatar-wrap { flex-direction: column; }
       .about-avatar { width: 100px; height: 100px; font-size: 2rem; }
       .hero-meta-bar { gap: 8px; }
+      .codelab-intro-highlights { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .container { padding: 0 16px; }
@@ -292,7 +328,7 @@
     </a>
     <div class="nav-links">
       <a href="index.html" class="nav-link active">Home</a>
-      <a href="teaching.html" class="nav-link">Teaching</a>
+      <a href="teaching.html" class="nav-link">Learning Material</a>
       <a href="projects.html" class="nav-link">Projects</a>
       <a href="contact.html" class="nav-link">Reach Out</a>
     </div>
@@ -331,7 +367,7 @@
     <div class="stats-grid">
       <div class="stat-item">
         <span class="stat-num">7</span>
-        <span class="stat-label">Teaching Modules</span>
+        <span class="stat-label">Learning Modules</span>
       </div>
       <div class="stat-item">
         <span class="stat-num">6</span>
@@ -348,6 +384,51 @@
     </div>
   </div>
 </div>
+
+<!-- WHAT IS CODELAB? -->
+<section class="home-section alt" id="what-is-codelab">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">About the Platform</div>
+      <h2>What is CodeLab?</h2>
+    </div>
+    <div class="codelab-intro-grid">
+      <div class="codelab-intro-text">
+        <p class="lead">
+          CodeLab is the open, browser-based companion platform for Generative AI for Software Development (CSCI&nbsp;455/555) at William&nbsp;&amp;&nbsp;Mary.
+        </p>
+        <p>
+          It provides self-paced interactive learning modules, student project showcases, and hands-on demos &mdash; all free, no install required. CodeLab bridges the gap between academic teaching and real-world AI-assisted development by giving students a place to learn, experiment, and publish their work.
+        </p>
+        <p>
+          Every module features interactive slides with embedded runnable code, live demos, and exercises. Student projects showcase full applications built through &ldquo;vibe coding&rdquo; &mdash; building software primarily through natural language and AI pair-programming.
+        </p>
+      </div>
+      <div class="codelab-intro-highlights">
+        <div class="intro-highlight">
+          <div class="hl-icon">&#127760;</div>
+          <h4>Open Access</h4>
+          <p>Free for anyone &mdash; no login, no install. Open your browser and start learning.</p>
+        </div>
+        <div class="intro-highlight">
+          <div class="hl-icon">&#128187;</div>
+          <h4>Browser-Based</h4>
+          <p>Interactive slides with live code, runnable demos, and exercises &mdash; all in-browser.</p>
+        </div>
+        <div class="intro-highlight">
+          <div class="hl-icon">&#127891;</div>
+          <h4>Student Showcases</h4>
+          <p>Real projects built by undergraduates using AI pair-programming and vibe coding.</p>
+        </div>
+        <div class="intro-highlight">
+          <div class="hl-icon">&#128300;</div>
+          <h4>Research-Backed</h4>
+          <p>Developed by an active researcher in AI for Software Engineering at W&amp;M.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- COURSE OVERVIEW -->
 <section class="home-section">
@@ -442,7 +523,7 @@
 <section class="home-section">
   <div class="container">
     <div class="section-head">
-      <div class="eyebrow">Teaching Resources</div>
+      <div class="eyebrow">Learning Resources</div>
       <h2>Interactive Learning Modules</h2>
       <p class="lead">
         Seven self-paced, browser-based modules covering the full pipeline — from mining repositories to detecting hallucinations. Each module includes interactive demos and hands-on exercises. No install required.
@@ -526,7 +607,7 @@
     <div class="section-head">
       <div class="eyebrow">Student Showcase</div>
       <h2>Vibe Coding Projects</h2>
-      <p class="lead" style="max-width:620px;">
+      <p class="lead">
         Students use generative AI tools to build real, functional applications from scratch — a practice called vibe coding. Each project is prototyped through natural language prompts and AI pair-programming.
       </p>
     </div>
@@ -624,7 +705,7 @@
       </div>
       <nav class="footer-nav">
         <a href="index.html">Home</a>
-        <a href="teaching.html">Teaching</a>
+        <a href="teaching.html">Learning Material</a>
         <a href="projects.html">Projects</a>
         <a href="contact.html">Reach Out</a>
       </nav>
