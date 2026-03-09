@@ -141,12 +141,33 @@
     .pfc-stat .lbl { font-size: 0.72rem; color: var(--text-3); }
 
     @media (max-width: 900px) {
-      .projects-layout { grid-template-columns: 1fr; }
+      .projects-layout { grid-template-columns: 1fr; gap: 24px; }
       .projects-sidebar { position: static; }
       .pfc-grid { grid-template-columns: 1fr; }
       .pfc-visual { height: 160px; border-right: none; border-bottom: 1px solid var(--border); }
       .pfc-action { padding: 0 32px 20px; }
       .pfc-stats { flex-wrap: wrap; gap: 16px; }
+    }
+    @media (max-width: 640px) {
+      .pfc-body { padding: 20px; }
+      .pfc-body h2 { font-size: 1.1rem; }
+      .pfc-body > p { font-size: 0.82rem; }
+      .pfc-action { padding: 0 20px 16px; }
+      .pfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
+      .pfc-stats { padding: 12px 20px; gap: 12px; }
+      .pfc-skills { padding: 12px 20px; }
+      .pfc-visual { height: 120px; }
+      .pfc-icon { font-size: 2.4rem; }
+      .info-card { padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .projects-layout { gap: 16px; }
+      .pfc-body { padding: 16px; }
+      .pfc-stats { padding: 10px 16px; }
+      .pfc-skills { padding: 10px 16px; }
+      .pfc-action { padding: 0 16px 14px; }
+      .pfc-visual { height: 100px; }
+      .pfc-icon { font-size: 2rem; }
     }
   </style>
 </head>

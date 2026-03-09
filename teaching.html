@@ -121,11 +121,28 @@
     .tag-teal { background: #F0FDFA; color: #0D9488; border: 1px solid #99F6E4; }
 
     @media (max-width: 900px) {
-      .teaching-layout { grid-template-columns: 1fr; }
+      .teaching-layout { grid-template-columns: 1fr; gap: 24px; }
       .teaching-sidebar { position: static; }
       .mfc-grid { grid-template-columns: 1fr; gap: 12px; }
       .mfc-num { display: none; }
       .module-stats { flex-wrap: wrap; gap: 16px; }
+    }
+    @media (max-width: 640px) {
+      .mfc-grid { padding: 20px; gap: 10px; }
+      .module-stats { padding: 12px 20px; gap: 12px; }
+      .mfc-skills { padding: 12px 20px; }
+      .mfc-title { font-size: 1.1rem; }
+      .mfc-desc { font-size: 0.82rem; }
+      .mfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
+      .course-card { margin-top: 16px; }
+    }
+    @media (max-width: 480px) {
+      .teaching-layout { gap: 16px; }
+      .mfc-grid { padding: 16px; }
+      .module-stats { padding: 10px 16px; }
+      .mfc-skills { padding: 10px 16px; }
+      .module-section { margin-bottom: 40px; }
+      .semester-divider { margin: 32px 0 20px; }
     }
 
     /* ── Module Loading Transition ──────────────────────── */
