@@ -195,6 +195,53 @@
     .info-grid-2x2{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;margin-top:6px;}
     @media(max-width:700px){.info-grid-2x2{grid-template-columns:1fr !important;grid-template-rows:auto !important;}}
 
+    /* ── GA Visualizer (Slide 12) ─────────────────────────────── */
+    .gav-phase-bar{display:flex;align-items:center;gap:4px;margin-bottom:12px;flex-wrap:wrap;}
+    .gav-phase{font-size:0.68rem;font-family:var(--font-mono);padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted);background:var(--bg-3);transition:all 0.25s;white-space:nowrap;}
+    .gav-phase.active{color:var(--green);border-color:var(--green-border);background:var(--green-dim);}
+    .gav-phase.done{color:var(--text-muted);border-color:transparent;background:var(--bg-2);opacity:0.5;}
+    .gav-arrow{color:var(--text-muted);font-size:0.7rem;opacity:0.4;}
+    .gav-gen-badge{margin-left:auto;font-family:var(--font-mono);font-size:0.75rem;color:var(--amber);font-weight:600;}
+
+    .gav-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;}
+    @media(max-width:700px){.gav-grid{grid-template-columns:1fr;}}
+    .gav-panel-title{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+    .gav-pop-scroll{max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;padding-right:4px;}
+
+    .gav-ind{display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:6px;background:var(--bg-3);border:1px solid var(--border);margin-bottom:3px;transition:all 0.35s ease;position:relative;}
+    .gav-ind .gav-rank{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);min-width:20px;text-align:right;}
+    .gav-ind .gav-bits{display:flex;gap:2px;flex:1;flex-wrap:nowrap;}
+    .gav-ind .gav-b{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;border:1px solid var(--border);background:var(--bg-2);transition:all 0.2s;flex-shrink:0;}
+    .gav-ind .gav-b.one{color:var(--green);border-color:var(--green-border);background:rgba(0,217,126,0.08);}
+    .gav-ind .gav-b.zero{color:var(--blue);border-color:rgba(88,166,255,0.15);background:rgba(88,166,255,0.05);}
+    .gav-ind .gav-fit{font-family:var(--font-mono);font-size:0.68rem;color:var(--amber);margin-left:auto;min-width:30px;text-align:right;white-space:nowrap;}
+    .gav-ind.dimmed{opacity:0.25;transform:scale(0.97);}
+    .gav-ind.parent-a{border-color:var(--green-border);background:var(--green-dim);box-shadow:0 0 12px rgba(0,217,126,0.15);transform:scale(1.02);z-index:2;}
+    .gav-ind.parent-b{border-color:rgba(188,140,255,0.3);background:rgba(188,140,255,0.06);box-shadow:0 0 12px rgba(188,140,255,0.15);transform:scale(1.02);z-index:2;}
+
+    .gav-ops{display:flex;flex-direction:column;gap:10px;}
+    .gav-ops-section{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;transition:all 0.3s;opacity:0.3;}
+    .gav-ops-section.active{opacity:1;border-color:var(--green-border);}
+    .gav-ops-section .gav-ops-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+    .gav-ops-section.active .gav-ops-label{color:var(--green);}
+
+    .gav-xo-point{display:flex;align-items:center;justify-content:center;gap:4px;margin:4px 0;font-family:var(--font-mono);font-size:0.68rem;color:var(--amber);}
+    .gav-xo-line{flex:1;height:1px;background:var(--amber);}
+
+    .gav-b.from-a{color:var(--green);border-color:var(--green-border);background:rgba(0,217,126,0.12);}
+    .gav-b.from-b{color:var(--purple);border-color:rgba(188,140,255,0.3);background:rgba(188,140,255,0.1);}
+    .gav-b.mutated{color:var(--red);border-color:rgba(248,81,73,0.3);background:rgba(248,81,73,0.15);animation:gav-mut-flash 0.5s ease;}
+    @keyframes gav-mut-flash{0%,30%{background:rgba(248,81,73,0.4);transform:scale(1.3);}100%{background:rgba(248,81,73,0.15);transform:scale(1);}}
+
+    .gav-chart-wrap{margin-top:10px;}
+    .gav-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+    .gav-speed-label{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-muted);white-space:nowrap;}
+    .gav-speed-slider{width:60px;}
+
+    .gav-params-row{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+    .gav-param{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-secondary);}
+    .gav-param span:last-child{color:var(--green);font-family:var(--font-mono);font-weight:600;}
+
     /* Finish overlay */
     .finish-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;}
     .finish-overlay.visible{display:flex;}
@@ -731,42 +778,76 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
 <!-- ==================== SLIDE 12 ==================== -->
 <div class="slide" id="slide-12">
   <div class="slide-label">Extra &middot; Slide 12</div>
-  <h2 class="slide-h2">Interactive: <em>Parameter Explorer</em></h2>
-  <p class="slide-p">Adjust the GA parameters below, then run the optimization. The GA will try to maximize the number of 1-bits in a 20-bit chromosome. Observe how different settings affect convergence speed and final fitness.</p>
+  <h2 class="slide-h2">Interactive: <em>GA Evolution Visualizer</em></h2>
+  <p class="slide-p">Watch a genetic algorithm evolve in real time. See how a <strong>population</strong> of candidates is evaluated, how <strong>parents are selected</strong>, how <strong>crossover</strong> and <strong>mutation</strong> create offspring, and how the population improves over generations.</p>
 
   <div class="inter-panel">
     <div class="inter-header">
-      <div class="inter-title">GA Parameter Explorer <span class="inter-badge">Interactive</span></div>
-      <div style="display:flex;gap:6px;">
-        <button class="sim-btn primary" onclick="runParamExplorer()">Run GA</button>
-        <button class="sim-btn" onclick="resetParamExplorer()">Reset</button>
+      <div class="inter-title">GA Evolution Visualizer <span class="inter-badge">Interactive</span></div>
+      <div class="gav-controls">
+        <span class="gav-speed-label">Speed</span>
+        <input type="range" id="gav-speed" class="gav-speed-slider" min="1" max="5" value="3" step="1">
+        <button class="sim-btn" id="gav-step-btn" onclick="gavStep()">Step</button>
+        <button class="sim-btn primary" id="gav-play-btn" onclick="gavPlay()">&#9654; Play</button>
+        <button class="sim-btn" onclick="gavReset()">Reset</button>
       </div>
     </div>
     <div class="inter-body">
-      <div class="two-col" style="gap:18px;">
+      <!-- Compact params row -->
+      <div class="gav-params-row">
+        <div class="gav-param"><span>Pop:</span><span id="gav-pop-val">12</span></div>
+        <div class="gav-param"><span>Bits:</span><span>10</span></div>
+        <div class="gav-param"><span>Mut:</span><span>0.08</span></div>
+        <div class="gav-param"><span>Cross:</span><span>0.85</span></div>
+      </div>
+
+      <!-- Phase bar -->
+      <div class="gav-phase-bar" id="gav-phases">
+        <span class="gav-phase active" data-phase="init">Initialize</span>
+        <span class="gav-arrow">&rarr;</span>
+        <span class="gav-phase" data-phase="eval">Evaluate</span>
+        <span class="gav-arrow">&rarr;</span>
+        <span class="gav-phase" data-phase="select">Select Parents</span>
+        <span class="gav-arrow">&rarr;</span>
+        <span class="gav-phase" data-phase="crossover">Crossover</span>
+        <span class="gav-arrow">&rarr;</span>
+        <span class="gav-phase" data-phase="mutate">Mutate</span>
+        <span class="gav-arrow">&rarr;</span>
+        <span class="gav-phase" data-phase="nextgen">Next Gen</span>
+        <span class="gav-gen-badge" id="gav-gen-badge">Gen 0</span>
+      </div>
+
+      <!-- Main vis grid -->
+      <div class="gav-grid">
+        <!-- Left: Population -->
         <div>
-          <div class="slider-group">
-            <div class="slider-label"><span>Population Size</span><span id="param-pop-val">30</span></div>
-            <input type="range" id="param-pop" min="10" max="100" value="30" step="10" oninput="document.getElementById('param-pop-val').textContent=this.value">
-          </div>
-          <div class="slider-group">
-            <div class="slider-label"><span>Mutation Rate</span><span id="param-mut-val">0.05</span></div>
-            <input type="range" id="param-mut" min="0" max="30" value="5" step="1" oninput="document.getElementById('param-mut-val').textContent=(this.value/100).toFixed(2)">
-          </div>
-          <div class="slider-group">
-            <div class="slider-label"><span>Crossover Rate</span><span id="param-cross-val">0.80</span></div>
-            <input type="range" id="param-cross" min="10" max="100" value="80" step="5" oninput="document.getElementById('param-cross-val').textContent=(this.value/100).toFixed(2)">
-          </div>
-          <div class="slider-group">
-            <div class="slider-label"><span>Generations</span><span id="param-gen-val">30</span></div>
-            <input type="range" id="param-gen" min="5" max="80" value="30" step="5" oninput="document.getElementById('param-gen-val').textContent=this.value">
-          </div>
+          <div class="gav-panel-title">POPULATION <span style="color:var(--amber);margin-left:auto;" id="gav-pop-count">12 individuals</span></div>
+          <div class="gav-pop-scroll" id="gav-pop-grid"></div>
         </div>
-        <div>
-          <canvas id="param-chart" width="500" height="180" style="width:100%;height:180px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;display:none;"></canvas>
-          <div id="param-results" style="font-size:0.8rem;color:var(--text-secondary);">
-            <div style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;margin-bottom:6px;">RESULTS WILL APPEAR HERE</div>
-            <div style="color:var(--text-muted);font-size:0.78rem;">Adjust the sliders and click "Run GA" to see how different parameters affect optimization performance.</div>
+
+        <!-- Right: Operations panel -->
+        <div class="gav-ops">
+          <!-- Parents section -->
+          <div class="gav-ops-section" id="gav-parents-sec">
+            <div class="gav-ops-label">Selected Parents</div>
+            <div id="gav-parents-viz">
+              <div style="font-size:0.75rem;color:var(--text-muted);font-style:italic;">Click Step or Play to begin evolution</div>
+            </div>
+          </div>
+          <!-- Crossover section -->
+          <div class="gav-ops-section" id="gav-xover-sec">
+            <div class="gav-ops-label">Crossover &amp; Mutation &rarr; Offspring</div>
+            <div id="gav-xover-viz"></div>
+          </div>
+          <!-- Stats section -->
+          <div class="gav-ops-section active" id="gav-stats-sec" style="opacity:1;">
+            <div class="gav-ops-label">Fitness Tracker</div>
+            <canvas id="gav-chart" width="400" height="80" style="width:100%;height:80px;background:var(--bg-2);border-radius:6px;"></canvas>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+              <div style="font-family:var(--font-mono);font-size:0.7rem;"><span style="color:var(--green);">&#9632;</span> Best: <span id="gav-stat-best">--</span></div>
+              <div style="font-family:var(--font-mono);font-size:0.7rem;"><span style="color:var(--blue);">&#9632;</span> Avg: <span id="gav-stat-avg">--</span></div>
+              <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);">Gen: <span id="gav-stat-gen">0</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1679,171 +1760,358 @@ function gaBuilderReset() {
 // Initialize on load
 gaBuilderInit();
 
-// ── Slide 12: Parameter Explorer ──────────────────────────────────
-function runParamExplorer() {
-  const popSize = parseInt(document.getElementById('param-pop').value);
-  const mutRate = parseInt(document.getElementById('param-mut').value) / 100;
-  const crossRate = parseInt(document.getElementById('param-cross').value) / 100;
-  const numGens = parseInt(document.getElementById('param-gen').value);
-  const chromoLen = 20;
+// ── Slide 12: GA Evolution Visualizer ─────────────────────────────
+const GAV = {
+  POP_SIZE: 12, CHROMO_LEN: 10, MUT_RATE: 0.08, CROSS_RATE: 0.85, MAX_GEN: 25,
+  pop: [], gen: 0, history: [], phase: 'init',
+  parentA: null, parentB: null, parentAIdx: -1, parentBIdx: -1,
+  child1: null, child2: null, xoverPt: -1,
+  child1Muts: [], child2Muts: [],
+  playing: false, playTimer: null,
+  fitness(c) { return c.reduce((s, b) => s + b, 0); },
 
-  // Initialize population
-  let pop = [];
-  for (let i = 0; i < popSize; i++) {
-    const chromo = [];
-    for (let j = 0; j < chromoLen; j++) chromo.push(Math.random() < 0.5 ? 1 : 0);
-    pop.push(chromo);
-  }
-
-  const fitness = (c) => c.reduce((s, b) => s + b, 0);
-  let history = [];
-
-  for (let gen = 0; gen <= numGens; gen++) {
-    const fitnesses = pop.map(fitness);
-    const bestFit = Math.max(...fitnesses);
-    const avgFit = (fitnesses.reduce((s, f) => s + f, 0) / popSize).toFixed(1);
-    history.push({ gen, best: bestFit, avg: parseFloat(avgFit) });
-
-    if (gen === numGens) break;
-
-    // Create new population
-    const newPop = [];
-    // Elitism: keep best
-    const bestIdx = fitnesses.indexOf(bestFit);
-    newPop.push([...pop[bestIdx]]);
-
-    while (newPop.length < popSize) {
-      // Tournament selection (k=2)
-      const i1 = Math.floor(Math.random() * popSize);
-      const i2 = Math.floor(Math.random() * popSize);
-      const p1 = fitnesses[i1] >= fitnesses[i2] ? pop[i1] : pop[i2];
-      const i3 = Math.floor(Math.random() * popSize);
-      const i4 = Math.floor(Math.random() * popSize);
-      const p2 = fitnesses[i3] >= fitnesses[i4] ? pop[i3] : pop[i4];
-
-      let child;
-      if (Math.random() < crossRate) {
-        const pt = Math.floor(Math.random() * chromoLen);
-        child = p1.slice(0, pt).concat(p2.slice(pt));
-      } else {
-        child = [...p1];
-      }
-
-      // Mutation
-      for (let j = 0; j < chromoLen; j++) {
-        if (Math.random() < mutRate) child[j] = 1 - child[j];
-      }
-      newPop.push(child);
+  init() {
+    this.pop = [];
+    for (let i = 0; i < this.POP_SIZE; i++) {
+      const c = [];
+      for (let j = 0; j < this.CHROMO_LEN; j++) c.push(Math.random() < 0.5 ? 1 : 0);
+      this.pop.push(c);
     }
-    pop = newPop;
+    this.gen = 0; this.history = []; this.phase = 'init';
+    this.parentA = this.parentB = this.child1 = this.child2 = null;
+    this.parentAIdx = this.parentBIdx = -1;
+    this.child1Muts = []; this.child2Muts = [];
+    this.recordHistory();
+    this.renderPop();
+    this.renderOps();
+    this.drawChart();
+    this.updatePhaseBar();
+    this.updateStats();
+    document.getElementById('gav-gen-badge').textContent = 'Gen 0';
+    document.getElementById('gav-parents-viz').innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);font-style:italic;">Click Step or Play to begin evolution</div>';
+    document.getElementById('gav-xover-viz').innerHTML = '';
+  },
+
+  recordHistory() {
+    const fits = this.pop.map(c => this.fitness(c));
+    const best = Math.max(...fits);
+    const avg = +(fits.reduce((s, f) => s + f, 0) / fits.length).toFixed(1);
+    this.history.push({ best, avg });
+  },
+
+  renderBits(chromo, classes) {
+    return chromo.map((b, i) => {
+      let cls = b ? 'one' : 'zero';
+      if (classes && classes[i]) cls = classes[i];
+      return '<span class="gav-b ' + cls + '">' + b + '</span>';
+    }).join('');
+  },
+
+  renderPop(highlightA, highlightB) {
+    const grid = document.getElementById('gav-pop-grid');
+    const fits = this.pop.map(c => this.fitness(c));
+    // Sort by fitness (descending) for display, keep track of original indices
+    const indices = this.pop.map((_, i) => i);
+    indices.sort((a, b) => fits[b] - fits[a]);
+
+    let html = '';
+    indices.forEach((idx, rank) => {
+      let rowClass = 'gav-ind';
+      if (highlightA !== undefined && idx === highlightA) rowClass += ' parent-a';
+      else if (highlightB !== undefined && idx === highlightB) rowClass += ' parent-b';
+      else if (highlightA !== undefined) rowClass += ' dimmed';
+      html += '<div class="' + rowClass + '" title="Individual #' + (idx+1) + ' — Fitness: ' + fits[idx] + '/' + this.CHROMO_LEN + '">';
+      html += '<span class="gav-rank">#' + (rank+1) + '</span>';
+      html += '<span class="gav-bits">' + this.renderBits(this.pop[idx]) + '</span>';
+      html += '<span class="gav-fit">' + fits[idx] + '/' + this.CHROMO_LEN + '</span>';
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+    document.getElementById('gav-pop-count').textContent = this.POP_SIZE + ' individuals';
+  },
+
+  renderOps() {
+    // Reset ops panels
+    document.getElementById('gav-parents-sec').classList.remove('active');
+    document.getElementById('gav-xover-sec').classList.remove('active');
+  },
+
+  updatePhaseBar() {
+    const phases = document.querySelectorAll('#gav-phases .gav-phase');
+    const order = ['init', 'eval', 'select', 'crossover', 'mutate', 'nextgen'];
+    const curIdx = order.indexOf(this.phase);
+    phases.forEach((p, i) => {
+      p.classList.remove('active', 'done');
+      if (i === curIdx) p.classList.add('active');
+      else if (i < curIdx) p.classList.add('done');
+    });
+  },
+
+  updateStats() {
+    const h = this.history;
+    if (h.length === 0) return;
+    const last = h[h.length - 1];
+    document.getElementById('gav-stat-best').textContent = last.best + '/' + this.CHROMO_LEN;
+    document.getElementById('gav-stat-avg').textContent = last.avg;
+    document.getElementById('gav-stat-gen').textContent = this.gen;
+    document.getElementById('gav-gen-badge').textContent = 'Gen ' + this.gen;
+  },
+
+  drawChart() {
+    const canvas = document.getElementById('gav-chart');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    const W = rect.width, H = rect.height;
+    const pad = { top: 10, right: 8, bottom: 14, left: 24 };
+    const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle = '#21262D'; ctx.lineWidth = 1;
+    for (let v = 0; v <= this.CHROMO_LEN; v += Math.ceil(this.CHROMO_LEN / 4)) {
+      const y = pad.top + cH - (v / this.CHROMO_LEN) * cH;
+      ctx.beginPath(); ctx.setLineDash([2,2]); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7D8590'; ctx.font = '7px "JetBrains Mono",monospace'; ctx.textAlign = 'right';
+      ctx.fillText(v, pad.left - 3, y + 3);
+    }
+
+    if (this.history.length < 2) return;
+    const maxG = this.MAX_GEN;
+    // Avg fill + line
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top + cH);
+    this.history.forEach((h, i) => { ctx.lineTo(pad.left + (i / maxG) * cW, pad.top + cH - (h.avg / this.CHROMO_LEN) * cH); });
+    ctx.lineTo(pad.left + ((this.history.length - 1) / maxG) * cW, pad.top + cH);
+    ctx.closePath(); ctx.fillStyle = 'rgba(88,166,255,0.06)'; ctx.fill();
+    ctx.beginPath();
+    this.history.forEach((h, i) => { const x = pad.left + (i / maxG) * cW; const y = pad.top + cH - (h.avg / this.CHROMO_LEN) * cH; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.strokeStyle = '#58A6FF'; ctx.lineWidth = 1.2; ctx.stroke();
+    // Best fill + line
+    ctx.beginPath(); ctx.moveTo(pad.left, pad.top + cH);
+    this.history.forEach((h, i) => { ctx.lineTo(pad.left + (i / maxG) * cW, pad.top + cH - (h.best / this.CHROMO_LEN) * cH); });
+    ctx.lineTo(pad.left + ((this.history.length - 1) / maxG) * cW, pad.top + cH);
+    ctx.closePath(); ctx.fillStyle = 'rgba(0,217,126,0.05)'; ctx.fill();
+    ctx.beginPath();
+    this.history.forEach((h, i) => { const x = pad.left + (i / maxG) * cW; const y = pad.top + cH - (h.best / this.CHROMO_LEN) * cH; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+    ctx.strokeStyle = '#00D97E'; ctx.lineWidth = 1.5; ctx.stroke();
+  },
+
+  // ── Step through one phase at a time ──
+  stepPhase() {
+    if (this.gen >= this.MAX_GEN && this.phase === 'nextgen') {
+      this.stop(); return;
+    }
+    const phaseOrder = ['eval', 'select', 'crossover', 'mutate', 'nextgen'];
+    const curIdx = phaseOrder.indexOf(this.phase);
+    if (this.phase === 'init' || this.phase === 'nextgen') {
+      // Start new generation cycle
+      this.phase = 'eval';
+    } else {
+      this.phase = phaseOrder[curIdx + 1];
+    }
+    this.updatePhaseBar();
+    this.executePhase();
+  },
+
+  executePhase() {
+    const fits = this.pop.map(c => this.fitness(c));
+    switch (this.phase) {
+      case 'eval':
+        // Show population sorted by fitness with all visible
+        this.renderPop();
+        this.renderParents('Evaluating fitness of all individuals...');
+        document.getElementById('gav-xover-viz').innerHTML = '';
+        document.getElementById('gav-parents-sec').classList.add('active');
+        document.getElementById('gav-xover-sec').classList.remove('active');
+        break;
+
+      case 'select': {
+        // Tournament selection for two parents
+        const t1a = Math.floor(Math.random() * this.POP_SIZE);
+        const t1b = Math.floor(Math.random() * this.POP_SIZE);
+        this.parentAIdx = fits[t1a] >= fits[t1b] ? t1a : t1b;
+        const t2a = Math.floor(Math.random() * this.POP_SIZE);
+        const t2b = Math.floor(Math.random() * this.POP_SIZE);
+        this.parentBIdx = fits[t2a] >= fits[t2b] ? t2a : t2b;
+        if (this.parentBIdx === this.parentAIdx) this.parentBIdx = (this.parentAIdx + 1) % this.POP_SIZE;
+        this.parentA = [...this.pop[this.parentAIdx]];
+        this.parentB = [...this.pop[this.parentBIdx]];
+
+        // Highlight parents in population
+        this.renderPop(this.parentAIdx, this.parentBIdx);
+
+        // Show parents in ops panel
+        let phtml = '<div class="gav-ind parent-a" style="margin-bottom:4px;">';
+        phtml += '<span class="gav-rank" style="color:var(--green);">P1</span>';
+        phtml += '<span class="gav-bits">' + this.renderBits(this.parentA) + '</span>';
+        phtml += '<span class="gav-fit">' + fits[this.parentAIdx] + '/' + this.CHROMO_LEN + '</span></div>';
+        phtml += '<div class="gav-ind parent-b">';
+        phtml += '<span class="gav-rank" style="color:var(--purple);">P2</span>';
+        phtml += '<span class="gav-bits">' + this.renderBits(this.parentB) + '</span>';
+        phtml += '<span class="gav-fit">' + fits[this.parentBIdx] + '/' + this.CHROMO_LEN + '</span></div>';
+        phtml += '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Tournament selection (k=2): fittest of random pairs</div>';
+        document.getElementById('gav-parents-viz').innerHTML = phtml;
+        document.getElementById('gav-parents-sec').classList.add('active');
+        document.getElementById('gav-xover-sec').classList.remove('active');
+        break;
+      }
+
+      case 'crossover': {
+        // Single-point crossover
+        this.xoverPt = 1 + Math.floor(Math.random() * (this.CHROMO_LEN - 2));
+        if (Math.random() < this.CROSS_RATE) {
+          this.child1 = this.parentA.slice(0, this.xoverPt).concat(this.parentB.slice(this.xoverPt));
+          this.child2 = this.parentB.slice(0, this.xoverPt).concat(this.parentA.slice(this.xoverPt));
+        } else {
+          this.child1 = [...this.parentA];
+          this.child2 = [...this.parentB];
+          this.xoverPt = -1; // no crossover happened
+        }
+        this.child1Muts = [];
+        this.child2Muts = [];
+
+        // Show crossover visualization
+        let xhtml = '';
+        if (this.xoverPt >= 0) {
+          // Parent A bits with crossover coloring
+          xhtml += '<div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:4px;">Crossover at position ' + this.xoverPt + '</div>';
+          // Child 1
+          const c1classes = {};
+          for (let i = 0; i < this.CHROMO_LEN; i++) c1classes[i] = i < this.xoverPt ? 'from-a' : 'from-b';
+          xhtml += '<div class="gav-ind" style="border-color:rgba(0,217,126,0.15);"><span class="gav-rank" style="color:var(--cyan);">C1</span><span class="gav-bits">' + this.renderBits(this.child1, c1classes) + '</span><span class="gav-fit">' + this.fitness(this.child1) + '/' + this.CHROMO_LEN + '</span></div>';
+          // Crossover point indicator
+          xhtml += '<div class="gav-xo-point"><span class="gav-xo-line"></span>cut at ' + this.xoverPt + '<span class="gav-xo-line"></span></div>';
+          // Child 2
+          const c2classes = {};
+          for (let i = 0; i < this.CHROMO_LEN; i++) c2classes[i] = i < this.xoverPt ? 'from-b' : 'from-a';
+          xhtml += '<div class="gav-ind" style="border-color:rgba(188,140,255,0.15);"><span class="gav-rank" style="color:var(--cyan);">C2</span><span class="gav-bits">' + this.renderBits(this.child2, c2classes) + '</span><span class="gav-fit">' + this.fitness(this.child2) + '/' + this.CHROMO_LEN + '</span></div>';
+          xhtml += '<div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;"><span style="color:var(--green);">&#9632;</span> from P1 &nbsp;<span style="color:var(--purple);">&#9632;</span> from P2</div>';
+        } else {
+          xhtml += '<div style="font-size:0.72rem;color:var(--text-muted);font-style:italic;">No crossover this round (copies of parents)</div>';
+          xhtml += '<div class="gav-ind"><span class="gav-rank" style="color:var(--cyan);">C1</span><span class="gav-bits">' + this.renderBits(this.child1) + '</span><span class="gav-fit">' + this.fitness(this.child1) + '/' + this.CHROMO_LEN + '</span></div>';
+          xhtml += '<div class="gav-ind"><span class="gav-rank" style="color:var(--cyan);">C2</span><span class="gav-bits">' + this.renderBits(this.child2) + '</span><span class="gav-fit">' + this.fitness(this.child2) + '/' + this.CHROMO_LEN + '</span></div>';
+        }
+        document.getElementById('gav-xover-viz').innerHTML = xhtml;
+        document.getElementById('gav-xover-sec').classList.add('active');
+        break;
+      }
+
+      case 'mutate': {
+        // Apply mutation
+        this.child1Muts = [];
+        this.child2Muts = [];
+        for (let j = 0; j < this.CHROMO_LEN; j++) {
+          if (Math.random() < this.MUT_RATE) { this.child1[j] = 1 - this.child1[j]; this.child1Muts.push(j); }
+          if (Math.random() < this.MUT_RATE) { this.child2[j] = 1 - this.child2[j]; this.child2Muts.push(j); }
+        }
+
+        // Show mutation results
+        let mhtml = '';
+        if (this.child1Muts.length > 0 || this.child2Muts.length > 0) {
+          mhtml += '<div style="font-size:0.68rem;color:var(--red);margin-bottom:4px;">Mutation! Bits flipped at random positions</div>';
+        } else {
+          mhtml += '<div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:4px;">No mutations this round</div>';
+        }
+        // Child 1 with mutation highlights
+        const c1cls = {};
+        if (this.xoverPt >= 0) { for (let i = 0; i < this.CHROMO_LEN; i++) c1cls[i] = i < this.xoverPt ? 'from-a' : 'from-b'; }
+        this.child1Muts.forEach(i => { c1cls[i] = 'mutated'; });
+        mhtml += '<div class="gav-ind"><span class="gav-rank" style="color:var(--cyan);">C1</span><span class="gav-bits">' + this.renderBits(this.child1, c1cls) + '</span><span class="gav-fit">' + this.fitness(this.child1) + '/' + this.CHROMO_LEN + '</span></div>';
+        // Child 2
+        const c2cls = {};
+        if (this.xoverPt >= 0) { for (let i = 0; i < this.CHROMO_LEN; i++) c2cls[i] = i < this.xoverPt ? 'from-b' : 'from-a'; }
+        this.child2Muts.forEach(i => { c2cls[i] = 'mutated'; });
+        mhtml += '<div class="gav-ind"><span class="gav-rank" style="color:var(--cyan);">C2</span><span class="gav-bits">' + this.renderBits(this.child2, c2cls) + '</span><span class="gav-fit">' + this.fitness(this.child2) + '/' + this.CHROMO_LEN + '</span></div>';
+        if (this.child1Muts.length > 0 || this.child2Muts.length > 0) {
+          mhtml += '<div style="font-size:0.65rem;color:var(--text-muted);margin-top:3px;"><span style="color:var(--red);">&#9632;</span> mutated bits</div>';
+        }
+        document.getElementById('gav-xover-viz').innerHTML = mhtml;
+        break;
+      }
+
+      case 'nextgen': {
+        // Build new generation: elitism + offspring + fill rest
+        const newPop = [];
+        const bestIdx = fits.indexOf(Math.max(...fits));
+        newPop.push([...this.pop[bestIdx]]); // elitism
+        newPop.push([...this.child1]);
+        newPop.push([...this.child2]);
+        // Fill rest via tournament + crossover + mutation
+        while (newPop.length < this.POP_SIZE) {
+          const t1a = Math.floor(Math.random() * this.POP_SIZE);
+          const t1b = Math.floor(Math.random() * this.POP_SIZE);
+          const p1 = fits[t1a] >= fits[t1b] ? this.pop[t1a] : this.pop[t1b];
+          const t2a = Math.floor(Math.random() * this.POP_SIZE);
+          const t2b = Math.floor(Math.random() * this.POP_SIZE);
+          const p2 = fits[t2a] >= fits[t2b] ? this.pop[t2a] : this.pop[t2b];
+          let child;
+          if (Math.random() < this.CROSS_RATE) {
+            const pt = Math.floor(Math.random() * this.CHROMO_LEN);
+            child = p1.slice(0, pt).concat(p2.slice(pt));
+          } else { child = [...p1]; }
+          for (let j = 0; j < this.CHROMO_LEN; j++) { if (Math.random() < this.MUT_RATE) child[j] = 1 - child[j]; }
+          newPop.push(child);
+        }
+        this.pop = newPop;
+        this.gen++;
+        this.recordHistory();
+        this.renderPop();
+        this.drawChart();
+        this.updateStats();
+        document.getElementById('gav-parents-sec').classList.remove('active');
+        document.getElementById('gav-xover-sec').classList.remove('active');
+        this.renderParents('Generation ' + this.gen + ' formed. Population updated.');
+        document.getElementById('gav-xover-viz').innerHTML = '<div style="font-size:0.72rem;color:var(--green);">&#10003; New generation ready</div>';
+        break;
+      }
+    }
+  },
+
+  renderParents(msg) {
+    document.getElementById('gav-parents-viz').innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);font-style:italic;">' + msg + '</div>';
+  },
+
+  stop() {
+    this.playing = false;
+    clearInterval(this.playTimer);
+    this.playTimer = null;
+    const btn = document.getElementById('gav-play-btn');
+    btn.innerHTML = '&#9654; Play';
+    btn.classList.add('primary');
   }
+};
 
-  // Draw fitness chart on canvas
-  const canvas = document.getElementById('param-chart');
-  canvas.style.display = 'block';
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  const W = rect.width, H = rect.height;
-  const pad = { top: 18, right: 12, bottom: 24, left: 36 };
-  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
-
-  ctx.clearRect(0, 0, W, H);
-
-  // Grid lines and labels
-  ctx.strokeStyle = '#21262D'; ctx.lineWidth = 1;
-  for (let v = 0; v <= chromoLen; v += 5) {
-    const y = pad.top + cH - (v / chromoLen) * cH;
-    ctx.beginPath(); ctx.setLineDash([3,3]); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = '#7D8590'; ctx.font = '9px "JetBrains Mono",monospace'; ctx.textAlign = 'right';
-    ctx.fillText(v, pad.left - 4, y + 3);
-  }
-  // X axis labels
-  ctx.textAlign = 'center'; ctx.fillStyle = '#7D8590'; ctx.font = '9px "JetBrains Mono",monospace';
-  const xStep = Math.max(1, Math.ceil(numGens / 6));
-  for (let g = 0; g <= numGens; g += xStep) {
-    const x = pad.left + (g / numGens) * cW;
-    ctx.fillText(g, x, H - 4);
-  }
-
-  // Draw avg fitness line (blue, filled area)
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top + cH);
-  history.forEach((h, i) => {
-    const x = pad.left + (i / Math.max(1, numGens)) * cW;
-    const y = pad.top + cH - (h.avg / chromoLen) * cH;
-    ctx.lineTo(x, y);
-  });
-  ctx.lineTo(pad.left + (history.length - 1) / Math.max(1, numGens) * cW, pad.top + cH);
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(88,166,255,0.08)'; ctx.fill();
-  // Avg line stroke
-  ctx.beginPath();
-  history.forEach((h, i) => {
-    const x = pad.left + (i / Math.max(1, numGens)) * cW;
-    const y = pad.top + cH - (h.avg / chromoLen) * cH;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = '#58A6FF'; ctx.lineWidth = 1.5; ctx.setLineDash([]); ctx.stroke();
-
-  // Draw best fitness line (green, filled area)
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top + cH);
-  history.forEach((h, i) => {
-    const x = pad.left + (i / Math.max(1, numGens)) * cW;
-    const y = pad.top + cH - (h.best / chromoLen) * cH;
-    ctx.lineTo(x, y);
-  });
-  ctx.lineTo(pad.left + (history.length - 1) / Math.max(1, numGens) * cW, pad.top + cH);
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(0,217,126,0.06)'; ctx.fill();
-  // Best line stroke
-  ctx.beginPath();
-  history.forEach((h, i) => {
-    const x = pad.left + (i / Math.max(1, numGens)) * cW;
-    const y = pad.top + cH - (h.best / chromoLen) * cH;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = '#00D97E'; ctx.lineWidth = 2; ctx.stroke();
-
-  // Legend
-  ctx.font = '9px "JetBrains Mono",monospace';
-  ctx.fillStyle = '#00D97E'; ctx.fillRect(pad.left + 4, 4, 14, 3);
-  ctx.fillText('Best', pad.left + 22, 10);
-  ctx.fillStyle = '#58A6FF'; ctx.fillRect(pad.left + 52, 4, 14, 3);
-  ctx.fillText('Avg', pad.left + 70, 10);
-
-  // Render stat cards below chart
-  const last = history[history.length - 1];
-  const convergedGen = history.findIndex(h => h.best === chromoLen);
-  let html = '<div class="stat-row" style="margin-top:8px;">';
-  html += '<div class="stat-card"><div class="stat-val">' + last.best + '/' + chromoLen + '</div><div class="stat-label">Final Best</div></div>';
-  html += '<div class="stat-card"><div class="stat-val blue">' + last.avg.toFixed(1) + '</div><div class="stat-label">Final Avg</div></div>';
-  if (convergedGen >= 0) {
-    html += '<div class="stat-card"><div class="stat-val green">' + convergedGen + '</div><div class="stat-label">Converged at Gen</div></div>';
-  } else {
-    html += '<div class="stat-card"><div class="stat-val amber">N/A</div><div class="stat-label">Did Not Converge</div></div>';
-  }
-  html += '</div>';
-  document.getElementById('param-results').innerHTML = html;
+function gavStep() {
+  GAV.stop();
+  GAV.stepPhase();
 }
 
-function resetParamExplorer() {
-  document.getElementById('param-pop').value = 30;
-  document.getElementById('param-pop-val').textContent = '30';
-  document.getElementById('param-mut').value = 5;
-  document.getElementById('param-mut-val').textContent = '0.05';
-  document.getElementById('param-cross').value = 80;
-  document.getElementById('param-cross-val').textContent = '0.80';
-  document.getElementById('param-gen').value = 30;
-  document.getElementById('param-gen-val').textContent = '30';
-  document.getElementById('param-chart').style.display = 'none';
-  document.getElementById('param-results').innerHTML = '<div style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;margin-bottom:6px;">RESULTS WILL APPEAR HERE</div><div style="color:var(--text-muted);font-size:0.78rem;">Adjust the sliders and click "Run GA" to see how different parameters affect optimization performance.</div>';
+function gavPlay() {
+  if (GAV.playing) { GAV.stop(); return; }
+  GAV.playing = true;
+  const btn = document.getElementById('gav-play-btn');
+  btn.innerHTML = '&#9646;&#9646; Pause';
+  btn.classList.remove('primary');
+  const speeds = [1200, 800, 500, 300, 150];
+  const spd = speeds[parseInt(document.getElementById('gav-speed').value) - 1] || 500;
+  GAV.playTimer = setInterval(() => {
+    if (GAV.gen >= GAV.MAX_GEN && GAV.phase === 'nextgen') { GAV.stop(); return; }
+    GAV.stepPhase();
+  }, spd);
 }
+
+function gavReset() {
+  GAV.stop();
+  GAV.init();
+}
+
+// Initialize on load
+GAV.init();
 
 // ── Slide 17: Evolve Test Descriptions ────────────────────────────
 const evoInitialDescs = [
@@ -2237,5 +2505,6 @@ function restartModule(){hideFinish();document.getElementById('slide-'+cur).clas
     </div>
   </div>
 
+<script src="feedback-widget.js"></script>
 </body>
 </html>
