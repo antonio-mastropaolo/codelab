@@ -499,34 +499,58 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
 /* ---- Platform Footer ---- */
 .platform-footer {
   background: var(--wm-green-dark);
-  padding: 48px 0 32px;
-  border-top: 4px solid var(--wm-gold);
+  padding: 0;
+  border-top: 3px solid var(--wm-gold);
 }
-.footer-grid {
-  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: clamp(24px, 4vw, 48px); margin-bottom: 40px;
+.footer-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 0; gap: 32px; flex-wrap: wrap;
 }
-.footer-brand .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #FFFFFF; margin-bottom: 10px; }
-.footer-brand .logo .dot { color: var(--wm-gold); }
-.footer-brand p { font-size: 0.85rem; color: rgba(255,255,255,0.5); max-width: 280px; line-height: 1.65; }
-.footer-col h5 { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 14px; font-family: 'Inter', sans-serif; }
-.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.footer-col a { font-size: 0.85rem; color: rgba(255,255,255,0.6); transition: color 0.2s; }
-.footer-col a:hover { color: var(--wm-gold-light); }
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding-top: 24px;
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+.footer-left {
+  display: flex; align-items: center; gap: 12px;
 }
-.footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
-.footer-wm { font-size: 0.78rem; color: var(--wm-gold); font-weight: 600; }
-.footer-badges { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-.footer-badge {
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: #FFFFFF; text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+.footer-logo .fl-mark {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem; font-weight: 600;
-  padding: 4px 10px; border-radius: 4px;
-  background: rgba(185,151,91,0.12); color: var(--wm-gold-light);
-  letter-spacing: 0.04em; border: 1px solid rgba(185,151,91,0.2);
+  font-size: 0.7rem; color: var(--wm-gold);
+  opacity: 0.7;
 }
+.footer-sep {
+  width: 1px; height: 18px; background: rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+.footer-tagline {
+  font-size: 0.78rem; color: rgba(255,255,255,0.4);
+  line-height: 1.4; max-width: 280px;
+}
+.footer-nav {
+  display: flex; align-items: center; gap: 24px;
+  list-style: none; flex-wrap: wrap;
+}
+.footer-nav a {
+  font-size: 0.78rem; color: rgba(255,255,255,0.45);
+  text-decoration: none; transition: color 0.2s;
+  font-family: 'Inter', sans-serif; font-weight: 500;
+}
+.footer-nav a:hover { color: var(--wm-gold-light); }
+.footer-bottom-bar {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 16px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.25); }
+.footer-wm { font-size: 0.72rem; color: var(--wm-gold); font-weight: 600; opacity: 0.7; }
+
+/* Legacy footer classes (kept for backward compat) */
+.footer-grid { display: none; }
+.footer-bottom { display: none; }
 
 /* ---- Teaching Page specific ---- */
 .teaching-hero {
@@ -635,13 +659,15 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   .feature-card-visual { min-height: 240px; }
   .about-grid { grid-template-columns: minmax(0, 1fr); }
   .about-avatar-wrap { flex-direction: row; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
   h1 { font-size: 2.4rem; }
   .nav-links { display: none; }
   .nav-instructor { display: none; }
-  .footer-grid { grid-template-columns: minmax(0, 1fr); }
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .footer-left { flex-wrap: wrap; }
+  .footer-nav { gap: 16px; }
+  .footer-bottom-bar { flex-direction: column; text-align: center; }
   .hero-actions { flex-direction: column; }
   .hero-actions .btn { justify-content: center; }
   .feature-card-body { padding: 28px; }
@@ -671,7 +697,6 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   .about-avatar-wrap { flex-direction: column; align-items: center; }
   .about-links { gap: 8px; }
   .about-link { font-size: 0.78rem; padding: 7px 12px; }
-  .footer-bottom { flex-direction: column; text-align: center; }
   .module-grid { gap: 16px; }
   .project-grid { gap: 16px; }
   .eyebrow { font-size: 0.65rem; margin-bottom: 10px; }
