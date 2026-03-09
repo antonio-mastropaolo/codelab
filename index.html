@@ -189,46 +189,6 @@
     .mod-row:hover .mod-row-arrow { opacity: 1; transform: translateX(2px); }
     .mod-row.gold { border-left: 3px solid var(--wm-gold); }
 
-    /* Projects preview */
-    .projects-preview-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-      gap: 20px;
-    }
-    .proj-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: var(--radius);
-      padding: 24px;
-      text-decoration: none; display: flex; flex-direction: column;
-      transition: transform 0.25s, background 0.25s, border-color 0.25s;
-    }
-    .proj-card:hover {
-      transform: translateY(-3px);
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(185,151,91,0.35);
-    }
-    .proj-tag {
-      display: inline-block;
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; color: var(--wm-gold-light);
-      margin-bottom: 10px;
-    }
-    .proj-card h4 {
-      font-family: 'Inter', sans-serif; font-weight: 600;
-      color: #FFFFFF; margin-bottom: 8px; font-size: 1rem;
-    }
-    .proj-card p { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.55; flex: 1; }
-    .proj-stack {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px;
-    }
-    .proj-stack-tag {
-      font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 4px;
-      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
     /* About section */
     .about-grid {
       display: grid; grid-template-columns: auto 1fr; gap: 48px; align-items: start;
@@ -236,10 +196,11 @@
     .about-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .about-avatar {
       width: 120px; height: 120px; border-radius: 50%;
-      background: var(--wm-green-dark); border: 3px solid var(--wm-gold);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 700;
-      color: var(--wm-gold-light); flex-shrink: 0;
+      border: 3px solid var(--wm-gold);
+      flex-shrink: 0; overflow: hidden;
+    }
+    .about-avatar img {
+      width: 100%; height: 100%; object-fit: cover;
     }
     .about-affiliation {
       text-align: center; font-size: 0.78rem; color: var(--text-3); line-height: 1.5;
@@ -304,7 +265,7 @@
       .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
       .stat-num { font-size: 1.6rem; }
       .about-avatar-wrap { flex-direction: column; }
-      .about-avatar { width: 100px; height: 100px; font-size: 2rem; }
+      .about-avatar { width: 100px; height: 100px; }
       .hero-meta-bar { gap: 8px; }
       .codelab-intro-highlights { grid-template-columns: 1fr; }
     }
@@ -312,8 +273,7 @@
       .container { padding: 0 16px; }
       .home-hero { padding: calc(var(--nav-h) + 32px) 0 40px; }
       .home-section { padding: 40px 0; }
-      .mod-compact-grid,
-      .projects-preview-grid { grid-template-columns: minmax(0, 1fr); }
+      .mod-compact-grid { grid-template-columns: minmax(0, 1fr); }
     }
   </style>
 </head>
@@ -601,67 +561,12 @@
   </div>
 </section>
 
-<!-- PROJECTS PREVIEW -->
-<section class="projects-section">
-  <div class="container" style="position:relative;z-index:1;">
-    <div class="section-head">
-      <div class="eyebrow">Student Showcase</div>
-      <h2>Vibe Coding Projects</h2>
-      <p class="lead">
-        Students use generative AI tools to build real, functional applications from scratch — a practice called vibe coding. Each project is prototyped through natural language prompts and AI pair-programming.
-      </p>
-    </div>
-    <div class="projects-preview-grid">
-      <a href="project-stock-trading.html" class="proj-card">
-        <span class="proj-tag">Fintech</span>
-        <h4>Stock Trading Signal Platform</h4>
-        <p>AI-powered signals, real-time charts, and portfolio analytics. Full-stack fintech meets vibe coding.</p>
-        <div class="proj-stack">
-          <span class="proj-stack-tag">React</span>
-          <span class="proj-stack-tag">Python</span>
-          <span class="proj-stack-tag">APIs</span>
-        </div>
-      </a>
-      <a href="project-prompt-engineering.html" class="proj-card">
-        <span class="proj-tag">Education</span>
-        <h4>AI Prompt Engineering Platform</h4>
-        <p>Interactive playground for COLL 100 students to learn prompt design through A/B evaluation and live feedback.</p>
-        <div class="proj-stack">
-          <span class="proj-stack-tag">LLM APIs</span>
-          <span class="proj-stack-tag">A/B testing</span>
-        </div>
-      </a>
-      <a href="project-code-review.html" class="proj-card">
-        <span class="proj-tag">DevTools</span>
-        <h4>CodeLens — AI Code Review</h4>
-        <p>Paste code, get structured AI review: bugs, style, complexity, security. Built with pure prompt engineering.</p>
-        <div class="proj-stack">
-          <span class="proj-stack-tag">Prompting</span>
-          <span class="proj-stack-tag">AST analysis</span>
-        </div>
-      </a>
-      <a href="project-interview-prep.html" class="proj-card">
-        <span class="proj-tag">Careers</span>
-        <h4>AI Interview Coach</h4>
-        <p>Simulate technical interviews with adaptive AI, get instant feedback, and track improvement over time.</p>
-        <div class="proj-stack">
-          <span class="proj-stack-tag">Adaptive AI</span>
-          <span class="proj-stack-tag">Feedback</span>
-        </div>
-      </a>
-    </div>
-    <div style="text-align:center;margin-top:36px;">
-      <a href="projects.html" class="btn btn-outline-white">View All Projects →</a>
-    </div>
-  </div>
-</section>
-
 <!-- ABOUT -->
 <section class="home-section alt" id="about">
   <div class="container">
     <div class="about-grid">
       <div class="about-avatar-wrap">
-        <div class="about-avatar">AM</div>
+        <div class="about-avatar"><img src="https://antoniomastropaolo.com/assets/img/profile-pic.jpg" alt="Prof. Antonio Mastropaolo" loading="lazy" /></div>
         <div class="about-affiliation">
           <strong>Prof. Antonio Mastropaolo</strong>
           William &amp; Mary<br>Department of Computer Science
@@ -697,22 +602,32 @@
 <!-- FOOTER -->
 <footer class="platform-footer">
   <div class="container">
-    <div class="footer-inner">
-      <div class="footer-left">
+    <div class="footer-top">
+      <div class="footer-brand">
         <a href="index.html" class="footer-logo"><span class="fl-mark">&lt;/&gt;</span> CodeLab</a>
-        <div class="footer-sep"></div>
-        <span class="footer-tagline">Interactive modules for Generative&nbsp;AI at William&nbsp;&amp;&nbsp;Mary</span>
+        <p class="footer-desc">The open companion platform for Generative&nbsp;AI for Software Development (CSCI&nbsp;455/555) at William&nbsp;&amp;&nbsp;Mary. Browser-based, free, and built for learning.</p>
       </div>
-      <nav class="footer-nav">
-        <a href="index.html">Home</a>
-        <a href="teaching.html">Learning Material</a>
-        <a href="projects.html">Projects</a>
-        <a href="contact.html">Reach Out</a>
-      </nav>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="teaching.html">Learning Material</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Reach Out</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website</a></li>
+          <li><a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science</a></li>
+        </ul>
+      </div>
     </div>
     <div class="footer-bottom-bar">
-      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
-      <span class="footer-wm">W&amp;M Computer Science</span>
+      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
+      <a href="https://www.wm.edu/as/computerscience/" target="_blank" class="footer-wm">W&amp;M Computer Science</a>
     </div>
   </div>
 </footer>
