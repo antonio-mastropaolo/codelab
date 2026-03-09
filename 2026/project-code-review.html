@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeLens — AI Code Review · CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .project-hero { padding:120px 0 64px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+    .project-hero::before { content:''; position:absolute; top:-80px; right:-60px; width:500px; height:500px; background:radial-gradient(circle, rgba(188,140,255,0.09) 0%, transparent 70%); pointer-events:none; }
+    .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-muted); margin-bottom:20px; }
+    .breadcrumb a { color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .breadcrumb a:hover { color:var(--green); }
+    .project-hero-inner { display:flex; align-items:flex-start; gap:40px; }
+    @media (max-width:700px) { .project-hero-inner { flex-direction:column; } }
+    .project-hero-icon { width:72px; height:72px; background:linear-gradient(135deg,rgba(188,140,255,0.2),rgba(188,140,255,0.06)); border:1px solid rgba(188,140,255,0.25); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0; }
+    .project-hero h1 { font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:700; letter-spacing:-0.025em; margin-bottom:10px; }
+    .project-hero p  { color:var(--text-secondary); font-size:1rem; line-height:1.65; max-width:580px; margin-bottom:20px; }
+    .project-tags { display:flex; flex-wrap:wrap; gap:8px; }
+    .ptag { font-size:0.75rem; font-family:var(--font-mono); padding:4px 10px; border-radius:5px; }
+    .ptag.purple { background:rgba(188,140,255,0.1); color:var(--purple); border:1px solid rgba(188,140,255,0.2); }
+    .ptag.default { background:var(--bg-3); color:var(--text-muted); border:1px solid var(--border); }
+
+    .mockups-section { padding:64px 0; }
+    .mockup-row { margin-bottom:64px; }
+    .mockup-row:last-child { margin-bottom:0; }
+    .mockup-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .mockup-num { width:28px; height:28px; border-radius:8px; background:rgba(188,140,255,0.1); border:1px solid rgba(188,140,255,0.25); color:var(--purple); font-family:var(--font-mono); font-size:0.8rem; font-weight:600; display:flex; align-items:center; justify-content:center; }
+    .mockup-title { font-size:1rem; font-weight:600; color:var(--text-primary); }
+    .mockup-desc  { font-size:0.85rem; color:var(--text-muted); margin-top:3px; }
+
+    .browser-frame { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+    .browser-bar { background:var(--bg-3); border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:12px; }
+    .browser-dots { display:flex; gap:6px; }
+    .browser-dot { width:10px; height:10px; border-radius:50%; }
+    .bd-red{background:#FF5F57;}.bd-yellow{background:#FFBD2E;}.bd-green{background:#28CA41;}
+    .browser-url { flex:1; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:4px 12px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); }
+
+    .app-shell { display:flex; height:480px; }
+    .app-sidebar { width:190px; background:var(--bg-3); border-right:1px solid var(--border); padding:16px 0; flex-shrink:0; }
+    .app-sidebar-logo { padding:0 14px 12px; font-weight:700; font-size:0.88rem; color:var(--purple); border-bottom:1px solid var(--border); margin-bottom:12px; font-family:var(--font-display); }
+    .app-nav-item { padding:8px 14px; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+    .app-nav-item.active { color:var(--purple); background:rgba(188,140,255,0.08); }
+    .app-main { flex:1; overflow:hidden; background:var(--bg); }
+    .app-topbar { padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-2); }
+    .app-topbar-title { font-weight:600; font-size:0.9rem; }
+    .mini-btn { font-size:0.72rem; padding:4px 10px; border-radius:5px; background:var(--bg-3); border:1px solid var(--border); color:var(--text-secondary); }
+    .mini-btn.purple { background:var(--purple); color:#000; border-color:var(--purple); font-weight:600; }
+    .app-content { padding:14px 18px; overflow:hidden; }
+
+    /* Review Layout (Mockup 1) */
+    .review-layout { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:380px; }
+    .code-input-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .code-panel-header { padding:8px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-3); }
+    .lang-badge { font-size:0.7rem; font-family:var(--font-mono); padding:2px 7px; background:rgba(188,140,255,0.1); color:var(--purple); border:1px solid rgba(188,140,255,0.2); border-radius:3px; }
+    .code-body { flex:1; padding:10px 12px; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-secondary); line-height:1.6; overflow:hidden; }
+    .code-kw  { color:var(--purple); }
+    .code-fn  { color:var(--blue); }
+    .code-str { color:var(--amber); }
+    .code-cmt { color:var(--text-muted); font-style:italic; }
+    .code-num { color:var(--green); }
+    .review-results { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .issue-row { padding:9px 12px; border-bottom:1px solid var(--border); display:flex; gap:10px; align-items:flex-start; }
+    .issue-row:last-child { border-bottom:none; }
+    .issue-icon { font-size:0.9rem; margin-top:1px; flex-shrink:0; }
+    .issue-body { flex:1; }
+    .issue-title { font-size:0.78rem; font-weight:600; color:var(--text-primary); }
+    .issue-desc { font-size:0.72rem; color:var(--text-muted); line-height:1.4; margin-top:2px; }
+    .issue-tag { display:inline-block; font-size:0.65rem; font-family:var(--font-mono); padding:1px 5px; border-radius:3px; margin-top:4px; }
+    .issue-tag.error { background:rgba(255,95,87,0.1); color:#FF5F57; border:1px solid rgba(255,95,87,0.25); }
+    .issue-tag.warn  { background:rgba(227,179,65,0.1); color:var(--amber); border:1px solid rgba(227,179,65,0.25); }
+    .issue-tag.info  { background:rgba(88,166,255,0.1); color:var(--blue); border:1px solid rgba(88,166,255,0.2); }
+
+    /* Score Dashboard (Mockup 2) */
+    .scores-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px; }
+    .score-card { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+    .score-card-val { font-size:1.6rem; font-weight:700; font-family:var(--font-mono); }
+    .score-card-val.a { color:var(--green); }
+    .score-card-val.b { color:var(--blue); }
+    .score-card-val.c { color:var(--amber); }
+    .score-card-val.d { color:#FF5F57; }
+    .score-card-label { font-size:0.7rem; color:var(--text-muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.06em; }
+    .score-card-grade { font-size:0.8rem; margin-top:3px; color:var(--text-secondary); }
+
+    /* Diff View (Mockup 3) */
+    .diff-layout { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:380px; }
+    .diff-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .diff-header { padding:8px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-3); }
+    .diff-title { font-size:0.78rem; font-weight:600; }
+    .diff-body { flex:1; padding:8px 0; font-family:var(--font-mono); font-size:0.7rem; overflow:hidden; }
+    .diff-line { padding:2px 12px; line-height:1.5; }
+    .diff-line.removed { background:rgba(255,95,87,0.08); color:#FF8C8C; }
+    .diff-line.added   { background:rgba(0,217,126,0.07); color:#6EFFC0; }
+    .diff-line.context { color:var(--text-muted); }
+    .diff-prefix { display:inline-block; width:12px; opacity:0.7; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+      <ul class="nav-links">
+        <li><a href="projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="teaching.html" class="nav-link">Teaching</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+      </ul>
+      <a href="projects.html" class="btn btn-outline">← All Projects</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">CodeLab</a><span style="opacity:0.4">›</span>
+        <a href="projects.html">Projects</a><span style="opacity:0.4">›</span>
+        <span>CodeLens</span>
+      </div>
+      <div class="project-hero-inner">
+        <div class="project-hero-icon">🔍</div>
+        <div>
+          <h1>CodeLens — AI Code Review</h1>
+          <p>Paste any code snippet and receive a structured, multi-dimensional AI review. CodeLens surfaces bugs, style violations, complexity issues, and security vulnerabilities — with actionable fix suggestions and a cleaned-up diff view.</p>
+          <div class="project-tags">
+            <span class="ptag purple">devtools</span>
+            <span class="ptag default">vibe coding</span>
+            <span class="ptag default">static analysis</span>
+            <span class="ptag default">prompt engineering</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockups-section">
+    <div class="container">
+
+      <!-- Mockup 1: Review Panel -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">01</div>
+          <div>
+            <div class="mockup-title">Inline Review Panel</div>
+            <div class="mockup-desc">Code input on the left, structured AI issues on the right</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">codelens.codelab.sh/review</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">CodeLens 🔍</div>
+                <div class="app-nav-item active">📝 Review</div>
+                <div class="app-nav-item">📊 Score</div>
+                <div class="app-nav-item">🔀 Diff</div>
+                <div class="app-nav-item">📜 History</div>
+                <div class="app-nav-item">⚙️ Settings</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Code Review</span>
+                  <div style="display:flex;gap:8px;">
+                    <span class="mini-btn">Python 3</span>
+                    <span class="mini-btn purple">🔍 Analyze</span>
+                  </div>
+                </div>
+                <div class="app-content">
+                  <div class="review-layout">
+                    <div class="code-input-panel">
+                      <div class="code-panel-header">
+                        <span style="font-size:0.78rem;font-weight:600;">Input Code</span>
+                        <span class="lang-badge">Python</span>
+                      </div>
+                      <div class="code-body">
+<span class="code-kw">def</span> <span class="code-fn">get_user</span>(user_id):<br>
+&nbsp;&nbsp;<span class="code-kw">import</span> sqlite3<br>
+&nbsp;&nbsp;conn = sqlite3.<span class="code-fn">connect</span>(<span class="code-str">"users.db"</span>)<br>
+&nbsp;&nbsp;cur = conn.<span class="code-fn">cursor</span>()<br>
+&nbsp;&nbsp;query = <span class="code-str">f"SELECT * FROM users WHERE id={user_id}"</span><br>
+&nbsp;&nbsp;cur.<span class="code-fn">execute</span>(query)<br>
+&nbsp;&nbsp;<span class="code-kw">return</span> cur.<span class="code-fn">fetchone</span>()<br>
+<br>
+<span class="code-kw">def</span> <span class="code-fn">process_users</span>(ids):<br>
+&nbsp;&nbsp;results = []<br>
+&nbsp;&nbsp;<span class="code-kw">for</span> i <span class="code-kw">in</span> <span class="code-fn">range</span>(<span class="code-fn">len</span>(ids)):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;results.<span class="code-fn">append</span>(<span class="code-fn">get_user</span>(ids[i]))<br>
+&nbsp;&nbsp;<span class="code-kw">return</span> results
+                      </div>
+                    </div>
+                    <div class="review-results">
+                      <div class="code-panel-header" style="background:var(--bg-3);">
+                        <span style="font-size:0.78rem;font-weight:600;">Issues Found</span>
+                        <span style="font-size:0.72rem;color:#FF5F57;font-family:var(--font-mono);">3 issues</span>
+                      </div>
+                      <div style="flex:1;overflow:hidden;">
+                        <div class="issue-row">
+                          <span class="issue-icon">🔴</span>
+                          <div class="issue-body">
+                            <div class="issue-title">SQL Injection Vulnerability</div>
+                            <div class="issue-desc">Line 5: f-string interpolation in SQL query allows direct injection. Use parameterized queries instead.</div>
+                            <span class="issue-tag error">security · critical</span>
+                          </div>
+                        </div>
+                        <div class="issue-row">
+                          <span class="issue-icon">🟡</span>
+                          <div class="issue-body">
+                            <div class="issue-title">Import Inside Function</div>
+                            <div class="issue-desc">Line 2: Importing sqlite3 inside function is called on every invocation. Move to module level.</div>
+                            <span class="issue-tag warn">style · medium</span>
+                          </div>
+                        </div>
+                        <div class="issue-row">
+                          <span class="issue-icon">🔵</span>
+                          <div class="issue-body">
+                            <div class="issue-title">Use Enumerate Instead of range(len())</div>
+                            <div class="issue-desc">Line 11: <code style="font-family:var(--font-mono);color:var(--purple);">for i in range(len(ids))</code> is non-Pythonic. Use <code style="font-family:var(--font-mono);color:var(--green);">for id in ids</code>.</div>
+                            <span class="issue-tag info">style · low</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 2: Score Dashboard -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">02</div>
+          <div>
+            <div class="mockup-title">Quality Score Dashboard</div>
+            <div class="mockup-desc">Multi-dimensional quality grades across four review dimensions</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">codelens.codelab.sh/score</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">CodeLens 🔍</div>
+                <div class="app-nav-item">📝 Review</div>
+                <div class="app-nav-item active">📊 Score</div>
+                <div class="app-nav-item">🔀 Diff</div>
+                <div class="app-nav-item">📜 History</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Quality Score Report</span>
+                  <div style="display:flex;gap:8px;"><span class="mini-btn">get_user.py</span><span class="mini-btn purple">Export PDF</span></div>
+                </div>
+                <div class="app-content">
+                  <div class="scores-grid">
+                    <div class="score-card">
+                      <div class="score-card-val d">D</div>
+                      <div class="score-card-label">Security</div>
+                      <div class="score-card-grade">2.1 / 10 · Critical</div>
+                    </div>
+                    <div class="score-card">
+                      <div class="score-card-val c">C</div>
+                      <div class="score-card-label">Style</div>
+                      <div class="score-card-grade">5.8 / 10 · Needs work</div>
+                    </div>
+                    <div class="score-card">
+                      <div class="score-card-val b">B+</div>
+                      <div class="score-card-label">Complexity</div>
+                      <div class="score-card-grade">8.0 / 10 · Good</div>
+                    </div>
+                    <div class="score-card">
+                      <div class="score-card-val a">A</div>
+                      <div class="score-card-label">Readability</div>
+                      <div class="score-card-grade">9.1 / 10 · Excellent</div>
+                    </div>
+                  </div>
+                  <!-- Radar chart placeholder -->
+                  <div style="display:flex;gap:16px;margin-top:8px;">
+                    <div style="flex:1;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:center;">
+                      <svg width="160" height="140" viewBox="0 0 160 140">
+                        <!-- Radar grid -->
+                        <polygon points="80,10 140,50 120,120 40,120 20,50" fill="none" stroke="var(--border)" stroke-width="1"/>
+                        <polygon points="80,30 120,58 108,100 52,100 40,58" fill="none" stroke="var(--border)" stroke-width="1"/>
+                        <polygon points="80,50 100,66 96,80 64,80 60,66" fill="none" stroke="var(--border)" stroke-width="1"/>
+                        <!-- Score polygon -->
+                        <polygon points="80,62 126,56 112,112 48,114 30,54" fill="rgba(188,140,255,0.15)" stroke="var(--purple)" stroke-width="1.5"/>
+                        <!-- Labels -->
+                        <text x="72" y="8" font-size="9" fill="var(--text-muted)" font-family="monospace">Security</text>
+                        <text x="142" y="54" font-size="9" fill="var(--text-muted)" font-family="monospace">Style</text>
+                        <text x="120" y="128" font-size="9" fill="var(--text-muted)" font-family="monospace">Complex</text>
+                        <text x="20" y="128" font-size="9" fill="var(--text-muted)" font-family="monospace">Read</text>
+                        <text x="0" y="54" font-size="9" fill="var(--text-muted)" font-family="monospace">Bugs</text>
+                      </svg>
+                    </div>
+                    <div style="flex:1.4;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+                      <div style="font-size:0.78rem;font-weight:600;margin-bottom:10px;">Priority Fix List</div>
+                      <div style="font-size:0.75rem;padding:6px 0;border-bottom:1px solid var(--border);color:var(--text-secondary);">1. 🔴 Fix SQL injection — use <code style="font-family:var(--font-mono);color:var(--purple);">?</code> placeholders</div>
+                      <div style="font-size:0.75rem;padding:6px 0;border-bottom:1px solid var(--border);color:var(--text-secondary);">2. 🟡 Move import to module level</div>
+                      <div style="font-size:0.75rem;padding:6px 0;color:var(--text-secondary);">3. 🔵 Replace <code style="font-family:var(--font-mono);color:var(--purple);">range(len())</code> with direct iteration</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 3: Diff View -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">03</div>
+          <div>
+            <div class="mockup-title">AI-Suggested Diff</div>
+            <div class="mockup-desc">Side-by-side before/after view of AI-corrected code</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">codelens.codelab.sh/diff</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">CodeLens 🔍</div>
+                <div class="app-nav-item">📝 Review</div>
+                <div class="app-nav-item">📊 Score</div>
+                <div class="app-nav-item active">🔀 Diff</div>
+                <div class="app-nav-item">📜 History</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">AI-Suggested Diff</span>
+                  <div style="display:flex;gap:8px;"><span class="mini-btn">Side by Side</span><span class="mini-btn purple">Apply All Fixes</span></div>
+                </div>
+                <div class="app-content">
+                  <div class="diff-layout">
+                    <div class="diff-panel">
+                      <div class="diff-header">
+                        <span class="diff-title">Before</span>
+                        <span style="font-size:0.7rem;color:#FF5F57;font-family:var(--font-mono);">−7 issues</span>
+                      </div>
+                      <div class="diff-body">
+                        <div class="diff-line context"><span class="diff-prefix"> </span><span class="code-kw" style="color:rgba(188,140,255,0.8);">def</span> <span style="color:rgba(88,166,255,0.8);">get_user</span>(user_id):</div>
+                        <div class="diff-line removed"><span class="diff-prefix">−</span>&nbsp;&nbsp;<span style="color:rgba(188,140,255,0.8);">import</span> sqlite3</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;conn = sqlite3.connect(<span style="color:rgba(227,179,65,0.8);">"users.db"</span>)</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;cur = conn.cursor()</div>
+                        <div class="diff-line removed"><span class="diff-prefix">−</span>&nbsp;&nbsp;query = <span style="color:#FF8C8C;">f"SELECT * FROM users WHERE id={user_id}"</span></div>
+                        <div class="diff-line removed"><span class="diff-prefix">−</span>&nbsp;&nbsp;cur.execute(query)</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;<span style="color:rgba(188,140,255,0.8);">return</span> cur.fetchone()</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span></div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span><span style="color:rgba(188,140,255,0.8);">def</span> <span style="color:rgba(88,166,255,0.8);">process_users</span>(ids):</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;results = []</div>
+                        <div class="diff-line removed"><span class="diff-prefix">−</span>&nbsp;&nbsp;<span style="color:rgba(188,140,255,0.8);">for</span> i <span style="color:rgba(188,140,255,0.8);">in</span> range(len(ids)):</div>
+                        <div class="diff-line removed"><span class="diff-prefix">−</span>&nbsp;&nbsp;&nbsp;&nbsp;results.append(get_user(ids[i]))</div>
+                      </div>
+                    </div>
+                    <div class="diff-panel">
+                      <div class="diff-header">
+                        <span class="diff-title">After (AI Fixed)</span>
+                        <span style="font-size:0.7rem;color:var(--green);font-family:var(--font-mono);">+6 improvements</span>
+                      </div>
+                      <div class="diff-body">
+                        <div class="diff-line added"><span class="diff-prefix">+</span><span style="color:rgba(188,140,255,0.8);">import</span> sqlite3</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span></div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span><span style="color:rgba(188,140,255,0.8);">def</span> <span style="color:rgba(88,166,255,0.8);">get_user</span>(user_id):</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;conn = sqlite3.connect(<span style="color:rgba(227,179,65,0.8);">"users.db"</span>)</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;cur = conn.cursor()</div>
+                        <div class="diff-line added"><span class="diff-prefix">+</span>&nbsp;&nbsp;query = <span style="color:rgba(0,217,126,0.9);">"SELECT * FROM users WHERE id=?"</span></div>
+                        <div class="diff-line added"><span class="diff-prefix">+</span>&nbsp;&nbsp;cur.execute(query, (user_id,))</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span>&nbsp;&nbsp;<span style="color:rgba(188,140,255,0.8);">return</span> cur.fetchone()</div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span></div>
+                        <div class="diff-line context"><span class="diff-prefix"> </span><span style="color:rgba(188,140,255,0.8);">def</span> <span style="color:rgba(88,166,255,0.8);">process_users</span>(ids):</div>
+                        <div class="diff-line added"><span class="diff-prefix">+</span>&nbsp;&nbsp;<span style="color:rgba(188,140,255,0.8);">return</span> [get_user(uid) <span style="color:rgba(188,140,255,0.8);">for</span> uid <span style="color:rgba(188,140,255,0.8);">in</span> ids]</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+        <p class="footer-tagline">Generative AI for Software Development · William &amp; Mary</p>
+      </div>
+      <div class="footer-links">
+        <a href="projects.html" class="footer-link">← All Projects</a>
+        <a href="teaching.html" class="footer-link">Teaching</a>
+        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
+      <span>Built with vibe coding ✨</span>
+    </div>
+  </footer>
+
+<script src="../feedback-widget.js"></script>
+</body>
+</html>

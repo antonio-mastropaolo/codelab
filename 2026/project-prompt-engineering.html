@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Prompt Engineering Platform — CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    .project-hero {
+      padding: 120px 0 64px;
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .project-hero::before {
+      content: ''; position: absolute; top: -80px; right: -60px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(88,166,255,0.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-muted); margin-bottom:20px; }
+    .breadcrumb a { color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .breadcrumb a:hover { color:var(--green); }
+    .project-hero-inner { display:flex; align-items:flex-start; gap:40px; }
+    @media (max-width:700px) { .project-hero-inner { flex-direction:column; } }
+    .project-hero-icon {
+      width:72px; height:72px;
+      background: linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.06));
+      border: 1px solid rgba(88,166,255,0.25);
+      border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; flex-shrink:0;
+    }
+    .project-hero h1 { font-size:clamp(1.8rem, 3.5vw, 2.6rem); font-weight:700; letter-spacing:-0.025em; margin-bottom:10px; }
+    .project-hero p  { color:var(--text-secondary); font-size:1rem; line-height:1.65; max-width:580px; margin-bottom:20px; }
+    .project-tags { display:flex; flex-wrap:wrap; gap:8px; }
+    .ptag { font-size:0.75rem; font-family:var(--font-mono); padding:4px 10px; border-radius:5px; }
+    .ptag.blue    { background:rgba(88,166,255,0.1); color:var(--blue); border:1px solid rgba(88,166,255,0.2); }
+    .ptag.default { background:var(--bg-3); color:var(--text-muted); border:1px solid var(--border); }
+
+    .mockups-section { padding: 64px 0; }
+    .mockup-row { margin-bottom: 64px; }
+    .mockup-row:last-child { margin-bottom: 0; }
+    .mockup-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .mockup-num {
+      width:28px; height:28px; border-radius:8px;
+      background:rgba(88,166,255,0.1); border:1px solid rgba(88,166,255,0.25);
+      color:var(--blue); font-family:var(--font-mono); font-size:0.8rem; font-weight:600;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .mockup-title { font-size:1rem; font-weight:600; color:var(--text-primary); }
+    .mockup-desc  { font-size:0.85rem; color:var(--text-muted); margin-top:3px; }
+
+    .browser-frame { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+    .browser-bar { background:var(--bg-3); border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:12px; }
+    .browser-dots { display:flex; gap:6px; }
+    .browser-dot { width:10px; height:10px; border-radius:50%; }
+    .bd-red{background:#FF5F57;} .bd-yellow{background:#FFBD2E;} .bd-green{background:#28CA41;}
+    .browser-url { flex:1; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:4px 12px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); }
+
+    /* ── App Shells ──────────────────────────────────────── */
+    .app-shell { display:flex; height:480px; }
+    .app-sidebar { width:200px; background:var(--bg-3); border-right:1px solid var(--border); padding:16px 0; flex-shrink:0; }
+    .app-sidebar-logo { padding:0 16px 14px; font-weight:700; font-size:0.9rem; color:var(--blue); border-bottom:1px solid var(--border); margin-bottom:12px; font-family:var(--font-display); }
+    .app-nav-item { padding:8px 16px; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+    .app-nav-item.active { color:var(--blue); background:rgba(88,166,255,0.08); }
+    .app-main { flex:1; overflow:hidden; background:var(--bg); }
+    .app-topbar { padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-2); }
+    .app-topbar-title { font-weight:600; font-size:0.9rem; }
+    .app-topbar-actions { display:flex; gap:8px; }
+    .mini-btn { font-size:0.72rem; padding:4px 10px; border-radius:5px; background:var(--bg-3); border:1px solid var(--border); color:var(--text-secondary); }
+    .mini-btn.blue { background:var(--blue); color:#000; border-color:var(--blue); font-weight:600; }
+    .app-content { padding:16px 20px; overflow:hidden; }
+
+    /* Prompt Playground (Mockup 1) */
+    .playground-layout { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:380px; }
+    .prompt-panel {
+      background:var(--bg-2); border:1px solid var(--border); border-radius:8px;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .panel-header { padding:8px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .panel-title { font-size:0.78rem; font-weight:600; color:var(--text-primary); }
+    .panel-badge { font-size:0.65rem; font-family:var(--font-mono); padding:2px 6px; border-radius:3px; }
+    .panel-badge.a { background:rgba(88,166,255,0.1); color:var(--blue); border:1px solid rgba(88,166,255,0.2); }
+    .panel-badge.b { background:rgba(188,140,255,0.1); color:var(--purple); border:1px solid rgba(188,140,255,0.2); }
+    .panel-textarea { flex:1; padding:10px 12px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-secondary); line-height:1.5; overflow:hidden; }
+    .panel-response { padding:10px 12px; border-top:1px solid var(--border); font-size:0.75rem; color:var(--text-secondary); line-height:1.5; flex:1; overflow:hidden; }
+    .score-bar-row { display:flex; align-items:center; gap:8px; padding:6px 12px; border-top:1px solid var(--border); }
+    .score-label { font-size:0.68rem; color:var(--text-muted); min-width:60px; }
+    .score-track { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .score-fill { height:100%; border-radius:2px; }
+    .score-fill.a { background:var(--blue); }
+    .score-fill.b { background:var(--purple); }
+    .score-val { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-muted); min-width:28px; text-align:right; }
+
+    /* Prompt Library (Mockup 2) */
+    .library-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+    .lib-card { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px; }
+    .lib-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .lib-title { font-size:0.82rem; font-weight:600; }
+    .lib-score {
+      font-family:var(--font-mono); font-size:0.72rem; padding:2px 7px;
+      background:rgba(88,166,255,0.1); color:var(--blue); border:1px solid rgba(88,166,255,0.2); border-radius:3px;
+    }
+    .lib-prompt { font-size:0.73rem; color:var(--text-muted); font-family:var(--font-mono); line-height:1.4; margin-bottom:8px; }
+    .lib-tags { display:flex; gap:5px; flex-wrap:wrap; }
+    .lib-tag { font-size:0.65rem; padding:2px 6px; background:var(--bg-3); border:1px solid var(--border); border-radius:3px; color:var(--text-muted); font-family:var(--font-mono); }
+
+    /* Rubric Evaluation (Mockup 3) */
+    .rubric-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:12px; height:380px; }
+    .rubric-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:14px; overflow:hidden; }
+    .rubric-row { padding:9px 0; border-bottom:1px solid var(--border); }
+    .rubric-row:last-child { border-bottom:none; }
+    .rubric-crit { font-size:0.8rem; font-weight:600; margin-bottom:4px; }
+    .rubric-desc { font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; }
+    .rubric-stars { display:flex; gap:3px; }
+    .rstar { font-size:0.9rem; opacity:0.25; }
+    .rstar.lit { opacity:1; }
+    .feedback-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .feedback-header { padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .feedback-score-big { font-size:2rem; font-weight:700; font-family:var(--font-mono); color:var(--blue); }
+    .feedback-score-label { font-size:0.78rem; color:var(--text-muted); }
+    .feedback-body { padding:12px 14px; flex:1; overflow:hidden; }
+    .feedback-item { font-size:0.78rem; color:var(--text-secondary); padding:7px 0; border-bottom:1px solid var(--border); line-height:1.45; }
+    .feedback-item:last-child { border-bottom:none; }
+    .feedback-item b { color:var(--blue); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+      <ul class="nav-links">
+        <li><a href="projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="teaching.html" class="nav-link">Teaching</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+      </ul>
+      <a href="projects.html" class="btn btn-outline">← All Projects</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">CodeLab</a>
+        <span style="opacity:0.4">›</span>
+        <a href="projects.html">Projects</a>
+        <span style="opacity:0.4">›</span>
+        <span>Prompt Engineering</span>
+      </div>
+      <div class="project-hero-inner">
+        <div class="project-hero-icon">🧠</div>
+        <div>
+          <h1>AI Prompt Engineering Platform</h1>
+          <p>An interactive teaching tool for COLL 100 students to develop prompt engineering intuition. Side-by-side A/B comparisons, structured rubric scoring, and a community library of high-performing prompts — all built through LLM-assisted development.</p>
+          <div class="project-tags">
+            <span class="ptag blue">education</span>
+            <span class="ptag blue">COLL 100</span>
+            <span class="ptag default">vibe coding</span>
+            <span class="ptag default">prompt design</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockups-section">
+    <div class="container">
+
+      <!-- Mockup 1: A/B Playground -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">01</div>
+          <div>
+            <div class="mockup-title">Prompt A/B Playground</div>
+            <div class="mockup-desc">Compare two prompts side-by-side and see scored responses in real time</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">promptlab.codelab.sh/playground</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">PromptLab 🧠</div>
+                <div class="app-nav-item active">⚔️ A/B Compare</div>
+                <div class="app-nav-item">📚 Library</div>
+                <div class="app-nav-item">📊 Rubric</div>
+                <div class="app-nav-item">📈 My Progress</div>
+                <div class="app-nav-item">🎓 Lessons</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">A/B Prompt Comparison</span>
+                  <div class="app-topbar-actions">
+                    <span class="mini-btn">Task: Explain recursion</span>
+                    <span class="mini-btn blue">▶ Run Both</span>
+                  </div>
+                </div>
+                <div class="app-content" style="padding:12px 16px;">
+                  <div class="playground-layout">
+                    <div class="prompt-panel">
+                      <div class="panel-header">
+                        <span class="panel-title">Prompt A</span>
+                        <span class="panel-badge a">Variant A</span>
+                      </div>
+                      <div class="panel-textarea">"Explain recursion to me."</div>
+                      <div class="panel-response" style="background:rgba(88,166,255,0.04);">
+                        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:5px;">AI Response:</div>
+                        Recursion is when a function calls itself. For example, to calculate factorial(n), you call factorial(n-1). The base case stops the recursion when n reaches 0 or 1…
+                      </div>
+                      <div class="score-bar-row">
+                        <span class="score-label">Clarity</span>
+                        <div class="score-track"><div class="score-fill a" style="width:55%"></div></div>
+                        <span class="score-val">5.5</span>
+                      </div>
+                      <div class="score-bar-row">
+                        <span class="score-label">Depth</span>
+                        <div class="score-track"><div class="score-fill a" style="width:40%"></div></div>
+                        <span class="score-val">4.0</span>
+                      </div>
+                    </div>
+                    <div class="prompt-panel">
+                      <div class="panel-header">
+                        <span class="panel-title">Prompt B</span>
+                        <span class="panel-badge b">Variant B</span>
+                      </div>
+                      <div class="panel-textarea">"You are a CS professor. Explain recursion to a first-year student using a real-world analogy, then show a Python example with comments."</div>
+                      <div class="panel-response" style="background:rgba(188,140,255,0.04);">
+                        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:5px;">AI Response:</div>
+                        Think of recursion like Russian nesting dolls 🪆. Each doll contains a smaller version of itself until you reach the tiniest one — the base case. Here's how that looks in Python: <span style="color:var(--purple);font-family:var(--font-mono);">def fact(n): ...</span>
+                      </div>
+                      <div class="score-bar-row">
+                        <span class="score-label">Clarity</span>
+                        <div class="score-track"><div class="score-fill b" style="width:88%"></div></div>
+                        <span class="score-val">8.8</span>
+                      </div>
+                      <div class="score-bar-row">
+                        <span class="score-label">Depth</span>
+                        <div class="score-track"><div class="score-fill b" style="width:85%"></div></div>
+                        <span class="score-val">8.5</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 2: Prompt Library -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">02</div>
+          <div>
+            <div class="mockup-title">Community Prompt Library</div>
+            <div class="mockup-desc">Browse, fork, and rate high-performing prompts from the class</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">promptlab.codelab.sh/library</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">PromptLab 🧠</div>
+                <div class="app-nav-item">⚔️ A/B Compare</div>
+                <div class="app-nav-item active">📚 Library</div>
+                <div class="app-nav-item">📊 Rubric</div>
+                <div class="app-nav-item">📈 My Progress</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Prompt Library · 48 entries</span>
+                  <div class="app-topbar-actions">
+                    <span class="mini-btn">🔍 Search</span>
+                    <span class="mini-btn">Filter: All</span>
+                    <span class="mini-btn blue">+ Submit Mine</span>
+                  </div>
+                </div>
+                <div class="app-content">
+                  <div class="library-grid">
+                    <div class="lib-card">
+                      <div class="lib-card-header">
+                        <span class="lib-title">Role + Format + Example</span>
+                        <span class="lib-score">9.2 / 10</span>
+                      </div>
+                      <div class="lib-prompt">"Act as a senior engineer. Explain [X] with: 1. Analogy 2. Code 3. Common mistake"</div>
+                      <div class="lib-tags"><span class="lib-tag">structure</span><span class="lib-tag">role prompting</span><span class="lib-tag">few-shot</span></div>
+                    </div>
+                    <div class="lib-card">
+                      <div class="lib-card-header">
+                        <span class="lib-title">Chain of Thought</span>
+                        <span class="lib-score">8.8 / 10</span>
+                      </div>
+                      <div class="lib-prompt">"Think step by step before answering. First list assumptions, then reason through each…"</div>
+                      <div class="lib-tags"><span class="lib-tag">CoT</span><span class="lib-tag">reasoning</span><span class="lib-tag">structured</span></div>
+                    </div>
+                    <div class="lib-card">
+                      <div class="lib-card-header">
+                        <span class="lib-title">Audience Targeting</span>
+                        <span class="lib-score">8.4 / 10</span>
+                      </div>
+                      <div class="lib-prompt">"Explain this concept as if I'm a 10-year-old who loves Minecraft, then as if I'm a PhD…"</div>
+                      <div class="lib-tags"><span class="lib-tag">audience</span><span class="lib-tag">clarity</span></div>
+                    </div>
+                    <div class="lib-card">
+                      <div class="lib-card-header">
+                        <span class="lib-title">Constraint-Based</span>
+                        <span class="lib-score">8.1 / 10</span>
+                      </div>
+                      <div class="lib-prompt">"Explain X in exactly 3 bullet points. Each must start with a verb. No jargon."</div>
+                      <div class="lib-tags"><span class="lib-tag">constraints</span><span class="lib-tag">concise</span></div>
+                    </div>
+                  </div>
+                  <div style="text-align:center;padding:10px;font-size:0.78rem;color:var(--text-muted);">Showing 4 of 48 prompts · <span style="color:var(--blue);cursor:pointer;">Load more</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 3: Rubric Evaluation -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">03</div>
+          <div>
+            <div class="mockup-title">AI Rubric Evaluation</div>
+            <div class="mockup-desc">Structured criteria scoring with actionable improvement suggestions</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">promptlab.codelab.sh/rubric</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">PromptLab 🧠</div>
+                <div class="app-nav-item">⚔️ A/B Compare</div>
+                <div class="app-nav-item">📚 Library</div>
+                <div class="app-nav-item active">📊 Rubric</div>
+                <div class="app-nav-item">📈 My Progress</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Rubric Evaluation</span>
+                  <div class="app-topbar-actions">
+                    <span class="mini-btn">Prompt: "Explain sorting..."</span>
+                    <span class="mini-btn blue">Re-evaluate</span>
+                  </div>
+                </div>
+                <div class="app-content">
+                  <div class="rubric-layout">
+                    <div class="rubric-panel">
+                      <div style="font-size:0.78rem;font-weight:600;margin-bottom:10px;color:var(--text-primary);">Evaluation Criteria</div>
+                      <div class="rubric-row">
+                        <div class="rubric-crit">Specificity</div>
+                        <div class="rubric-desc">Does the prompt define audience, format, and constraints?</div>
+                        <div class="rubric-stars"><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar">★</span></div>
+                      </div>
+                      <div class="rubric-row">
+                        <div class="rubric-crit">Context</div>
+                        <div class="rubric-desc">Is background / role information provided?</div>
+                        <div class="rubric-stars"><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar">★</span><span class="rstar">★</span></div>
+                      </div>
+                      <div class="rubric-row">
+                        <div class="rubric-crit">Output Format</div>
+                        <div class="rubric-desc">Is the desired response format specified?</div>
+                        <div class="rubric-stars"><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span></div>
+                      </div>
+                      <div class="rubric-row">
+                        <div class="rubric-crit">Clarity</div>
+                        <div class="rubric-desc">Is the prompt unambiguous and direct?</div>
+                        <div class="rubric-stars"><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar lit">★</span><span class="rstar">★</span></div>
+                      </div>
+                    </div>
+                    <div class="feedback-panel">
+                      <div class="feedback-header">
+                        <span class="feedback-score-big">8.0</span>
+                        <div><div class="feedback-score-label">Overall Score / 10</div><div style="font-size:0.7rem;color:var(--green);">Good — One area for improvement</div></div>
+                      </div>
+                      <div class="feedback-body">
+                        <div style="font-size:0.78rem;font-weight:600;margin-bottom:8px;color:var(--text-primary);">AI Feedback</div>
+                        <div class="feedback-item">✅ <b>Strong output format:</b> Asking for bullet points + code example is excellent — it forces the AI to organize its thinking.</div>
+                        <div class="feedback-item">✅ <b>Role context works:</b> "Senior developer" frames the tone and vocabulary well for the audience.</div>
+                        <div class="feedback-item">⚠️ <b>Add audience context:</b> Specifying who will read this (e.g., "for a junior developer who knows Python but not CS theory") would significantly improve relevance.</div>
+                        <div class="feedback-item">💡 <b>Suggestion:</b> Try adding "…and explain why each algorithm has a different Big-O complexity" to increase depth score.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+        <p class="footer-tagline">Generative AI for Software Development · William &amp; Mary</p>
+      </div>
+      <div class="footer-links">
+        <a href="projects.html" class="footer-link">← All Projects</a>
+        <a href="teaching.html" class="footer-link">Teaching</a>
+        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2025 CodeLab · Prof. Antonio Mastropaolo · William &amp; Mary</span>
+      <span>Built with vibe coding ✨</span>
+    </div>
+  </footer>
+
+<script src="../feedback-widget.js"></script>
+</body>
+</html>

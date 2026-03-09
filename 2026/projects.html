@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — CodeLab</title>
+  <meta name="description" content="Vibe Coding Project Gallery — concept platforms built with generative AI tools by undergraduate students at William & Mary." />
+  <link rel="stylesheet" href="../platform.css" />
+  <style>
+    /* ── Project Card (light-theme version) ─────────────────── */
+    .projects-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; align-items: start; }
+    .projects-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); min-width: 0; overflow: hidden; }
+
+    .sidebar-section { margin-bottom: 28px; }
+    .sidebar-title {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px;
+      font-size: 0.85rem; color: var(--text-2);
+      cursor: pointer; transition: all 0.2s;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: var(--wm-green-mist); color: var(--wm-green); }
+    .sidebar-item.active { background: var(--wm-green-mist); color: var(--wm-green); font-weight: 600; }
+    .sidebar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sidebar-dot.green  { background: #059669; }
+    .sidebar-dot.blue   { background: #3B82F6; }
+    .sidebar-dot.purple { background: #8B5CF6; }
+    .sidebar-dot.amber  { background: #D97706; }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .info-card h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--wm-green); margin-bottom: 10px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .info-card p {
+      font-size: 0.82rem; color: var(--text-2); line-height: 1.55;
+    }
+    .info-card .pill-row {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .info-card .pill-item {
+      font-size: 0.68rem; padding: 3px 10px;
+      background: var(--wm-green-mist); border: 1px solid rgba(17,87,64,0.15);
+      border-radius: 100px; color: var(--wm-green); font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Project Cards Grid ────────────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .project-full-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden; min-width: 0;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      text-decoration: none; display: block;
+    }
+    .project-full-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--wm-green);
+    }
+
+    .pfc-grid {
+      display: grid; grid-template-columns: 200px 1fr auto;
+      align-items: center; gap: 0;
+    }
+
+    .pfc-visual {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .pfc-visual.green  { background: linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04)); border-right: 1px solid rgba(5,150,105,0.15); }
+    .pfc-visual.blue   { background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04)); border-right: 1px solid rgba(59,130,246,0.15); }
+    .pfc-visual.purple { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04)); border-right: 1px solid rgba(139,92,246,0.15); }
+    .pfc-visual.amber  { background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(217,119,6,0.04)); border-right: 1px solid rgba(217,119,6,0.15); }
+    .pfc-icon { font-size: 3.2rem; line-height: 1; position: relative; z-index: 1; }
+    .pfc-accent-ring {
+      position: absolute;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      opacity: 0.1;
+    }
+    .pfc-visual.green  .pfc-accent-ring { background: #059669; }
+    .pfc-visual.blue   .pfc-accent-ring { background: #3B82F6; }
+    .pfc-visual.purple .pfc-accent-ring { background: #8B5CF6; }
+    .pfc-visual.amber  .pfc-accent-ring { background: #D97706; }
+
+    .pfc-body { padding: 28px 32px; }
+    .pfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .pfc-body h2 { font-size: 1.3rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
+    .pfc-body > p { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; max-width: 680px; }
+
+    .pfc-meta { display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap; }
+    .pfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
+    .pfc-meta-item .icon { font-size: 0.85rem; }
+
+    .pfc-action { flex-shrink: 0; padding-right: 32px; }
+
+    .pfc-skills {
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .pfc-skill {
+      font-size: 0.72rem; padding: 3px 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text-3); font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pfc-stats {
+      display: flex; gap: 32px; padding: 14px 32px;
+      border-top: 1px solid var(--border); background: var(--wm-green-mist);
+    }
+    .pfc-stat { display: flex; align-items: center; gap: 6px; }
+    .pfc-stat .val { font-size: 1rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
+    .pfc-stat .lbl { font-size: 0.72rem; color: var(--text-3); }
+
+    @media (max-width: 900px) {
+      .projects-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+      .projects-sidebar { position: static; }
+      .pfc-grid { grid-template-columns: minmax(0, 1fr); }
+      .pfc-visual { height: 160px; border-right: none; border-bottom: 1px solid var(--border); }
+      .pfc-action { padding: 0 32px 20px; }
+      .pfc-stats { flex-wrap: wrap; gap: 16px; }
+    }
+    @media (max-width: 640px) {
+      .pfc-body { padding: 20px; }
+      .pfc-body h2 { font-size: 1.1rem; }
+      .pfc-body > p { font-size: 0.82rem; }
+      .pfc-action { padding: 0 20px 16px; }
+      .pfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
+      .pfc-stats { padding: 12px 20px; gap: 12px; }
+      .pfc-skills { padding: 12px 20px; }
+      .pfc-visual { height: 120px; }
+      .pfc-icon { font-size: 2.4rem; }
+      .info-card { padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .projects-layout { gap: 16px; }
+      .pfc-body { padding: 16px; }
+      .pfc-stats { padding: 10px 16px; }
+      .pfc-skills { padding: 10px 16px; }
+      .pfc-action { padding: 0 16px 14px; }
+      .pfc-visual { height: 100px; }
+      .pfc-icon { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV (same as teaching) -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      CodeLab
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="teaching.html" class="nav-link">Teaching</a>
+      <a href="projects.html" class="nav-link active">Projects</a>
+      <a href="contact.html" class="nav-link">Reach Out</a>
+    </div>
+    <div class="nav-right">
+      <div class="year-selector" id="year-selector">
+        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">
+          Spring 2026 <span class="caret">&#9660;</span>
+        </div>
+        <div class="year-dropdown">
+          <a href="/2026/" class="year-option current">Spring 2026 <span class="yr-badge">current</span></a>
+          <a href="/2025/" class="year-option">Spring 2025 <span class="yr-badge">archived</span></a>
+        </div>
+      </div>
+      <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO (matching teaching hero) -->
+<section class="projects-page-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill">Vibe Coding</span>
+      <span class="sep">&middot;</span>
+      <span>Spring 2026</span>
+      <span class="sep">&middot;</span>
+      <span>William &amp; Mary</span>
+    </div>
+    <h1 class="animate-up">Project Gallery</h1>
+    <p class="lead animate-up animate-up-1" style="max-width:620px;margin-top:12px;">
+      Four concept platforms built with generative AI tools. Each showcases what undergrad students can ship when armed with modern <strong style="color:var(--wm-gold-light);">LLMs and a bit of ambition</strong>.
+    </p>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<section style="padding: 64px 0 96px; background: var(--bg);">
+  <div class="container">
+    <div class="projects-layout">
+
+      <!-- Sidebar -->
+      <aside class="projects-sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Projects</div>
+          <a href="#project-fintech" class="sidebar-item active">
+            <span class="sidebar-dot green"></span> Stock Trading
+          </a>
+          <a href="#project-edtech" class="sidebar-item">
+            <span class="sidebar-dot blue"></span> Prompt Engineering
+          </a>
+          <a href="#project-devtools" class="sidebar-item">
+            <span class="sidebar-dot purple"></span> Code Review
+          </a>
+          <a href="#project-careers" class="sidebar-item">
+            <span class="sidebar-dot amber"></span> Interview Coach
+          </a>
+        </div>
+
+        <div class="info-card">
+          <h4>What is Vibe Coding?</h4>
+          <p>Building real software primarily through natural language — describing what you want, letting AI generate the implementation, iterating fast.</p>
+          <div class="pill-row">
+            <span class="pill-item">prompt-driven</span>
+            <span class="pill-item">AI-generated</span>
+            <span class="pill-item">rapid iteration</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Project List -->
+      <main>
+
+        <div class="semester-divider" style="margin-top:0;">
+          <h3>Spring 2026 — Vibe Coding Projects</h3>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- Stock Trading -->
+          <a href="project-stock-trading.html" class="project-full-card" id="project-fintech">
+            <div class="pfc-grid">
+              <div class="pfc-visual green">
+                <div class="pfc-accent-ring"></div>
+                <span class="pfc-icon">&#128200;</span>
+              </div>
+              <div class="pfc-body">
+                <div class="pfc-tags">
+                  <span class="section-tag tag-green">Fintech</span>
+                  <span class="section-tag tag-teal">Full-stack</span>
+                </div>
+                <h2>Stock Trading Signal Platform</h2>
+                <p>A full-featured trading platform with AI-generated buy/sell signals, real-time candlestick charts, portfolio analytics, and a customizable watchlist. Built entirely through prompt-driven development.</p>
+                <div class="pfc-meta">
+                  <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+                  <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+                </div>
+              </div>
+              <div class="pfc-action">
+                <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+              </div>
+            </div>
+            <div class="pfc-stats">
+              <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
+              <div class="pfc-stat"><span class="val">AI</span><span class="lbl">Signals</span></div>
+              <div class="pfc-stat"><span class="val">Live</span><span class="lbl">Charts</span></div>
+            </div>
+            <div class="pfc-skills">
+              <span class="pfc-skill">candlestick charts</span>
+              <span class="pfc-skill">AI signals</span>
+              <span class="pfc-skill">portfolio tracker</span>
+              <span class="pfc-skill">watchlist</span>
+            </div>
+          </a>
+
+          <!-- Prompt Engineering -->
+          <a href="project-prompt-engineering.html" class="project-full-card" id="project-edtech">
+            <div class="pfc-grid">
+              <div class="pfc-visual blue">
+                <div class="pfc-accent-ring"></div>
+                <span class="pfc-icon">&#129504;</span>
+              </div>
+              <div class="pfc-body">
+                <div class="pfc-tags">
+                  <span class="section-tag tag-blue">Education</span>
+                  <span class="section-tag tag-gold">COLL 100</span>
+                </div>
+                <h2>AI Prompt Engineering Platform</h2>
+                <p>An interactive teaching tool designed for COLL 100 students. Side-by-side prompt comparison, structured evaluation rubrics, and a prompt improvement feedback loop powered by AI.</p>
+                <div class="pfc-meta">
+                  <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+                  <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+                </div>
+              </div>
+              <div class="pfc-action">
+                <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+              </div>
+            </div>
+            <div class="pfc-stats">
+              <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
+              <div class="pfc-stat"><span class="val">A/B</span><span class="lbl">Testing</span></div>
+              <div class="pfc-stat"><span class="val">Live</span><span class="lbl">Feedback</span></div>
+            </div>
+            <div class="pfc-skills">
+              <span class="pfc-skill">prompt A/B testing</span>
+              <span class="pfc-skill">rubric scoring</span>
+              <span class="pfc-skill">live feedback</span>
+              <span class="pfc-skill">prompt library</span>
+            </div>
+          </a>
+
+          <!-- CodeLens -->
+          <a href="project-code-review.html" class="project-full-card" id="project-devtools">
+            <div class="pfc-grid">
+              <div class="pfc-visual purple">
+                <div class="pfc-accent-ring"></div>
+                <span class="pfc-icon">&#128269;</span>
+              </div>
+              <div class="pfc-body">
+                <div class="pfc-tags">
+                  <span class="section-tag tag-purple">DevTools</span>
+                  <span class="section-tag tag-green">AI-Powered</span>
+                </div>
+                <h2>CodeLens — AI Code Review</h2>
+                <p>Paste any code snippet and receive a structured, multi-dimensional AI review covering bugs, code style, algorithmic complexity, and security vulnerabilities. A developer's second pair of eyes.</p>
+                <div class="pfc-meta">
+                  <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+                  <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+                </div>
+              </div>
+              <div class="pfc-action">
+                <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+              </div>
+            </div>
+            <div class="pfc-stats">
+              <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
+              <div class="pfc-stat"><span class="val">4</span><span class="lbl">Dimensions</span></div>
+              <div class="pfc-stat"><span class="val">Multi</span><span class="lbl">Language</span></div>
+            </div>
+            <div class="pfc-skills">
+              <span class="pfc-skill">bug detection</span>
+              <span class="pfc-skill">style analysis</span>
+              <span class="pfc-skill">complexity score</span>
+              <span class="pfc-skill">security scan</span>
+            </div>
+          </a>
+
+          <!-- Interview Coach -->
+          <a href="project-interview-prep.html" class="project-full-card" id="project-careers">
+            <div class="pfc-grid">
+              <div class="pfc-visual amber">
+                <div class="pfc-accent-ring"></div>
+                <span class="pfc-icon">&#128188;</span>
+              </div>
+              <div class="pfc-body">
+                <div class="pfc-tags">
+                  <span class="section-tag tag-gold">Careers</span>
+                  <span class="section-tag tag-blue">Adaptive AI</span>
+                </div>
+                <h2>AI Interview Coach</h2>
+                <p>Simulate real technical and behavioral interviews with an adaptive AI interviewer. Get instant, structured feedback on clarity, accuracy, and communication — then track your improvement over sessions.</p>
+                <div class="pfc-meta">
+                  <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+                  <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+                </div>
+              </div>
+              <div class="pfc-action">
+                <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+              </div>
+            </div>
+            <div class="pfc-stats">
+              <div class="pfc-stat"><span class="val">3</span><span class="lbl">Mockups</span></div>
+              <div class="pfc-stat"><span class="val">AI</span><span class="lbl">Interviewer</span></div>
+              <div class="pfc-stat"><span class="val">Track</span><span class="lbl">Progress</span></div>
+            </div>
+            <div class="pfc-skills">
+              <span class="pfc-skill">mock interviews</span>
+              <span class="pfc-skill">instant feedback</span>
+              <span class="pfc-skill">progress tracking</span>
+              <span class="pfc-skill">question bank</span>
+            </div>
+          </a>
+
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER (same as teaching) -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">CodeLab</div>
+        <p>Interactive teaching modules and vibe coding projects for Generative AI for Software Development at William &amp; Mary.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="teaching.html">Teaching</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Reach Out</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Projects</h5>
+        <ul>
+          <li><a href="project-stock-trading.html">Stock Trading</a></li>
+          <li><a href="project-prompt-engineering.html">Prompt Engineering</a></li>
+          <li><a href="project-code-review.html">Code Review</a></li>
+          <li><a href="project-interview-prep.html">Interview Coach</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
+      <span class="footer-wm">W&amp;M Computer Science</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../feedback-widget.js"></script>
+<script>document.addEventListener('click',function(e){var ys=document.getElementById('year-selector');if(ys&&!ys.contains(e.target))ys.classList.remove('open');});</script>
+</body>
+</html>
