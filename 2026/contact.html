@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reach Out — CodeLab</title>
   <meta name="description" content="Get in touch with Antonio Mastropaolo — questions about the platform, research collaboration, student inquiries, or general feedback." />
-  <link rel="stylesheet" href="../platform.css" />
+  <link rel="stylesheet" href="platform.css" />
   <style>
     /* ── Contact Page ───────────────────────────────────────────── */
     .contact-hero {
@@ -149,15 +149,6 @@
       <a href="contact.html" class="nav-link active">Reach Out</a>
     </div>
     <div class="nav-right">
-      <div class="year-selector" id="year-selector">
-        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">
-          Spring 2026 <span class="caret">&#9660;</span>
-        </div>
-        <div class="year-dropdown">
-          <a href="/2026/" class="year-option current">Spring 2026 <span class="yr-badge">current</span></a>
-          <a href="/2025/" class="year-option">Spring 2025 <span class="yr-badge">archived</span></a>
-        </div>
-      </div>
       <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
     </div>
   </div>
@@ -292,8 +283,8 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="logo">CodeLab</div>
-        <p>Interactive teaching modules and student projects for Generative AI for Software Development at William &amp; Mary.</p>
+        <div class="logo">&lt;/&gt; CodeLab</div>
+        <p>Interactive teaching modules and student projects for Generative&nbsp;AI for Software Development at William&nbsp;&amp;&nbsp;Mary.</p>
       </div>
       <div class="footer-col">
         <h5>Platform</h5>
@@ -304,6 +295,19 @@
           <li><a href="contact.html">Reach Out</a></li>
         </ul>
       </div>
+      <div class="footer-col">
+        <h5>Modules</h5>
+        <ul>
+          <li><a href="course-intro.html">00 &mdash; Course Intro</a></li>
+          <li><a href="msr.html">01 &mdash; Mining Software Repos</a></li>
+          <li><a href="probabilistic-code-models.html">02 &mdash; Source Code Modeling</a></li>
+          <li><a href="evaluation-metrics.html">03 &mdash; Evaluation Metrics</a></li>
+          <li><a href="dl4se-foundations.html">04 &mdash; DL4SE Foundations</a></li>
+          <li><a href="prompting-llms.html">05 &mdash; Prompting LLMs</a></li>
+          <li><a href="hallucinations.html">06 &mdash; Hallucinations</a></li>
+          <li><a href="genetic-algorithms.html">GA &mdash; Genetic Algorithms</a></li>
+        </ul>
+      </div>
     </div>
     <div class="footer-bottom">
       <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
@@ -312,7 +316,7 @@
   </div>
 </footer>
 
-<script src="../feedback-widget.js"></script>
+<script src="feedback-widget.js"></script>
 <script>
 // ── Contact Form Logic ────────────────────────────────────────────
 (function() {
@@ -434,6 +438,5 @@
 })();
 </script>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-<script>document.addEventListener('click',function(e){var ys=document.getElementById('year-selector');if(ys&&!ys.contains(e.target))ys.classList.remove('open');});</script>
 </body>
 </html>
