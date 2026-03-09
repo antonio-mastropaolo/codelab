@@ -37,7 +37,7 @@
     .slide-h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .slide-h2{font-size:clamp(1.4rem,2.5vw,2rem);font-weight:700;margin-bottom:16px;font-family:var(--font-display);letter-spacing:-0.02em}
     .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:16px;max-width:680px}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:8px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;margin-top:8px}
     @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px}}
     .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;margin:12px 0}
     .cb.blue{border-left-color:var(--blue)}.cb.amber{border-left-color:var(--amber)}.cb.purple{border-left-color:var(--purple)}.cb.red{border-left-color:var(--red)}
@@ -50,7 +50,7 @@
     .term-emoji{font-size:1.3rem;margin-bottom:6px}
     .term-name{font-size:0.76rem;font-family:var(--font-mono);color:var(--green);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
     .term-def{font-size:0.82rem;color:var(--text-secondary);line-height:1.5}
-    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:14px 0}
+    .vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin:14px 0}
     @media(max-width:700px){.vs-grid{grid-template-columns:1fr}}
     .vs-card{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:18px}
     .vs-card h4{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px}
@@ -146,6 +146,12 @@
     .guide-metrics{font-size:0.82rem;color:var(--text-secondary);line-height:1.5}
     .tab-panel{display:none}.tab-panel.active{display:block}
     .passk-results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+    /* Acronym tooltips */
+    .acr { position: relative; cursor: help; border-bottom: 1px dotted var(--green); text-decoration: none; font-style: normal; font-weight: 600; color: var(--text-primary); }
+    .acr::after { content: attr(data-full); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(4px); background: var(--bg-2); border: 1px solid var(--green-border); color: var(--green); padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-mono); font-weight: 400; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .acr:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .acr.first-use { animation: acr-glow 2s ease-out; }
+    @keyframes acr-glow { 0%,15% { background: rgba(0,217,126,0.25); border-radius: 3px; } 100% { background: transparent; } }
   </style>
 </head>
 <body>
@@ -183,7 +189,7 @@
         <div>
           <div class="cb blue"><div class="cb-label">Prediction (PR)</div><div class="cb-body" style="font-size:1rem;font-weight:600;color:var(--text-primary);">"Reads the contents of this source as a string."</div></div>
           <div class="cb"><div class="cb-label">Ground Truth (GT)</div><div class="cb-body" style="font-size:1rem;font-weight:600;color:var(--text-primary);">"Get the textual information from this source and represent it as a string."</div></div>
-          <div style="margin-top:12px;"><span class="score-badge low">BLEU: 0.21</span></div>
+          <div style="margin-top:12px;"><span class="score-badge low"><abbr class="acr" data-full="Bilingual Evaluation Understudy">BLEU</abbr>: 0.21</span></div>
         </div>
         <div>
           <h4 style="font-family:var(--font-display);font-size:0.9rem;margin-bottom:10px;">Interactive: Word Overlap</h4>
@@ -416,7 +422,7 @@
     <!-- S14: CodeBLEU -->
     <div class="slide" id="slide-14">
       <div class="slide-label">Module 3 · Slide 14</div>
-      <h2 class="slide-h2">CodeBLEU</h2>
+      <h2 class="slide-h2"><abbr class="acr" data-full="Code-aware BLEU with AST and data-flow matching">CodeBLEU</abbr></h2>
       <p class="slide-p">CodeBLEU extends BLEU by recognizing that code should be evaluated not only as text, but also as structure and behavior.</p>
       <div class="flow-row">
         <div class="flow-box green">N-gram Match<br/><span style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">0.25</span></div><span class="flow-arrow">+</span>
@@ -454,7 +460,7 @@
     <!-- S16: NEW — pass@k -->
     <div class="slide" id="slide-16">
       <div class="slide-label">Module 3 · Slide 16</div>
-      <h2 class="slide-h2">pass@k: <em>Evaluating Code Generation</em></h2>
+      <h2 class="slide-h2"><abbr class="acr" data-full="Pass at k — functional correctness metric">pass@k</abbr>: <em>Evaluating Code Generation</em></h2>
       <p class="slide-p">For code generation, we do not need EVERY output to be correct — just ONE. pass@k measures the probability that at least one of k generated solutions passes all test cases.</p>
       <div class="two-col">
         <div>
@@ -620,7 +626,7 @@
         </div>
         <div>
           <div class="warn-card"><div class="warn-title">Ignoring Statistical Significance</div><div class="warn-body">Reporting single-run results without confidence intervals. Small improvements may be noise.</div><div class="warn-fix">Fix: Run multiple seeds, report mean ± std.</div></div>
-          <div class="warn-card"><div class="warn-title">Test Set Contamination</div><div class="warn-body">LLMs may have seen the test data during pre-training. Results on contaminated benchmarks are inflated and unreliable.</div><div class="warn-fix">Fix: Use time-split data or create new benchmarks.</div></div>
+          <div class="warn-card"><div class="warn-title">Test Set Contamination</div><div class="warn-body"><abbr class="acr" data-full="Large Language Models">LLMs</abbr> may have seen the test data during pre-training. Results on contaminated benchmarks are inflated and unreliable.</div><div class="warn-fix">Fix: Use time-split data or create new benchmarks.</div></div>
         </div>
       </div>
     </div>
@@ -765,8 +771,22 @@
       document.getElementById('next-btn').textContent=current===TOTAL?'Finish':'Next →';
       const dots=document.getElementById('dots');dots.innerHTML='';
       for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='slide-dot'+(i===current?' active':'');d.onclick=()=>setSlide(i);dots.appendChild(d);}
+      processAcronyms();
     }
     document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();goSlide(-1);}});
+
+    // ── Acronym tooltip system ──────────────────────────────
+    const ACR_SEEN = new Set();
+    function processAcronyms() {
+      document.querySelectorAll('.slide.active .acr').forEach(el => {
+        const key = el.textContent.trim();
+        if (!ACR_SEEN.has(key)) {
+          ACR_SEEN.add(key);
+          el.classList.add('first-use');
+          el.addEventListener('animationend', () => el.classList.remove('first-use'), { once: true });
+        }
+      });
+    }
 
     function initSlide(n){
       if(n===2) setTimeout(initWordOverlap,50);

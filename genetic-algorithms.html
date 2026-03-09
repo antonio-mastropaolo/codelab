@@ -51,7 +51,7 @@
     .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
     .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;margin-top:6px;}
     @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
     .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
     .cb.blue{border-left-color:var(--blue);}
@@ -154,6 +154,12 @@
     .evo-desc{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:5px 0;font-size:0.8rem;color:var(--text-secondary);line-height:1.5;transition:all 0.2s;}
     .evo-desc.best{border-color:var(--green-border);background:var(--green-dim);}
     .evo-desc .evo-score{font-family:var(--font-mono);font-size:0.72rem;color:var(--amber);float:right;}
+    /* Acronym tooltips */
+    .acr { position: relative; cursor: help; border-bottom: 1px dotted var(--green); text-decoration: none; font-style: normal; font-weight: 600; color: var(--text-primary); }
+    .acr::after { content: attr(data-full); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(4px); background: var(--bg-2); border: 1px solid var(--green-border); color: var(--green); padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; font-family: var(--font-mono); font-weight: 400; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .acr:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .acr.first-use { animation: acr-glow 2s ease-out; }
+    @keyframes acr-glow { 0%,15% { background: rgba(0,217,126,0.25); border-radius: 3px; } 100% { background: transparent; } }
   </style>
 </head>
 <body>
@@ -178,7 +184,7 @@
 <div class="slide active" id="slide-1">
   <div class="slide-label">Extra &middot; Slide 01</div>
   <h1 class="slide-h1"><em>Genetic Algorithms</em> &amp;<br>LLMs</h1>
-  <p class="slide-p">Evolutionary computation meets AI-assisted software engineering. Learn how genetic algorithms can evolve prompts, test suites, and code specifications to dramatically improve the quality of LLM-generated software artifacts.</p>
+  <p class="slide-p">Evolutionary computation meets AI-assisted software engineering. Learn how genetic algorithms can evolve prompts, test suites, and code specifications to dramatically improve the quality of <abbr class="acr" data-full="Large Language Model">LLM</abbr>-generated software artifacts.</p>
 
   <div class="slide-h2" style="font-size:1rem;margin-top:10px;margin-bottom:12px;">Learning Objectives</div>
   <div class="term-grid" style="grid-template-columns:1fr 1fr 1fr;">
@@ -188,7 +194,7 @@
     </div>
     <div class="term-card">
       <div class="term-name">Objective 2</div>
-      <div class="term-def">Apply GA concepts to real optimization problems using binary and real-valued encodings</div>
+      <div class="term-def">Apply <abbr class="acr" data-full="Genetic Algorithm">GA</abbr> concepts to real optimization problems using binary and real-valued encodings</div>
     </div>
     <div class="term-card">
       <div class="term-name">Objective 3</div>
@@ -737,7 +743,7 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
 
   <div class="stat-row">
     <div class="stat-card" style="border-top:3px solid var(--amber);">
-      <div class="stat-val amber">CodeBLEU</div>
+      <div class="stat-val amber"><abbr class="acr" data-full="Code-aware BLEU with AST and data-flow matching">CodeBLEU</abbr></div>
       <div class="stat-label" style="font-size:0.68rem;line-height:1.4;margin-top:6px;">Measures text similarity<br>~0.1s per eval<br><strong style="color:var(--red);">DOESN'T tell you if code works</strong></div>
     </div>
     <div class="stat-card" style="border-top:3px solid var(--red);">
@@ -959,7 +965,7 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
   <p class="slide-p">Here is the full pipeline when we combine genetic algorithms with LLM-based fitness approximation. The key: expensive test execution happens only ONCE at the end.</p>
 
   <div class="step-row"><div class="step-num">1</div><div class="step-body"><h4>Initialize Population</h4><p>Generate N code solutions using the LLM with different prompts, temperatures, or parameter configurations. Each solution is an "individual."</p></div></div>
-  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Evaluate Fitness (CHEAP)</h4><p>Call the LLM predictor for each individual &mdash; predict pass@1: 0 or 1. This is just an API call (~0.5s), <strong>NOT</strong> test execution (hours).</p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h4>Evaluate Fitness (CHEAP)</h4><p>Call the LLM predictor for each individual &mdash; predict pass@1: 0 or 1. This is just an <abbr class="acr" data-full="Application Programming Interface">API</abbr> call (~0.5s), <strong>NOT</strong> test execution (hours).</p></div></div>
   <div class="step-row"><div class="step-num">3</div><div class="step-body"><h4>Selection</h4><p>Tournament selection &mdash; pick the fittest individuals based on predicted fitness scores.</p></div></div>
   <div class="step-row"><div class="step-num">4</div><div class="step-body"><h4>Crossover</h4><p>Combine parts of good solutions &mdash; e.g., take function A's algorithm + function B's error handling. For prompt evolution: merge clauses from two high-fitness prompts.</p></div></div>
   <div class="step-row"><div class="step-num">5</div><div class="step-body"><h4>Mutation</h4><p>Randomly modify candidates: rename variables, restructure logic, change data structures, rephrase prompt clauses, add or remove constraints.</p></div></div>
@@ -1419,6 +1425,7 @@ function setSlide(n) {
   document.getElementById('prev-btn').disabled = cur === 1;
   document.getElementById('next-btn').disabled = cur === TOTAL;
   buildDots();
+  processAcronyms();
 }
 
 function goSlide(d) { setSlide(cur + d); }
@@ -1426,6 +1433,20 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
 });
+
+    // ── Acronym tooltip system ──────────────────────────────
+    const ACR_SEEN = new Set();
+    function processAcronyms() {
+      document.querySelectorAll('.slide.active .acr').forEach(el => {
+        const key = el.textContent.trim();
+        if (!ACR_SEEN.has(key)) {
+          ACR_SEEN.add(key);
+          el.classList.add('first-use');
+          el.addEventListener('animationend', () => el.classList.remove('first-use'), { once: true });
+        }
+      });
+    }
+
 buildDots();
 
 // ── Slide 8: GA Step-by-Step Builder ──────────────────────────────

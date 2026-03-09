@@ -61,7 +61,7 @@
     .slide-h2{font-size:clamp(1.3rem,2.2vw,1.9rem);font-weight:700;margin-bottom:14px;font-family:var(--font-display);letter-spacing:-0.02em;}
     .slide-h2 em{font-style:normal;background:linear-gradient(135deg,var(--green),#00B8D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .slide-p{color:var(--text-secondary);line-height:1.7;font-size:0.95rem;margin-bottom:14px;max-width:700px;}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;margin-top:6px;}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;margin-top:6px;}
     @media(max-width:700px){.two-col{grid-template-columns:1fr;gap:16px;}}
     .cb{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin:12px 0;}
     .cb.blue{border-left-color:var(--blue);}
@@ -115,6 +115,7 @@
     .quiz-option.revealed.correct{border-color:var(--green-border);background:var(--green-dim);}
     .quiz-option.revealed.wrong{border-color:rgba(248,81,73,0.2);background:rgba(248,81,73,0.04);}
     .inter-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:14px;}
+    .inter-body{padding:14px 16px;}
     .inter-header{padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg-3);display:flex;align-items:center;justify-content:space-between;}
     .inter-title{font-size:0.82rem;font-weight:600;display:flex;align-items:center;gap:8px;}
     .inter-badge{font-size:0.68rem;font-family:var(--font-mono);background:rgba(0,217,126,0.1);color:var(--green);border:1px solid rgba(0,217,126,0.2);padding:2px 7px;border-radius:4px;}
@@ -287,6 +288,13 @@
     .roadmap-weeks{font-family:var(--font-mono);font-size:0.66rem;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;}
     .roadmap-card h4{font-size:0.78rem;font-weight:600;margin-bottom:3px;}
     .roadmap-card p{font-size:0.7rem;color:var(--text-secondary);line-height:1.4;margin:0;}
+
+    /* Acronym tooltips */
+    .acr{position:relative;cursor:help;border-bottom:1px dotted var(--green);text-decoration:none;font-style:normal;font-weight:600;color:var(--text-primary);}
+    .acr::after{content:attr(data-full);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--bg-2);border:1px solid rgba(0,217,126,0.2);color:var(--green);padding:5px 12px;border-radius:6px;font-size:0.72rem;font-family:var(--font-mono);font-weight:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+    .acr:hover::after{opacity:1;transform:translateX(-50%) translateY(0);}
+    .acr.first-use{animation:acr-glow 2s ease-out;}
+    @keyframes acr-glow{0%,15%{background:rgba(0,217,126,0.25);border-radius:3px;}100%{background:transparent;}}
   </style>
 </head>
 <body>
@@ -443,7 +451,7 @@
   </div>
   <div class="cb purple" style="margin-top:6px;">
     <div class="cb-label">Course Focus</div>
-    <div class="cb-body">This course focuses on the <strong>LLM era</strong> while teaching you the foundations &mdash; from statistical models to deep learning &mdash; that make it all work. Each era built on the previous one, and understanding this progression makes you a stronger practitioner.</div>
+    <div class="cb-body">This course focuses on the <strong><abbr class="acr" data-full="Large Language Model">LLM</abbr> era</strong> while teaching you the foundations &mdash; from statistical models to deep learning &mdash; that make it all work. Each era built on the previous one, and understanding this progression makes you a stronger practitioner.</div>
   </div>
 </div>
 
@@ -517,7 +525,7 @@
     <div>
       <div class="cb">
         <div class="cb-label">Research Focus</div>
-        <div class="cb-body">My work centers on <strong>AI for Software Engineering (AI4SE)</strong>: using deep learning and large language models to automate software development tasks including code generation, code summarization, bug fixing, and code review.</div>
+        <div class="cb-body">My work centers on <strong>AI for Software Engineering (<abbr class="acr" data-full="AI for Software Engineering">AI4SE</abbr>)</strong>: using deep learning and large language models to automate software development tasks including code generation, code summarization, bug fixing, and code review.</div>
       </div>
       <div class="cb cyan">
         <div class="cb-label">Background</div>
@@ -1752,6 +1760,7 @@ function setSlide(n) {
   document.getElementById('prev-btn').disabled = cur === 1;
   document.getElementById('next-btn').disabled = cur === TOTAL;
   buildDots();
+  processAcronyms();
 }
 
 function goSlide(d) { setSlide(cur + d); }
@@ -1759,6 +1768,20 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goSlide(1);
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goSlide(-1);
 });
+
+// ── Acronym tooltip system ──────────────────────────────
+const ACR_SEEN = new Set();
+function processAcronyms() {
+  document.querySelectorAll('.slide.active .acr').forEach(el => {
+    const key = el.textContent.trim();
+    if (!ACR_SEEN.has(key)) {
+      ACR_SEEN.add(key);
+      el.classList.add('first-use');
+      el.addEventListener('animationend', () => el.classList.remove('first-use'), { once: true });
+    }
+  });
+}
+
 buildDots();
 
 // ── Slide 19: Match the Tool (click-to-match) ─────────────────────
