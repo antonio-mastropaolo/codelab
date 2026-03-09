@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teaching — CodeLab</title>
   <meta name="description" content="Interactive teaching modules for Generative AI for Software Development (CSCI 455/555) at William & Mary." />
-  <link rel="stylesheet" href="../platform.css" />
+  <link rel="stylesheet" href="platform.css" />
   <style>
     .module-list { margin-top: 48px; }
     .module-section { margin-bottom: 64px; }
@@ -105,15 +105,6 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.62rem; color: var(--text-3); min-width: 28px; text-align: right;
     }
-    .sidebar-meta {
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.65rem; color: var(--text-3);
-    }
-    .sidebar-continue {
-      font-size: 0.62rem; font-weight: 600; color: var(--wm-gold);
-      text-decoration: none; font-family: 'Inter', sans-serif;
-    }
-    .sidebar-item.completed .sidebar-continue { color: var(--wm-green); }
     .sidebar-item:hover .sidebar-num { color: var(--wm-green); }
 
     .course-card {
@@ -269,15 +260,6 @@
       <a href="contact.html" class="nav-link">Reach Out</a>
     </div>
     <div class="nav-right">
-      <div class="year-selector" id="year-selector">
-        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">
-          Spring 2026 <span class="caret">&#9660;</span>
-        </div>
-        <div class="year-dropdown">
-          <a href="/2026/" class="year-option current">Spring 2026 <span class="yr-badge">current</span></a>
-          <a href="/2025/" class="year-option">Spring 2025 <span class="yr-badge">archived</span></a>
-        </div>
-      </div>
       <span class="nav-instructor">Antonio Mastropaolo · W&amp;M</span>
     </div>
   </div>
@@ -766,10 +748,11 @@
       var isComplete = pct >= 95;
       var isStarted = visited > 0;
       var cls = isComplete ? 'completed' : isStarted ? 'in-progress' : '';
-      var remaining = Math.max(0, total - visited);
-      var estMin = Math.ceil(remaining * 0.5);
+      // Build direct link: resume from last slide if in-progress
+      var targetHref = mod.href;
+      if (isStarted && p && p.lastSlide > 1 && !isComplete) targetHref = mod.href + '#slide=' + p.lastSlide;
 
-      html += '<a href="#' + mod.anchor + '" class="sidebar-item ' + cls + '" data-slug="' + mod.slug + '">';
+      html += '<a href="' + targetHref + '" class="sidebar-item ' + cls + '" data-slug="' + mod.slug + '">';
       html += '<div class="sidebar-top">';
       html += '<span class="sidebar-num">' + mod.num + '</span>';
       html += '<span class="sidebar-name">' + mod.name + '</span>';
@@ -778,18 +761,6 @@
       html += '<div class="sidebar-progress">';
       html += '<div class="sidebar-bar-track"><div class="sidebar-bar-fill" style="width:' + pct + '%;"></div></div>';
       html += '<span class="sidebar-pct">' + pct + '%</span>';
-      html += '</div>';
-      html += '<div class="sidebar-meta">';
-      if (isComplete) {
-        html += '<span>Completed</span>';
-        html += '<span class="sidebar-continue" onclick="event.preventDefault();event.stopPropagation();window.location.href=\'' + mod.href + '\';">Review \u2192</span>';
-      } else if (isStarted) {
-        html += '<span>' + visited + '/' + total + ' slides \u00B7 ~' + estMin + ' min left</span>';
-        html += '<span class="sidebar-continue" onclick="event.preventDefault();event.stopPropagation();window.location.href=\'' + mod.href + '#slide=' + (p ? p.lastSlide : 1) + '\';">Continue \u2192</span>';
-      } else {
-        html += '<span>Not started</span>';
-        html += '<span class="sidebar-continue" onclick="event.preventDefault();event.stopPropagation();window.location.href=\'' + mod.href + '\';">Start \u2192</span>';
-      }
       html += '</div>';
       html += '</a>';
     });
@@ -800,7 +771,6 @@
   renderSidebar();
 })();
 </script>
-<script src="../feedback-widget.js"></script>
-<script>document.addEventListener('click',function(e){var ys=document.getElementById('year-selector');if(ys&&!ys.contains(e.target))ys.classList.remove('open');});</script>
+<script src="feedback-widget.js"></script>
 </body>
 </html>
