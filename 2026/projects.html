@@ -91,12 +91,24 @@
     .pfc-visual.amber  .pfc-accent-ring { background: #D97706; }
     .pfc-visual.rose   .pfc-accent-ring { background: #F43F5E; }
 
-    .pfc-body { padding: 20px 20px 14px; flex: 1; }
+    .pfc-body {
+      padding: 20px 20px 14px; flex: 1;
+      display: flex; flex-direction: column;
+    }
     .pfc-tags { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
-    .pfc-body h2 { font-size: 1.08rem; color: var(--text); margin-bottom: 6px; font-family: 'Playfair Display', serif; font-weight: 700; }
-    .pfc-body > p { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; }
+    .pfc-body h2 {
+      font-size: 1.08rem; color: var(--text); margin-bottom: 6px;
+      font-family: 'Playfair Display', serif; font-weight: 700;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .pfc-body > p {
+      font-size: 0.82rem; color: var(--text-2); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
 
-    .pfc-meta { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+    .pfc-meta {
+      display: flex; gap: 16px; margin-top: auto; padding-top: 14px; flex-wrap: wrap;
+    }
     .pfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
     .pfc-meta-item .icon { font-size: 0.85rem; }
 
@@ -168,6 +180,7 @@
     .propose-body > p {
       font-size: 0.82rem; color: var(--text-2); line-height: 1.55;
       margin-bottom: 16px;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
     .propose-form { margin-top: auto; }
     .propose-input-wrap {
