@@ -96,11 +96,13 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
 .nav-logo .logo-mark svg { width: 34px; height: 34px; }
 .nav-links {
   display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
 }
 .nav-link {
   padding: 8px 16px; border-radius: 8px;
   font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.72);
   transition: all 0.2s; letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 .nav-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
 .nav-link.active { color: var(--wm-gold-light); background: rgba(185,151,91,0.12); }
