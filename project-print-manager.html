@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RouteLLM — AI Inference Optimizer · CodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .project-hero { padding:120px 0 64px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+    .project-hero::before { content:''; position:absolute; top:-80px; right:-60px; width:500px; height:500px; background:radial-gradient(circle, rgba(244,63,94,0.09) 0%, transparent 70%); pointer-events:none; }
+    .breadcrumb { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-muted); margin-bottom:20px; }
+    .breadcrumb a { color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .breadcrumb a:hover { color:var(--green); }
+    .project-hero-inner { display:flex; align-items:flex-start; gap:40px; }
+    @media (max-width:700px) { .project-hero-inner { flex-direction:column; } }
+    .project-hero-icon { width:72px; height:72px; background:linear-gradient(135deg,rgba(244,63,94,0.2),rgba(244,63,94,0.06)); border:1px solid rgba(244,63,94,0.25); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0; }
+    .project-hero h1 { font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:700; letter-spacing:-0.025em; margin-bottom:10px; }
+    .project-hero p  { color:var(--text-secondary); font-size:1rem; line-height:1.65; max-width:580px; margin-bottom:20px; }
+    .project-tags { display:flex; flex-wrap:wrap; gap:8px; }
+    .ptag { font-size:0.75rem; font-family:var(--font-mono); padding:4px 10px; border-radius:5px; }
+    .ptag.rose    { background:rgba(244,63,94,0.1); color:#F43F5E; border:1px solid rgba(244,63,94,0.2); }
+    .ptag.default { background:var(--bg-3); color:var(--text-muted); border:1px solid var(--border); }
+
+    .mockups-section { padding:64px 0; }
+    .mockup-row { margin-bottom:64px; }
+    .mockup-row:last-child { margin-bottom:0; }
+    .mockup-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .mockup-num { width:28px; height:28px; border-radius:8px; background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.25); color:#F43F5E; font-family:var(--font-mono); font-size:0.8rem; font-weight:600; display:flex; align-items:center; justify-content:center; }
+    .mockup-title { font-size:1rem; font-weight:600; }
+    .mockup-desc  { font-size:0.85rem; color:var(--text-muted); margin-top:3px; }
+
+    .browser-frame { background:var(--bg-2); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+    .browser-bar { background:var(--bg-3); border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:12px; }
+    .browser-dots { display:flex; gap:6px; }
+    .browser-dot { width:10px; height:10px; border-radius:50%; }
+    .bd-red{background:#FF5F57;}.bd-yellow{background:#FFBD2E;}.bd-green{background:#28CA41;}
+    .browser-url { flex:1; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:4px 12px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); }
+
+    .app-shell { display:flex; min-height:480px; }
+    .app-sidebar { width:195px; background:var(--bg-3); border-right:1px solid var(--border); padding:16px 0; flex-shrink:0; }
+    .app-sidebar-logo { padding:0 14px 12px; font-weight:700; font-size:0.88rem; color:#F43F5E; border-bottom:1px solid var(--border); margin-bottom:12px; font-family:var(--font-display); }
+    .app-nav-item { padding:8px 14px; font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+    .app-nav-item.active { color:#F43F5E; background:rgba(244,63,94,0.08); }
+    .app-main { flex:1; overflow:hidden; background:var(--bg); }
+    .app-topbar { padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg-2); }
+    .app-topbar-title { font-weight:600; font-size:0.9rem; }
+    .mini-btn { font-size:0.72rem; padding:4px 10px; border-radius:5px; background:var(--bg-3); border:1px solid var(--border); color:var(--text-secondary); }
+    .mini-btn.rose { background:#F43F5E; color:#fff; border-color:#F43F5E; font-weight:600; }
+    .app-content { padding:14px 18px; overflow:hidden; }
+
+    /* Task Queue (Mockup 1) */
+    .task-grid { display:flex; flex-direction:column; gap:8px; }
+    .task-row { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+    .task-type-icon { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .task-type-icon.code     { background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); }
+    .task-type-icon.text     { background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2); }
+    .task-type-icon.vision   { background:rgba(5,150,105,0.1);  border:1px solid rgba(5,150,105,0.2); }
+    .task-type-icon.reason   { background:rgba(227,179,65,0.1); border:1px solid rgba(227,179,65,0.2); }
+    .task-info { flex:1; min-width:0; }
+    .task-info h4 { font-size:0.8rem; font-weight:600; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .task-info p  { font-size:0.68rem; color:var(--text-muted); margin:2px 0 0; }
+    .model-badge { font-size:0.62rem; font-family:var(--font-mono); padding:2px 7px; border-radius:3px; font-weight:600; }
+    .model-badge.haiku   { background:rgba(5,150,105,0.1); color:var(--green); border:1px solid rgba(5,150,105,0.2); }
+    .model-badge.sonnet  { background:rgba(59,130,246,0.1); color:var(--blue); border:1px solid rgba(59,130,246,0.2); }
+    .model-badge.opus    { background:rgba(139,92,246,0.1); color:var(--purple); border:1px solid rgba(139,92,246,0.2); }
+    .model-badge.gpt4    { background:rgba(227,179,65,0.1); color:var(--amber); border:1px solid rgba(227,179,65,0.2); }
+    .cost-cell { text-align:right; flex-shrink:0; min-width:70px; }
+    .cost-val  { font-size:0.78rem; font-family:var(--font-mono); font-weight:700; }
+    .cost-saved { font-size:0.6rem; color:var(--green); font-family:var(--font-mono); }
+    .status-pill { font-size:0.62rem; font-family:var(--font-mono); padding:2px 7px; border-radius:3px; font-weight:600; }
+    .status-pill.done    { background:rgba(5,150,105,0.1); color:var(--green); border:1px solid rgba(5,150,105,0.2); }
+    .status-pill.running { background:rgba(244,63,94,0.1); color:#F43F5E; border:1px solid rgba(244,63,94,0.2); }
+
+    /* Router Detail (Mockup 2) */
+    .router-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:12px; min-height:380px; }
+    .router-panel { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .router-header { padding:8px 12px; border-bottom:1px solid var(--border); background:var(--bg-3); font-size:0.78rem; font-weight:600; display:flex; align-items:center; justify-content:space-between; }
+    .router-body { flex:1; padding:12px; display:flex; flex-direction:column; gap:10px; }
+    .analysis-item { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
+    .analysis-item:last-child { border-bottom:none; }
+    .analysis-label { font-size:0.75rem; color:var(--text-muted); }
+    .analysis-val { font-size:0.75rem; font-family:var(--font-mono); font-weight:600; }
+    .opt-row { background:var(--bg-3); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
+    .opt-row-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+    .opt-row-label { font-size:0.72rem; font-weight:600; }
+    .opt-row-badge { font-size:0.6rem; font-family:var(--font-mono); padding:1px 5px; border-radius:3px; }
+    .opt-row-badge.active { background:rgba(5,150,105,0.1); color:var(--green); border:1px solid rgba(5,150,105,0.2); }
+    .opt-row-badge.skip   { background:var(--bg-2); color:var(--text-muted); border:1px solid var(--border); }
+    .opt-row-desc { font-size:0.68rem; color:var(--text-muted); line-height:1.4; }
+    .cost-compare { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:auto; }
+    .cost-box { background:var(--bg-3); border:1px solid var(--border); border-radius:6px; padding:10px; text-align:center; }
+    .cost-box-val { font-size:1.3rem; font-weight:700; font-family:var(--font-mono); }
+    .cost-box-label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px; }
+
+    /* Analytics (Mockup 3) */
+    .analytics-layout { display:flex; flex-direction:column; gap:12px; }
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .stat-card { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+    .stat-val { font-size:1.4rem; font-weight:700; font-family:var(--font-mono); }
+    .stat-label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px; }
+    .charts-row { display:grid; grid-template-columns:1.6fr 1fr; gap:10px; }
+    .chart-card { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:12px; }
+    .chart-title { font-size:0.75rem; font-weight:600; margin-bottom:8px; }
+    .model-dist-list { display:flex; flex-direction:column; gap:6px; }
+    .model-dist-row { display:flex; align-items:center; gap:8px; }
+    .model-dist-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .model-dist-name { flex:1; font-size:0.75rem; color:var(--text-secondary); }
+    .model-dist-bar { flex:2; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .model-dist-fill { height:100%; border-radius:3px; }
+    .model-dist-pct { font-size:0.72rem; font-family:var(--font-mono); font-weight:600; min-width:32px; text-align:right; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+      <ul class="nav-links">
+        <li><a href="projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="teaching.html" class="nav-link">Teaching</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+      </ul>
+      <a href="projects.html" class="btn btn-outline">&larr; All Projects</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">CodeLab</a><span style="opacity:0.4">&rsaquo;</span>
+        <a href="projects.html">Projects</a><span style="opacity:0.4">&rsaquo;</span>
+        <span>Inference Optimizer</span>
+      </div>
+      <div class="project-hero-inner">
+        <div class="project-hero-icon">⚡</div>
+        <div>
+          <h1>RouteLLM &mdash; AI Inference Optimizer</h1>
+          <p>Submit any AI task and the platform automatically selects the optimal model, compresses prompts, minimizes tokens, and routes to the cheapest provider that meets quality thresholds. An intelligent efficiency layer between users and LLM APIs.</p>
+          <div class="project-tags">
+            <span class="ptag rose">infrastructure</span>
+            <span class="ptag default">vibe coding</span>
+            <span class="ptag default">model routing</span>
+            <span class="ptag default">cost optimization</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockups-section">
+    <div class="container">
+
+      <!-- Mockup 1: Task Queue & Router Dashboard -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">01</div>
+          <div>
+            <div class="mockup-title">Task Queue &amp; Smart Router</div>
+            <div class="mockup-desc">Incoming tasks are analyzed, routed to the optimal model, and tracked with cost savings</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">routellm.codelab.sh/tasks</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">RouteLLM ⚡</div>
+                <div class="app-nav-item active">📋 Task Queue</div>
+                <div class="app-nav-item">🔀 Router</div>
+                <div class="app-nav-item">📊 Analytics</div>
+                <div class="app-nav-item">🧩 Models</div>
+                <div class="app-nav-item">⚙️ Settings</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Task Queue &middot; 47 today</span>
+                  <div style="display:flex;gap:8px;">
+                    <span class="mini-btn">Filters</span>
+                    <span class="mini-btn rose">+ Submit Task</span>
+                  </div>
+                </div>
+                <div class="app-content">
+                  <div class="task-grid">
+                    <!-- Code generation task -->
+                    <div class="task-row">
+                      <div class="task-type-icon code">🧑‍💻</div>
+                      <div class="task-info">
+                        <h4>Generate REST API endpoints for user auth module</h4>
+                        <p>Code generation &middot; complexity: high &middot; 2,840 tokens</p>
+                      </div>
+                      <span class="model-badge opus">Claude Opus</span>
+                      <div class="cost-cell">
+                        <div class="cost-val">$0.042</div>
+                        <div class="cost-saved">&darr; 38% saved</div>
+                      </div>
+                      <span class="status-pill done">Done</span>
+                    </div>
+                    <!-- Text summarization task -->
+                    <div class="task-row">
+                      <div class="task-type-icon text">📝</div>
+                      <div class="task-info">
+                        <h4>Summarize 12-page research paper on transformer efficiency</h4>
+                        <p>Summarization &middot; complexity: low &middot; 890 tokens</p>
+                      </div>
+                      <span class="model-badge haiku">Claude Haiku</span>
+                      <div class="cost-cell">
+                        <div class="cost-val">$0.001</div>
+                        <div class="cost-saved">&darr; 92% saved</div>
+                      </div>
+                      <span class="status-pill done">Done</span>
+                    </div>
+                    <!-- Vision task -->
+                    <div class="task-row">
+                      <div class="task-type-icon vision">👁️</div>
+                      <div class="task-info">
+                        <h4>Extract table data from scanned invoice PDF</h4>
+                        <p>Vision + extraction &middot; complexity: medium &middot; 1,560 tokens</p>
+                      </div>
+                      <span class="model-badge sonnet">Claude Sonnet</span>
+                      <div class="cost-cell">
+                        <div class="cost-val">$0.008</div>
+                        <div class="cost-saved">&darr; 71% saved</div>
+                      </div>
+                      <span class="status-pill done">Done</span>
+                    </div>
+                    <!-- Reasoning task -->
+                    <div class="task-row">
+                      <div class="task-type-icon reason">🧠</div>
+                      <div class="task-info">
+                        <h4>Multi-step math proof: convergence of infinite series</h4>
+                        <p>Reasoning &middot; complexity: very high &middot; 4,120 tokens</p>
+                      </div>
+                      <span class="model-badge opus">Claude Opus</span>
+                      <div class="cost-cell">
+                        <div class="cost-val">$0.061</div>
+                        <div class="cost-saved">&darr; 24% saved</div>
+                      </div>
+                      <span class="status-pill running">Running</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 2: Optimization Engine Detail -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">02</div>
+          <div>
+            <div class="mockup-title">Optimization Engine</div>
+            <div class="mockup-desc">Task analysis, prompt compression, model selection rationale, and cost comparison</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">routellm.codelab.sh/router/task-0847</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">RouteLLM ⚡</div>
+                <div class="app-nav-item">📋 Task Queue</div>
+                <div class="app-nav-item active">🔀 Router</div>
+                <div class="app-nav-item">📊 Analytics</div>
+                <div class="app-nav-item">🧩 Models</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Task #0847 &middot; Routing Decision</span>
+                  <div style="display:flex;gap:8px;"><span class="mini-btn">Re-route</span><span class="mini-btn rose">View Output</span></div>
+                </div>
+                <div class="app-content">
+                  <div class="router-layout">
+                    <!-- Left: Task Analysis -->
+                    <div class="router-panel">
+                      <div class="router-header">
+                        <span>Task Analysis</span>
+                        <span style="font-size:0.65rem;color:var(--text-muted);">auto-detected</span>
+                      </div>
+                      <div class="router-body">
+                        <div class="analysis-item">
+                          <span class="analysis-label">Task Type</span>
+                          <span class="analysis-val" style="color:var(--purple);">Code Generation</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Complexity</span>
+                          <span class="analysis-val" style="color:var(--amber);">High (0.82)</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Reasoning Depth</span>
+                          <span class="analysis-val">Multi-step</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Input Tokens</span>
+                          <span class="analysis-val">4,580</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Compressed To</span>
+                          <span class="analysis-val" style="color:var(--green);">2,840 (&darr;38%)</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Est. Output</span>
+                          <span class="analysis-val">~1,200 tokens</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Selected Model</span>
+                          <span class="model-badge opus">Claude Opus</span>
+                        </div>
+                        <div class="analysis-item">
+                          <span class="analysis-label">Confidence</span>
+                          <span class="analysis-val" style="color:var(--green);">96%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Right: Optimization Steps + Cost -->
+                    <div class="router-panel">
+                      <div class="router-header">
+                        <span>Optimization Pipeline</span>
+                        <span style="font-size:0.65rem;color:var(--green);font-family:var(--font-mono);">5 / 6 applied</span>
+                      </div>
+                      <div class="router-body">
+                        <div class="opt-row">
+                          <div class="opt-row-header">
+                            <span class="opt-row-label">1. Prompt Compression</span>
+                            <span class="opt-row-badge active">Applied</span>
+                          </div>
+                          <div class="opt-row-desc">Removed redundant instructions, deduplicated context. 4,580 &rarr; 2,840 tokens (38% reduction).</div>
+                        </div>
+                        <div class="opt-row">
+                          <div class="opt-row-header">
+                            <span class="opt-row-label">2. Input Restructuring</span>
+                            <span class="opt-row-badge active">Applied</span>
+                          </div>
+                          <div class="opt-row-desc">Converted free-text spec into structured JSON schema for clearer model comprehension.</div>
+                        </div>
+                        <div class="opt-row">
+                          <div class="opt-row-header">
+                            <span class="opt-row-label">3. Model Downgrade Check</span>
+                            <span class="opt-row-badge skip">Skipped</span>
+                          </div>
+                          <div class="opt-row-desc">Complexity 0.82 exceeds Sonnet threshold (0.65). Opus required for multi-step code gen.</div>
+                        </div>
+                        <div class="opt-row">
+                          <div class="opt-row-header">
+                            <span class="opt-row-label">4. Token Budget Cap</span>
+                            <span class="opt-row-badge active">Applied</span>
+                          </div>
+                          <div class="opt-row-desc">max_tokens set to 1,500 (est. 1,200 + 25% buffer) to prevent runaway generation.</div>
+                        </div>
+                        <div class="cost-compare">
+                          <div class="cost-box">
+                            <div class="cost-box-val" style="color:var(--text-muted);text-decoration:line-through;">$0.068</div>
+                            <div class="cost-box-label">Na&iuml;ve Cost</div>
+                          </div>
+                          <div class="cost-box">
+                            <div class="cost-box-val" style="color:var(--green);">$0.042</div>
+                            <div class="cost-box-label">Optimized Cost</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup 3: Cost Analytics Dashboard -->
+      <div class="mockup-row">
+        <div class="mockup-label">
+          <div class="mockup-num">03</div>
+          <div>
+            <div class="mockup-title">Cost Analytics Dashboard</div>
+            <div class="mockup-desc">Track savings, model distribution, and token efficiency across all tasks</div>
+          </div>
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dots"><div class="browser-dot bd-red"></div><div class="browser-dot bd-yellow"></div><div class="browser-dot bd-green"></div></div>
+            <div class="browser-url">routellm.codelab.sh/analytics</div>
+          </div>
+          <div class="browser-body">
+            <div class="app-shell">
+              <div class="app-sidebar">
+                <div class="app-sidebar-logo">RouteLLM ⚡</div>
+                <div class="app-nav-item">📋 Task Queue</div>
+                <div class="app-nav-item">🔀 Router</div>
+                <div class="app-nav-item active">📊 Analytics</div>
+                <div class="app-nav-item">🧩 Models</div>
+              </div>
+              <div class="app-main">
+                <div class="app-topbar">
+                  <span class="app-topbar-title">Cost Analytics &middot; Last 30 days</span>
+                  <div style="display:flex;gap:8px;"><span class="mini-btn">This Month</span><span class="mini-btn rose">Export CSV</span></div>
+                </div>
+                <div class="app-content">
+                  <div class="analytics-layout">
+                    <!-- Top stats -->
+                    <div class="stats-row">
+                      <div class="stat-card">
+                        <div class="stat-val" style="color:#F43F5E;">1,284</div>
+                        <div class="stat-label">Tasks Routed</div>
+                      </div>
+                      <div class="stat-card">
+                        <div class="stat-val" style="color:var(--green);">$127</div>
+                        <div class="stat-label">Total Saved</div>
+                      </div>
+                      <div class="stat-card">
+                        <div class="stat-val" style="color:var(--blue);">64%</div>
+                        <div class="stat-label">Avg Savings</div>
+                      </div>
+                      <div class="stat-card">
+                        <div class="stat-val" style="color:var(--amber);">41%</div>
+                        <div class="stat-label">Token Reduction</div>
+                      </div>
+                    </div>
+                    <!-- Charts -->
+                    <div class="charts-row">
+                      <div class="chart-card">
+                        <div class="chart-title">Cost Trend (Na&iuml;ve vs Optimized)</div>
+                        <svg width="100%" height="110" viewBox="0 0 340 110">
+                          <line x1="0" y1="70" x2="340" y2="70" stroke="var(--border)" stroke-width="1"/>
+                          <line x1="0" y1="35" x2="340" y2="35" stroke="var(--border)" stroke-width="1"/>
+                          <!-- Naive cost line (higher) -->
+                          <polyline points="0,30 40,28 80,32 120,25 160,22 200,28 240,20 280,18 320,22 340,15"
+                            fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+                          <!-- Optimized cost line (lower) -->
+                          <polyline points="0,75 40,72 80,78 120,68 160,65 200,70 240,60 280,55 320,58 340,50"
+                            fill="none" stroke="#F43F5E" stroke-width="2" stroke-linejoin="round"/>
+                          <polyline points="0,75 40,72 80,78 120,68 160,65 200,70 240,60 280,55 320,58 340,50 340,110 0,110"
+                            fill="url(#roseGrad)" stroke="none" opacity="0.12"/>
+                          <defs>
+                            <linearGradient id="roseGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stop-color="#F43F5E"/>
+                              <stop offset="100%" stop-color="transparent"/>
+                            </linearGradient>
+                          </defs>
+                          <text x="2" y="68" font-size="7" fill="var(--text-muted)" font-family="monospace">$0.05</text>
+                          <text x="2" y="33" font-size="7" fill="var(--text-muted)" font-family="monospace">$0.15</text>
+                          <circle cx="340" cy="50" r="3" fill="#F43F5E"/>
+                          <circle cx="340" cy="15" r="3" fill="var(--text-muted)" opacity="0.5"/>
+                        </svg>
+                        <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:4px;">
+                          <span>Feb 9</span>
+                          <span style="display:flex;gap:12px;">
+                            <span style="color:var(--text-muted);">--- Na&iuml;ve</span>
+                            <span style="color:#F43F5E;">&mdash; Optimized</span>
+                          </span>
+                          <span>Mar 9</span>
+                        </div>
+                      </div>
+                      <div class="chart-card">
+                        <div class="chart-title">Model Distribution</div>
+                        <div class="model-dist-list">
+                          <div class="model-dist-row">
+                            <div class="model-dist-dot" style="background:var(--green);"></div>
+                            <span class="model-dist-name">Claude Haiku</span>
+                            <div class="model-dist-bar"><div class="model-dist-fill" style="width:52%;background:var(--green);"></div></div>
+                            <span class="model-dist-pct" style="color:var(--green);">52%</span>
+                          </div>
+                          <div class="model-dist-row">
+                            <div class="model-dist-dot" style="background:var(--blue);"></div>
+                            <span class="model-dist-name">Claude Sonnet</span>
+                            <div class="model-dist-bar"><div class="model-dist-fill" style="width:28%;background:var(--blue);"></div></div>
+                            <span class="model-dist-pct" style="color:var(--blue);">28%</span>
+                          </div>
+                          <div class="model-dist-row">
+                            <div class="model-dist-dot" style="background:var(--purple);"></div>
+                            <span class="model-dist-name">Claude Opus</span>
+                            <div class="model-dist-bar"><div class="model-dist-fill" style="width:12%;background:var(--purple);"></div></div>
+                            <span class="model-dist-pct" style="color:var(--purple);">12%</span>
+                          </div>
+                          <div class="model-dist-row">
+                            <div class="model-dist-dot" style="background:var(--amber);"></div>
+                            <span class="model-dist-name">GPT-4o</span>
+                            <div class="model-dist-bar"><div class="model-dist-fill" style="width:8%;background:var(--amber);"></div></div>
+                            <span class="model-dist-pct" style="color:var(--amber);">8%</span>
+                          </div>
+                        </div>
+                        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);">
+                          <strong style="color:var(--green);">52%</strong> of tasks routed to Haiku &mdash; cheap model handles majority of simple tasks
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <a href="index.html" class="nav-logo"><span class="logo-mark">&lt;/&gt;</span>CodeLab</a>
+        <p class="footer-tagline">Generative AI for Software Development &middot; William &amp; Mary</p>
+      </div>
+      <div class="footer-links">
+        <a href="projects.html" class="footer-link">&larr; All Projects</a>
+        <a href="teaching.html" class="footer-link">Teaching</a>
+        <a href="genetic-algorithms.html" class="footer-link">GA Module</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>&copy; 2026 CodeLab &middot; Prof. Antonio Mastropaolo &middot; William &amp; Mary</span>
+      <span>Built with vibe coding</span>
+    </div>
+  </footer>
+
+<script src="feedback-widget.js"></script>
+</body>
+</html>
