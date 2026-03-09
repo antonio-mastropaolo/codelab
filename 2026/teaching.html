@@ -67,45 +67,6 @@
 
     .teaching-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; align-items: start; }
     .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); max-height: calc(100vh - var(--nav-h) - 48px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-    .sidebar-section { margin-bottom: 28px; }
-    .sidebar-title {
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--text-3); margin-bottom: 12px;
-      font-family: 'Inter', sans-serif;
-    }
-    .sidebar-item {
-      display: flex; flex-direction: column; gap: 4px;
-      padding: 8px 12px; border-radius: 8px;
-      font-size: 0.82rem; color: var(--text-2);
-      cursor: pointer; transition: all 0.2s;
-      text-decoration: none; margin-bottom: 4px;
-      border: 1px solid transparent;
-    }
-    .sidebar-item:hover { background: var(--wm-green-mist); border-color: rgba(17,87,64,0.12); }
-    .sidebar-item.completed { border-color: rgba(17,87,64,0.15); }
-    .sidebar-item.in-progress { border-color: rgba(185,151,91,0.25); background: rgba(185,151,91,0.04); }
-    .sidebar-top { display: flex; align-items: center; gap: 8px; }
-    .sidebar-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem; font-weight: 600;
-      color: var(--text-3); min-width: 22px;
-    }
-    .sidebar-name { flex: 1; font-size: 0.78rem; line-height: 1.3; }
-    .sidebar-check { color: var(--wm-green); font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
-    .sidebar-progress { display: flex; align-items: center; gap: 8px; }
-    .sidebar-bar-track {
-      flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
-    }
-    .sidebar-bar-fill {
-      height: 100%; border-radius: 2px; transition: width 0.4s ease;
-      background: var(--wm-green);
-    }
-    .sidebar-item.in-progress .sidebar-bar-fill { background: var(--wm-gold); }
-    .sidebar-pct {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem; color: var(--text-3); min-width: 28px; text-align: right;
-    }
-    .sidebar-item:hover .sidebar-num { color: var(--wm-green); }
 
     .course-card {
       background: var(--surface);
@@ -289,11 +250,6 @@
 
       <!-- Sidebar -->
       <aside class="teaching-sidebar">
-        <div class="sidebar-section">
-          <div class="sidebar-title">Your Progress</div>
-          <div id="sidebar-modules"></div>
-        </div>
-
         <div class="course-card">
           <h4>Course Details</h4>
           <div class="course-row">
@@ -712,63 +668,6 @@
       setTimeout(() => { window.location.href = href; }, 1350);
     });
   });
-})();
-</script>
-<script>
-// ── Sidebar Progress Tracker ──────────────────────────────────────
-(function(){
-  var MODULES = [
-    { num: '00', name: 'Course Intro',     slug: 'course-intro',              href: 'course-intro.html',              total: 30, anchor: 'module-0' },
-    { num: '01', name: 'MSR',              slug: 'msr',                       href: 'msr.html',                       total: 32, anchor: 'module-1' },
-    { num: '02', name: 'Source Code Modeling', slug: 'probabilistic-code-models', href: 'probabilistic-code-models.html', total: 28, anchor: 'module-2' },
-    { num: '03', name: 'Evaluation',       slug: 'evaluation-metrics',        href: 'evaluation-metrics.html',        total: 30, anchor: 'module-3' },
-    { num: '04', name: 'DL4SE Foundations', slug: 'dl4se-foundations',         href: 'dl4se-foundations.html',         total: 34, anchor: 'module-4' },
-    { num: '05', name: 'Prompting LLMs',   slug: 'prompting-llms',            href: 'prompting-llms.html',            total: 30, anchor: 'module-5' },
-    { num: '06', name: 'Hallucinations',   slug: 'hallucinations',            href: 'hallucinations.html',            total: 30, anchor: 'module-6' },
-    { num: 'GA', name: 'Genetic Algorithms', slug: 'genetic-algorithms',      href: 'genetic-algorithms.html',        total: 30, anchor: 'module-ga' }
-  ];
-
-  function getProgress(slug) {
-    try {
-      var raw = localStorage.getItem('codelab-progress-' + slug);
-      return raw ? JSON.parse(raw) : null;
-    } catch(e) { return null; }
-  }
-
-  function renderSidebar() {
-    var container = document.getElementById('sidebar-modules');
-    if (!container) return;
-    var html = '';
-
-    MODULES.forEach(function(mod) {
-      var p = getProgress(mod.slug);
-      var visited = p ? p.visited.length : 0;
-      var total = p ? p.total : mod.total;
-      var pct = Math.round((visited / total) * 100);
-      var isComplete = pct >= 95;
-      var isStarted = visited > 0;
-      var cls = isComplete ? 'completed' : isStarted ? 'in-progress' : '';
-      // Build direct link: resume from last slide if in-progress
-      var targetHref = mod.href;
-      if (isStarted && p && p.lastSlide > 1 && !isComplete) targetHref = mod.href + '#slide=' + p.lastSlide;
-
-      html += '<a href="' + targetHref + '" class="sidebar-item ' + cls + '" data-slug="' + mod.slug + '">';
-      html += '<div class="sidebar-top">';
-      html += '<span class="sidebar-num">' + mod.num + '</span>';
-      html += '<span class="sidebar-name">' + mod.name + '</span>';
-      if (isComplete) html += '<span class="sidebar-check">\u2713</span>';
-      html += '</div>';
-      html += '<div class="sidebar-progress">';
-      html += '<div class="sidebar-bar-track"><div class="sidebar-bar-fill" style="width:' + pct + '%;"></div></div>';
-      html += '<span class="sidebar-pct">' + pct + '%</span>';
-      html += '</div>';
-      html += '</a>';
-    });
-
-    container.innerHTML = html;
-  }
-
-  renderSidebar();
 })();
 </script>
 <script src="feedback-widget.js"></script>
