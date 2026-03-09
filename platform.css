@@ -90,13 +90,10 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   color: #FFFFFF; letter-spacing: -0.01em; white-space: nowrap;
 }
 .nav-logo .logo-mark {
-  width: 34px; height: 34px; border-radius: 8px;
-  background: var(--wm-gold); color: var(--wm-green-dark);
+  width: 34px; height: 34px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 0.85rem; letter-spacing: 0;
-  font-family: 'Inter', sans-serif;
-  flex-shrink: 0;
 }
+.nav-logo .logo-mark svg { width: 34px; height: 34px; }
 .nav-links {
   display: flex; align-items: center; gap: 4px;
 }
