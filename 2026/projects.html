@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects — CodeLab</title>
   <meta name="description" content="Vibe Coding Project Gallery — concept platforms built with generative AI tools by undergraduate students at William & Mary." />
-  <link rel="stylesheet" href="../platform.css" />
+  <link rel="stylesheet" href="platform.css" />
   <style>
     /* ── Project Card (light-theme version) ─────────────────── */
     .projects-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; align-items: start; }
@@ -31,6 +31,7 @@
     .sidebar-dot.blue   { background: #3B82F6; }
     .sidebar-dot.purple { background: #8B5CF6; }
     .sidebar-dot.amber  { background: #D97706; }
+    .sidebar-dot.rose   { background: #F43F5E; }
 
     .info-card {
       background: var(--surface);
@@ -98,6 +99,7 @@
     .pfc-visual.blue   { background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04)); border-right: 1px solid rgba(59,130,246,0.15); }
     .pfc-visual.purple { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04)); border-right: 1px solid rgba(139,92,246,0.15); }
     .pfc-visual.amber  { background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(217,119,6,0.04)); border-right: 1px solid rgba(217,119,6,0.15); }
+    .pfc-visual.rose   { background: linear-gradient(135deg, rgba(244,63,94,0.12), rgba(244,63,94,0.04)); border-right: 1px solid rgba(244,63,94,0.15); }
     .pfc-icon { font-size: 3.2rem; line-height: 1; position: relative; z-index: 1; }
     .pfc-accent-ring {
       position: absolute;
@@ -109,6 +111,7 @@
     .pfc-visual.blue   .pfc-accent-ring { background: #3B82F6; }
     .pfc-visual.purple .pfc-accent-ring { background: #8B5CF6; }
     .pfc-visual.amber  .pfc-accent-ring { background: #D97706; }
+    .pfc-visual.rose   .pfc-accent-ring { background: #F43F5E; }
 
     .pfc-body { padding: 28px 32px; }
     .pfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -187,15 +190,6 @@
       <a href="contact.html" class="nav-link">Reach Out</a>
     </div>
     <div class="nav-right">
-      <div class="year-selector" id="year-selector">
-        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">
-          Spring 2026 <span class="caret">&#9660;</span>
-        </div>
-        <div class="year-dropdown">
-          <a href="/2026/" class="year-option current">Spring 2026 <span class="yr-badge">current</span></a>
-          <a href="/2025/" class="year-option">Spring 2025 <span class="yr-badge">archived</span></a>
-        </div>
-      </div>
       <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
     </div>
   </div>
@@ -213,7 +207,7 @@
     </div>
     <h1 class="animate-up">Project Gallery</h1>
     <p class="lead animate-up animate-up-1" style="max-width:620px;margin-top:12px;">
-      Four concept platforms built with generative AI tools. Each showcases what undergrad students can ship when armed with modern <strong style="color:var(--wm-gold-light);">LLMs and a bit of ambition</strong>.
+      Five concept platforms built with generative AI tools. Each showcases what undergrad students can ship when armed with modern <strong style="color:var(--wm-gold-light);">LLMs and a bit of ambition</strong>.
     </p>
   </div>
 </section>
@@ -238,6 +232,9 @@
           </a>
           <a href="#project-careers" class="sidebar-item">
             <span class="sidebar-dot amber"></span> Interview Coach
+          </a>
+          <a href="#project-infra" class="sidebar-item">
+            <span class="sidebar-dot rose"></span> Inference Optimizer
           </a>
         </div>
 
@@ -405,6 +402,42 @@
             </div>
           </a>
 
+          <!-- RouteLLM -->
+          <a href="project-print-manager.html" class="project-full-card" id="project-infra">
+            <div class="pfc-grid">
+              <div class="pfc-visual rose">
+                <div class="pfc-accent-ring"></div>
+                <span class="pfc-icon">&#9889;</span>
+              </div>
+              <div class="pfc-body">
+                <div class="pfc-tags">
+                  <span class="section-tag" style="background:rgba(244,63,94,0.1);color:#F43F5E;border:1px solid rgba(244,63,94,0.2);">Infrastructure</span>
+                  <span class="section-tag tag-green">AI-Powered</span>
+                </div>
+                <h2>RouteLLM &mdash; AI Inference Optimizer</h2>
+                <p>Submit any AI task and the platform selects the optimal model, compresses prompts, minimizes tokens, and routes to the cheapest provider that meets quality thresholds. An intelligent efficiency layer for LLM APIs.</p>
+                <div class="pfc-meta">
+                  <div class="pfc-meta-item"><span class="icon">3</span> UI mockups</div>
+                  <div class="pfc-meta-item"><span class="icon">&#128187;</span> Concept demo</div>
+                </div>
+              </div>
+              <div class="pfc-action">
+                <span class="btn btn-primary btn-sm">View Showcase <span class="btn-icon">&rarr;</span></span>
+              </div>
+            </div>
+            <div class="pfc-stats">
+              <div class="pfc-stat"><span class="val">Smart</span><span class="lbl">Routing</span></div>
+              <div class="pfc-stat"><span class="val">64%</span><span class="lbl">Avg Savings</span></div>
+              <div class="pfc-stat"><span class="val">Multi</span><span class="lbl">Provider</span></div>
+            </div>
+            <div class="pfc-skills">
+              <span class="pfc-skill">model routing</span>
+              <span class="pfc-skill">prompt compression</span>
+              <span class="pfc-skill">cost optimization</span>
+              <span class="pfc-skill">token efficiency</span>
+            </div>
+          </a>
+
         </div>
       </main>
     </div>
@@ -435,6 +468,7 @@
           <li><a href="project-prompt-engineering.html">Prompt Engineering</a></li>
           <li><a href="project-code-review.html">Code Review</a></li>
           <li><a href="project-interview-prep.html">Interview Coach</a></li>
+          <li><a href="project-print-manager.html">Inference Optimizer</a></li>
         </ul>
       </div>
     </div>
@@ -445,7 +479,6 @@
   </div>
 </footer>
 
-<script src="../feedback-widget.js"></script>
-<script>document.addEventListener('click',function(e){var ys=document.getElementById('year-selector');if(ys&&!ys.contains(e.target))ys.classList.remove('open');});</script>
+<script src="feedback-widget.js"></script>
 </body>
 </html>
