@@ -46,8 +46,8 @@
     /* ── Project Cards Grid ────────────────────────────────── */
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 28px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
     }
 
     .project-full-card {
@@ -91,37 +91,37 @@
     .pfc-visual.amber  .pfc-accent-ring { background: #D97706; }
     .pfc-visual.rose   .pfc-accent-ring { background: #F43F5E; }
 
-    .pfc-body { padding: 24px 24px 16px; flex: 1; }
-    .pfc-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-    .pfc-body h2 { font-size: 1.15rem; color: var(--text); margin-bottom: 8px; font-family: 'Playfair Display', serif; font-weight: 700; }
-    .pfc-body > p { font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
+    .pfc-body { padding: 20px 20px 14px; flex: 1; }
+    .pfc-tags { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+    .pfc-body h2 { font-size: 1.08rem; color: var(--text); margin-bottom: 6px; font-family: 'Playfair Display', serif; font-weight: 700; }
+    .pfc-body > p { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; }
 
     .pfc-meta { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
     .pfc-meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: var(--text-3); }
     .pfc-meta-item .icon { font-size: 0.85rem; }
 
-    .pfc-action { padding: 0 24px 20px; }
-    .pfc-action .btn { width: 100%; justify-content: center; }
+    .pfc-action { padding: 0 20px 16px; }
+    .pfc-action .btn { width: 100%; justify-content: center; font-size: 0.8rem; }
 
     .pfc-skills {
       border-top: 1px solid var(--border);
-      padding: 12px 24px;
-      display: flex; gap: 6px; flex-wrap: wrap;
+      padding: 10px 20px;
+      display: flex; gap: 5px; flex-wrap: wrap;
     }
     .pfc-skill {
-      font-size: 0.7rem; padding: 3px 9px;
+      font-size: 0.68rem; padding: 2px 8px;
       background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
       color: var(--text-3); font-family: 'JetBrains Mono', monospace;
     }
 
     .pfc-stats {
-      display: flex; gap: 24px; padding: 12px 24px;
+      display: flex; gap: 18px; padding: 10px 20px;
       border-top: 1px solid var(--border); background: var(--wm-green-mist);
       margin-top: auto;
     }
-    .pfc-stat { display: flex; align-items: center; gap: 6px; }
-    .pfc-stat .val { font-size: 0.95rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
-    .pfc-stat .lbl { font-size: 0.7rem; color: var(--text-3); }
+    .pfc-stat { display: flex; align-items: center; gap: 5px; }
+    .pfc-stat .val { font-size: 0.88rem; font-weight: 700; color: var(--wm-green); font-family: 'Inter', sans-serif; }
+    .pfc-stat .lbl { font-size: 0.68rem; color: var(--text-3); }
 
     /* ── Propose Card ─────────────────────────────────────── */
     .propose-card {
@@ -158,16 +158,16 @@
       opacity: 0.8; transform: scale(1.1);
     }
     .propose-body {
-      padding: 24px 24px 16px; flex: 1;
+      padding: 20px 20px 14px; flex: 1;
       display: flex; flex-direction: column;
     }
     .propose-body h2 {
-      font-size: 1.15rem; color: var(--text); margin-bottom: 6px;
+      font-size: 1.08rem; color: var(--text); margin-bottom: 6px;
       font-family: 'Playfair Display', serif; font-weight: 700;
     }
     .propose-body > p {
-      font-size: 0.85rem; color: var(--text-2); line-height: 1.6;
-      margin-bottom: 20px;
+      font-size: 0.82rem; color: var(--text-2); line-height: 1.55;
+      margin-bottom: 16px;
     }
     .propose-form { margin-top: auto; }
     .propose-input-wrap {
@@ -201,7 +201,7 @@
     }
     .propose-footer {
       border-top: 2px dashed var(--border);
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex; align-items: center; gap: 8px;
       margin-top: auto;
     }
@@ -236,10 +236,13 @@
       to   { transform: scale(1); opacity: 1; }
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
       .vibe-intro { grid-template-columns: 1fr; }
       .vibe-icon { display: none; }
-      .projects-grid { grid-template-columns: 1fr; max-width: 640px; }
+      .projects-grid { grid-template-columns: 1fr; max-width: 540px; }
       .pfc-stats { flex-wrap: wrap; gap: 16px; }
       .propose-visual { height: 100px; }
     }
