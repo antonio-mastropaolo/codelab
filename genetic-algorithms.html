@@ -191,6 +191,10 @@
     .acr.first-use { animation: acr-glow 2s ease-out; }
     @keyframes acr-glow { 0%,15% { background: rgba(0,217,126,0.25); border-radius: 3px; } 100% { background: transparent; } }
 
+    /* Responsive grid helpers */
+    .info-grid-2x2{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;margin-top:6px;}
+    @media(max-width:700px){.info-grid-2x2{grid-template-columns:1fr !important;grid-template-rows:auto !important;}}
+
     /* Finish overlay */
     .finish-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:200;}
     .finish-overlay.visible{display:flex;}
@@ -269,7 +273,7 @@
   <h2 class="slide-h2">What Are <em>Genetic Algorithms</em>?</h2>
   <p class="slide-p">Genetic algorithms (GAs) are optimization techniques inspired by Charles Darwin's theory of natural selection. Instead of computing an exact solution, GAs evolve a population of candidate solutions over successive generations, guided by a fitness function.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;margin-top:6px;">
+  <div class="info-grid-2x2">
     <div class="cb" style="margin:0;display:flex;flex-direction:column;">
       <div class="cb-label">Core Idea</div>
       <div class="cb-body" style="flex:1;"><strong>Evolve, don't calculate.</strong> Start with a random population of possible solutions. Evaluate how "fit" each one is. Select the best, combine them, introduce small random changes, and repeat. Over many generations, the population converges toward optimal solutions.</div>
@@ -533,45 +537,82 @@ After:   [3.14, <span class="cr">2.83</span>, 1.41, 0.57]</div>
 <div class="slide" id="slide-9">
   <div class="slide-label">Extra &middot; Slide 09</div>
   <h2 class="slide-h2">Fitness <em>Landscapes</em></h2>
-  <p class="slide-p">A fitness landscape is a conceptual surface where each point represents a candidate solution, and the height represents its fitness. Understanding these landscapes helps explain why GAs behave the way they do.</p>
+  <p class="slide-p">A fitness landscape maps every candidate solution to its fitness. The shape determines how hard the problem is and how GAs navigate it.</p>
 
-  <div class="two-col">
+  <!-- SVG Fitness Landscape Visualization -->
+  <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px 6px;margin:6px 0;">
+    <svg viewBox="0 0 800 195" width="100%" style="display:block;">
+      <!-- Subtle horizontal grid lines -->
+      <line x1="0" y1="45" x2="800" y2="45" stroke="#21262D" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="0" y1="95" x2="800" y2="95" stroke="#21262D" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="0" y1="145" x2="800" y2="145" stroke="#21262D" stroke-width="1" stroke-dasharray="4,4"/>
+      <!-- Gradient defs -->
+      <defs>
+        <linearGradient id="lf" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#00D97E" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#00D97E" stop-opacity="0.01"/>
+        </linearGradient>
+        <marker id="ah" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill="#F85149"/>
+        </marker>
+      </defs>
+      <!-- Filled area under curve -->
+      <path d="M0,175 C40,170 80,110 120,88 S170,148 200,150 S265,22 320,38 S385,150 410,142 S445,122 465,124 L530,124 S565,138 575,135 S628,4 665,20 S725,125 752,108 S792,172 800,170 L800,195 L0,195 Z" fill="url(#lf)" stroke="none"/>
+      <!-- Main landscape curve -->
+      <path d="M0,175 C40,170 80,110 120,88 S170,148 200,150 S265,22 320,38 S385,150 410,142 S445,122 465,124 L530,124 S565,138 575,135 S628,4 665,20 S725,125 752,108 S792,172 800,170" fill="none" stroke="#00D97E" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Plateau dashed underline -->
+      <line x1="462" y1="127" x2="533" y2="127" stroke="#E3B341" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.5"/>
+      <!-- Global optimum marker + label -->
+      <circle cx="665" cy="20" r="5.5" fill="#00D97E" stroke="#0D1117" stroke-width="2"/>
+      <text x="665" y="8" text-anchor="middle" fill="#00D97E" font-size="9" font-family="'JetBrains Mono',monospace" font-weight="600">GLOBAL OPTIMUM</text>
+      <!-- Local optimum marker + label -->
+      <circle cx="320" cy="38" r="4.5" fill="#58A6FF" stroke="#0D1117" stroke-width="2"/>
+      <text x="320" y="28" text-anchor="middle" fill="#58A6FF" font-size="8.5" font-family="'JetBrains Mono',monospace">LOCAL OPTIMUM</text>
+      <!-- Small peak marker -->
+      <circle cx="120" cy="88" r="3" fill="#7D8590" stroke="#0D1117" stroke-width="1.5"/>
+      <text x="120" y="79" text-anchor="middle" fill="#7D8590" font-size="7.5" font-family="'JetBrains Mono',monospace">SMALL PEAK</text>
+      <!-- Plateau label -->
+      <text x="497" y="117" text-anchor="middle" fill="#E3B341" font-size="8" font-family="'JetBrains Mono',monospace">PLATEAU</text>
+      <!-- Valley label -->
+      <text x="200" y="166" text-anchor="middle" fill="#7D8590" font-size="7.5" font-family="'JetBrains Mono',monospace">VALLEY</text>
+      <!-- Population dots: cluster at local optimum (trapped) -->
+      <circle cx="308" cy="42" r="3.5" fill="#58A6FF" opacity="0.75"/><circle cx="332" cy="42" r="3.5" fill="#58A6FF" opacity="0.75"/><circle cx="318" cy="36" r="3.5" fill="#58A6FF" opacity="0.75"/>
+      <!-- Dots in valley (unfit) -->
+      <circle cx="190" cy="148" r="3" fill="#7D8590" opacity="0.4"/><circle cx="408" cy="141" r="3" fill="#7D8590" opacity="0.4"/>
+      <!-- Dots near global optimum (fit) -->
+      <circle cx="655" cy="24" r="3.5" fill="#00D97E" opacity="0.85"/><circle cx="676" cy="24" r="3.5" fill="#00D97E" opacity="0.85"/>
+      <!-- Dot on plateau (stuck) -->
+      <circle cx="495" cy="123" r="3" fill="#E3B341" opacity="0.55"/>
+      <!-- Mutation escape arrow: local optimum → slope of global -->
+      <path d="M334,36 C385,8 565,2 648,18" fill="none" stroke="#F85149" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah)" opacity="0.7"/>
+      <text x="492" y="5" text-anchor="middle" fill="#F85149" font-size="7.5" font-family="'JetBrains Mono',monospace" font-style="italic">mutation jump</text>
+      <!-- Axis labels -->
+      <text x="795" y="188" text-anchor="end" fill="#7D8590" font-size="8" font-family="'JetBrains Mono',monospace">Solution Space &rarr;</text>
+    </svg>
+    <div style="display:flex;gap:14px;justify-content:center;padding:3px 0;flex-wrap:wrap;">
+      <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--text-muted);display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00D97E;"></span> Fit individuals</span>
+      <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--text-muted);display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#58A6FF;"></span> Trapped at local optimum</span>
+      <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--text-muted);display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#7D8590;"></span> Low-fitness</span>
+      <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--text-muted);display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:6px;height:2px;background:#F85149;border-radius:1px;"></span> Mutation escape</span>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:6px;">
     <div>
-      <div class="cb">
-        <div class="cb-label">Peaks and Valleys</div>
-        <div class="cb-body">
-          <strong>Peaks</strong> are areas of high fitness &mdash; these are the solutions we want to find. The highest peak is the <strong>global optimum</strong>.<br><br>
-          <strong>Valleys</strong> are areas of low fitness &mdash; poor solutions that the GA should move away from.<br><br>
-          <strong>Plateaus</strong> are flat regions where many solutions have similar fitness. These are difficult because there is no gradient to guide the search.
-        </div>
-      </div>
-      <div class="cb red">
+      <div class="cb red" style="margin:0;">
         <div class="cb-label">Local Optima Trap</div>
-        <div class="cb-body">A <strong>local optimum</strong> is a peak that is not the highest. A solution on a local peak is better than all its neighbors, but worse than the global optimum. Gradient-based methods get permanently stuck here. GAs can escape via <strong>mutation</strong> and <strong>population diversity</strong>.</div>
+        <div class="cb-body">A <strong>local optimum</strong> is better than all its neighbors, but worse than the global best. Gradient methods get stuck here permanently. GAs escape via <strong>mutation</strong> (the red dashed arrow above) and <strong>population diversity</strong>. This is why even seemingly harmful mutations are valuable.</div>
       </div>
     </div>
     <div>
-      <div class="cb blue">
-        <div class="cb-label">Why Mutation Helps Escape</div>
-        <div class="cb-body">Mutation introduces random jumps in the search space. While most jumps land in worse locations, occasionally a mutation moves an individual off a local peak to the slope of a higher peak. This is why <strong>even seemingly harmful mutations are valuable</strong> &mdash; they enable exploration of new regions.</div>
+      <div class="stat-row" style="margin:0 0 8px;">
+        <div class="stat-card"><div class="stat-val">Explore</div><div class="stat-label">Mutation &amp; Large Pop.</div></div>
+        <div class="stat-card"><div class="stat-val amber">vs</div><div class="stat-label">Core Tradeoff</div></div>
+        <div class="stat-card"><div class="stat-val blue">Exploit</div><div class="stat-label">Selection &amp; Crossover</div></div>
       </div>
-      <div class="stat-row">
-        <div class="stat-card">
-          <div class="stat-val">Explore</div>
-          <div class="stat-label">Mutation &amp; Large Populations</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val amber">vs</div>
-          <div class="stat-label">The Core Tradeoff</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val blue">Exploit</div>
-          <div class="stat-label">Selection &amp; Crossover</div>
-        </div>
-      </div>
-      <div class="cb amber">
+      <div class="cb amber" style="margin:0;">
         <div class="cb-label">Exploration vs Exploitation</div>
-        <div class="cb-body"><strong>Exploration</strong> = searching new regions (driven by mutation, large populations). <strong>Exploitation</strong> = refining promising solutions (driven by selection, crossover). A successful GA balances both. Too much exploration = random search. Too much exploitation = premature convergence.</div>
+        <div class="cb-body"><strong>Exploration</strong> = searching new regions (mutation, large populations). <strong>Exploitation</strong> = refining known solutions (selection, crossover). Too much exploration = random search. Too much exploitation = premature convergence.</div>
       </div>
     </div>
   </div>
@@ -722,6 +763,7 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
           </div>
         </div>
         <div>
+          <canvas id="param-chart" width="500" height="180" style="width:100%;height:180px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;display:none;"></canvas>
           <div id="param-results" style="font-size:0.8rem;color:var(--text-secondary);">
             <div style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;margin-bottom:6px;">RESULTS WILL APPEAR HERE</div>
             <div style="color:var(--text-muted);font-size:0.78rem;">Adjust the sliders and click "Run GA" to see how different parameters affect optimization performance.</div>
@@ -1278,16 +1320,27 @@ Ind. 1:          [0,1,1,0,1] &rarr; x=13 &rarr; f = <span class="cl">169</span>
         <button class="sim-btn" onclick="resetEvoSim()">Reset</button>
       </div>
     </div>
-    <div class="inter-body">
-      <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:8px;" id="evosim-mode">MODE: EXACT FITNESS &mdash; Slow but accurate</div>
-      <div class="stat-row" id="evosim-stats">
-        <div class="stat-card"><div class="stat-val" id="evosim-gen">0</div><div class="stat-label">Generation</div></div>
-        <div class="stat-card"><div class="stat-val blue" id="evosim-best">0</div><div class="stat-label">Best Fitness</div></div>
-        <div class="stat-card"><div class="stat-val amber" id="evosim-avg">0</div><div class="stat-label">Avg Fitness</div></div>
-        <div class="stat-card"><div class="stat-val purple" id="evosim-diversity">0</div><div class="stat-label">Diversity</div></div>
-        <div class="stat-card"><div class="stat-val red" id="evosim-fp">0</div><div class="stat-label">False Positives</div></div>
+    <div class="inter-body" style="padding:10px 16px;">
+      <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:6px;" id="evosim-mode">MODE: EXACT FITNESS &mdash; Slow but accurate</div>
+      <!-- Fitness chart -->
+      <canvas id="evosim-chart" width="500" height="130" style="width:100%;height:130px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;"></canvas>
+      <!-- Stats + Population grid side by side -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+        <div>
+          <div style="font-size:0.68rem;font-family:var(--font-mono);color:var(--text-muted);margin-bottom:4px;">TOP 5 INDIVIDUALS</div>
+          <div id="evosim-pop-grid"></div>
+        </div>
+        <div>
+          <div class="stat-row" id="evosim-stats" style="margin:0 0 6px;gap:6px;">
+            <div class="stat-card" style="padding:8px;"><div class="stat-val" id="evosim-gen" style="font-size:1.2rem;">0</div><div class="stat-label">Gen</div></div>
+            <div class="stat-card" style="padding:8px;"><div class="stat-val blue" id="evosim-best" style="font-size:1.2rem;">0</div><div class="stat-label">Best</div></div>
+            <div class="stat-card" style="padding:8px;"><div class="stat-val amber" id="evosim-avg" style="font-size:1.2rem;">0</div><div class="stat-label">Avg</div></div>
+            <div class="stat-card" style="padding:8px;"><div class="stat-val purple" id="evosim-diversity" style="font-size:1.2rem;">0</div><div class="stat-label">Div</div></div>
+            <div class="stat-card" style="padding:8px;"><div class="stat-val red" id="evosim-fp" style="font-size:1.2rem;">0</div><div class="stat-label">FP</div></div>
+          </div>
+          <div id="evosim-log" style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-secondary);line-height:1.6;max-height:100px;overflow-y:auto;background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:6px 8px;"></div>
+        </div>
       </div>
-      <div id="evosim-log" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-secondary);line-height:1.7;max-height:160px;overflow-y:auto;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:8px;"></div>
     </div>
   </div>
 </div>
@@ -1685,35 +1738,89 @@ function runParamExplorer() {
     pop = newPop;
   }
 
-  // Render results
+  // Draw fitness chart on canvas
+  const canvas = document.getElementById('param-chart');
+  canvas.style.display = 'block';
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  const pad = { top: 18, right: 12, bottom: 24, left: 36 };
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines and labels
+  ctx.strokeStyle = '#21262D'; ctx.lineWidth = 1;
+  for (let v = 0; v <= chromoLen; v += 5) {
+    const y = pad.top + cH - (v / chromoLen) * cH;
+    ctx.beginPath(); ctx.setLineDash([3,3]); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#7D8590'; ctx.font = '9px "JetBrains Mono",monospace'; ctx.textAlign = 'right';
+    ctx.fillText(v, pad.left - 4, y + 3);
+  }
+  // X axis labels
+  ctx.textAlign = 'center'; ctx.fillStyle = '#7D8590'; ctx.font = '9px "JetBrains Mono",monospace';
+  const xStep = Math.max(1, Math.ceil(numGens / 6));
+  for (let g = 0; g <= numGens; g += xStep) {
+    const x = pad.left + (g / numGens) * cW;
+    ctx.fillText(g, x, H - 4);
+  }
+
+  // Draw avg fitness line (blue, filled area)
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + cH);
+  history.forEach((h, i) => {
+    const x = pad.left + (i / Math.max(1, numGens)) * cW;
+    const y = pad.top + cH - (h.avg / chromoLen) * cH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.left + (history.length - 1) / Math.max(1, numGens) * cW, pad.top + cH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(88,166,255,0.08)'; ctx.fill();
+  // Avg line stroke
+  ctx.beginPath();
+  history.forEach((h, i) => {
+    const x = pad.left + (i / Math.max(1, numGens)) * cW;
+    const y = pad.top + cH - (h.avg / chromoLen) * cH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#58A6FF'; ctx.lineWidth = 1.5; ctx.setLineDash([]); ctx.stroke();
+
+  // Draw best fitness line (green, filled area)
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + cH);
+  history.forEach((h, i) => {
+    const x = pad.left + (i / Math.max(1, numGens)) * cW;
+    const y = pad.top + cH - (h.best / chromoLen) * cH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.left + (history.length - 1) / Math.max(1, numGens) * cW, pad.top + cH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,217,126,0.06)'; ctx.fill();
+  // Best line stroke
+  ctx.beginPath();
+  history.forEach((h, i) => {
+    const x = pad.left + (i / Math.max(1, numGens)) * cW;
+    const y = pad.top + cH - (h.best / chromoLen) * cH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#00D97E'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Legend
+  ctx.font = '9px "JetBrains Mono",monospace';
+  ctx.fillStyle = '#00D97E'; ctx.fillRect(pad.left + 4, 4, 14, 3);
+  ctx.fillText('Best', pad.left + 22, 10);
+  ctx.fillStyle = '#58A6FF'; ctx.fillRect(pad.left + 52, 4, 14, 3);
+  ctx.fillText('Avg', pad.left + 70, 10);
+
+  // Render stat cards below chart
   const last = history[history.length - 1];
   const convergedGen = history.findIndex(h => h.best === chromoLen);
-  let html = '<div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);margin-bottom:8px;">GENERATION LOG</div>';
-  // Show first 5, middle sample, last 5
-  const toShow = [];
-  for (let i = 0; i < Math.min(5, history.length); i++) toShow.push(history[i]);
-  if (history.length > 10) {
-    toShow.push({ gen: '...', best: '...', avg: '...' });
-    const mid = Math.floor(history.length / 2);
-    toShow.push(history[mid]);
-    toShow.push({ gen: '...', best: '...', avg: '...' });
-  }
-  for (let i = Math.max(5, history.length - 5); i < history.length; i++) {
-    if (i >= 5) toShow.push(history[i]);
-  }
-
-  html += '<div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.8;font-family:var(--font-mono);">';
-  toShow.forEach(h => {
-    if (h.gen === '...') {
-      html += '<span style="color:var(--text-muted);">  ...</span><br>';
-    } else {
-      const bar = '|'.repeat(h.best) + '<span style="color:var(--border);">' + '|'.repeat(chromoLen - h.best) + '</span>';
-      html += 'Gen ' + String(h.gen).padStart(3, ' ') + ': best=<span style="color:var(--green);">' + h.best + '</span>/' + chromoLen + '  avg=<span style="color:var(--blue);">' + (typeof h.avg === 'number' ? h.avg.toFixed(1) : h.avg) + '</span>  ' + bar + '<br>';
-    }
-  });
-  html += '</div>';
-
-  html += '<div class="stat-row" style="margin-top:10px;">';
+  let html = '<div class="stat-row" style="margin-top:8px;">';
   html += '<div class="stat-card"><div class="stat-val">' + last.best + '/' + chromoLen + '</div><div class="stat-label">Final Best</div></div>';
   html += '<div class="stat-card"><div class="stat-val blue">' + last.avg.toFixed(1) + '</div><div class="stat-label">Final Avg</div></div>';
   if (convergedGen >= 0) {
@@ -1722,7 +1829,6 @@ function runParamExplorer() {
     html += '<div class="stat-card"><div class="stat-val amber">N/A</div><div class="stat-label">Did Not Converge</div></div>';
   }
   html += '</div>';
-
   document.getElementById('param-results').innerHTML = html;
 }
 
@@ -1735,6 +1841,7 @@ function resetParamExplorer() {
   document.getElementById('param-cross-val').textContent = '0.80';
   document.getElementById('param-gen').value = 30;
   document.getElementById('param-gen-val').textContent = '30';
+  document.getElementById('param-chart').style.display = 'none';
   document.getElementById('param-results').innerHTML = '<div style="color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;margin-bottom:6px;">RESULTS WILL APPEAR HERE</div><div style="color:var(--text-muted);font-size:0.78rem;">Adjust the sliders and click "Run GA" to see how different parameters affect optimization performance.</div>';
 }
 
@@ -1895,21 +2002,19 @@ let evoSimPop = [];
 let evoSimGen = 0;
 let evoSimFP = 0;
 let evoSimLog = [];
+let evoSimHistory = []; // {best, avg} per generation for chart
 const EVOSIM_POP_SIZE = 20;
 const EVOSIM_CHROMO_LEN = 16;
 const EVOSIM_MAX_GEN = 40;
 
 function evoSimFitness(chromo) {
-  // True fitness: count of 1-bits
   return chromo.reduce((s, b) => s + b, 0);
 }
 
 function evoSimApproxFitness(chromo) {
   const trueFit = evoSimFitness(chromo);
-  // 5% chance of wrong answer
   if (Math.random() < 0.05) {
     evoSimFP++;
-    // Return a wrong fitness (off by 2-4)
     const err = (Math.random() < 0.5 ? 1 : -1) * (2 + Math.floor(Math.random() * 3));
     return Math.max(0, Math.min(EVOSIM_CHROMO_LEN, trueFit + err));
   }
@@ -1917,7 +2022,6 @@ function evoSimApproxFitness(chromo) {
 }
 
 function evoSimDiversity(pop) {
-  // Simple diversity: average hamming distance between pairs (sampled)
   let total = 0, count = 0;
   for (let i = 0; i < Math.min(pop.length, 10); i++) {
     for (let j = i + 1; j < Math.min(pop.length, 10); j++) {
@@ -1931,6 +2035,99 @@ function evoSimDiversity(pop) {
   return count > 0 ? (total / count).toFixed(1) : '0';
 }
 
+function drawEvoSimChart() {
+  const canvas = document.getElementById('evosim-chart');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  const pad = { top: 14, right: 10, bottom: 18, left: 30 };
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#21262D'; ctx.lineWidth = 1;
+  for (let v = 0; v <= EVOSIM_CHROMO_LEN; v += 4) {
+    const y = pad.top + cH - (v / EVOSIM_CHROMO_LEN) * cH;
+    ctx.beginPath(); ctx.setLineDash([3,3]); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#7D8590'; ctx.font = '8px "JetBrains Mono",monospace'; ctx.textAlign = 'right';
+    ctx.fillText(v, pad.left - 3, y + 3);
+  }
+
+  if (evoSimHistory.length < 2) {
+    ctx.fillStyle = '#7D8590'; ctx.font = '11px "JetBrains Mono",monospace'; ctx.textAlign = 'center';
+    ctx.fillText('Fitness over generations will appear here', W/2, H/2);
+    return;
+  }
+
+  const maxGen = EVOSIM_MAX_GEN;
+  // Avg fill
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top + cH);
+  evoSimHistory.forEach((h, i) => {
+    const x = pad.left + (i / maxGen) * cW;
+    const y = pad.top + cH - (h.avg / EVOSIM_CHROMO_LEN) * cH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.left + ((evoSimHistory.length - 1) / maxGen) * cW, pad.top + cH);
+  ctx.closePath(); ctx.fillStyle = 'rgba(88,166,255,0.08)'; ctx.fill();
+  // Avg line
+  ctx.beginPath();
+  evoSimHistory.forEach((h, i) => {
+    const x = pad.left + (i / maxGen) * cW;
+    const y = pad.top + cH - (h.avg / EVOSIM_CHROMO_LEN) * cH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#58A6FF'; ctx.lineWidth = 1.5; ctx.setLineDash([]); ctx.stroke();
+  // Best fill
+  ctx.beginPath(); ctx.moveTo(pad.left, pad.top + cH);
+  evoSimHistory.forEach((h, i) => {
+    const x = pad.left + (i / maxGen) * cW;
+    const y = pad.top + cH - (h.best / EVOSIM_CHROMO_LEN) * cH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.left + ((evoSimHistory.length - 1) / maxGen) * cW, pad.top + cH);
+  ctx.closePath(); ctx.fillStyle = 'rgba(0,217,126,0.06)'; ctx.fill();
+  // Best line
+  ctx.beginPath();
+  evoSimHistory.forEach((h, i) => {
+    const x = pad.left + (i / maxGen) * cW;
+    const y = pad.top + cH - (h.best / EVOSIM_CHROMO_LEN) * cH;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#00D97E'; ctx.lineWidth = 2; ctx.stroke();
+  // Legend
+  ctx.font = '8px "JetBrains Mono",monospace';
+  ctx.fillStyle = '#00D97E'; ctx.fillRect(pad.left + 3, 3, 12, 3);
+  ctx.fillText('Best', pad.left + 18, 8);
+  ctx.fillStyle = '#58A6FF'; ctx.fillRect(pad.left + 42, 3, 12, 3);
+  ctx.fillText('Avg', pad.left + 57, 8);
+}
+
+function renderEvoSimPopGrid() {
+  const grid = document.getElementById('evosim-pop-grid');
+  if (!grid) return;
+  // Sort by fitness descending, take top 5
+  const sorted = evoSimPop.map((c, i) => ({ chromo: c, fit: evoSimFitness(c), idx: i }))
+    .sort((a, b) => b.fit - a.fit).slice(0, 5);
+  let html = '';
+  sorted.forEach((ind, rank) => {
+    const cls = rank === 0 ? ' selected' : '';
+    html += '<div class="ga-row' + cls + '" style="padding:3px 6px;margin:2px 0;gap:4px;">';
+    html += '<span class="ga-label" style="font-size:0.65rem;min-width:16px;">#' + (rank + 1) + '</span>';
+    ind.chromo.forEach(bit => {
+      html += '<span class="ga-bit ' + (bit ? 'one' : 'zero') + '" style="width:18px;height:18px;font-size:0.62rem;border-radius:3px;">' + bit + '</span>';
+    });
+    html += '<span class="ga-fitness" style="font-size:0.65rem;">' + ind.fit + '/' + EVOSIM_CHROMO_LEN + '</span>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
+}
+
 function resetEvoSim() {
   evoSimPop = [];
   for (let i = 0; i < EVOSIM_POP_SIZE; i++) {
@@ -1941,12 +2138,18 @@ function resetEvoSim() {
   evoSimGen = 0;
   evoSimFP = 0;
   evoSimLog = [];
+  evoSimHistory = [];
   const isApprox = document.getElementById('approx-toggle').checked;
   document.getElementById('evosim-mode').textContent = isApprox
     ? 'MODE: APPROXIMATE FITNESS \u2014 Fast but ~5% error rate'
     : 'MODE: EXACT FITNESS \u2014 Slow but accurate';
+  // Record initial state
+  const fitnesses = evoSimPop.map(evoSimFitness);
+  evoSimHistory.push({ best: Math.max(...fitnesses), avg: parseFloat((fitnesses.reduce((s,f)=>s+f,0)/EVOSIM_POP_SIZE).toFixed(1)) });
   updateEvoSimStats();
-  document.getElementById('evosim-log').innerHTML = '<span style="color:var(--text-muted);">Click "Step" to advance one generation, or "Run All" to run to completion.</span>';
+  drawEvoSimChart();
+  renderEvoSimPopGrid();
+  document.getElementById('evosim-log').innerHTML = '<span style="color:var(--text-muted);">Click "Step" or "Run All" to evolve.</span>';
 }
 
 function updateEvoSimStats() {
@@ -1964,25 +2167,18 @@ function stepEvoSim() {
   if (evoSimGen >= EVOSIM_MAX_GEN) return;
   const isApprox = document.getElementById('approx-toggle').checked;
   const fitFunc = isApprox ? evoSimApproxFitness : evoSimFitness;
-
   const fitnesses = evoSimPop.map(fitFunc);
   const trueFitnesses = evoSimPop.map(evoSimFitness);
   const newPop = [];
-
-  // Elitism (based on true fitness for fairness)
   const bestIdx = trueFitnesses.indexOf(Math.max(...trueFitnesses));
   newPop.push([...evoSimPop[bestIdx]]);
-
   while (newPop.length < EVOSIM_POP_SIZE) {
-    // Tournament selection using evaluated fitnesses
     const i1 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
     const i2 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
     const p1 = fitnesses[i1] >= fitnesses[i2] ? evoSimPop[i1] : evoSimPop[i2];
     const i3 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
     const i4 = Math.floor(Math.random() * EVOSIM_POP_SIZE);
     const p2 = fitnesses[i3] >= fitnesses[i4] ? evoSimPop[i3] : evoSimPop[i4];
-
-    // Crossover
     let child;
     if (Math.random() < 0.8) {
       const pt = Math.floor(Math.random() * EVOSIM_CHROMO_LEN);
@@ -1990,26 +2186,24 @@ function stepEvoSim() {
     } else {
       child = [...p1];
     }
-
-    // Mutation
     for (let j = 0; j < EVOSIM_CHROMO_LEN; j++) {
       if (Math.random() < 1 / EVOSIM_CHROMO_LEN) child[j] = 1 - child[j];
     }
     newPop.push(child);
   }
-
   evoSimPop = newPop;
   evoSimGen++;
-
   const newTrue = evoSimPop.map(evoSimFitness);
   const bestFit = Math.max(...newTrue);
-  const avgFit = (newTrue.reduce((s, f) => s + f, 0) / EVOSIM_POP_SIZE).toFixed(1);
-
+  const avgFit = parseFloat((newTrue.reduce((s, f) => s + f, 0) / EVOSIM_POP_SIZE).toFixed(1));
+  evoSimHistory.push({ best: bestFit, avg: avgFit });
   const logLine = 'Gen ' + String(evoSimGen).padStart(2, ' ') + ': best=<span style="color:var(--green);">' + bestFit + '</span>/' + EVOSIM_CHROMO_LEN + '  avg=<span style="color:var(--blue);">' + avgFit + '</span>' + (isApprox ? '  FP=<span style="color:var(--red);">' + evoSimFP + '</span>' : '');
   evoSimLog.push(logLine);
   document.getElementById('evosim-log').innerHTML = evoSimLog.join('<br>');
   document.getElementById('evosim-log').scrollTop = document.getElementById('evosim-log').scrollHeight;
   updateEvoSimStats();
+  drawEvoSimChart();
+  renderEvoSimPopGrid();
 }
 
 function runEvoSimFull() {
