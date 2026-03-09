@@ -2329,11 +2329,10 @@ function drawEvoSimChart() {
   });
   ctx.strokeStyle = '#00D97E'; ctx.lineWidth = 2; ctx.stroke();
   // Legend
-  ctx.font = '8px "JetBrains Mono",monospace';
-  ctx.fillStyle = '#00D97E'; ctx.fillRect(pad.left + 3, 3, 12, 3);
-  ctx.fillText('Best', pad.left + 18, 8);
-  ctx.fillStyle = '#58A6FF'; ctx.fillRect(pad.left + 42, 3, 12, 3);
-  ctx.fillText('Avg', pad.left + 57, 8);
+  ctx.font = '10px "JetBrains Mono",monospace'; ctx.textAlign = 'left';
+  const legY = pad.top + 4;
+  ctx.fillStyle = '#00D97E'; ctx.fillRect(pad.left + 6, legY - 4, 14, 4); ctx.fillText('Best', pad.left + 24, legY);
+  ctx.fillStyle = '#58A6FF'; ctx.fillRect(pad.left + 54, legY - 4, 14, 4); ctx.fillText('Avg',  pad.left + 72, legY);
 }
 
 function renderEvoSimPopGrid() {
@@ -2434,12 +2433,19 @@ function stepEvoSim() {
   renderEvoSimPopGrid();
 }
 
+let evoSimRunning = false;
 function runEvoSimFull() {
-  if (evoSimGen >= EVOSIM_MAX_GEN) return;
+  if (evoSimGen >= EVOSIM_MAX_GEN || evoSimRunning) return;
+  evoSimRunning = true;
+  const btn = document.querySelector('[onclick="runEvoSimFull()"]');
+  if (btn) { btn.textContent = 'Running…'; btn.disabled = true; }
   const run = () => {
     if (evoSimGen < EVOSIM_MAX_GEN) {
       stepEvoSim();
-      requestAnimationFrame(run);
+      setTimeout(run, 150);
+    } else {
+      evoSimRunning = false;
+      if (btn) { btn.textContent = 'Run All'; btn.disabled = false; }
     }
   };
   run();
