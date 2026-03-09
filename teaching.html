@@ -66,25 +66,37 @@
     }
 
     .teaching-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 48px; align-items: start; }
-    .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); max-height: calc(100vh - var(--nav-h) - 48px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .teaching-sidebar { position: sticky; top: calc(var(--nav-h) + 24px); max-height: calc(100vh - var(--nav-h) - 48px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-top: 44px; }
 
     .course-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-top: 20px;
+      border-radius: var(--radius);
+      padding: 0;
+      overflow: hidden;
       box-shadow: var(--shadow-sm);
+      border-top: 3px solid var(--wm-gold);
     }
-    .course-card h4 {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem; font-weight: 700;
-      color: var(--wm-green); margin-bottom: 8px;
-      text-transform: uppercase; letter-spacing: 0.06em;
+    .course-card-header {
+      padding: 20px 20px 16px;
+      background: var(--wm-gold-pale);
+      border-bottom: 1px solid rgba(185,151,91,0.15);
     }
+    .course-card-header h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; font-weight: 700;
+      color: var(--wm-gold); margin: 0 0 6px;
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+    .course-card-header .course-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--text); line-height: 1.3; margin: 0;
+    }
+    .course-card-body { padding: 14px 20px 18px; }
     .course-row {
       display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 5px 0; border-bottom: 1px solid var(--border);
+      padding: 7px 0; border-bottom: 1px solid var(--border);
       font-size: 0.75rem;
     }
     .course-row:last-child { border-bottom: none; }
@@ -100,7 +112,7 @@
 
     @media (max-width: 900px) {
       .teaching-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-      .teaching-sidebar { position: static; min-width: 0; }
+      .teaching-sidebar { position: static; min-width: 0; padding-top: 0; }
       .mfc-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
       .mfc-num { display: none; }
       .module-stats { flex-wrap: wrap; gap: 16px; }
@@ -112,7 +124,6 @@
       .mfc-title { font-size: 1.1rem; }
       .mfc-desc { font-size: 0.82rem; }
       .mfc-action .btn { font-size: 0.78rem; padding: 7px 14px; }
-      .course-card { margin-top: 16px; }
     }
     @media (max-width: 480px) {
       .teaching-layout { gap: 16px; }
@@ -251,38 +262,35 @@
       <!-- Sidebar -->
       <aside class="teaching-sidebar">
         <div class="course-card">
-          <h4>Course Details</h4>
-          <div class="course-row">
-            <span class="course-key">Course</span>
-            <span class="course-val">CSCI 455 / 555</span>
+          <div class="course-card-header">
+            <h4>CSCI 455 / 555</h4>
+            <p class="course-title">Generative AI for<br>Software Development</p>
           </div>
-          <div class="course-row">
-            <span class="course-key">Title</span>
-            <span class="course-val">GenAI for Software<br>Development</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Semester</span>
-            <span class="course-val">Spring 2026</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Schedule</span>
-            <span class="course-val">MWF 1:00 – 1:50 PM</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Location</span>
-            <span class="course-val">Blow Hall 333</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Credits</span>
-            <span class="course-val">3</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Instructor</span>
-            <span class="course-val">Prof. A. Mastropaolo</span>
-          </div>
-          <div class="course-row">
-            <span class="course-key">Institution</span>
-            <span class="course-val">William &amp; Mary</span>
+          <div class="course-card-body">
+            <div class="course-row">
+              <span class="course-key">Semester</span>
+              <span class="course-val">Spring 2026</span>
+            </div>
+            <div class="course-row">
+              <span class="course-key">Schedule</span>
+              <span class="course-val">MWF 1:00 &ndash; 1:50 PM</span>
+            </div>
+            <div class="course-row">
+              <span class="course-key">Location</span>
+              <span class="course-val">Blow Hall 333</span>
+            </div>
+            <div class="course-row">
+              <span class="course-key">Credits</span>
+              <span class="course-val">3</span>
+            </div>
+            <div class="course-row">
+              <span class="course-key">Instructor</span>
+              <span class="course-val">Prof. A. Mastropaolo</span>
+            </div>
+            <div class="course-row">
+              <span class="course-key">Institution</span>
+              <span class="course-val">William &amp; Mary</span>
+            </div>
           </div>
         </div>
       </aside>
