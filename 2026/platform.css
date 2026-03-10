@@ -230,6 +230,13 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   color: #92400E; border: 1px solid rgba(217,119,6,0.3);
   font-weight: 600; letter-spacing: 0.02em;
 }
+.tag-value {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  color: #065F46; border: 1px solid rgba(5,150,105,0.25);
+  font-weight: 700; letter-spacing: 0.02em;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+}
 
 /* ---- Buttons ---- */
 .btn {
