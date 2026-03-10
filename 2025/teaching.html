@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learning Material — Spring 2025 Archive — CodeLab</title>
+  <meta name="description" content="Archived learning modules from the inaugural offering of Generative AI for Software Development (CSCI 455/555) at William & Mary, Spring 2025." />
+  <link rel="stylesheet" href="../platform.css" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <style>
+    .archive-module-list { margin-top: 16px; }
+    .archive-module-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0; overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+    }
+    .archive-module-num {
+      display: flex; align-items: center; justify-content: center;
+      background: var(--wm-green-mist);
+      border-right: 1px solid var(--border);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--border-md);
+    }
+    .archive-module-body { padding: 24px 28px; }
+    .archive-module-body h3 {
+      font-size: 1.1rem; margin-bottom: 8px; color: var(--text);
+    }
+    .archive-module-body p {
+      font-size: 0.88rem; line-height: 1.6; margin-bottom: 12px;
+    }
+    .archive-module-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .archive-module-tag {
+      font-size: 0.68rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 100px;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.15);
+    }
+    .archive-module-tag.gold {
+      background: rgba(185,151,91,0.10); color: #8B6914;
+      border-color: rgba(185,151,91,0.25);
+    }
+
+    .archive-note {
+      background: rgba(185,151,91,0.08);
+      border: 1px solid rgba(185,151,91,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 32px;
+      font-size: 0.88rem; color: #8B6914; line-height: 1.6;
+    }
+    .archive-note strong { color: #6B4F0A; }
+
+    @media (max-width: 640px) {
+      .archive-module-card { grid-template-columns: 60px 1fr; }
+      .archive-module-num { font-size: 1.2rem; }
+      .archive-module-body { padding: 18px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      CodeLab
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="teaching.html" class="nav-link active">Learning Material</a>
+      <a href="projects.html" class="nav-link">Projects</a>
+      <a href="../contact.html" class="nav-link">Reach Out</a>
+    </div>
+    <div class="nav-right">
+      <div class="year-selector" id="year-selector">
+        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">Spring 2025 <span class="caret">&#9660;</span></div>
+        <div class="year-dropdown">
+          <a href="../teaching.html" class="year-option">Spring 2026 <span class="yr-badge">current</span></a>
+          <a href="teaching.html" class="year-option current">Spring 2025 <span class="yr-badge">archived</span></a>
+        </div>
+      </div>
+      <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ARCHIVE BANNER -->
+<div class="archive-banner">
+  You're viewing archived materials from <strong>Spring 2025</strong>.
+  <a href="../teaching.html">View current materials (Spring 2026) &rarr;</a>
+</div>
+
+<!-- HERO -->
+<section class="teaching-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill" style="background:rgba(185,151,91,0.18);border:1px solid rgba(185,151,91,0.3);color:#D4B07A;font-size:0.72rem;font-weight:600;padding:5px 14px;border-radius:100px;">ARCHIVED</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">CSCI 455 / 555</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">Spring 2025</span>
+    </div>
+    <h1 class="animate-up">Learning Material</h1>
+    <p class="lead animate-up animate-up-1" style="margin-top:12px;max-width:640px;">
+      Archived course content from the inaugural offering of <strong style="color:var(--wm-gold-light);">Generative AI for Software Development</strong>. The Spring 2025 curriculum covered five core modules focused on the foundations of AI for code.
+    </p>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section style="padding: 64px 0 96px; background: var(--bg);">
+  <div class="container">
+
+    <div class="semester-divider" style="margin-top:0;">
+      <h3>Spring 2025 &mdash; Core Modules</h3>
+    </div>
+
+    <div class="archive-module-list">
+
+      <div class="archive-module-card">
+        <div class="archive-module-num">00</div>
+        <div class="archive-module-body">
+          <h3>Course Introduction</h3>
+          <p>Overview of AI for software engineering, course structure, and the landscape of generative models applied to code &mdash; from early statistical approaches to modern LLMs.</p>
+          <div class="archive-module-tags">
+            <span class="archive-module-tag gold">Spring 2025</span>
+            <span class="archive-module-tag">Overview</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="archive-module-card">
+        <div class="archive-module-num">01</div>
+        <div class="archive-module-body">
+          <h3>Mining Software Repositories</h3>
+          <p>Techniques for extracting, cleaning, and analyzing data from version control systems, issue trackers, and code hosting platforms to build training datasets for AI models.</p>
+          <div class="archive-module-tags">
+            <span class="archive-module-tag gold">Spring 2025</span>
+            <span class="archive-module-tag">Data Collection</span>
+            <span class="archive-module-tag">Git</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="archive-module-card">
+        <div class="archive-module-num">02</div>
+        <div class="archive-module-body">
+          <h3>Probabilistic Source Code Modeling</h3>
+          <p>Foundations of probabilistic language models for code: n-grams, smoothing, perplexity, and entropy &mdash; understanding how machines can learn the statistical patterns of programming languages.</p>
+          <div class="archive-module-tags">
+            <span class="archive-module-tag gold">Spring 2025</span>
+            <span class="archive-module-tag">N-grams</span>
+            <span class="archive-module-tag">Probability</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="archive-module-card">
+        <div class="archive-module-num">03</div>
+        <div class="archive-module-body">
+          <h3>Evaluation Metrics</h3>
+          <p>Measuring the quality of AI-generated code: BLEU, CodeBLEU, exact match, functional correctness, and the challenges of evaluating generated outputs rigorously.</p>
+          <div class="archive-module-tags">
+            <span class="archive-module-tag gold">Spring 2025</span>
+            <span class="archive-module-tag">BLEU</span>
+            <span class="archive-module-tag">Benchmarks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="archive-module-card">
+        <div class="archive-module-num">04</div>
+        <div class="archive-module-body">
+          <h3>Deep Learning for Software Engineering</h3>
+          <p>Neural approaches to code: word embeddings, RNNs, LSTMs, and the Transformer architecture &mdash; the building blocks behind modern code generation tools.</p>
+          <div class="archive-module-tags">
+            <span class="archive-module-tag gold">Spring 2025</span>
+            <span class="archive-module-tag">Transformers</span>
+            <span class="archive-module-tag">Neural Networks</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="archive-note">
+      <strong>Note:</strong> The Spring 2025 curriculum covered five foundational modules. Spring 2026 expanded the course to eight modules, adding coverage of prompting LLMs, code hallucinations, and genetic algorithms. <a href="../teaching.html" style="color:var(--wm-green);font-weight:600;">View the current curriculum &rarr;</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-identity">
+        <div class="footer-brand-row">
+          <div class="footer-logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <span class="footer-brand-name">CodeLab</span>
+        </div>
+        <p class="footer-brand-desc">The open companion platform for CSCI&nbsp;455/555 &mdash; Generative AI for Software Development at William&nbsp;&amp;&nbsp;Mary.</p>
+        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-link">
+          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
+          William &amp; Mary
+        </a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Platform</div>
+        <div class="footer-col-links">
+          <a href="index.html">Home</a>
+          <a href="teaching.html">Learning Material</a>
+          <a href="projects.html">Projects</a>
+          <a href="../contact.html">Reach Out</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Resources</div>
+        <div class="footer-col-links">
+          <a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science <span class="footer-ext">&#8599;</span></a>
+          <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website <span class="footer-ext">&#8599;</span></a>
+          <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository <span class="footer-ext">&#8599;</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <span class="footer-copy">&copy; 2025 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
+      <span class="footer-made-with">Built with AI-assisted development</span>
+    </div>
+  </div>
+</footer>
+
+<script>document.addEventListener('click',function(e){var s=document.getElementById('year-selector');if(s&&!s.contains(e.target))s.classList.remove('open')});</script>
+</body>
+</html>

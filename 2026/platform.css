@@ -218,13 +218,17 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
   padding: 4px 12px; border-radius: 100px;
 }
-.tag-green  { background: rgba(17,87,64,0.08);  color: var(--wm-green); border: 1px solid rgba(17,87,64,0.2); }
-.tag-gold   { background: var(--wm-gold-pale);  color: #8B6914;         border: 1px solid rgba(185,151,91,0.3); }
+.tag-green  { background: rgba(17,87,64,0.10);  color: #0E6B48;         border: 1px solid rgba(17,87,64,0.25); }
+.tag-gold   { background: rgba(185,151,91,0.12); color: #8B6914;        border: 1px solid rgba(185,151,91,0.35); }
 .tag-blue   { background: #EEF2FF;              color: #4338CA;         border: 1px solid #C7D2FE; }
-.tag-purple { background: #F5F3FF;              color: #6D28D9;         border: 1px solid #DDD6FE; }
-.tag-teal   { background: #F0FDFA;              color: #0D9488;         border: 1px solid #99F6E4; }
-.tag-rose   { background: rgba(244,63,94,0.1);  color: #F43F5E;         border: 1px solid rgba(244,63,94,0.2); }
+.tag-purple { background: #F3F0FF;              color: #6D28D9;         border: 1px solid #D8D0FE; }
+.tag-teal   { background: #ECFDF8;              color: #0F766E;         border: 1px solid #86EFCE; }
+.tag-rose   { background: rgba(244,63,94,0.10); color: #E11D48;        border: 1px solid rgba(244,63,94,0.25); }
 .tag-red    { background: #FEF2F2;              color: #DC2626;         border: 1px solid #FECACA; }
+.tag-amber  { background: #FFFBEB;              color: #B45309;         border: 1px solid #FDE68A; }
+.tag-cyan   { background: #ECFEFF;              color: #0E7490;         border: 1px solid #A5F3FC; }
+.tag-indigo { background: #EEF2FF;              color: #3730A3;         border: 1px solid #A5B4FC; }
+.tag-slate  { background: #F1F5F9;              color: #475569;         border: 1px solid #CBD5E1; }
 .tag-special {
   background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(185,151,91,0.10));
   color: #92400E; border: 1px solid rgba(217,119,6,0.3);
@@ -547,54 +551,74 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   border-top: 3px solid var(--wm-gold);
 }
 
-/* Main footer content area */
+/* Main footer: 3-column grid */
 .footer-main {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 40px 0 36px; gap: 40px; flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: clamp(32px, 5vw, 64px);
+  padding: 48px 0 40px;
 }
 
-/* Left: W&M logo + CodeLab brand */
+/* Column 1: Brand identity */
 .footer-identity {
-  display: flex; align-items: center; gap: 20px;
+  display: flex; flex-direction: column; gap: 16px;
 }
-.footer-wm-logo {
-  display: flex; align-items: center;
-  flex-shrink: 0;
+.footer-brand-row {
+  display: flex; align-items: center; gap: 12px;
 }
-.footer-wm-logo img {
-  height: 32px; width: auto;
-  opacity: 0.9;
-  transition: opacity 0.2s;
+.footer-logo-mark {
+  width: 34px; height: 34px; flex-shrink: 0;
 }
-.footer-wm-logo:hover img { opacity: 1; }
-.footer-divider {
-  width: 1px; height: 36px;
-  background: rgba(255,255,255,0.15); flex-shrink: 0;
-}
-.footer-brand-block {
-  display: flex; flex-direction: column; gap: 2px;
-}
+.footer-logo-mark svg { width: 34px; height: 34px; }
 .footer-brand-name {
   font-family: 'Playfair Display', serif;
-  font-size: 1.05rem; font-weight: 700; color: #FFFFFF;
+  font-size: 1.2rem; font-weight: 700; color: #FFFFFF;
   letter-spacing: 0.01em;
 }
-.footer-brand-sub {
-  font-size: 0.73rem; color: rgba(255,255,255,0.38);
+.footer-brand-desc {
+  font-size: 0.82rem; color: rgba(255,255,255,0.4);
   font-family: 'Inter', sans-serif; font-weight: 400;
+  line-height: 1.6; max-width: 300px;
+}
+.footer-wm-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; color: rgba(255,255,255,0.35);
+  font-family: 'Inter', sans-serif; font-weight: 500;
+  text-decoration: none; transition: color 0.2s;
+  margin-top: 4px;
+}
+.footer-wm-link:hover { color: var(--wm-gold-light); }
+.footer-wm-link img {
+  height: 18px; width: auto; opacity: 0.5; transition: opacity 0.2s;
+}
+.footer-wm-link:hover img { opacity: 0.8; }
+
+/* Column headers */
+.footer-col-head {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.55);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-/* Right: nav links */
-.footer-nav {
-  display: flex; align-items: center; gap: 28px;
-  list-style: none; flex-wrap: wrap;
+/* Column 2 & 3: link columns */
+.footer-col { display: flex; flex-direction: column; }
+.footer-col-links {
+  display: flex; flex-direction: column; gap: 10px;
 }
-.footer-nav a {
-  font-size: 0.8rem; color: rgba(255,255,255,0.45);
+.footer-col-links a {
+  font-size: 0.82rem; color: rgba(255,255,255,0.45);
   text-decoration: none; transition: color 0.2s;
   font-family: 'Inter', sans-serif; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
 }
-.footer-nav a:hover { color: var(--wm-gold-light); }
+.footer-col-links a:hover { color: var(--wm-gold-light); }
+.footer-col-links a .footer-ext {
+  font-size: 0.6rem; opacity: 0.4; transition: opacity 0.2s;
+}
+.footer-col-links a:hover .footer-ext { opacity: 0.7; }
 
 /* Bottom bar */
 .footer-bottom-bar {
@@ -607,15 +631,10 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   font-size: 0.72rem; color: rgba(255,255,255,0.25);
   font-family: 'Inter', sans-serif;
 }
-.footer-bottom-links {
-  display: flex; align-items: center; gap: 20px;
+.footer-made-with {
+  font-size: 0.72rem; color: rgba(255,255,255,0.2);
+  font-family: 'Inter', sans-serif;
 }
-.footer-bottom-links a {
-  font-size: 0.72rem; color: rgba(255,255,255,0.30);
-  text-decoration: none; transition: color 0.2s;
-  font-family: 'Inter', sans-serif; font-weight: 500;
-}
-.footer-bottom-links a:hover { color: var(--wm-gold-light); }
 
 /* Legacy footer classes (kept for backward compat) */
 .footer-grid { display: none; }
@@ -752,10 +771,10 @@ p  { color: var(--text-2); font-size: 1rem; line-height: 1.7; }
   .container { padding: 0 20px; }
   .nav-links { display: none; }
   .nav-instructor { display: none; }
-  .footer-main { flex-direction: column; align-items: flex-start; gap: 24px; padding: 32px 0 28px; }
-  .footer-nav { gap: 16px; }
+  .footer-main { grid-template-columns: 1fr; gap: 32px; padding: 36px 0 28px; }
+  .footer-brand-desc { max-width: 100%; }
+  .footer-col-links { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; }
   .footer-bottom-bar { flex-direction: column; text-align: center; }
-  .footer-bottom-links { gap: 14px; }
   .footer-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
   .footer-left { flex-wrap: wrap; }
   .hero-actions { flex-direction: column; }

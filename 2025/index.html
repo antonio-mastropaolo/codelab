@@ -4,44 +4,287 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spring 2025 Archive — CodeLab</title>
+  <meta name="description" content="Archived materials from the inaugural offering of Generative AI for Software Development (CSCI 455/555) at William & Mary, Spring 2025." />
   <link rel="stylesheet" href="../platform.css" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <style>
+    .archive-hero {
+      padding: calc(var(--nav-h) + clamp(48px, 8vw, 80px)) 0 clamp(48px, 8vw, 80px);
+      background: var(--wm-green-dark);
+      border-bottom: 4px solid var(--wm-gold);
+      position: relative; overflow: hidden;
+    }
+    .archive-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px; pointer-events: none;
+    }
+    .archive-hero h1 { color: #FFFFFF; }
+    .archive-hero p { color: rgba(255,255,255,0.6); }
+
+    .archive-section { padding: 64px 0; }
+    .archive-section.alt { background: var(--surface); }
+    .archive-section .section-head { margin-bottom: 36px; }
+    .archive-section .section-head h2 { margin-bottom: 10px; }
+
+    .archive-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .archive-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none; display: block;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .archive-summary-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--wm-green);
+    }
+    .archive-summary-card .card-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 16px;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.15);
+    }
+    .archive-summary-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+    .archive-summary-card p { font-size: 0.88rem; line-height: 1.6; }
+    .archive-summary-card .card-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 16px; font-size: 0.85rem; font-weight: 600;
+      color: var(--wm-green);
+    }
+
+    .archive-info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    .archive-info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .archive-info-card h3 {
+      font-size: 1.15rem; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--wm-gold);
+    }
+    .archive-info-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .archive-info-row:last-child { border-bottom: none; }
+    .archive-info-key { color: var(--text-3); }
+    .archive-info-val { color: var(--text); font-weight: 500; text-align: right; }
+
+    .archive-topic-pills {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+    }
+    .archive-topic-pill {
+      font-size: 0.72rem; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.15);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @media (max-width: 768px) {
+      .archive-summary-grid { grid-template-columns: 1fr; }
+      .archive-info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="platform-nav">
-  <div class="container nav-inner">
-    <a href="/2025/" class="nav-logo">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
       <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
       CodeLab
     </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="teaching.html" class="nav-link">Learning Material</a>
+      <a href="projects.html" class="nav-link">Projects</a>
+      <a href="../contact.html" class="nav-link">Reach Out</a>
+    </div>
+    <div class="nav-right">
+      <div class="year-selector" id="year-selector">
+        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">Spring 2025 <span class="caret">&#9660;</span></div>
+        <div class="year-dropdown">
+          <a href="../index.html" class="year-option">Spring 2026 <span class="yr-badge">current</span></a>
+          <a href="index.html" class="year-option current">Spring 2025 <span class="yr-badge">archived</span></a>
+        </div>
+      </div>
+      <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
+    </div>
   </div>
 </nav>
 
+<!-- ARCHIVE BANNER -->
 <div class="archive-banner">
-  📁 You're viewing materials from Spring 2025.
-  <a href="/2026/">View current materials &rarr;</a>
+  You're viewing archived materials from <strong>Spring 2025</strong>.
+  <a href="../index.html">View current materials (Spring 2026) &rarr;</a>
 </div>
 
-<section class="hero" style="padding: 80px 0 60px; text-align: center;">
-  <div class="container">
-    <div style="display:inline-block;padding:6px 16px;border-radius:6px;background:rgba(185,151,91,0.12);border:1px solid rgba(185,151,91,0.3);color:#8B6914;font-size:0.82rem;font-weight:600;margin-bottom:20px;">
-      📁 Archived Materials
+<!-- HERO -->
+<section class="archive-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill" style="background:rgba(185,151,91,0.18);border:1px solid rgba(185,151,91,0.3);color:#D4B07A;font-size:0.72rem;font-weight:600;padding:5px 14px;border-radius:100px;">ARCHIVED</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">CSCI 455 / 555</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">Spring 2025</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">William &amp; Mary</span>
     </div>
-    <h1 style="font-family:'Playfair Display',serif;font-size:2.4rem;margin-bottom:16px;">Spring 2025</h1>
-    <p style="font-size:1.05rem;color:var(--text-2);max-width:540px;margin:0 auto 32px;line-height:1.7;">
-      Materials from Spring 2025 are being archived. This space will contain previous course content for reference.
+    <h1 class="animate-up">Spring 2025</h1>
+    <p class="lead animate-up animate-up-1" style="margin-top:12px;max-width:640px;">
+      The inaugural offering of <strong style="color:var(--wm-gold-light);">Generative AI for Software Development</strong>. This archive preserves the course structure, topics, and student work from the first semester.
     </p>
-    <a href="/2026/" class="btn btn-primary">View Current Materials (Spring 2026) &rarr;</a>
+    <div style="margin-top:28px;" class="animate-up animate-up-2">
+      <a href="../index.html" class="btn btn-outline-white">Switch to Spring 2026 &rarr;</a>
+    </div>
   </div>
 </section>
 
+<!-- QUICK NAV -->
+<section class="archive-section">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Spring 2025 Archive</div>
+      <h2>What's in This Archive</h2>
+    </div>
+    <div class="archive-summary-grid">
+      <a href="teaching.html" class="archive-summary-card">
+        <div class="card-icon">&#128218;</div>
+        <h3>Learning Material</h3>
+        <p>Five core modules covering the foundations of AI for software engineering &mdash; from mining repositories to deep learning for code.</p>
+        <span class="card-link">View Modules &rarr;</span>
+      </a>
+      <a href="projects.html" class="archive-summary-card">
+        <div class="card-icon">&#128187;</div>
+        <h3>Student Projects</h3>
+        <p>The first cohort of students explored AI-assisted development through hands-on team projects presented in class.</p>
+        <span class="card-link">View Projects &rarr;</span>
+      </a>
+      <a href="../index.html" class="archive-summary-card">
+        <div class="card-icon">&#128640;</div>
+        <h3>Current Semester</h3>
+        <p>Spring 2026 expands to eight modules with interactive demos, a project gallery, and the CodeLab platform.</p>
+        <span class="card-link">Go to Spring 2026 &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COURSE OVERVIEW -->
+<section class="archive-section alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Course Overview</div>
+      <h2>CSCI 455 / 555 &mdash; Spring 2025</h2>
+      <p class="lead">
+        The first iteration of the course introduced students to the intersection of generative AI and software engineering, focusing on foundational concepts in code modeling and deep learning.
+      </p>
+    </div>
+    <div class="archive-info-grid">
+      <div class="archive-info-card">
+        <h3>Course Information</h3>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Course</span>
+          <span class="archive-info-val">CSCI 455 / 555</span>
+        </div>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Schedule</span>
+          <span class="archive-info-val">MWF 1:00 &ndash; 1:50 PM</span>
+        </div>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Location</span>
+          <span class="archive-info-val">Blow Hall 333</span>
+        </div>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Credits</span>
+          <span class="archive-info-val">3</span>
+        </div>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Instructor</span>
+          <span class="archive-info-val">Prof. Antonio Mastropaolo</span>
+        </div>
+        <div class="archive-info-row">
+          <span class="archive-info-key">Class Size</span>
+          <span class="archive-info-val">~30 students</span>
+        </div>
+      </div>
+      <div class="archive-info-card">
+        <h3>Topics Covered</h3>
+        <p style="font-size:0.88rem;line-height:1.65;margin-bottom:16px;">
+          The inaugural semester focused on the core pipeline of AI-assisted software development: from mining and modeling source code to evaluating model outputs and applying deep learning to coding tasks.
+        </p>
+        <div class="archive-topic-pills">
+          <span class="archive-topic-pill">mining repositories</span>
+          <span class="archive-topic-pill">language models</span>
+          <span class="archive-topic-pill">evaluation metrics</span>
+          <span class="archive-topic-pill">deep learning</span>
+          <span class="archive-topic-pill">code generation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer class="platform-footer">
   <div class="container">
-    <div class="footer-bottom">
-      <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary</span>
+    <div class="footer-main">
+      <div class="footer-identity">
+        <div class="footer-brand-row">
+          <div class="footer-logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <span class="footer-brand-name">CodeLab</span>
+        </div>
+        <p class="footer-brand-desc">The open companion platform for CSCI&nbsp;455/555 &mdash; Generative AI for Software Development at William&nbsp;&amp;&nbsp;Mary.</p>
+        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-link">
+          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
+          William &amp; Mary
+        </a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Platform</div>
+        <div class="footer-col-links">
+          <a href="index.html">Home</a>
+          <a href="teaching.html">Learning Material</a>
+          <a href="projects.html">Projects</a>
+          <a href="../contact.html">Reach Out</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Resources</div>
+        <div class="footer-col-links">
+          <a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science <span class="footer-ext">&#8599;</span></a>
+          <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website <span class="footer-ext">&#8599;</span></a>
+          <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository <span class="footer-ext">&#8599;</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <span class="footer-copy">&copy; 2025 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
+      <span class="footer-made-with">Built with AI-assisted development</span>
     </div>
   </div>
 </footer>
 
+<script>document.addEventListener('click',function(e){var s=document.getElementById('year-selector');if(s&&!s.contains(e.target))s.classList.remove('open')});</script>
 </body>
 </html>

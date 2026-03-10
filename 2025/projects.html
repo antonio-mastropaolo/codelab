@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Spring 2025 Archive — CodeLab</title>
+  <meta name="description" content="Archived student projects from the inaugural offering of Generative AI for Software Development (CSCI 455/555) at William & Mary, Spring 2025." />
+  <link rel="stylesheet" href="../platform.css" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <style>
+    .archive-projects-section { padding: 64px 0 96px; background: var(--bg); }
+    .archive-project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .archive-project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .archive-project-card-bar { height: 5px; background: var(--wm-gold); }
+    .archive-project-card-body { padding: 24px; }
+    .archive-project-semester {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--wm-gold);
+      margin-bottom: 10px;
+    }
+    .archive-project-card h4 {
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: 1rem; color: var(--text); margin-bottom: 8px;
+    }
+    .archive-project-card p {
+      font-size: 0.85rem; line-height: 1.6; margin-bottom: 14px;
+    }
+    .archive-project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .archive-project-tag {
+      font-size: 0.65rem; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+      background: var(--wm-green-mist); color: var(--wm-green);
+      border: 1px solid rgba(17,87,64,0.12);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .archive-project-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem; color: var(--text-3);
+    }
+
+    .archive-empty-state {
+      text-align: center; padding: 64px 24px;
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      margin-top: 32px;
+    }
+    .archive-empty-state .empty-icon {
+      font-size: 3rem; margin-bottom: 16px; opacity: 0.3;
+    }
+    .archive-empty-state h3 { margin-bottom: 10px; }
+    .archive-empty-state p { max-width: 480px; margin: 0 auto; }
+
+    .archive-note {
+      background: rgba(185,151,91,0.08);
+      border: 1px solid rgba(185,151,91,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 32px;
+      font-size: 0.88rem; color: #8B6914; line-height: 1.6;
+    }
+    .archive-note strong { color: #6B4F0A; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="platform-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      CodeLab
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="teaching.html" class="nav-link">Learning Material</a>
+      <a href="projects.html" class="nav-link active">Projects</a>
+      <a href="../contact.html" class="nav-link">Reach Out</a>
+    </div>
+    <div class="nav-right">
+      <div class="year-selector" id="year-selector">
+        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">Spring 2025 <span class="caret">&#9660;</span></div>
+        <div class="year-dropdown">
+          <a href="../projects.html" class="year-option">Spring 2026 <span class="yr-badge">current</span></a>
+          <a href="projects.html" class="year-option current">Spring 2025 <span class="yr-badge">archived</span></a>
+        </div>
+      </div>
+      <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ARCHIVE BANNER -->
+<div class="archive-banner">
+  You're viewing archived materials from <strong>Spring 2025</strong>.
+  <a href="../projects.html">View current projects (Spring 2026) &rarr;</a>
+</div>
+
+<!-- HERO -->
+<section class="projects-page-hero">
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="hero-meta" style="padding-top:0;">
+      <span class="pill" style="background:rgba(185,151,91,0.18);border:1px solid rgba(185,151,91,0.3);color:#D4B07A;font-size:0.72rem;font-weight:600;padding:5px 14px;border-radius:100px;">ARCHIVED</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">Spring 2025</span>
+      <span class="sep" style="color:rgba(255,255,255,0.2);">&middot;</span>
+      <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);">William &amp; Mary</span>
+    </div>
+    <h1 class="animate-up">Student Projects</h1>
+    <p class="lead animate-up animate-up-1" style="margin-top:12px;max-width:640px;">
+      Projects from the inaugural cohort of <strong style="color:var(--wm-gold-light);">Generative AI for Software Development</strong>. Students explored AI-assisted development through hands-on team projects.
+    </p>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="archive-projects-section">
+  <div class="container">
+
+    <div class="semester-divider" style="margin-top:0;">
+      <h3>Spring 2025 &mdash; Student Projects</h3>
+    </div>
+
+    <div class="archive-project-grid">
+
+      <div class="archive-project-card">
+        <div class="archive-project-card-bar"></div>
+        <div class="archive-project-card-body">
+          <div class="archive-project-semester">Spring 2025</div>
+          <h4>AI-Powered Study Assistant</h4>
+          <p>A study tool that uses LLMs to generate practice questions, explain concepts, and create flashcards from lecture notes and textbook content.</p>
+          <div class="archive-project-tags">
+            <span class="archive-project-tag">Python</span>
+            <span class="archive-project-tag">Flask</span>
+            <span class="archive-project-tag">OpenAI API</span>
+          </div>
+        </div>
+        <div class="archive-project-footer">Team of 3 &middot; Presented in class</div>
+      </div>
+
+      <div class="archive-project-card">
+        <div class="archive-project-card-bar"></div>
+        <div class="archive-project-card-body">
+          <div class="archive-project-semester">Spring 2025</div>
+          <h4>Code Documentation Generator</h4>
+          <p>An automated tool that analyzes codebases and generates documentation, README files, and inline comments using generative models.</p>
+          <div class="archive-project-tags">
+            <span class="archive-project-tag">JavaScript</span>
+            <span class="archive-project-tag">Node.js</span>
+            <span class="archive-project-tag">LLM</span>
+          </div>
+        </div>
+        <div class="archive-project-footer">Team of 3 &middot; Presented in class</div>
+      </div>
+
+      <div class="archive-project-card">
+        <div class="archive-project-card-bar"></div>
+        <div class="archive-project-card-body">
+          <div class="archive-project-semester">Spring 2025</div>
+          <h4>Commit Message Classifier</h4>
+          <p>A machine learning pipeline that classifies commit messages by type (bug fix, feature, refactor) using both traditional ML and transformer-based models.</p>
+          <div class="archive-project-tags">
+            <span class="archive-project-tag">Python</span>
+            <span class="archive-project-tag">scikit-learn</span>
+            <span class="archive-project-tag">BERT</span>
+          </div>
+        </div>
+        <div class="archive-project-footer">Team of 2 &middot; Presented in class</div>
+      </div>
+
+      <div class="archive-project-card">
+        <div class="archive-project-card-bar"></div>
+        <div class="archive-project-card-body">
+          <div class="archive-project-semester">Spring 2025</div>
+          <h4>Repository Health Dashboard</h4>
+          <p>A web dashboard that mines GitHub repositories and visualizes code quality metrics, contributor activity, and issue resolution trends.</p>
+          <div class="archive-project-tags">
+            <span class="archive-project-tag">React</span>
+            <span class="archive-project-tag">GitHub API</span>
+            <span class="archive-project-tag">D3.js</span>
+          </div>
+        </div>
+        <div class="archive-project-footer">Team of 3 &middot; Presented in class</div>
+      </div>
+
+    </div>
+
+    <div class="archive-note">
+      <strong>Note:</strong> Spring 2025 projects were presented in class and are summarized here for reference. Starting with Spring 2026, student projects are showcased as fully interactive demos on the CodeLab platform. <a href="../projects.html" style="color:var(--wm-green);font-weight:600;">View Spring 2026 projects &rarr;</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="platform-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-identity">
+        <div class="footer-brand-row">
+          <div class="footer-logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <span class="footer-brand-name">CodeLab</span>
+        </div>
+        <p class="footer-brand-desc">The open companion platform for CSCI&nbsp;455/555 &mdash; Generative AI for Software Development at William&nbsp;&amp;&nbsp;Mary.</p>
+        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-link">
+          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
+          William &amp; Mary
+        </a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Platform</div>
+        <div class="footer-col-links">
+          <a href="index.html">Home</a>
+          <a href="teaching.html">Learning Material</a>
+          <a href="projects.html">Projects</a>
+          <a href="../contact.html">Reach Out</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Resources</div>
+        <div class="footer-col-links">
+          <a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science <span class="footer-ext">&#8599;</span></a>
+          <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website <span class="footer-ext">&#8599;</span></a>
+          <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository <span class="footer-ext">&#8599;</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <span class="footer-copy">&copy; 2025 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
+      <span class="footer-made-with">Built with AI-assisted development</span>
+    </div>
+  </div>
+</footer>
+
+<script>document.addEventListener('click',function(e){var s=document.getElementById('year-selector');if(s&&!s.contains(e.target))s.classList.remove('open')});</script>
+</body>
+</html>

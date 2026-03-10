@@ -6,6 +6,7 @@
   <title>Projects — CodeLab</title>
   <meta name="description" content="Vibe Coding Project Gallery — concept platforms built with generative AI tools by undergraduate students at William & Mary." />
   <link rel="stylesheet" href="platform.css" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <style>
     /* ── Vibe Coding Intro ─────────────────────────────────── */
     .vibe-intro {
@@ -303,6 +304,13 @@
       <a href="contact.html" class="nav-link">Reach Out</a>
     </div>
     <div class="nav-right">
+      <div class="year-selector" id="year-selector">
+        <div class="year-pill" onclick="document.getElementById('year-selector').classList.toggle('open')">Spring 2026 <span class="caret">&#9660;</span></div>
+        <div class="year-dropdown">
+          <a href="projects.html" class="year-option current">Spring 2026 <span class="yr-badge">current</span></a>
+          <a href="../2025/projects.html" class="year-option">Spring 2025 <span class="yr-badge">archived</span></a>
+        </div>
+      </div>
       <span class="nav-instructor">Antonio Mastropaolo &middot; W&amp;M</span>
     </div>
   </div>
@@ -355,7 +363,7 @@
           <div class="pfc-body">
             <div class="pfc-tags">
               <span class="section-tag tag-green">Fintech</span>
-              <span class="section-tag tag-teal">Full-stack</span>
+              <span class="section-tag tag-slate">Full-Stack</span>
               <span class="section-tag tag-value">~$120K ARR</span>
             </div>
             <h2>Stock Trading Signal Platform</h2>
@@ -425,7 +433,7 @@
           <div class="pfc-body">
             <div class="pfc-tags">
               <span class="section-tag tag-purple">DevTools</span>
-              <span class="section-tag tag-green">AI-Powered</span>
+              <span class="section-tag tag-indigo">AI-Powered</span>
               <span class="section-tag tag-value">~$85K ARR</span>
             </div>
             <h2>CodeLens &mdash; AI Code Review</h2>
@@ -459,8 +467,8 @@
           </div>
           <div class="pfc-body">
             <div class="pfc-tags">
-              <span class="section-tag tag-gold">Careers</span>
-              <span class="section-tag tag-blue">Adaptive AI</span>
+              <span class="section-tag tag-amber">Careers</span>
+              <span class="section-tag tag-cyan">Adaptive AI</span>
               <span class="section-tag tag-value">~$60K ARR</span>
             </div>
             <h2>AI Interview Coach</h2>
@@ -495,7 +503,7 @@
           <div class="pfc-body">
             <div class="pfc-tags">
               <span class="section-tag tag-rose">Infrastructure</span>
-              <span class="section-tag tag-green">AI-Powered</span>
+              <span class="section-tag tag-indigo">AI-Powered</span>
               <span class="section-tag tag-value">~$200K ARR</span>
             </div>
             <h2>RouteLLM &mdash; Inference Optimizer</h2>
@@ -556,29 +564,37 @@
   <div class="container">
     <div class="footer-main">
       <div class="footer-identity">
-        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-logo">
-          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
-        </a>
-        <div class="footer-divider"></div>
-        <div class="footer-brand-block">
+        <div class="footer-brand-row">
+          <div class="footer-logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
           <span class="footer-brand-name">CodeLab</span>
-          <span class="footer-brand-sub">CSCI 455/555 &middot; Generative AI for Software Development</span>
+        </div>
+        <p class="footer-brand-desc">The open companion platform for CSCI&nbsp;455/555 &mdash; Generative AI for Software Development at William&nbsp;&amp;&nbsp;Mary.</p>
+        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-link">
+          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
+          William &amp; Mary
+        </a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-head">Platform</div>
+        <div class="footer-col-links">
+          <a href="index.html">Home</a>
+          <a href="teaching.html">Learning Material</a>
+          <a href="projects.html">Projects</a>
+          <a href="contact.html">Reach Out</a>
         </div>
       </div>
-      <nav class="footer-nav">
-        <a href="index.html">Home</a>
-        <a href="teaching.html">Learning Material</a>
-        <a href="projects.html">Projects</a>
-        <a href="contact.html">Reach Out</a>
-      </nav>
+      <div class="footer-col">
+        <div class="footer-col-head">Resources</div>
+        <div class="footer-col-links">
+          <a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science <span class="footer-ext">&#8599;</span></a>
+          <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website <span class="footer-ext">&#8599;</span></a>
+          <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository <span class="footer-ext">&#8599;</span></a>
+        </div>
+      </div>
     </div>
     <div class="footer-bottom-bar">
       <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
-      <div class="footer-bottom-links">
-        <a href="https://www.wm.edu/as/computerscience/" target="_blank">Department of Computer Science</a>
-        <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub</a>
-        <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website</a>
-      </div>
+      <span class="footer-made-with">Built with AI-assisted development</span>
     </div>
   </div>
 </footer>
@@ -610,6 +626,7 @@
   }
 })();
 </script>
+<script>document.addEventListener('click',function(e){var s=document.getElementById('year-selector');if(s&&!s.contains(e.target))s.classList.remove('open')});</script>
 <script src="feedback-widget.js"></script>
 </body>
 </html>
