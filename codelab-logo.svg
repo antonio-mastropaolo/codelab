@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <!-- Left curly brace -->
+  <path d="M18 8C12 8 10 12 10 16L10 24C10 28 6 30 6 30C6 30 10 32 10 36L10 44C10 48 12 52 18 52" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Right curly brace -->
+  <path d="M62 8C68 8 70 12 70 16L70 24C70 28 74 30 74 30C74 30 70 32 70 36L70 44C70 48 68 52 62 52" stroke="#D4B07A" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Wave/pulse between braces -->
+  <path d="M22 30 Q30 18 38 30 Q46 42 54 30 Q58 24 62 30" stroke="url(#wave-grad)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Text: Code (white) -->
+  <text x="82" y="33" font-family="Inter, sans-serif" font-weight="700" font-size="22" fill="#FFFFFF">Code</text>
+  <!-- Text: Lab (gold) -->
+  <text x="134" y="33" font-family="Inter, sans-serif" font-weight="700" font-size="22" fill="#D4B07A">Lab</text>
+  <!-- Text: .sh (gold, smaller) -->
+  <text x="166" y="33" font-family="Inter, sans-serif" font-weight="500" font-size="16" fill="#D4B07A">.sh</text>
+  <defs>
+    <linearGradient id="wave-grad" x1="22" y1="30" x2="62" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+      <stop offset="50%" stop-color="#4AEAAF"/>
+      <stop offset="100%" stop-color="#D4B07A"/>
+    </linearGradient>
+  </defs>
+</svg>
