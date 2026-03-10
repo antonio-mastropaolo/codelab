@@ -58,7 +58,7 @@
     /* Form elements */
     .cl-fb-field { margin-bottom: 12px; }
     .cl-fb-label {
-      display: block; font-size: 0.72rem; font-weight: 600; color: #7D8590;
+      display: block; font-size: 0.72rem; font-weight: 600; color: #FFFFFF;
       margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em;
       font-family: 'JetBrains Mono', monospace;
     }
@@ -200,7 +200,7 @@
         <div class="cl-fb-error-msg" id="cl-fb-type-err">Select a category.</div>
       </div>
       <div class="cl-fb-field">
-        <label class="cl-fb-label" for="cl-fb-title">Title <span style="color:#7D8590;font-weight:400;text-transform:none;">(optional)</span></label>
+        <label class="cl-fb-label" for="cl-fb-title">Title <span style="color:rgba(255,255,255,0.5);font-weight:400;text-transform:none;">(optional)</span></label>
         <input class="cl-fb-input" id="cl-fb-title" type="text" placeholder="Brief summary..." maxlength="120" autocomplete="off">
       </div>
       <div class="cl-fb-field">

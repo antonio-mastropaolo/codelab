@@ -283,7 +283,7 @@
 <nav class="platform-nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
-      <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="logo-mark"><svg viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="8" fill="#115740"/><path class="logo-left" d="M13.5 10L7.5 17l6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path class="logo-right" d="M20.5 10l6 7-6 7" stroke="#B9975B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path class="logo-slash" d="M18.5 8.5L15 25.5" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round"/><line class="logo-cursor" x1="17" y1="11" x2="17" y2="23" stroke="#B9975B" stroke-width="1.5" stroke-linecap="round"/></svg></div>
       CodeLab
     </a>
     <div class="nav-links">
@@ -575,10 +575,13 @@
       <div class="about-content">
         <h2>About This Platform</h2>
         <p>
-          CodeLab is the open companion to <em>Generative AI for Software Development</em> (CSCI 455/555) at William &amp; Mary. The course explores how large language models reshape programming practice — from data collection and model training to prompt engineering and output evaluation.
+          CodeLab was born from first-hand experience with vibe coding. As a researcher and practitioner, Antonio started building software through natural language prompts and AI pair-programming — and the impact on the development chain of command was striking. That hands-on experimentation sparked a deeper reflection on how far this novel approach to writing code can actually take us.
         </p>
         <p>
-          All teaching modules are self-paced, browser-based, and free to use. Student projects demonstrate real-world applications built through AI-assisted development. The platform serves as both a learning resource and a showcase of student work.
+          This website is itself part of those original experiments: an entirely vibe-coded platform, built and iterated through AI-assisted development. It now serves as the open companion to <em>Generative AI for Software Development</em> (CSCI 455/555) at William &amp; Mary, where students explore the same workflow — from prompt engineering and model evaluation to shipping real applications.
+        </p>
+        <p>
+          All teaching modules are self-paced, browser-based, and free to use. Student projects demonstrate what undergrads can build when armed with modern LLMs and a bit of ambition.
         </p>
         <div class="about-links">
           <a href="https://antoniomastropaolo.com/teaching/" class="about-link" target="_blank">
@@ -602,32 +605,31 @@
 <!-- FOOTER -->
 <footer class="platform-footer">
   <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="index.html" class="footer-logo"><span class="fl-mark">&lt;/&gt;</span> CodeLab</a>
-        <p class="footer-desc">The open companion platform for Generative&nbsp;AI for Software Development (CSCI&nbsp;455/555) at William&nbsp;&amp;&nbsp;Mary. Browser-based, free, and built for learning.</p>
+    <div class="footer-main">
+      <div class="footer-identity">
+        <a href="https://www.wm.edu/" target="_blank" class="footer-wm-logo">
+          <img src="https://www.wm.edu/images/wm_vertical_single_line.svg" alt="William &amp; Mary" />
+        </a>
+        <div class="footer-divider"></div>
+        <div class="footer-brand-block">
+          <span class="footer-brand-name">CodeLab</span>
+          <span class="footer-brand-sub">CSCI 455/555 &middot; Generative AI for Software Development</span>
+        </div>
       </div>
-      <div class="footer-col">
-        <h4>Platform</h4>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="teaching.html">Learning Material</a></li>
-          <li><a href="projects.html">Projects</a></li>
-          <li><a href="contact.html">Reach Out</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website</a></li>
-          <li><a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub Repository</a></li>
-          <li><a href="https://www.wm.edu/as/computerscience/" target="_blank">W&amp;M Computer Science</a></li>
-        </ul>
-      </div>
+      <nav class="footer-nav">
+        <a href="index.html">Home</a>
+        <a href="teaching.html">Learning Material</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Reach Out</a>
+      </nav>
     </div>
     <div class="footer-bottom-bar">
       <span class="footer-copy">&copy; 2026 Antonio Mastropaolo &middot; William &amp; Mary. All rights reserved.</span>
-      <a href="https://www.wm.edu/as/computerscience/" target="_blank" class="footer-wm">W&amp;M Computer Science</a>
+      <div class="footer-bottom-links">
+        <a href="https://www.wm.edu/as/computerscience/" target="_blank">Department of Computer Science</a>
+        <a href="https://github.com/antonio-mastropaolo/codelab" target="_blank">GitHub</a>
+        <a href="https://antoniomastropaolo.com/teaching/" target="_blank">Course Website</a>
+      </div>
     </div>
   </div>
 </footer>
